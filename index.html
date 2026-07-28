@@ -28,7 +28,7 @@
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
 
-  .shell{max-width:1140px;margin:0 auto;padding:0 20px 64px;display:grid;grid-template-columns:1fr;gap:0}
+  .shell{max-width:1140px;margin:0 auto;padding:14px 20px 64px;display:grid;grid-template-columns:1fr;gap:0}
 
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;
     letter-spacing:-.01em;padding:20px 2px 18px;line-height:1.25}
@@ -264,6 +264,105 @@
     text-decoration:underline;cursor:pointer;padding:6px 0}
   .fusslink:hover{color:var(--ac-dark)}
 
+  /* ---------- Antwort eintippen ---------- */
+  .eingabezeile{display:flex;gap:10px;align-items:stretch}
+  .antwortfeld{margin-bottom:0;font-size:19px;font-weight:600}
+  .eingabezeile .btn{flex:none;padding:13px 22px}
+  @media(max-width:480px){
+    .eingabezeile{flex-direction:column}
+    .eingabezeile .btn{width:100%}
+  }
+
+  /* ---------- Kopfleiste und Menü ---------- */
+  .kopfleiste{position:sticky;top:0;z-index:40;background:var(--bg);
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 20px;max-width:1140px;margin:0 auto}
+  .marke{display:flex;align-items:center;gap:10px;background:none;border:none;
+    font:inherit;font-weight:700;font-size:17px;color:var(--ink);cursor:pointer;padding:4px}
+  .marke .dot{width:30px;height:30px;border-radius:9px;background:var(--ac);flex:none;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:800}
+  .burger{background:none;border:1.5px solid var(--line);border-radius:11px;
+    width:46px;height:42px;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;gap:5px;cursor:pointer;padding:0}
+  .burger:hover{border-color:var(--ac)}
+  .burger i{display:block;width:20px;height:2.5px;border-radius:2px;background:var(--ink);
+    transition:transform .18s, opacity .18s}
+  .burger.offen i:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+  .burger.offen i:nth-child(2){opacity:0}
+  .burger.offen i:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+
+  .menuegrund{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50}
+  .menue{position:fixed;top:0;right:0;bottom:0;width:min(340px,86vw);z-index:60;
+    background:var(--card);border-left:1px solid var(--line);
+    padding:74px 16px 30px;overflow-y:auto;box-shadow:-6px 0 26px rgba(0,0,0,.14)}
+  .mtitel{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--soft);
+    font-weight:700;margin:20px 0 6px 10px}
+  .mtitel:first-child{margin-top:0}
+  .mpunkt{display:flex;justify-content:space-between;align-items:center;gap:10px;
+    width:100%;text-align:left;background:none;border:none;border-radius:11px;
+    padding:12px 12px;font:inherit;font-size:16.5px;color:var(--ink);cursor:pointer}
+  .mpunkt:hover{background:var(--ac-soft);color:var(--ac-dark)}
+  .mpunkt.an{background:var(--ac-soft);color:var(--ac-dark);font-weight:600}
+  .mpunkt.unter{padding-left:26px;font-size:15.5px;color:var(--soft)}
+  .mpunkt.unter span{font-size:13px;color:var(--soft)}
+  .mpunkt.admin{color:var(--ac-dark);font-weight:600}
+  .mpunkt span{font-size:14px;color:var(--soft)}
+
+  .faq{padding:16px 0;border-bottom:1px solid var(--line)}
+  .faq:last-child{border-bottom:none}
+  .faq b{display:block;font-size:17px;margin-bottom:6px}
+  .faq p{margin:0;color:var(--soft);font-size:16px;line-height:1.6}
+  .platzhalter{background:var(--amber-soft);color:var(--amber);border-radius:5px;
+    padding:1px 7px;font-weight:700;font-size:14px}
+
+  /* ---------- Dashboard, zweiter Teil ---------- */
+  .wochentage{display:grid;gap:4px}
+  .wtag{display:flex;align-items:center;gap:10px}
+  .wname{flex:0 0 30px;font-size:14px;color:var(--soft)}
+  .wbalken{flex:1;background:var(--bg);border-radius:999px;height:12px;overflow:hidden}
+  .wbalken i{display:block;height:100%;background:var(--ac);border-radius:999px}
+  .wzahl{flex:0 0 42px;text-align:right;font-size:13px;color:var(--soft);font-variant-numeric:tabular-nums}
+  .todo{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);font-size:16px}
+  .todo:last-child{border-bottom:none}
+  .todo .haken{flex:none;width:22px;height:22px;border-radius:7px;border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff}
+  .todo.fertig .haken{background:var(--ac);border-color:var(--ac)}
+  .todo.fertig{color:var(--soft);text-decoration:line-through}
+
+  /* ---------- Tickets und Support ---------- */
+  .code{background:var(--ac-soft);color:var(--ac-dark);border-radius:12px;padding:14px 18px;
+    font-size:19px;margin:14px 0;text-align:center}
+  .code b{font-size:24px;letter-spacing:.04em}
+  .kontext{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .kontext span{background:var(--bg);border:1px solid var(--line);border-radius:8px;
+    padding:4px 9px;font-size:12.5px;color:var(--soft)}
+  .kontext b{color:var(--ink);font-weight:600;margin-right:5px}
+  .antwort{background:var(--ac-soft);border-radius:11px;padding:12px 15px;margin:10px 0}
+  .antwort b{display:block;font-size:13px;color:var(--ac-dark);margin-bottom:4px;
+    text-transform:uppercase;letter-spacing:.08em}
+  .antwort p{margin:0;font-size:16px;white-space:pre-wrap}
+  .statuspille{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;
+    background:var(--amber-soft);color:var(--amber)}
+  .statuspille.beantwortet{background:var(--ac-soft);color:var(--ac-dark)}
+  .statuspille.fertig{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
+  .freigabeliste{display:flex;flex-direction:column;gap:5px;margin:8px 0}
+  .fpunkt{font-size:14px;color:var(--soft);background:var(--bg);border-radius:8px;padding:6px 10px}
+
+  /* ---------- Fußleiste ---------- */
+  .fussleiste{border-top:1px solid var(--line);background:var(--card);margin-top:30px;padding:34px 20px 26px}
+  .fussinhalt{max-width:1140px;margin:0 auto;display:grid;gap:26px}
+  .fussspalte{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+  .fusstitel{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--soft);
+    font-weight:700;margin:0 0 8px}
+  .fusslink{background:none;border:none;padding:5px 0;font:inherit;font-size:15px;
+    color:var(--ink);text-align:left;cursor:pointer}
+  .fusslink:hover{color:var(--ac-dark);text-decoration:underline}
+  .fussschluss{max-width:1140px;margin:26px auto 0;padding-top:20px;border-top:1px solid var(--line);
+    font-size:13.5px;color:var(--soft);text-align:center}
+  .card.faellig{border-color:var(--ac)}
+  .btn.admin{background:var(--ac-dark)}
+
   /* ---------- breiter Bildschirm ---------- */
   @media(min-width:900px){
     .shell{grid-template-columns:262px 1fr;gap:32px;align-items:start}
@@ -282,22 +381,24 @@
     .gegen{grid-template-columns:1fr 1fr}
     .hero{padding:34px 0 14px}
     .wahlgitter{grid-template-columns:1fr 1fr}
+    .fussinhalt{grid-template-columns:repeat(4,1fr);gap:30px}
     .wahlgitter.drei{grid-template-columns:1fr 1fr 1fr}
     .optionen3{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
   }
 </style>
 </head>
 <body>
+<div id="kopf"></div>
 <div class="shell" id="shell">
   <aside class="side">
-    <div class="logo"><span class="dot">EK</span> <span>Endlich kapiert</span></div>
     <div id="seite"></div>
   </aside>
   <main>
     <div id="screen"></div>
-    <p class="demo">Endlich kapiert · Mathe Klasse 5 bis 7 und Deutsch Klasse 5 bis 7 sind fertig — die übrigen Klassen kommen nach und nach.</p>
+    <p class="demo">Mathe Klasse 5 bis 7 und Deutsch Klasse 5 bis 7 sind fertig — die übrigen Klassen kommen nach und nach.</p>
   </main>
 </div>
+<div id="fussleiste"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ---------- Themenkatalog ---------- */
@@ -376,11 +477,13 @@ const AUFGABEN = {
                 F("Alle Ziffern zusammen", "Nein — nur die eine direkt rechts daneben.")]},
      {frage:`Die entscheidende Ziffer ist eine <b>${e}</b>. Was heißt das?`,
       tipp:"0 bis 4 heißt abrunden, 5 bis 9 heißt aufrunden.",
-      optionen: auf
+      optionen: zieheVerschiedene(auf
         ? [R("Aufrunden", `${e} ist 5 oder größer — also aufrunden.`),
-           F("Abrunden", `Abgerundet wird nur bis 4. Die ${e} liegt darüber.`)]
+           F("Abrunden", `Abgerundet wird nur bis 4. Die ${e} liegt darüber.`),
+           F("Die Ziffer stehen lassen", "Beim Runden verschwindet alles rechts der Rundungsstelle.")]
         : [R("Abrunden", `${e} liegt unter 5 — also abrunden.`),
-           F("Aufrunden", "Aufgerundet wird erst ab 5.")]},
+           F("Aufrunden", "Aufgerundet wird erst ab 5."),
+           F("Die Ziffer stehen lassen", "Beim Runden verschwindet alles rechts der Rundungsstelle.")], 3)},
      {frage:"Wie heißt das Ergebnis?",
       tipp:"Die Hunderterziffer bleibt oder wächst um eins, dahinter stehen zwei Nullen.",
       optionen:[R(z(erg), "Richtig."),
@@ -406,7 +509,13 @@ const AUFGABEN = {
     schritte:[
      {frage:`An welcher Stelle steht die <b>${ziffer}</b> in ${z(n)}?`,
       tipp:"Zähl von rechts: Einer, Zehner, Hunderter, Tausender, Zehntausender.",
-      optionen: zieheVerschiedene([R(st.name, "Richtig."), F(andere.name, `Nein, das ist die Stelle mit dem Wert ${z(andere.wert)}.`)], 2)},
+      optionen: (() => {
+        const kand = [R(st.name, "Richtig."),
+                      F(andere.name, `Nein, das ist die Stelle mit dem Wert ${z(andere.wert)}.`),
+                      F("Zehntausender", "Das wäre die Ziffer ganz links.")];
+        const einmalig = kand.filter((o,i,arr) => arr.findIndex(x => x.t === o.t) === i);
+        return zieheVerschiedene(einmalig, einmalig.length);
+      })()},
      {frage:`Wie viel ist <b>ein einzelner ${st.name}</b> wert?`,
       tipp:"Einer = 1, Zehner = 10, Hunderter = 100, Tausender = 1000.",
       optionen:[R(z(st.wert), "Genau."),
@@ -438,7 +547,8 @@ const AUFGABEN = {
      {frage:"Welche Rechnung machst du <b>zuerst</b>?",
       tipp:"Es gibt eine feste Reihenfolge, egal wie die Aufgabe dasteht.",
       optionen:[R(`${b} · ${c}`, "Richtig — Punkt vor Strich."),
-                F(`${a} + ${b}`, `Das wäre von links nach rechts. Dann käme ${z(falsch)} heraus, und das ist falsch.`)]},
+                F(`${a} + ${b}`, `Das wäre von links nach rechts. Dann käme ${z(falsch)} heraus, und das ist falsch.`),
+                F(`${a} · ${c}`, `Die ${a} und die ${c} stehen nicht nebeneinander — dazwischen steht ein Pluszeichen.`)]},
      {frage:`Was ergibt <b>${b} · ${c}</b>?`,
       tipp:`${b} mal die ${c}.`,
       optionen:[R(z(b*c), "Ja."),
@@ -508,7 +618,8 @@ const AUFGABEN = {
      {frage:`Jetzt fehlen noch die <b>${z(g)} g</b>. Was machst du damit?`,
       tipp:"Die stehen schon in der richtigen Einheit.",
       optionen:[R("Einfach dazuzählen", "Richtig, sie sind ja schon in Gramm."),
-                F("Auch mal 1.000 nehmen", "Nur die Kilogramm mussten umgerechnet werden.")]},
+                F("Auch mal 1.000 nehmen", "Nur die Kilogramm mussten umgerechnet werden."),
+                F("Durch 1.000 teilen", "Dann würden aus Gramm Kilogramm — genau verkehrt herum.")]},
      {frage:`<b>${z(kg*1000)} + ${z(g)}</b> ergibt?`,
       tipp:"Ganz normal zusammenzählen.",
       optionen:[R(z(erg) + " g", "Fertig."),
@@ -586,7 +697,8 @@ const AUFGABEN = {
      {frage:"Was ist der <b>Flächeninhalt</b>?",
       tipp:"Wie viele Zentimeterquadrate passen hinein?",
       optionen:[R("Der Platz innerhalb des Rechtecks", "Richtig."),
-                F("Der Weg außen herum", "Das ist der Umfang.")]},
+                F("Der Weg außen herum", "Das ist der Umfang."),
+                F("Die Länge der längsten Seite", "Eine einzelne Seite ist weder Fläche noch Umfang.")]},
      {frage:"Welche Rechnung gehört zur Fläche?",
       tipp:"Länge und Breite werden verbunden — aber nicht addiert.",
       optionen:[R(`${l} · ${b}`, "Genau: Länge mal Breite."),
@@ -713,6 +825,7 @@ const AUFGABEN = {
                 F(`${a}/${n}`, "Du hast nur unten erweitert. Oben muss dasselbe passieren."),
                 F(`${n}/${n}`, "Das wäre genau 1.")]},
      {frage:`Und <b>${c}/${d}</b> mit dem Nenner ${n}? Dann kannst du addieren.`,
+      tippAntwort: `${zaehler}/${n}`,
       tipp:`Der Nenner wird mal ${fd} genommen — der Zähler auch.`,
       optionen:(() => {
         const richtigZ = c*fd;
@@ -749,7 +862,8 @@ const AUFGABEN = {
       optionen:[R(z(teil), `Ja, ein ${b}tel von ${z(N)} sind ${z(teil)}.`),
                 F(z(teil + 1), "Rechne noch mal nach."),
                 F(z(N - b), "Hier wird geteilt, nicht abgezogen.")]},
-     {frage:`Du brauchst aber <b>${a}</b> davon. Letzter Schritt?`,
+     {frage:`Du brauchst aber <b>${a}</b> davon. Wie viel ist das?`,
+      tippAntwort: String(erg),
       tipp:"Der Zähler sagt, wie viele dieser Teile du nimmst.",
       optionen:[R(`${z(teil)} · ${a} = ${z(erg)}`, "Fertig."),
                 F(`${z(teil)} : ${a} = ${z(teil/a)}`, `${a} Teile sind mehr als einer, nicht weniger.`)]}]};
@@ -839,10 +953,13 @@ const AUFGABEN = {
         F(String(n), "Die Quersumme ist die Summe der einzelnen Ziffern, nicht die Zahl selbst.")], 3)},
      {frage:`Ist <b>${q}</b> durch 3 teilbar?`,
       tipp:"3, 6, 9, 12, 15, 18, 21 …",
-      optionen: q % 3 === 0
-        ? [R("Ja", `Ja — 3 · ${q/3} = ${q}.`), F("Nein", `Doch, ${q} : 3 = ${q/3} geht glatt auf.`)]
+      optionen: zieheVerschiedene(q % 3 === 0
+        ? [R("Ja", `Ja — 3 · ${q/3} = ${q}.`),
+           F("Nein", `Doch, ${q} : 3 = ${q/3} geht glatt auf.`),
+           F("Nur mit Rest", `Nein, ${q} : 3 = ${q/3} geht genau auf.`)]
         : [R("Nein", `Richtig, ${q} liegt zwischen ${Math.floor(q/3)*3} und ${Math.ceil(q/3)*3}.`),
-           F("Ja", `Nein, ${q} : 3 geht nicht ohne Rest auf.`)]},
+           F("Ja", `Nein, ${q} : 3 geht nicht ohne Rest auf.`),
+           F("Nur wenn man aufrundet", "Teilbarkeit hat mit Runden nichts zu tun.")], 3)},
      {frage:`Also ist ${z(n)} …`,
       tipp:"Quersumme teilbar heißt Zahl teilbar.",
       optionen: teilbar
@@ -913,7 +1030,8 @@ const AUFGABEN = {
      {frage:`Wie kommst du auf den Preis für <b>ein</b> ${ware.ein}?`,
       tipp:`Aus ${k} ${ware.mehr} wird 1 ${ware.ein}.`,
       optionen:[R(`${eur(preisK)} : ${k}`, "Richtig."),
-                F(`${eur(preisK)} · ${k}`, `Ein ${ware.ein} ist billiger als ${k}, nicht teurer.`)]},
+                F(`${eur(preisK)} · ${k}`, `Ein ${ware.ein} ist billiger als ${k}, nicht teurer.`),
+                F(`${eur(preisK)} − ${k}`, "Von einem Preis eine Stückzahl abzuziehen ergibt keinen Sinn.")]},
      {frage:`<b>${eur(preisK)} : ${k}</b> ergibt?`,
       tipp:`${Math.round(preisK*100)} Cent durch ${k}.`,
       optionen: zieheVerschiedene([
@@ -1060,7 +1178,8 @@ const AUFGABEN = {
       optionen:[R(`${a}x = ${a*x}`, "Sauber. Jetzt ist nur noch die Zahl vor dem x im Weg."),
                 F(`${a}x = ${c + b}`, "Rechts wurde addiert statt abgezogen."),
                 F(`x = ${a*x}`, `Noch nicht — die ${a} vor dem x steht ja noch da.`)]},
-     {frage:`Letzter Schritt: <b>${a}x = ${a*x}</b>`,
+     {frage:`Letzter Schritt: <b>${a}x = ${a*x}</b> — wie groß ist x?`,
+      tippAntwort: String(x),
       tipp:`${a}x heißt „${a} mal x“. Das Gegenteil von mal ist …`,
       optionen:[R(`Beide Seiten durch ${a} teilen, also x = ${x}`, `Genau. Probe: ${a}·${x} + ${b} = ${c}. Stimmt.`),
                 F(`Auf beiden Seiten ${a} abziehen`, "Abziehen hilft gegen Plus. Hier wird mal gerechnet."),
@@ -1078,19 +1197,24 @@ const AUFGABEN = {
      {frage:"Was räumst du <b>zuerst</b> weg?",
       tipp:"Erst das, was addiert oder abgezogen wird.",
       optionen:[R(`Die − ${b}`, "Richtig, immer zuerst Plus und Minus."),
-                F(`Die ${a} vor dem x`, "Die kommt zum Schluss.")]},
+                F(`Die ${a} vor dem x`, "Die kommt zum Schluss."),
+                F(`Die ${c} rechts vom Gleichheitszeichen`, "Die steht auf der anderen Seite und stört das x nicht.")]},
      {frage:`Wie wirst du die <b>− ${b}</b> los?`,
       tipp:`Das Gegenteil von minus ${b}.`,
       optionen:[R(`Auf beiden Seiten ${b} addieren`, "Genau."),
-                F(`Auf beiden Seiten ${b} abziehen`, `Dann stünde da − ${2*b}.`)]},
+                F(`Auf beiden Seiten ${b} abziehen`, `Dann stünde da − ${2*b}.`),
+                F(`Beide Seiten mit ${b} multiplizieren`, "Mal-Rechnen hilft gegen Mal-Rechnen, nicht gegen Minus.")]},
      {frage:"Was steht jetzt da?",
       tipp:`Links bleibt ${a}x, rechts ${c} + ${b}.`,
       optionen:[R(`${a}x = ${a*x}`, "Richtig."),
-                F(`${a}x = ${c - b}`, "Da wurde rechts abgezogen statt addiert.")]},
-     {frage:`<b>${a}x = ${a*x}</b> — letzter Schritt?`,
+                F(`${a}x = ${c - b}`, "Da wurde rechts abgezogen statt addiert."),
+                F(`x = ${a*x}`, `Noch nicht — die ${a} vor dem x steht ja noch da.`)]},
+     {frage:`<b>${a}x = ${a*x}</b> — wie groß ist x?`,
+      tippAntwort: String(x),
       tipp:"Durch die Zahl vor dem x teilen.",
       optionen:[R(`Beide Seiten durch ${a} teilen, also x = ${x}`, `Fertig. Probe: ${a}·${x} − ${b} = ${c}. Stimmt.`),
-                F(`Beide Seiten mal ${a}, also x = ${a*a*x}`, "Mal macht es größer, du willst es kleiner.")]}]};
+                F(`Beide Seiten mal ${a}, also x = ${a*a*x}`, "Mal macht es größer, du willst es kleiner."),
+                F(`Auf beiden Seiten ${a} abziehen, also x = ${a*x - a}`, "Abziehen hilft gegen Plus. Hier steht ein Mal.")]}]};
  }
 ],
 
@@ -1266,7 +1390,8 @@ const AUFGABEN = {
       optionen: zieheVerschiedene([
         R(s.loes, "Richtig."),
         F(istDass ? "das" : "dass", istDass ? "Das wäre nur richtig, wenn der Ersetz-Test funktioniert hätte."
-                                            : "Zwei s stehen nur, wenn der Ersetz-Test nicht klappt.")], 2)}]};
+                                            : "Zwei s stehen nur, wenn der Ersetz-Test nicht klappt."),
+        F("daß", "Das ist die alte Schreibweise von vor der Rechtschreibreform — heute nicht mehr richtig.")], 3)}]};
  }
 ],
 
@@ -1392,12 +1517,101 @@ function entdoppeln(aufgabe){
   return aufgabe;
 }
 
+/* ---------- Antwortmöglichkeiten auffüllen ----------
+   Bei Zahlenantworten ergänzen wir automatisch weitere, knapp danebenliegende
+   Werte, damit man sich nicht mit einem Drittel Wahrscheinlichkeit durchraten kann. */
+
+const ZIEL_ANTWORTEN = 6;
+
+/* Zerlegt "3.800 g" in {wert: 3800, suffix: " g", stellen: 0} — oder null, wenn es keine reine Zahl ist. */
+function zahlTeile(text){
+  const roh = String(text).replace(/<[^>]+>/g, "").trim();
+  const m = roh.match(/^(-?\d{1,3}(?:\.\d{3})*(?:,\d+)?|-?\d+(?:,\d+)?)(\s*(?:cm²|cm³|cm|mm|km|m|kg|g|l|ml|min|h|s|°|%|€|Grad)?)$/);
+  if (!m) return null;
+  const zahlText = m[1];
+  const wert = Number(zahlText.replace(/\./g, "").replace(",", "."));
+  if (!Number.isFinite(wert)) return null;
+  const komma = zahlText.split(",")[1];
+  return {wert, suffix: m[2] || "", stellen: komma ? komma.length : 0};
+}
+function formatiereWie(wert, teile){
+  const zahl = wert.toLocaleString("de-DE", {minimumFractionDigits: teile.stellen, maximumFractionDigits: teile.stellen});
+  return zahl + teile.suffix;
+}
+
+function fuelleAuf(schritt, ziel){
+  if (schritt.optionen.length >= ziel) return;
+  const richtig = schritt.optionen.find(o => o.ok);
+  if (!richtig) return;
+  const teile = zahlTeile(richtig.t);
+  if (!teile) return;                                   // keine reine Zahlenantwort
+  const alleTeile = schritt.optionen.map(o => zahlTeile(o.t));
+  if (!alleTeile.every(t => t && t.suffix === teile.suffix)) return;   // gleiche Einheit genügt
+
+  const w = teile.wert;
+  const b = Math.abs(w);
+  /* Abstände passend zur Größenordnung, damit keine Ein-Cent-Ablenker entstehen */
+  const spruenge = b >= 1000 ? [100, 200, 50, 500]
+                 : b >= 100  ? [10, 20, 5, 50]
+                 : b >= 10   ? [1, 2, 5, 10]
+                 : b >= 1    ? [1, 2, 0.5, 3]
+                 : [0.1, 0.05, 0.2, 0.5];
+  const kandidaten = [];
+  spruenge.forEach(d => { kandidaten.push(w + d, w - d); });
+  kandidaten.push(w * 10, w / 10, w * 2, w / 2);
+  const genutzteTexte = new Set(schritt.optionen.map(o => String(o.t).replace(/<[^>]+>/g, "").trim()));
+  const genutzteWerte = alleTeile.map(t => t.wert);
+  for (const k of kandidaten){
+    if (schritt.optionen.length >= ziel) break;
+    if (!Number.isFinite(k)) continue;
+    if (w > 0 && k <= 0) continue;
+    if (Math.abs(k) > 1e9) continue;
+    const gerundet = Number(k.toFixed(teile.stellen + 2));
+    if (genutzteWerte.some(v => Math.abs(v - gerundet) < 1e-9)) continue;   // Wert schon vorhanden
+    const text = formatiereWie(gerundet, teile);
+    if (genutzteTexte.has(text)) continue;
+    genutzteTexte.add(text); genutzteWerte.push(gerundet);
+    schritt.optionen.push({t: text, ok: 0, fb: "Knapp daneben — rechne den letzten Schritt noch einmal nach."});
+  }
+}
+
+/* Kann man die Antwort dieses Schrittes auch eintippen? Nur bei reinen Werten. */
+function istEintippbar(schritt){
+  if (schritt.tippAntwort) return true;
+  const richtig = schritt.optionen.find(o => o.ok);
+  if (!richtig) return false;
+  const roh = String(richtig.t).replace(/<[^>]+>/g, "").trim();
+  if (/^\d+\/\d+$/.test(roh)) return true;             // Bruch wie 11/12
+  if (/^x = -?\d+$/.test(roh)) return true;             // Gleichungslösung
+  return !!zahlTeile(roh);
+}
+/* Vergleicht eine eingetippte Antwort mit der richtigen — großzügig bei Schreibweise. */
+function eingabePasst(eingabe, richtigText){
+  const putzen = t => String(t).replace(/<[^>]+>/g, "").replace(/\s/g, "").toLowerCase();
+  const a = putzen(eingabe), b = putzen(richtigText);
+  if (!a) return false;
+  if (a === b) return true;
+  const bruch = t => { const m = t.match(/^(\d+)\/(\d+)$/); return m ? Number(m[1])/Number(m[2]) : null; };
+  const ba = bruch(a), bb = bruch(b);
+  if (ba !== null && bb !== null) return Math.abs(ba - bb) < 1e-9;
+  const zahl = t => {
+    const m = t.replace(/x=/, "").match(/-?\d{1,3}(?:\.\d{3})+(?:,\d+)?|-?\d+(?:[.,]\d+)?/);
+    if (!m) return null;
+    return Number(m[0].replace(/\.(?=\d{3}\b)/g, "").replace(",", "."));
+  };
+  const za = zahl(a), zb = zahl(b);
+  if (za === null || zb === null) return false;
+  return Math.abs(za - zb) < 1e-6;
+}
+
 /* erzeugt eine frische Aufgabe (Zahlen und Wörter jedes Mal neu) */
 function baueAufgabe(name, welche){
   const liste = AUFGABEN[name];
   const bauer = liste[welche % liste.length];
   const aufgabe = typeof bauer === "function" ? bauer() : JSON.parse(JSON.stringify(bauer));
-  return entdoppeln(aufgabe);
+  entdoppeln(aufgabe);
+  (aufgabe.schritte || []).forEach(s => fuelleAuf(s, ZIEL_ANTWORTEN));
+  return aufgabe;
 }
 /* ---------- Weitere Deutsch-Themen ---------- */
 Object.assign(AUFGABEN, {
@@ -1572,12 +1786,15 @@ Object.assign(AUFGABEN, {
      {frage:"Was ist der <b>Begleitsatz</b>?",
       tipp:"Der Teil, der sagt, wer spricht.",
       optionen:[R(`„${f.begleit}“`, "Genau — er sagt, wer spricht."),
-                F(`„${f.rede}“`, "Das ist die wörtliche Rede selbst, also das Gesagte.")]},
+                F(`„${f.rede}“`, "Das ist die wörtliche Rede selbst, also das Gesagte."),
+                F("Die Anführungszeichen", "Das sind Satzzeichen, kein Satzteil.")]},
      {frage:"Steht der Begleitsatz <b>vor</b> oder <b>hinter</b> der wörtlichen Rede?",
       tipp:"Schau auf die Reihenfolge im Satz.",
-      optionen: f.vorn
-        ? [R("Davor", "Richtig."), F("Dahinter", "Nein, er steht am Anfang.")]
-        : [R("Dahinter", "Richtig."), F("Davor", "Nein, er steht am Ende.")]},
+      optionen: zieheVerschiedene(f.vorn
+        ? [R("Davor", "Richtig."), F("Dahinter", "Nein, er steht am Anfang."),
+           F("Mitten in der Rede", "Das gibt es zwar auch, hier aber nicht.")]
+        : [R("Dahinter", "Richtig."), F("Davor", "Nein, er steht am Ende."),
+           F("Mitten in der Rede", "Das gibt es zwar auch, hier aber nicht.")], 3)},
      {frage:"Welches <b>Satzzeichen</b> gehört dann an die Lücke?",
       tipp: f.vorn ? "Vor der Rede kündigt ein Zeichen sie an." : "Nach der Rede trennt ein Zeichen ab.",
       optionen: f.vorn
@@ -1619,19 +1836,23 @@ Object.assign(AUFGABEN, {
     schritte:[
      {frage:`Aus wie vielen Teilen besteht <b>„${f.form}“</b>? (Das „ich“ zählt nicht mit.)`,
       tipp:"Zähl die Verbformen.",
-      optionen: f.teile === 1
+      optionen: zieheVerschiedene(f.teile === 1
         ? [R("Aus einem Wort", "Richtig — dann kommen nur Präsens oder Präteritum infrage."),
-           F("Aus zwei Wörtern", "Nein, es steht nur eine Verbform da.")]
+           F("Aus zwei Wörtern", "Nein, es steht nur eine Verbform da."),
+           F("Aus drei Wörtern", "So lang ist die Form nicht.")]
         : [R("Aus zwei Wörtern", "Richtig — Hilfsverb plus zweite Form."),
-           F("Aus einem Wort", "Nein, es sind zwei Verbformen.")]},
+           F("Aus einem Wort", "Nein, es sind zwei Verbformen."),
+           F("Aus drei Wörtern", "Zähl noch mal — es sind genau zwei.")], 3)},
      {frage:"Was folgt daraus?",
       tipp: f.teile === 1 ? "Einteilige Formen sind Gegenwart oder einfache Vergangenheit."
                           : "Zweiteilige Formen brauchen ein Hilfsverb.",
-      optionen: f.teile === 1
+      optionen: zieheVerschiedene(f.teile === 1
         ? [R("Es ist Präsens oder Präteritum", "Genau."),
-           F("Es ist Perfekt oder Futur", "Dafür bräuchte es ein Hilfsverb.")]
+           F("Es ist Perfekt oder Futur", "Dafür bräuchte es ein Hilfsverb."),
+           F("Es ist Plusquamperfekt", "Das besteht immer aus zwei Teilen.")]
         : [R("Es ist Perfekt, Plusquamperfekt oder Futur", "Genau."),
-           F("Es ist Präsens oder Präteritum", "Die bestehen nur aus einem Wort.")]},
+           F("Es ist Präsens oder Präteritum", "Die bestehen nur aus einem Wort."),
+           F("Es ist gar keine Zeitform", "Doch — jede Verbform steht in einer Zeit.")], 3)},
      {frage:"Welche Zeitform ist es genau?",
       tipp: f.hinweis,
       optionen: zieheVerschiedene([
@@ -1673,7 +1894,8 @@ Object.assign(AUFGABEN, {
      {frage:`Und was gehört <b>vor „${f.schluss}“</b>?`,
       tipp:`Das ist die Ausnahme, die man sich merken muss.`,
       optionen:[R("Gar nichts", `Richtig — vor „${f.schluss}“ steht in einer Aufzählung kein Komma.`),
-                F("Ein Komma", `Nein, genau vor „${f.schluss}“ bleibt es weg.`)]},
+                F("Ein Komma", `Nein, genau vor „${f.schluss}“ bleibt es weg.`),
+                F("Ein Semikolon", "Ein Semikolon trennt ganze Sätze, nicht Aufzählungsglieder.")]},
      {frage:"Wie sieht der Satz richtig aus?",
       tipp:`Ein Komma in der Mitte, keines vor „${f.schluss}“.`,
       optionen: zieheVerschiedene([
@@ -2376,9 +2598,35 @@ function hatErklaerung(thema){ return !!ERKLAERUNGEN[thema]; }
 let istAdmin = false;
 let statistik = null;
 let meldungen = [];
+let nutzer = null;
+let nutzerSichtbar = false;
 let ladeFehler = "";
 let meldungGesendet = false;
 let vorMelden = "willkommen";
+let meldungCode = "";
+let meineAnfragen = [];
+let freigaben = null;
+let protokoll = null;
+
+/* Was war der Nutzer gerade am Tun? Das hängen wir an die Meldung an. */
+function meldeKontext(){
+  const k = {};
+  if (fach && KATALOG[fach]) k.fach = KATALOG[fach].name;
+  if (klasse) k.klasse = klasse;
+  if (aktuellName) k.thema = aktuellName;
+  if (aktuell){
+    k.aufgabe = (variante + 1) + " von " + anzahlAufgaben(aktuellName);
+    k.schritt = (schrittNr + 1) + " von " + aktuell.schritte.length;
+    k.aufgabentext = String(aktuell.text).replace(/<[^>]+>/g, "").slice(0, 160);
+  }
+  const ua = navigator.userAgent;
+  k.geraet = /Android/i.test(ua) ? "Android" : /iPhone|iPad/i.test(ua) ? "iPhone oder iPad"
+           : /Windows/i.test(ua) ? "Windows" : /Mac/i.test(ua) ? "Mac" : "unbekannt";
+  k.browser = /Edg\//.test(ua) ? "Edge" : /Chrome/.test(ua) ? "Chrome"
+            : /Firefox/.test(ua) ? "Firefox" : /Safari/.test(ua) ? "Safari" : "anderer";
+  k.breite = window.innerWidth + " px";
+  return k;
+}
 
 async function pruefeAdmin(){
   istAdmin = false;
@@ -2403,6 +2651,32 @@ async function ladeDashboard(){
     const {data} = await db.from("meldungen").select("*").order("erstellt", {ascending:false}).limit(50);
     meldungen = data || [];
   } catch(e){ meldungen = []; }
+}
+
+async function ladeNutzerliste(){
+  nutzerSichtbar = true; nutzer = null; render();
+  try {
+    const {data, error} = await db.rpc("nutzerliste");
+    nutzer = error ? [] : (data || []);
+  } catch(e){ nutzer = []; }
+  render();
+}
+function nutzerVerbergen(){ nutzerSichtbar = false; nutzer = null; render(); }
+
+/* Inhaltsübersicht — rein aus dem Katalog, ohne Server */
+function inhaltsUebersicht(){
+  const raus = [];
+  for (const [fk, f] of Object.entries(KATALOG)){
+    for (const [kl, liste] of Object.entries(f.themen)){
+      const fertig = liste.filter(t => AUFGABEN[t]).length;
+      raus.push({fach: f.name, klasse: Number(kl), fertig, gesamt: liste.length});
+    }
+  }
+  return raus;
+}
+function datum(x){
+  if (!x) return "—";
+  return new Date(x).toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit", year:"2-digit"});
 }
 
 async function zeigeDashboard(){
@@ -2430,12 +2704,14 @@ async function meldungSenden(){
   const email = document.getElementById("mMail").value.trim();
   if (nachricht.length < 5){ ladeFehler = "Bitte schreib kurz, worum es geht."; return render(); }
   ladeFehler = "";
-  const {error} = await db.from("meldungen").insert({
+  const {data, error} = await db.from("meldungen").insert({
     bereich: bereich,
     nachricht: nachricht,
-    email: email || (benutzer ? benutzer.email : null)
-  });
+    email: email || (benutzer ? benutzer.email : null),
+    kontext: meldeKontext()
+  }).select("code").maybeSingle();
   if (error){ ladeFehler = "Das Absenden hat nicht geklappt. Versuch es später noch einmal."; return render(); }
+  meldungCode = data && data.code ? data.code : "";
   meldungGesendet = true;
   render();
 }
@@ -2445,7 +2721,7 @@ async function meldungSenden(){
 function dashboardHtml(){
   if (ladeFehler && !statistik){
     return `<div class="card">
-      <button class="zurueck" onclick="zurFachwahl()">← Zurück</button>
+      <button class="zurueck" onclick="zurUebersicht()">← Zurück</button>
       <h1>Dashboard</h1>
       <div class="feedback nope">${ladeFehler}</div>
     </div>`;
@@ -2462,10 +2738,10 @@ function dashboardHtml(){
 
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurFachwahl()">← Zurück zum Üben</button>
+      <button class="zurueck" onclick="zurUebersicht()">← Zurück zum Üben</button>
       <span class="tag">Nur für dich sichtbar</span>
       <h1>Dashboard</h1>
-      <p class="soft">Ausschließlich Zahlen — keine Namen, keine E-Mail-Adressen, keine einzelnen Personen.</p>
+      <p class="soft">Zahlen, Inhalt und offene Punkte. Die Liste der Konten liegt weiter unten und ist bewusst zugeklappt.</p>
     </div>
 
     <div class="card">
@@ -2475,6 +2751,13 @@ function dashboardHtml(){
         <div><b>${s.nutzer_aktiv_7t}</b><span>aktiv (7 Tage)</span></div>
         <div><b>${s.uebungen_gesamt}</b><span>Übungen gesamt</span></div>
       </div>
+      <div class="zahlen" style="margin-top:10px">
+        <div><b>${s.rueckkehrer ?? "—"}</b><span>kamen wieder</span></div>
+        <div><b>${s.schnitt_fehler ?? "—"}</b><span>Ø Fehler je Aufgabe</span></div>
+        <div><b>${s.faellig_gesamt ?? "—"}</b><span>Wiederholungen fällig</span></div>
+        <div><b>${s.nutzer_gesamt ? Math.round((s.rueckkehrer || 0) / s.nutzer_gesamt * 100) : 0} %</b><span>Rückkehrquote</span></div>
+      </div>
+      <p class="small soft" style="margin-top:12px"><b>Die Rückkehrquote ist deine wichtigste Zahl.</b> Sie sagt, wie viele Menschen an mehr als einem Tag geübt haben. Wer einmal kommt und nie wieder, hat nichts gelernt — egal wie viele Aufgaben er gelöst hat.</p>
     </div>
 
     <div class="card">
@@ -2512,22 +2795,39 @@ function dashboardHtml(){
         : `<p class="small soft" style="margin:0">Noch keine Daten.</p>`}
     </div>
 
+    ${wannHtml(s)}
+
+    ${inhaltHtml()}
+
+    ${aufgabenlisteHtml(s)}
+
+    ${freigabenHtml()}
+
+    ${nutzerHtml()}
+
+    ${protokollHtml()}
+
     <div class="card">
-      <p class="ueberschrift">Meldungen aus dem Hilfe-Formular ${s.offene_meldungen ? `· ${s.offene_meldungen} offen` : ""}</p>
+      <p class="ueberschrift">Tickets ${s.offene_meldungen ? `· ${s.offene_meldungen} offen` : ""}</p>
       ${meldungen.length
         ? meldungen.map(m => `
             <div class="meldung ${m.erledigt ? "erledigt" : ""}">
               <div class="meldungkopf">
-                <b>${m.bereich || "Sonstiges"}</b>
+                <b>${m.code || "—"} · ${m.bereich || "Sonstiges"}</b>
                 <span>${new Date(m.erstellt).toLocaleDateString("de-DE")}</span>
               </div>
               <p class="meldungtext">${(m.nachricht || "").replace(/</g, "&lt;")}</p>
-              ${m.email ? `<a class="meldungmail" href="mailto:${m.email}">Antworten an ${m.email}</a>` : ""}
-              <button class="wechseln" onclick="meldungAbhaken(${m.id}, ${m.erledigt})">
+              ${m.kontext ? `<div class="kontext">${Object.entries(m.kontext).map(([k,v]) =>
+                  `<span><b>${k}</b> ${String(v).replace(/</g,"&lt;")}</span>`).join("")}</div>` : ""}
+              ${m.antwort ? `<div class="antwort"><b>Deine Antwort</b><p>${m.antwort.replace(/</g,"&lt;")}</p></div>`
+                : `<textarea class="feld" id="antwort${m.id}" rows="3" placeholder="Antwort schreiben — der Nutzer sieht sie unter „Meine Anfragen“"></textarea>
+                   <button class="btn full" onclick="ticketAntworten(${m.id})">Antwort speichern</button>`}
+              ${m.email ? `<a class="meldungmail" href="mailto:${m.email}?subject=${encodeURIComponent("Endlich kapiert · " + (m.code||""))}">Zusätzlich per E-Mail antworten</a>` : ""}
+              <button class="wechseln" onclick="ticketErledigt(${m.id}, ${m.erledigt})">
                 ${m.erledigt ? "wieder öffnen" : "als erledigt abhaken"}
               </button>
             </div>`).join("")
-        : `<p class="small soft" style="margin:0">Noch keine Meldungen.</p>`}
+        : `<p class="small soft" style="margin:0">Noch keine Tickets.</p>`}
     </div>`;
 }
 
@@ -2536,8 +2836,12 @@ function meldenHtml(){
     return `<div class="card">
       <span class="tag">Danke</span>
       <h1>Deine Nachricht ist angekommen</h1>
-      <p class="soft">Wir schauen sie uns an. Wenn du eine E-Mail-Adresse angegeben hast, melden wir uns dort.</p>
-      <button class="btn full" style="margin-top:16px" onclick="zurueckVonMelden()">Zurück</button>
+      ${meldungCode ? `<div class="code">Deine Nummer: <b>${meldungCode}</b></div>
+        <p class="soft">Schreib dir die Nummer auf. Wenn du dich noch einmal meldest, brauchst du nur sie zu nennen — dann müssen wir in keinem Konto nachschauen.</p>`
+       : `<p class="soft">Wir schauen sie uns an.</p>`}
+      ${benutzer ? `<button class="btn full" style="margin-top:16px" onclick="zeigeAnfragen()">Meine Anfragen ansehen</button>
+                    <button class="btn ghost full" style="margin-top:10px" onclick="zurueckVonMelden()">Zurück</button>`
+                 : `<button class="btn full" style="margin-top:16px" onclick="zurueckVonMelden()">Zurück</button>`}
     </div>`;
   }
   return `
@@ -2561,8 +2865,623 @@ function meldenHtml(){
              value="${benutzer ? benutzer.email : ""}">
       ${ladeFehler ? `<div class="feedback nope">${ladeFehler}</div>` : ""}
       <button class="btn full" style="margin-top:14px" onclick="meldungSenden()">Absenden</button>
-      <p class="small soft" style="margin-top:14px">Du kannst auch direkt schreiben an <a href="mailto:hilfe@endlichkapiert.com">hilfe@endlichkapiert.com</a>.</p>
+      <p class="small soft" style="margin-top:14px">Wir hängen automatisch an, wo du gerade warst — Fach, Klasse, Thema und Gerät. Sonst nichts. Damit finden wir den Fehler, ohne in dein Konto zu schauen.</p>
+      <p class="small soft">Du kannst auch direkt schreiben an <a href="mailto:hilfe@endlichkapiert.com">hilfe@endlichkapiert.com</a>.</p>
     </div>`;
+}
+
+
+/* ---------- Wann wird geübt ---------- */
+function wannHtml(s){
+  const tage = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+  const w = s.wochentage || [], h = s.stunden || [];
+  if (!w.length && !h.length) return `
+    <div class="card"><p class="ueberschrift">Wann wird geübt</p>
+    <p class="small soft" style="margin:0">Sobald geübt wird, siehst du hier, an welchen Tagen und zu welchen Uhrzeiten.</p></div>`;
+  const maxW = Math.max(1, ...w.map(x => x.anzahl));
+  const maxH = Math.max(1, ...h.map(x => x.anzahl));
+  const proStunde = nr => (h.find(x => x.stunde === nr) || {anzahl:0}).anzahl;
+  const spitze = h.length ? h.slice().sort((a,b) => b.anzahl - a.anzahl)[0].stunde : null;
+  return `
+    <div class="card">
+      <p class="ueberschrift">Wann wird geübt</p>
+      <div class="wochentage">
+        ${[1,2,3,4,5,6,0].map(nr => {
+          const e = w.find(x => x.nr === nr) || {anzahl:0};
+          return `<div class="wtag"><span class="wname">${tage[nr]}</span>
+                   <span class="wbalken"><i style="width:${Math.round(e.anzahl/maxW*100)}%"></i></span>
+                   <span class="wzahl">${e.anzahl}</span></div>`;
+        }).join("")}
+      </div>
+      <p class="ueberschrift" style="margin-top:22px">Nach Uhrzeit</p>
+      <div class="balken">
+        ${Array.from({length:24}, (_,nr) => `
+          <div class="balkensaeule" title="${nr}:00 — ${proStunde(nr)}">
+            <div class="saeule" style="height:${Math.round(proStunde(nr)/maxH*100)}%"></div>
+            <span>${nr % 3 === 0 ? nr : ""}</span>
+          </div>`).join("")}
+      </div>
+      ${spitze !== null ? `<p class="small soft" style="margin-top:12px">Spitzenzeit: gegen ${spitze} Uhr. Dann lohnt es sich, Neues zu veröffentlichen.</p>` : ""}
+    </div>`;
+}
+
+/* ---------- Inhaltsübersicht ---------- */
+function inhaltHtml(){
+  const zeilen = inhaltsUebersicht();
+  const fertig = zeilen.reduce((a,z) => a + z.fertig, 0);
+  const gesamt = zeilen.reduce((a,z) => a + z.gesamt, 0);
+  return `
+    <div class="card">
+      <p class="ueberschrift">Inhalt · ${fertig} von ${gesamt} Themen fertig (${Math.round(fertig/gesamt*100)} %)</p>
+      ${zeilen.map(z => `
+        <div class="rangzeile">
+          <span class="rangname">${z.fach} · Klasse ${z.klasse}</span>
+          <span class="rangbalken"><i style="width:${Math.round(z.fertig/z.gesamt*100)}%"></i></span>
+          <span class="rangzahl">${z.fertig}/${z.gesamt}</span>
+        </div>`).join("")}
+      <p class="small soft" style="margin-top:12px">Leere Balken sind die Klassenstufen, in denen ein Schüler bei dir nichts findet — und wieder geht.</p>
+    </div>`;
+}
+
+/* ---------- Was als Nächstes zu tun ist ---------- */
+function aufgabenlisteHtml(s){
+  const zeilen = inhaltsUebersicht();
+  const offen = zeilen.filter(z => z.fertig === 0);
+  const punkte = [
+    {erledigt: true,  text: "Eigene Domain verbunden"},
+    {erledigt: true,  text: "Anmeldung und Wiederholungsplan laufen"},
+    {erledigt: true,  text: "Dashboard eingerichtet"},
+    {erledigt: false, text: "Impressum und Datenschutzerklärung ausfüllen und prüfen lassen"},
+    {erledigt: offen.length === 0, text: offen.length
+        ? `${offen.length} Klassenstufen ohne jeden Inhalt: ${offen.map(z => z.fach + " " + z.klasse).join(", ")}`
+        : "Alle Klassenstufen haben Inhalte"},
+    {erledigt: (s.nutzer_gesamt || 0) >= 5, text: "Fünf echte Menschen ausprobieren lassen"},
+    {erledigt: (s.rueckkehrer || 0) >= 1,   text: "Der erste Mensch kommt an einem zweiten Tag wieder"},
+    {erledigt: false, text: "Eigene Absenderadresse für die E-Mails einrichten"}
+  ];
+  return `
+    <div class="card">
+      <p class="ueberschrift">Was als Nächstes zu tun ist</p>
+      ${punkte.map(p => `
+        <div class="todo ${p.erledigt ? "fertig" : ""}">
+          <span class="haken">${p.erledigt ? "✓" : ""}</span>
+          <span>${p.text}</span>
+        </div>`).join("")}
+    </div>`;
+}
+
+/* ---------- Nutzerliste ---------- */
+function nutzerHtml(){
+  if (!nutzerSichtbar) return `
+    <div class="card">
+      <p class="ueberschrift">Angemeldete Konten</p>
+      <div class="feedback tipp" style="margin-bottom:14px">
+        <b>Hier stehen echte personenbezogene Daten.</b> E-Mail-Adressen von Schülerinnen und Schülern.
+        Öffne die Liste nur, wenn du sie für eine konkrete Aufgabe brauchst — nicht aus Neugier.
+        Alles darüber gehört in deine Datenschutzerklärung.
+      </div>
+      <button class="btn ghost full" onclick="ladeNutzerliste()">Liste trotzdem öffnen</button>
+    </div>`;
+  if (nutzer === null) return `<div class="card"><p class="laden">Liste wird geladen …</p></div>`;
+  return `
+    <div class="card">
+      <p class="ueberschrift">Angemeldete Konten · ${nutzer.length}</p>
+      ${nutzer.length ? nutzer.map(n => `
+        <div class="zeile">
+          <div><b>${(n.email || "—").replace(/</g,"&lt;")}</b>
+               <span>angemeldet ${datum(n.angemeldet)} · ${n.uebungen} Übungen · zuletzt geübt ${datum(n.letzte_uebung)}</span></div>
+          ${n.email ? `<a class="wann spaeter" style="text-decoration:none" href="mailto:${n.email}">schreiben</a>` : ""}
+        </div>`).join("")
+        : `<p class="small soft" style="margin:0">Die Liste konnte nicht geladen werden. Ist die SQL-Erweiterung schon ausgeführt?</p>`}
+      <button class="btn ghost full" style="margin-top:14px" onclick="nutzerVerbergen()">Liste wieder schließen</button>
+    </div>`;
+}
+
+/* ---------- Meine Anfragen (für angemeldete Nutzer) ---------- */
+async function zeigeAnfragen(){
+  ansicht = "anfragen"; meineAnfragen = []; render();
+  const {data} = await db.from("meldungen").select("*").order("erstellt", {ascending:false}).limit(30);
+  meineAnfragen = data || [];
+  render();
+}
+function anfragenHtml(){
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonMelden()">← Zurück</button>
+      <span class="tag">Meine Anfragen</span>
+      <h1>Was du gemeldet hast</h1>
+      <p class="soft">Hier siehst du deine Meldungen und die Antworten darauf.</p>
+    </div>
+    ${meineAnfragen.length ? meineAnfragen.map(m => `
+      <div class="card">
+        <div class="meldungkopf">
+          <b>${m.code || "—"} · ${m.bereich || "Sonstiges"}</b>
+          <span class="statuspille ${m.status === "erledigt" ? "fertig" : m.antwort ? "beantwortet" : ""}">
+            ${m.status === "erledigt" ? "erledigt" : m.antwort ? "beantwortet" : "offen"}</span>
+        </div>
+        <p class="meldungtext">${(m.nachricht || "").replace(/</g,"&lt;")}</p>
+        ${m.antwort ? `<div class="antwort"><b>Antwort</b><p>${m.antwort.replace(/</g,"&lt;")}</p></div>` : ""}
+      </div>`).join("")
+      : `<div class="card"><p class="small soft" style="margin:0">Du hast noch nichts gemeldet.</p>
+         <button class="btn full" style="margin-top:12px" onclick="zeigeMelden()">Etwas melden</button></div>`}`;
+}
+
+/* ---------- Tickets beantworten (Admin) ---------- */
+async function ticketAntworten(id){
+  const feld = document.getElementById("antwort" + id);
+  if (!feld) return;
+  const text = feld.value.trim();
+  if (text.length < 2) return;
+  await db.from("meldungen").update({antwort: text, status: "beantwortet", beantwortet_am: new Date().toISOString()}).eq("id", id);
+  await db.rpc("protokolliere", {p_aktion: "Ticket beantwortet", p_betrifft: "Meldung " + id, p_grund: null});
+  await ladeDashboard(); render();
+}
+async function ticketErledigt(id, erledigt){
+  await db.from("meldungen").update({erledigt: !erledigt, status: !erledigt ? "erledigt" : "offen"}).eq("id", id);
+  await ladeDashboard(); render();
+}
+
+/* ---------- Freigaben und Protokoll ---------- */
+async function ladeFreigaben(){
+  freigaben = null; render();
+  const {data, error} = await db.rpc("freigaben");
+  freigaben = error ? [] : (data || []);
+  render();
+}
+async function ladeProtokoll(){
+  protokoll = null; render();
+  const {data} = await db.from("zugriffe").select("*").order("zeit", {ascending:false}).limit(50);
+  protokoll = data || [];
+  render();
+}
+
+function freigabenHtml(){
+  if (freigaben === null) return `
+    <div class="card">
+      <p class="ueberschrift">Konten, die dir Einblick gegeben haben</p>
+      <p class="small soft">Nutzer können dir in ihrem Konto für 24 Stunden Einblick in ihren Lernfortschritt geben. Ohne diese Freigabe lässt die Datenbank dich nicht hinein.</p>
+      <button class="btn ghost full" style="margin-top:12px" onclick="ladeFreigaben()">Freigaben anzeigen</button>
+    </div>`;
+  return `
+    <div class="card">
+      <p class="ueberschrift">Konten mit Freigabe · ${freigaben.length}</p>
+      ${freigaben.length ? freigaben.map(f => `
+        <div class="meldung">
+          <div class="meldungkopf">
+            <b>${(f.email||"").replace(/</g,"&lt;")}</b>
+            <span>läuft ab ${new Date(f.bis).toLocaleString("de-DE", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</span>
+          </div>
+          <p class="small soft" style="margin:6px 0">${f.uebungen} Übungen insgesamt</p>
+          ${(f.fortschritt||[]).length ? `<div class="freigabeliste">${(f.fortschritt||[]).map(p =>
+            `<span class="fpunkt">${p.thema} · Stufe ${p.stufe} · ${p.versuche}× geübt${p.fehler ? `, ${p.fehler}× gehakt` : ""}</span>`).join("")}</div>`
+            : `<p class="small soft" style="margin:0">Noch kein Fortschritt gespeichert.</p>`}
+        </div>`).join("")
+        : `<p class="small soft" style="margin:0">Gerade hat dir niemand Einblick gegeben.</p>`}
+      <button class="btn ghost full" style="margin-top:12px" onclick="freigaben=null;render()">Schließen</button>
+    </div>`;
+}
+
+function protokollHtml(){
+  if (protokoll === null) return `
+    <div class="card">
+      <p class="ueberschrift">Zugriffsprotokoll</p>
+      <p class="small soft">Jeder Blick in Konten und jede Support-Aktion wird mit Zeitpunkt festgehalten.</p>
+      <button class="btn ghost full" style="margin-top:12px" onclick="ladeProtokoll()">Protokoll anzeigen</button>
+    </div>`;
+  return `
+    <div class="card">
+      <p class="ueberschrift">Zugriffsprotokoll · letzte ${protokoll.length}</p>
+      ${protokoll.length ? protokoll.map(z => `
+        <div class="zeile">
+          <div><b>${z.aktion}</b><span>${z.betrifft || ""}${z.grund ? " · " + z.grund : ""}</span></div>
+          <div class="wann spaeter">${new Date(z.zeit).toLocaleString("de-DE", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</div>
+        </div>`).join("")
+        : `<p class="small soft" style="margin:0">Noch keine Zugriffe protokolliert.</p>`}
+      <button class="btn ghost full" style="margin-top:12px" onclick="protokoll=null;render()">Schließen</button>
+    </div>`;
+}
+/* ---------- Menü und Informationsseiten ---------- */
+
+let menueOffen = false;
+let menueAuf = null;          // welches Untermenü ist aufgeklappt
+let vorSeite = "willkommen";
+let kontoHinweis = "";
+let kontoFrage = "";          // "loeschen" | "zuruecksetzen"
+let freigabeBis = null;
+
+async function ladeFreigabeStand(){
+  if (!benutzer) { freigabeBis = null; return; }
+  try {
+    const {data} = await db.from("support_freigabe").select("bis").maybeSingle();
+    freigabeBis = data && new Date(data.bis) > new Date() ? data.bis : null;
+  } catch(e){ freigabeBis = null; }
+}
+async function supportFreigeben(){
+  const {data, error} = await db.rpc("support_freigeben");
+  if (error){ kontoHinweis = "Das hat nicht geklappt. Ist die SQL-Erweiterung schon ausgeführt?"; return render(); }
+  freigabeBis = data;
+  kontoHinweis = "Der Support kann jetzt 24 Stunden lang deinen Lernfortschritt sehen. Deine E-Mail und dein Passwort bleiben tabu.";
+  render();
+}
+async function supportBeenden(){
+  await db.rpc("support_beenden");
+  freigabeBis = null;
+  kontoHinweis = "Der Einblick ist wieder geschlossen.";
+  render();
+}
+
+function menueUmschalten(){ menueOffen = !menueOffen; menueAuf = null; render(); }
+function menueSchliessen(){ menueOffen = false; menueAuf = null; render(); }
+function menueKlappen(name){ menueAuf = menueAuf === name ? null : name; render(); }
+
+function zeigeSeite(name){
+  if (!["impressum","datenschutz","agb","faq","ueber","konto","anfragen"].includes(ansicht)) vorSeite = ansicht;
+  kontoHinweis = ""; kontoFrage = "";
+  ansicht = name; menueOffen = false; menueAuf = null; render();
+  if (name === "konto") ladeFreigabeStand().then(render);
+}
+function zurueckVonSeite(){ ansicht = vorSeite || "willkommen"; render(); }
+
+function menueLernen(f, k){
+  fach = f; klasse = k; ansicht = "start"; menueOffen = false; menueAuf = null; render();
+}
+
+/* ---------- Kopfzeile mit den drei Strichen ---------- */
+function kopfleisteHtml(){
+  return `
+    <div class="kopfleiste">
+      <button class="marke" onclick="zeigeWillkommen()">
+        <span class="dot">EK</span><span>Endlich kapiert</span>
+      </button>
+      <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
+        <i></i><i></i><i></i>
+      </button>
+    </div>`;
+}
+
+function menueHtml(){
+  if (!menueOffen) return "";
+  const klassen = f => [5,6,7,8,9,10].map(k => {
+    const fertig = KATALOG[f].themen[k].filter(t => AUFGABEN[t]).length;
+    return `<button class="mpunkt unter" onclick="menueLernen('${f}', ${k})">
+              Klasse ${k}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>
+            </button>`;
+  }).join("");
+
+  return `
+    <div class="menuegrund" onclick="menueSchliessen()"></div>
+    <nav class="menue">
+      <p class="mtitel">Lernen</p>
+      <button class="mpunkt ${menueAuf === "mathe" ? "an" : ""}" onclick="menueKlappen('mathe')">
+        Mathe<span>${menueAuf === "mathe" ? "▾" : "▸"}</span></button>
+      ${menueAuf === "mathe" ? klassen("mathe") : ""}
+      <button class="mpunkt ${menueAuf === "deutsch" ? "an" : ""}" onclick="menueKlappen('deutsch')">
+        Deutsch<span>${menueAuf === "deutsch" ? "▾" : "▸"}</span></button>
+      ${menueAuf === "deutsch" ? klassen("deutsch") : ""}
+      ${benutzer ? `<button class="mpunkt" onclick="zeigePlan();menueSchliessen()">Mein Wiederholungsplan</button>` : ""}
+      ${benutzer ? `<button class="mpunkt" onclick="zeigeAnfragen();menueSchliessen()">Meine Anfragen</button>` : ""}
+
+      <p class="mtitel">Hilfe</p>
+      <button class="mpunkt" onclick="zeigeMelden();menueSchliessen()">Hilfe und Feedback</button>
+      <button class="mpunkt" onclick="zeigeSeite('faq')">Häufige Fragen</button>
+      <button class="mpunkt" onclick="zeigeSeite('ueber')">Über das Projekt</button>
+
+      <p class="mtitel">Mein Bereich</p>
+      ${benutzer
+        ? `<button class="mpunkt" onclick="zeigeSeite('konto')">Mein Konto</button>`
+        : `<button class="mpunkt" onclick="zeigeAnmeldung();menueSchliessen()">Anmelden oder Konto anlegen</button>`}
+      <button class="mpunkt" onclick="zeigeEinstellungen();menueSchliessen()">Einstellungen</button>
+      ${istAdmin ? `<button class="mpunkt admin" onclick="zeigeDashboard();menueSchliessen()">Dashboard</button>` : ""}
+      ${benutzer ? `<button class="mpunkt" onclick="abmelden();menueSchliessen()">Abmelden</button>` : ""}
+
+      <p class="mtitel">Rechtliches</p>
+      <button class="mpunkt" onclick="zeigeSeite('impressum')">Impressum</button>
+      <button class="mpunkt" onclick="zeigeSeite('datenschutz')">Datenschutzerklärung</button>
+      <button class="mpunkt" onclick="zeigeSeite('agb')">Nutzungsbedingungen</button>
+    </nav>`;
+}
+
+/* ---------- Mein Konto ---------- */
+async function passwortAendern(){
+  const neu = document.getElementById("neuesPw").value;
+  if (!neu || neu.length < 6){ kontoHinweis = "Das neue Passwort muss mindestens 6 Zeichen haben."; return render(); }
+  const {error} = await db.auth.updateUser({password: neu});
+  kontoHinweis = error ? "Das hat nicht geklappt: " + error.message : "Dein Passwort wurde geändert.";
+  render();
+}
+function frageNach(was){ kontoFrage = was; kontoHinweis = ""; render(); }
+function frageAbbrechen(){ kontoFrage = ""; render(); }
+
+async function fortschrittZuruecksetzen(){
+  const {error} = await db.rpc("fortschritt_zuruecksetzen");
+  if (error){ kontoHinweis = "Das hat nicht geklappt. Ist die SQL-Erweiterung schon ausgeführt?"; }
+  else { await ladeFortschritt(); kontoHinweis = "Dein Fortschritt wurde gelöscht. Du fängst wieder bei null an."; }
+  kontoFrage = ""; render();
+}
+async function kontoLoeschen(){
+  const {error} = await db.rpc("konto_loeschen");
+  if (error){ kontoHinweis = "Das hat nicht geklappt: " + error.message; kontoFrage = ""; return render(); }
+  await db.auth.signOut();
+  benutzer = null; istAdmin = false; fortschritt = []; kontoFrage = "";
+  ansicht = "willkommen"; render();
+}
+
+function kontoHtml(){
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      <span class="tag">Mein Konto</span>
+      <h1>Dein Konto</h1>
+      <p class="soft">Angemeldet als <b>${benutzer ? benutzer.email : "—"}</b></p>
+    </div>
+
+    ${kontoHinweis ? `<div class="card"><div class="feedback ${kontoHinweis.includes("nicht geklappt") ? "nope" : "ok"}">${kontoHinweis}</div></div>` : ""}
+
+    <div class="card">
+      <p class="ueberschrift">Passwort ändern</p>
+      <input class="feld" id="neuesPw" type="password" placeholder="Neues Passwort (mindestens 6 Zeichen)" autocomplete="new-password">
+      <button class="btn full" onclick="passwortAendern()">Passwort speichern</button>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Fortschritt zurücksetzen</p>
+      <p class="small soft">Löscht deinen Wiederholungsplan und alle geübten Aufgaben. Dein Konto bleibt bestehen.</p>
+      ${kontoFrage === "zuruecksetzen"
+        ? `<div class="feedback tipp" style="margin-bottom:12px"><b>Wirklich zurücksetzen?</b> Das lässt sich nicht rückgängig machen.</div>
+           <button class="btn full" onclick="fortschrittZuruecksetzen()">Ja, alles zurücksetzen</button>
+           <button class="btn ghost full" style="margin-top:10px" onclick="frageAbbrechen()">Abbrechen</button>`
+        : `<button class="btn ghost full" style="margin-top:12px" onclick="frageNach('zuruecksetzen')">Fortschritt zurücksetzen</button>`}
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Hilfe vom Support</p>
+      <p class="small soft">Wenn du ein Problem gemeldet hast und wir nicht weiterkommen, kannst du uns hier für 24 Stunden Einblick in deinen Lernfortschritt geben — welche Themen du geübt hast und wo es hakt. <b>Nicht</b> in dein Passwort und nicht in deine anderen Daten.</p>
+      ${freigabeBis
+        ? `<div class="feedback ok" style="margin:12px 0">Einblick offen bis ${new Date(freigabeBis).toLocaleString("de-DE", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})} Uhr.</div>
+           <button class="btn ghost full" onclick="supportBeenden()">Einblick sofort beenden</button>`
+        : `<button class="btn ghost full" style="margin-top:12px" onclick="supportFreigeben()">Einblick für 24 Stunden geben</button>`}
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Meine Anfragen</p>
+      <p class="small soft">Alles, was du gemeldet hast, mit Nummer und Antwort.</p>
+      <button class="btn ghost full" style="margin-top:12px" onclick="zeigeAnfragen()">Anfragen ansehen</button>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Konto löschen</p>
+      <p class="small soft">Löscht dein Konto und alle Daten, die wir zu dir gespeichert haben — endgültig und sofort.</p>
+      ${kontoFrage === "loeschen"
+        ? `<div class="feedback nope" style="margin-bottom:12px"><b>Bist du sicher?</b> Dein Konto, dein Fortschritt und alle deine Daten werden gelöscht. Das kann niemand rückgängig machen.</div>
+           <button class="btn full" style="background:var(--red)" onclick="kontoLoeschen()">Ja, Konto endgültig löschen</button>
+           <button class="btn ghost full" style="margin-top:10px" onclick="frageAbbrechen()">Abbrechen</button>`
+        : `<button class="btn ghost full" style="margin-top:12px" onclick="frageNach('loeschen')">Konto löschen</button>`}
+    </div>`;
+}
+
+/* ---------- Häufige Fragen ---------- */
+const FAQ = [
+  ["Was ist „Endlich kapiert“?",
+   "Eine Lernseite für Mathe und Deutsch von Klasse 5 bis 10. Der Unterschied zu anderen: Du bekommst nie die fertige Lösung. Stattdessen wirst du mit kleinen Fragen dorthin geführt, bis du selbst draufkommst."],
+  ["Kostet das etwas?",
+   "Nein. Du kannst alles ohne Anmeldung und ohne Kosten ausprobieren."],
+  ["Warum bekomme ich nie die Lösung?",
+   "Weil abgeschriebene Lösungen nichts bringen. Beim nächsten Mal stehst du genauso da wie vorher. Wenn du selbst darauf kommst, bleibt es hängen — auch wenn es im Moment anstrengender ist."],
+  ["Brauche ich ein Konto?",
+   "Zum Üben nicht. Ein Konto brauchst du erst, wenn die Seite sich merken soll, was du schon konntest — also für den Wiederholungsplan."],
+  ["Wie funktioniert der Wiederholungsplan?",
+   "Was du nicht konntest, bekommst du nach einem Tag noch einmal vorgelegt. Schaffst du es fehlerfrei, rückt es weiter weg: nach drei Tagen, nach einer Woche, nach zwei Wochen, nach einem Monat, nach drei Monaten. Machst du wieder einen Fehler, rückt es näher. So lange, bis es wirklich sitzt."],
+  ["Kommen immer dieselben Aufgaben?",
+   "Nein. Die Zahlen werden bei jedem Aufruf neu erzeugt. Dieselbe Aufgabe siehst du praktisch nie zweimal — auswendig lernen funktioniert also nicht."],
+  ["Für welche Klassen ist das gedacht?",
+   "Klasse 5 bis 10, in Mathe und Deutsch. Weitere Fächer kommen nach und nach dazu."],
+  ["Ich weiß bei einem Thema gar nichts. Was tun?",
+   "Drück in der Aufgabe auf „Ich verstehe das Thema gar nicht“ oder tipp in der Themenliste auf das Fragezeichen. Dann bekommst du das Thema von vorn erklärt, bevor du weitermachst."],
+  ["Ich habe einen Fehler gefunden.",
+   "Sehr gut — bitte melde ihn über „Hilfe und Feedback“ im Menü. Schreib dazu, welches Fach, welche Klasse und welches Thema es war."],
+  ["Wie lösche ich mein Konto?",
+   "Im Menü unter „Mein Konto“. Dort löschst du mit einem Klick dein Konto und alle Daten, die zu dir gespeichert sind."]
+];
+
+function faqHtml(){
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      <span class="tag">Häufige Fragen</span>
+      <h1>Kurz beantwortet</h1>
+    </div>
+    <div class="card">
+      ${FAQ.map(([f,a]) => `
+        <div class="faq">
+          <b>${f}</b>
+          <p>${a}</p>
+        </div>`).join("")}
+    </div>
+    <div class="card" style="text-align:center">
+      <p class="soft" style="margin:0 auto 16px;max-width:44ch">Deine Frage war nicht dabei?</p>
+      <button class="btn" onclick="zeigeMelden()">Schreib uns</button>
+    </div>`;
+}
+
+function ueberHtml(){
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      <span class="tag">Über das Projekt</span>
+      <h1>Warum es das hier gibt</h1>
+    </div>
+    <div class="card">
+      <p class="einfachtext">Diese Seite ist entstanden, weil ich selbst in Mathe gehangen habe. Nicht ein bisschen — richtig.</p>
+      <p class="einfachtext">Ich habe alles probiert, was es gibt. Lösungs-Apps spucken das Ergebnis aus, und man schreibt es ab. Erklärvideos erklären irgendein Beispiel, aber nicht das, an dem man gerade sitzt. Und selbst wenn man es einmal verstanden hat, ist es eine Woche später wieder weg.</p>
+      <p class="einfachtext">Genau an diesen drei Punkten setzt „Endlich kapiert“ an:</p>
+      <ul class="liste">
+        <li>Keine Lösungen. Nur Fragen, die dich selbst hinführen.</li>
+        <li>Wer gar nichts versteht, bekommt das Thema von vorn erklärt — ohne Fachwörter, die man erst nachschlagen muss.</li>
+        <li>Und was du nicht konntest, kommt von allein wieder, bis es sitzt.</li>
+      </ul>
+      <p class="einfachtext" style="margin-top:14px">Die Seite wird laufend weitergebaut. Wenn dir etwas fehlt oder etwas falsch ist, schreib es mir — das hilft mehr als alles andere.</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <button class="btn" onclick="alsGast()">Einfach ausprobieren</button>
+    </div>`;
+}
+
+/* ---------- Rechtliches ---------- */
+const PLATZ = `<span class="platzhalter">[BITTE AUSFÜLLEN]</span>`;
+
+function impressumHtml(){
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      <span class="tag">Impressum</span>
+      <h1>Impressum</h1>
+      <div class="feedback tipp">Entwurf — bitte alle markierten Stellen ausfüllen und vor der Veröffentlichung prüfen lassen.</div>
+    </div>
+    <div class="card">
+      <p class="ueberschrift">Angaben gemäß § 5 DDG</p>
+      <p class="einfachtext">${PLATZ} (Vor- und Nachname)<br>
+      ${PLATZ} (Straße und Hausnummer)<br>
+      ${PLATZ} (Postleitzahl und Ort)<br>
+      Deutschland</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Kontakt</p>
+      <p class="einfachtext">E-Mail: hilfe@endlichkapiert.com<br>
+      Telefon: ${PLATZ} (freiwillig)</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Verantwortlich für den Inhalt</p>
+      <p class="einfachtext">${PLATZ} (Name und Anschrift wie oben)</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Umsatzsteuer</p>
+      <p class="einfachtext">Kleinunternehmer gemäß § 19 UStG — es wird keine Umsatzsteuer ausgewiesen.<br>
+      <span class="small soft">Diese Zeile nur stehen lassen, wenn sie auf dich zutrifft.</span></p>
+
+      <p class="ueberschrift" style="margin-top:22px">Streitschlichtung</p>
+      <p class="einfachtext">Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+    </div>`;
+}
+
+function datenschutzHtml(){
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      <span class="tag">Datenschutz</span>
+      <h1>Datenschutzerklärung</h1>
+      <div class="feedback tipp">Entwurf — beschreibt, was die Seite tatsächlich tut. Bitte ausfüllen und vor der Veröffentlichung prüfen lassen.</div>
+    </div>
+    <div class="card">
+      <p class="ueberschrift">Wer ist verantwortlich?</p>
+      <p class="einfachtext">${PLATZ} (Name), ${PLATZ} (Anschrift), E-Mail: hilfe@endlichkapiert.com</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Welche Daten werden gespeichert?</p>
+      <ul class="liste">
+        <li><b>Ohne Konto:</b> gar keine. Wer ohne Anmeldung übt, hinterlässt bei uns keine Daten.</li>
+        <li><b>Mit Konto:</b> deine E-Mail-Adresse und ein verschlüsseltes Passwort.</li>
+        <li><b>Beim Üben:</b> welches Thema du geübt hast, wann, und ob du Fehler gemacht hast. Daraus entsteht dein Wiederholungsplan.</li>
+        <li><b>Bei einer Meldung:</b> dein Text und, falls angegeben, deine E-Mail-Adresse für die Antwort.</li>
+      </ul>
+
+      <p class="ueberschrift" style="margin-top:22px">Wozu?</p>
+      <p class="einfachtext">Ausschließlich, um die Seite bereitzustellen und dir deinen Wiederholungsplan zu zeigen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Erfüllung des Nutzungsverhältnisses).</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Wer bekommt die Daten?</p>
+      <p class="einfachtext">Niemand, der sie nicht braucht. Für Betrieb und Speicherung setzen wir ein:</p>
+      <ul class="liste">
+        <li><b>Vercel Inc.</b> — Auslieferung der Seite</li>
+        <li><b>Supabase Inc.</b> — Speicherung von Konto und Lernfortschritt</li>
+      </ul>
+      <p class="einfachtext" style="margin-top:12px">Mit beiden bestehen Verträge zur Auftragsverarbeitung. Es findet keine Weitergabe zu Werbezwecken statt. Werbung wird auf dieser Seite nicht ausgespielt.</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Wie lange?</p>
+      <p class="einfachtext">So lange dein Konto besteht. Löschst du dein Konto, werden alle zugehörigen Daten sofort und vollständig gelöscht.</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Deine Rechte</p>
+      <p class="einfachtext">Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren.</p>
+      <p class="einfachtext">Löschen kannst du selbst und sofort: im Menü unter <b>Mein Konto → Konto löschen</b>.</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Kinder und Jugendliche</p>
+      <p class="einfachtext">Diese Seite richtet sich an Schülerinnen und Schüler. Wenn du jünger als 16 Jahre bist, lass dir bitte von deinen Eltern erlauben, ein Konto anzulegen. Ohne Konto kannst du alles nutzen, ohne dass Daten gespeichert werden.</p>
+
+      <p class="ueberschrift" style="margin-top:22px">Cookies und Tracking</p>
+      <p class="einfachtext">Diese Seite verwendet keine Werbe- oder Analyse-Cookies. Gespeichert werden nur deine Einstellungen (Aussehen, Schriftgröße) direkt in deinem Browser sowie eine Anmelde-Information, solange du eingeloggt bist.</p>
+    </div>`;
+}
+
+function agbHtml(){
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      <span class="tag">Nutzungsbedingungen</span>
+      <h1>Nutzungsbedingungen</h1>
+      <div class="feedback tipp">Entwurf — bitte vor der Veröffentlichung prüfen lassen.</div>
+    </div>
+    <div class="card">
+      <p class="ueberschrift">1. Worum es geht</p>
+      <p class="einfachtext">„Endlich kapiert“ ist ein kostenloses Lernangebot für Schülerinnen und Schüler. Anbieter ist ${PLATZ} (Name und Anschrift siehe Impressum).</p>
+
+      <p class="ueberschrift" style="margin-top:22px">2. Nutzung</p>
+      <p class="einfachtext">Die Nutzung ist kostenlos. Ein Konto ist freiwillig und dient nur dazu, deinen Lernfortschritt zu speichern. Du darfst die Inhalte für dein eigenes Lernen verwenden.</p>
+
+      <p class="ueberschrift" style="margin-top:22px">3. Was nicht erlaubt ist</p>
+      <ul class="liste">
+        <li>Die Seite automatisiert auslesen oder massenhaft abrufen.</li>
+        <li>Inhalte kopieren und als eigenes Angebot veröffentlichen.</li>
+        <li>Versuchen, in fremde Konten oder in die Verwaltung zu gelangen.</li>
+      </ul>
+
+      <p class="ueberschrift" style="margin-top:22px">4. Keine Gewähr für Richtigkeit</p>
+      <p class="einfachtext">Die Aufgaben und Erklärungen werden sorgfältig erstellt und automatisch geprüft. Trotzdem können Fehler vorkommen. Es besteht kein Anspruch darauf, dass alle Inhalte fehlerfrei oder für eine bestimmte Prüfung ausreichend sind. Wer einen Fehler findet, darf ihn gern melden.</p>
+
+      <p class="ueberschrift" style="margin-top:22px">5. Verfügbarkeit</p>
+      <p class="einfachtext">Es besteht kein Anspruch auf ständige Erreichbarkeit. Das Angebot kann jederzeit geändert oder eingestellt werden.</p>
+
+      <p class="ueberschrift" style="margin-top:22px">6. Haftung</p>
+      <p class="einfachtext">Für Schäden haften wir nur bei Vorsatz und grober Fahrlässigkeit sowie bei Verletzung von Leben, Körper und Gesundheit. Im Übrigen ist die Haftung ausgeschlossen, soweit gesetzlich zulässig.</p>
+
+      <p class="ueberschrift" style="margin-top:22px">7. Änderungen</p>
+      <p class="einfachtext">Diese Bedingungen können angepasst werden. Die jeweils aktuelle Fassung steht auf dieser Seite.</p>
+
+      <p class="einfachtext small soft" style="margin-top:22px">Stand: ${PLATZ} (Datum eintragen)</p>
+    </div>`;
+}
+
+
+/* ---------- Fußleiste, auf jeder Seite ---------- */
+function fussleisteHtml(){
+  return `
+    <footer class="fussleiste">
+      <div class="fussinhalt">
+        <div class="fussspalte">
+          <p class="fusstitel">Lernen</p>
+          <button class="fusslink" onclick="zurUebersicht()">Übersicht</button>
+          <button class="fusslink" onclick="waehleFach('mathe')">Mathe</button>
+          <button class="fusslink" onclick="waehleFach('deutsch')">Deutsch</button>
+          ${benutzer ? `<button class="fusslink" onclick="zeigePlan()">Mein Wiederholungsplan</button>` : ""}
+        </div>
+        <div class="fussspalte">
+          <p class="fusstitel">Hilfe</p>
+          <button class="fusslink" onclick="zeigeMelden()">Hilfe und Feedback</button>
+          <button class="fusslink" onclick="zeigeSeite('faq')">Häufige Fragen</button>
+          <button class="fusslink" onclick="zeigeSeite('ueber')">Über das Projekt</button>
+          ${benutzer ? `<button class="fusslink" onclick="zeigeAnfragen()">Meine Anfragen</button>` : ""}
+        </div>
+        <div class="fussspalte">
+          <p class="fusstitel">Mein Bereich</p>
+          ${benutzer
+            ? `<button class="fusslink" onclick="zeigeSeite('konto')">Mein Konto</button>
+               <button class="fusslink" onclick="abmelden()">Abmelden</button>`
+            : `<button class="fusslink" onclick="zeigeAnmeldung()">Anmelden oder Konto anlegen</button>`}
+          <button class="fusslink" onclick="zeigeEinstellungen()">Einstellungen</button>
+          ${istAdmin ? `<button class="fusslink" onclick="zeigeDashboard()">Dashboard</button>` : ""}
+        </div>
+        <div class="fussspalte">
+          <p class="fusstitel">Rechtliches</p>
+          <button class="fusslink" onclick="zeigeSeite('impressum')">Impressum</button>
+          <button class="fusslink" onclick="zeigeSeite('datenschutz')">Datenschutzerklärung</button>
+          <button class="fusslink" onclick="zeigeSeite('agb')">Nutzungsbedingungen</button>
+        </div>
+      </div>
+      <p class="fussschluss">Endlich kapiert · Ein Lernprojekt aus Deutschland</p>
+    </footer>`;
 }
 /* ---------- Verbindung zur Datenbank ---------- */
 const SUPABASE_URL = "https://ygiouoxwuupkbjepqhxm.supabase.co";
@@ -2584,9 +3503,10 @@ let falschGeklickt = [];   // welche Antworten in diesem Schritt schon danebenla
 let fehlerImSchritt = 0;
 let aufgeloest = false;    // nach drei Fehlversuchen wird die Lösung gezeigt
 let erklaerungAngeboten = false;
+let letzteEingabe = "";
 
 /* ---------- Einstellungen ---------- */
-const einstellungen = {modus:"auto", schrift:"normal", autoTipp:true};
+const einstellungen = {modus:"auto", schrift:"normal", autoTipp:true, eingabe:"gemischt"};
 function ladeEinstellungen(){
   try {
     const roh = window.localStorage.getItem("ek-einstellungen");
@@ -2653,7 +3573,7 @@ function anzahlFertig(){ return Object.keys(AUFGABEN).length; }
 async function pruefeAnmeldung(){
   const {data} = await db.auth.getSession();
   benutzer = data.session ? data.session.user : null;
-  if (benutzer){ await ladeFortschritt(); await pruefeAdmin(); ansicht = "fachwahl"; }
+  if (benutzer){ await ladeFortschritt(); await pruefeAdmin(); ansicht = "uebersicht"; }
   else { istAdmin = false; ansicht = "willkommen"; }
   render();
 }
@@ -2681,7 +3601,7 @@ async function anmelden(){
   }
   await ladeFortschritt();
   await pruefeAdmin();
-  ansicht = "fachwahl";
+  ansicht = "uebersicht";
   render();
 }
 
@@ -2692,7 +3612,7 @@ async function abmelden(){
   ansicht = "willkommen"; render();
 }
 
-function alsGast(){ benutzer = null; fortschritt = []; ansicht = "fachwahl"; render(); }
+function alsGast(){ benutzer = null; fortschritt = []; ansicht = "uebersicht"; render(); }
 function zeigeAnmeldung(){ ansicht = "anmelden"; hinweis = ""; render(); }
 function zeigeWillkommen(){ ansicht = "willkommen"; render(); }
 
@@ -2745,8 +3665,9 @@ async function speichereErgebnis(){
 function waehleFach(f){ fach = f; klasse = null; ansicht = "klassenwahl"; render(); }
 function waehleKlasse(k){ klasse = k; ansicht = "start"; render(); }
 function zurFachwahl(){ ansicht = "fachwahl"; render(); }
+function zurUebersicht(){ ansicht = "uebersicht"; render(); }
 function zurKlassenwahl(){ ansicht = "klassenwahl"; render(); }
-function zeigePlan(){ ansicht = ansicht === "plan" ? (klasse ? "start" : "fachwahl") : "plan"; render(); }
+function zeigePlan(){ ansicht = ansicht === "plan" ? (klasse ? "start" : "uebersicht") : "plan"; render(); }
 
 function starte(name, welche){
   aktuellName = name;
@@ -2799,8 +3720,39 @@ function antwort(i){
   if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
   render(i);
 }
+function tippModus(){
+  if (!aktuell) return false;
+  const s = aktuell.schritte[schrittNr];
+  if (!istEintippbar(s)) return false;
+  if (einstellungen.eingabe === "auswahl") return false;
+  if (einstellungen.eingabe === "tippen") return true;
+  return schrittNr === aktuell.schritte.length - 1;   // gemischt: nur der letzte Schritt
+}
+
+function eingabePruefen(){
+  const feld = document.getElementById("antwortFeld");
+  if (!feld) return;
+  const wert = feld.value.trim();
+  if (!wert) return;
+  const schritt = aktuell.schritte[schrittNr];
+  const erwartet = schritt.tippAntwort || schritt.optionen.find(o => o.ok).t;
+  if (eingabePasst(wert, erwartet)){
+    beantwortet = true;
+    letzteEingabe = wert;
+    render();
+    return;
+  }
+  letzteEingabe = wert;
+  fehlerImSchritt++;
+  fehlversuche++;
+  if (fehlerImSchritt === 1 && einstellungen.autoTipp) tippOffen = true;
+  if (fehlerImSchritt === 2) erklaerungAngeboten = true;
+  if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
+  render();
+}
+
 function schrittZuruecksetzen(){
-  falschGeklickt = []; fehlerImSchritt = 0; aufgeloest = false; erklaerungAngeboten = false;
+  falschGeklickt = []; fehlerImSchritt = 0; aufgeloest = false; erklaerungAngeboten = false; letzteEingabe = "";
 }
 async function weiter(){
   schrittNr++; beantwortet = false; tippOffen = false;
@@ -2821,7 +3773,7 @@ function wechsleModus(){
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
-  const ohne = ["laden","willkommen","anmelden","fachwahl","klassenwahl","melden"];
+  const ohne = ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen"];
   if (ohne.includes(ansicht)){ seiteEl.innerHTML = ""; return; }
 
   const kopfBox = benutzer
@@ -2855,9 +3807,13 @@ function renderSeite(){
 
 /* ---------- Hauptbereich ---------- */
 function render(gewaehlt){
+  const kopf = document.getElementById("kopf");
+  if (kopf) kopf.innerHTML = kopfleisteHtml() + menueHtml();
+  const fussEl = document.getElementById("fussleiste");
+  if (fussEl) fussEl.innerHTML = fussleisteHtml();
   renderSeite();
   const shell = document.getElementById("shell");
-  shell.classList.toggle("voll", ["laden","willkommen","anmelden","fachwahl","klassenwahl","melden"].includes(ansicht));
+  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen"].includes(ansicht));
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -2867,10 +3823,84 @@ function render(gewaehlt){
   if (ansicht === "willkommen"){ el.innerHTML = willkommenHtml(); return; }
   if (ansicht === "anmelden"){ el.innerHTML = anmeldenHtml(); return; }
 
+  /* ---- Übersicht: die Startseite der App ---- */
+  if (ansicht === "uebersicht"){
+    const offen = benutzer ? fortschritt.filter(z => tageBis(z.naechste_wiederholung) <= 0) : [];
+    const zuletzt = benutzer && fortschritt.length
+      ? fortschritt.slice().sort((a,b) => new Date(b.zuletzt_geuebt) - new Date(a.zuletzt_geuebt))[0]
+      : null;
+    const gesamtGeuebt = fortschritt.reduce((a,z) => a + (z.versuche || 0), 0);
+    const sitzt = fortschritt.filter(z => z.stufe >= 4).length;
+
+    el.innerHTML = `
+      <div class="card">
+        <span class="tag">${benutzer ? "Schön, dass du wieder da bist" : "Du übst ohne Konto"}</span>
+        <h1>${offen.length ? "Etwas wartet auf dich" : "Was möchtest du üben?"}</h1>
+        <p class="soft">${offen.length
+          ? `${offen.length} ${offen.length === 1 ? "Thema ist" : "Themen sind"} heute zur Wiederholung dran. Das ist der Teil, der wirklich etwas bringt.`
+          : benutzer ? "Such dir ein Fach aus — oder mach dort weiter, wo du aufgehört hast."
+                     : "Such dir ein Fach aus. Ein Konto brauchst du erst, wenn dein Fortschritt gespeichert werden soll."}</p>
+      </div>
+
+      ${offen.length ? `
+      <div class="card faellig">
+        <p class="ueberschrift">Heute fällig</p>
+        ${offen.slice(0,4).map(z => `
+          <button class="thema" onclick="starte('${z.thema.replace(/'/g,"\\'")}')">
+            <span>${z.thema}</span>
+            <span class="pill">${KATALOG[z.fach] ? KATALOG[z.fach].name : z.fach} ${z.klasse}</span>
+          </button>`).join("")}
+        ${offen.length > 4 ? `<p class="small soft" style="margin-top:10px">und ${offen.length - 4} weitere</p>` : ""}
+      </div>` : ""}
+
+      ${zuletzt && !offen.length ? `
+      <div class="card">
+        <p class="ueberschrift">Weitermachen</p>
+        <button class="thema" onclick="starte('${zuletzt.thema.replace(/'/g,"\\'")}')">
+          <span>${zuletzt.thema}</span>
+          <span class="pill">${KATALOG[zuletzt.fach] ? KATALOG[zuletzt.fach].name : zuletzt.fach} ${zuletzt.klasse}</span>
+        </button>
+      </div>` : ""}
+
+      <div class="card">
+        <p class="ueberschrift">Fach wählen</p>
+        <div class="wahlgitter">
+          ${Object.entries(KATALOG).map(([k,v]) => {
+            let f = 0, g = 0;
+            for (const liste of Object.values(v.themen)){ g += liste.length; f += liste.filter(t => AUFGABEN[t]).length; }
+            return `<button class="grosswahl" onclick="waehleFach('${k}')">
+              <b>${v.name}</b><span>${f} von ${g} Themen fertig</span></button>`;
+          }).join("")}
+        </div>
+      </div>
+
+      ${benutzer ? `
+      <div class="card">
+        <p class="ueberschrift">Dein Stand</p>
+        <div class="zahlen">
+          <div><b>${fortschritt.length}</b><span>Themen begonnen</span></div>
+          <div><b>${gesamtGeuebt}</b><span>Aufgaben gelöst</span></div>
+          <div><b>${sitzt}</b><span>sitzen sicher</span></div>
+          <div><b>${offen.length}</b><span>heute fällig</span></div>
+        </div>
+        <button class="btn ghost full" style="margin-top:14px" onclick="zeigePlan()">Meinen ganzen Plan ansehen</button>
+      </div>`
+      : `
+      <div class="card">
+        <p class="ueberschrift">Ohne Konto</p>
+        <p class="small soft">Du kannst alles üben — aber nichts wird gespeichert. Der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, funktioniert nur mit Konto.</p>
+        <button class="btn full" style="margin-top:12px" onclick="zeigeAnmeldung()">Konto anlegen</button>
+      </div>`}
+
+      ${istAdmin ? `<div class="card"><button class="btn full admin" onclick="zeigeDashboard()">Dashboard öffnen</button></div>` : ""}`;
+    return;
+  }
+
   /* ---- Fachwahl ---- */
   if (ansicht === "fachwahl"){
     el.innerHTML = `
       <div class="card">
+        <button class="zurueck" onclick="zurUebersicht()">← Zur Übersicht</button>
         <span class="tag">Schritt 1 von 3</span>
         <h1>Welches Fach?</h1>
         <p class="soft">Such dir aus, worin du gerade Hilfe brauchst.</p>
@@ -2970,7 +4000,7 @@ function render(gewaehlt){
       inhalt = `<div class="card">
         <h4 style="margin:0 0 8px">Noch nichts drin</h4>
         <p class="small soft">Sobald du dein erstes Thema durchgearbeitet hast, taucht es hier auf — mit dem Datum, an dem es wieder dran ist.</p>
-        <button class="btn full" style="margin-top:12px" onclick="zurFachwahl()">Erstes Thema üben</button>
+        <button class="btn full" style="margin-top:12px" onclick="zurUebersicht()">Erstes Thema üben</button>
       </div>`;
     } else {
       inhalt = `<div class="card">
@@ -2995,6 +4025,13 @@ function render(gewaehlt){
   }
 
   if (ansicht === "dashboard"){ el.innerHTML = dashboardHtml(); return; }
+  if (ansicht === "konto"){ el.innerHTML = kontoHtml(); return; }
+  if (ansicht === "anfragen"){ el.innerHTML = anfragenHtml(); return; }
+  if (ansicht === "faq"){ el.innerHTML = faqHtml(); return; }
+  if (ansicht === "ueber"){ el.innerHTML = ueberHtml(); return; }
+  if (ansicht === "impressum"){ el.innerHTML = impressumHtml(); return; }
+  if (ansicht === "datenschutz"){ el.innerHTML = datenschutzHtml(); return; }
+  if (ansicht === "agb"){ el.innerHTML = agbHtml(); return; }
   if (ansicht === "melden"){ el.innerHTML = meldenHtml(); return; }
 
   /* ---- Einstellungen ---- */
@@ -3025,6 +4062,15 @@ function render(gewaehlt){
         <div class="optionen3">
           ${wahl("schrift","normal","Normal","")}
           ${wahl("schrift","gross","Groß","Besser lesbar")}
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Antworten</p>
+        <div class="optionen3">
+          ${wahl("eingabe","gemischt","Gemischt","Zwischenschritte auswählen, Ergebnis selbst eintippen")}
+          ${wahl("eingabe","auswahl","Immer auswählen","Aus mehreren Möglichkeiten anklicken")}
+          ${wahl("eingabe","tippen","Immer eintippen","Schwerer, aber ohne Rateglück")}
         </div>
       </div>
 
@@ -3111,8 +4157,20 @@ function render(gewaehlt){
   /* ---- Aufgabe lösen ---- */
   const s = aktuell.schritte[schrittNr];
   const balken = aktuell.schritte.map((_,i) => `<i class="${i <= schrittNr ? "an" : ""}"></i>`).join("");
+  const tippen = tippModus();
+  const richtigeOption = s.optionen.find(o => o.ok);
   if (reihenfolge.length !== s.optionen.length) neueReihenfolge();
-  const optionenHtml = reihenfolge.map(i => {
+  const optionenHtml = tippen ? `
+    <div class="eingabezeile">
+      <input class="feld antwortfeld" id="antwortFeld" type="text" inputmode="decimal"
+             placeholder="Deine Antwort" value="${letzteEingabe.replace(/"/g,"&quot;")}"
+             ${beantwortet ? "disabled" : ""}
+             onkeydown="if(event.key==='Enter')eingabePruefen()">
+      ${beantwortet ? "" : `<button class="btn" onclick="eingabePruefen()">Prüfen</button>`}
+    </div>
+    ${beantwortet ? `<div class="pick richtig" style="cursor:default">${s.tippAntwort || richtigeOption.t}</div>` : ""}
+    <p class="small soft" style="margin-top:10px">Hier gibt es nichts zum Anklicken — schreib das Ergebnis selbst hin.</p>`
+   : reihenfolge.map(i => {
     const o = s.optionen[i];
     let cls = "";
     if (falschGeklickt.includes(i)) cls = "falsch";
@@ -3122,6 +4180,10 @@ function render(gewaehlt){
   }).join("");
 
   let fb = "";
+  if (tippen && letzteEingabe && !beantwortet)
+    fb += `<div class="feedback nope">„${letzteEingabe}“ stimmt noch nicht. Schau dir den Tipp an und versuch es noch einmal.</div>`;
+  if (tippen && beantwortet && !aufgeloest && letzteEingabe)
+    fb += `<div class="feedback ok">Richtig — und diesmal ohne Auswahl. Das kannst du wirklich.</div>`;
   if (gewaehlt !== undefined){
     const o = s.optionen[gewaehlt];
     fb = `<div class="feedback ${o.ok ? "ok" : "nope"}">${o.fb}</div>`;
@@ -3146,7 +4208,7 @@ function render(gewaehlt){
       </div>
       <div class="aufg ${aktuell.typ === "text" ? "text" : ""}"><div class="zeile1">${aktuell.text}</div></div>
       <p class="frage">${s.frage}</p>
-      <div class="optionen breit">${optionenHtml}</div>
+      <div class="optionen ${tippen ? "" : "breit"}">${optionenHtml}</div>
       ${fb}
       ${beantwortet
         ? `<button class="btn full" id="weiterBtn" style="margin-top:18px" onclick="weiter()">Weiter</button>`
@@ -3229,8 +4291,7 @@ function willkommenHtml(){
       <button class="btn" onclick="alsGast()">Jetzt ausprobieren</button>
     </div>
 
-    <p class="fuss">Endlich kapiert · Ein Lernprojekt aus Deutschland<br>
-      <button class="fusslink" onclick="zeigeMelden()">Hilfe und Feedback</button></p>`;
+    `;
 }
 
 function anmeldenHtml(){
