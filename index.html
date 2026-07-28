@@ -145,6 +145,44 @@
     cursor:pointer;padding:0;margin-bottom:14px;text-decoration:underline}
   .zurueck:hover{color:var(--ac-dark)}
 
+  /* ---------- Startseite ---------- */
+  .hero{padding:26px 0 10px}
+  .hero h1{font-size:clamp(30px,5.4vw,46px);line-height:1.12;letter-spacing:-.025em;margin:0 0 18px}
+  .hero .lede{font-size:19px;color:var(--soft);max-width:56ch;margin:0 0 26px}
+  .knopfreihe{display:flex;gap:12px;flex-wrap:wrap}
+  .abschnitt{margin-bottom:16px}
+  .ueberschrift{font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ac-dark);font-weight:700;margin:0 0 10px}
+  .liste{list-style:none;padding:0;margin:0}
+  .liste li{padding:12px 0 12px 30px;position:relative;border-bottom:1px solid var(--line);
+    font-size:16.5px}
+  .liste li:last-child{border-bottom:none}
+  .liste li::before{content:"";position:absolute;left:6px;top:21px;width:8px;height:8px;
+    border-radius:50%;background:var(--ac)}
+  .schritte{list-style:none;padding:0;margin:0;counter-reset:st}
+  .schritte li{counter-increment:st;position:relative;padding-left:52px;margin-bottom:24px}
+  .schritte li:last-child{margin-bottom:0}
+  .schritte li::before{content:counter(st);position:absolute;left:0;top:0;width:34px;height:34px;
+    border-radius:50%;background:var(--ac-soft);color:var(--ac-dark);font-weight:800;font-size:15px;
+    display:flex;align-items:center;justify-content:center}
+  .schritte b{display:block;font-size:18px;margin-bottom:4px}
+  .schritte span{color:var(--soft);font-size:16px}
+  .gegen{display:grid;gap:12px}
+  .gegen>div{border-radius:13px;padding:18px 20px}
+  .gegen .andere{background:var(--bg);border:1px solid var(--line)}
+  .gegen .wir{background:var(--ac-soft);border:1px solid var(--ac)}
+  .gegen b{display:block;font-size:15px;margin-bottom:6px}
+  .gegen .andere b{color:var(--soft)}
+  .gegen .wir b{color:var(--ac-dark)}
+  .probe{border:1px dashed var(--line);border-radius:14px;padding:20px;background:var(--bg)}
+  .probe .auf{font-size:26px;font-weight:600;text-align:center;padding:6px 0 16px;
+    border-bottom:1px solid var(--line);margin-bottom:16px}
+  .probe .fr{font-size:17px;margin:0 0 12px}
+  .probe .opt{background:var(--card);border:1.5px solid var(--line);border-radius:11px;
+    padding:11px 14px;margin-bottom:8px;font-size:15.5px}
+  .probe .opt.gut{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark);font-weight:600}
+  .fuss{text-align:center;color:var(--soft);font-size:14px;padding:26px 10px 0;line-height:1.6}
+
   /* ---------- breiter Bildschirm ---------- */
   @media(min-width:900px){
     .shell{grid-template-columns:262px 1fr;gap:32px;align-items:start}
@@ -158,11 +196,14 @@
     .aufg .zeile1{font-size:44px}
     .aufg.text .zeile1{font-size:24px;text-align:center}
     .themen{grid-template-columns:1fr 1fr}
+    .shell.voll{grid-template-columns:1fr;max-width:880px}
+    .gegen{grid-template-columns:1fr 1fr}
+    .hero{padding:34px 0 14px}
   }
 </style>
 </head>
 <body>
-<div class="shell">
+<div class="shell" id="shell">
   <aside class="side">
     <div class="logo"><span class="dot">EK</span> <span>Endlich kapiert</span></div>
     <div id="seite"></div>
@@ -408,7 +449,7 @@ async function pruefeAnmeldung(){
   const {data} = await db.auth.getSession();
   benutzer = data.session ? data.session.user : null;
   if (benutzer){ await ladeFortschritt(); ansicht = "start"; }
-  else { ansicht = "anmelden"; }
+  else { ansicht = "willkommen"; }
   render();
 }
 
@@ -442,7 +483,7 @@ async function anmelden(){
 async function abmelden(){
   await db.auth.signOut();
   benutzer = null; gast = false; fortschritt = []; hinweis = "";
-  ansicht = "anmelden";
+  ansicht = "willkommen";
   render();
 }
 
@@ -534,13 +575,13 @@ function anzahlGeplant(){
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
-  if (ansicht === "anmelden" || ansicht === "laden"){ seiteEl.innerHTML = ""; return; }
+  if (ansicht === "anmelden" || ansicht === "laden" || ansicht === "willkommen"){ seiteEl.innerHTML = ""; return; }
 
   const kopfBox = benutzer
     ? `<div class="userbox"><b>${benutzer.email}</b>
          <button onclick="abmelden()">Abmelden</button></div>`
     : `<div class="userbox gast"><b>Du übst ohne Konto</b>
-         <button onclick="ansicht='anmelden';render()">Konto anlegen und Fortschritt speichern</button></div>`;
+         <button onclick="zeigeAnmeldung()">Konto anlegen und Fortschritt speichern</button></div>`;
 
   const offen = benutzer ? faellig() : 0;
   const planText = benutzer
@@ -568,8 +609,92 @@ function renderSeite(){
 }
 
 /* ---------- Hauptbereich ---------- */
+function zeigeAnmeldung(){ ansicht="anmelden"; hinweis=""; render(); }
+function zeigeWillkommen(){ ansicht="willkommen"; render(); }
+
 function render(gewaehlt){
   renderSeite();
+  const shell = document.getElementById("shell");
+  const breit = (ansicht === "willkommen" || ansicht === "anmelden" || ansicht === "laden");
+  shell.classList.toggle("voll", breit);
+
+  if(ansicht === "willkommen"){
+    el.innerHTML = `
+      <div class="hero">
+        <span class="tag">Mathe und Deutsch · Klasse 5 bis 10</span>
+        <h1>„Ich hab’s im Unterricht<br>einfach nicht kapiert.“</h1>
+        <p class="lede">Dann bist du hier richtig. <b>Endlich kapiert</b> gibt dir nie die Lösung — es stellt dir Fragen, bis du selbst draufkommst. Und sorgt dafür, dass du es diesmal nicht wieder vergisst.</p>
+        <div class="knopfreihe">
+          <button class="btn" onclick="alsGast()">Kostenlos ausprobieren</button>
+          <button class="btn ghost" onclick="zeigeAnmeldung()">Anmelden</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Kennst du das?</p>
+        <ul class="liste">
+          <li>Die Lösung steht da — aber du verstehst nicht, wie man darauf kommt.</li>
+          <li>Bei Textaufgaben weißt du nicht mal, was du überhaupt rechnen sollst.</li>
+          <li>Du hast es verstanden. Eine Woche später ist es wieder weg.</li>
+          <li>Du nimmst dir vor zu üben — und machst es dann doch nicht.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">So funktioniert es</p>
+        <ol class="schritte">
+          <li><b>Du suchst dir dein Thema</b><span>Fach und Klassenstufe wählen, Thema antippen. Mehr nicht.</span></li>
+          <li><b>Du wirst hingeführt, nicht bedient</b><span>Statt einer fertigen Lösung bekommst du kleine Fragen. Auch wenn du auf „Ich weiß nicht weiter“ drückst, kommt nur ein Hinweis — den letzten Schritt machst immer du.</span></li>
+          <li><b>Es kommt von allein wieder</b><span>Was du nicht konntest, legt dir die App nach einem Tag wieder vor. Dann nach drei Tagen, nach einer Woche, nach einem Monat — bis es wirklich sitzt.</span></li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">So sieht das aus</p>
+        <div class="probe">
+          <div class="auf">3x + 5 = 20</div>
+          <p class="fr">Am Ende soll nur noch <b>x</b> alleine dastehen. Was steht ihm auf der linken Seite gerade im Weg?</p>
+          <div class="opt gut">Die + 5</div>
+          <div class="opt">Die 3 vor dem x</div>
+          <div class="opt">Die 20 auf der rechten Seite</div>
+        </div>
+        <p class="small soft" style="margin-top:14px">Vier solcher Fragen — und du hast die Gleichung selbst gelöst.</p>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Warum nicht einfach eine Lösungs-App?</p>
+        <div class="gegen">
+          <div class="andere">
+            <b>Andere Apps</b>
+            Du fotografierst die Aufgabe, bekommst das Ergebnis und schreibst es ab. Bei der nächsten Aufgabe stehst du genauso da wie vorher.
+          </div>
+          <div class="wir">
+            <b>Endlich kapiert</b>
+            Du kommst selbst darauf — und wirst daran erinnert, bevor du es vergessen hast. Beim nächsten Mal weißt du, wie es geht.
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Was drin ist</p>
+        <div class="zahlen">
+          <div><b>2</b><span>Fächer</span></div>
+          <div><b>6</b><span>Klassenstufen</span></div>
+          <div><b>${anzahlGeplant()}</b><span>Themen</span></div>
+          <div><b>0 €</b><span>zum Ausprobieren</span></div>
+        </div>
+        <p class="small soft" style="margin-top:14px">Mathe und Deutsch von Klasse 5 bis 10. Englisch, Französisch, Geschichte und Erdkunde kommen dazu.</p>
+      </div>
+
+      <div class="card" style="text-align:center">
+        <h2 style="margin-bottom:8px">Probier es einfach aus</h2>
+        <p class="soft" style="margin:0 auto 18px;max-width:44ch">Ohne Anmeldung, ohne Kosten. Ein Konto brauchst du erst, wenn die App sich deinen Fortschritt merken soll.</p>
+        <button class="btn" onclick="alsGast()">Jetzt ausprobieren</button>
+      </div>
+
+      <p class="fuss">Endlich kapiert · Ein Lernprojekt aus Deutschland</p>`;
+    return;
+  }
 
   if(ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -580,6 +705,7 @@ function render(gewaehlt){
     const reg = anmeldeModus === "registrieren";
     el.innerHTML = `
       <div class="card">
+        <button class="zurueck" onclick="zeigeWillkommen()">← Zur Startseite</button>
         <span class="tag">Endlich kapiert</span>
         <h1>${reg ? "Konto anlegen" : "Willkommen zurück"}</h1>
         <p class="soft">${reg
@@ -657,7 +783,7 @@ function render(gewaehlt){
       inhalt = `<div class="card">
         <h4 style="margin:0 0 8px">Dafür brauchst du ein Konto</h4>
         <p class="small soft">Ohne Anmeldung kann sich die App nicht merken, was du geübt hast.</p>
-        <button class="btn full" style="margin-top:12px" onclick="ansicht='anmelden';render()">Konto anlegen</button>
+        <button class="btn full" style="margin-top:12px" onclick="zeigeAnmeldung()">Konto anlegen</button>
       </div>`;
     } else if (fortschritt.length === 0){
       inhalt = `<div class="card">
