@@ -6,6 +6,9 @@
 <title>Endlich kapiert</title>
 <meta name="description" content="Endlich kapiert: Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe und Deutsch, Klasse 5 bis 10.">
 <meta name="theme-color" content="#10a37f">
+<!-- Solange gebaut wird: nicht bei Google aufnehmen. Wird automatisch entfernt,
+     sobald WARTUNG im Code auf false steht. -->
+<meta name="robots" content="noindex, nofollow" id="robots">
 <style>
   :root{
     --bg:#f4f8f7; --card:#ffffff; --ink:#16211e; --soft:#5b6b66; --line:#dfe8e5;
@@ -35,7 +38,11 @@
   .logo .dot{width:30px;height:30px;border-radius:9px;background:var(--ac);flex:none;
     display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:800;letter-spacing:.02em}
 
-  .side{align-self:start}
+  /* Auf dem Handy steht die Seitenleiste UNTER dem Inhalt — sonst muss man
+     erst an „Mein Plan / Einstellungen / Hilfe" vorbeiscrollen. Am Computer
+     bleibt sie links (siehe @media weiter unten). */
+  .side{align-self:start;order:2}
+  main{order:1}
   .sidebox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
   .sidelabel{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
     color:var(--soft);margin:0 0 9px 2px}
@@ -273,6 +280,30 @@
     .eingabezeile .btn{width:100%}
   }
 
+  /* ---------- Baustellenband und Hinweis ---------- */
+  .baustelle{background:var(--amber-soft);border-bottom:1px solid var(--line);
+    color:var(--amber);display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    padding:9px 20px;font-size:14.5px;line-height:1.4}
+  .baustelle .bzeichen{flex:none;display:flex}
+  .baustelle svg{width:19px;height:19px}
+  .baustelle .btext{flex:1;min-width:200px}
+  .baustelle b{font-weight:700}
+  .bknopf{flex:none;background:none;border:1.5px solid var(--amber);color:var(--amber);
+    border-radius:999px;font:inherit;font-size:13.5px;font-weight:600;
+    padding:4px 13px;cursor:pointer}
+  .bknopf:hover{background:var(--amber);color:var(--bg)}
+
+  .torgrund{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:80}
+  .tor{position:fixed;z-index:90;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:min(560px,92vw);max-height:88vh;overflow-y:auto;
+    background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:26px 24px;box-shadow:0 18px 50px rgba(0,0,0,.28)}
+  .tor h2{margin:10px 0 8px;font-size:25px;letter-spacing:-.01em}
+  .torliste{margin:14px 0 16px;padding-left:20px}
+  .torliste li{margin-bottom:9px}
+  .wartungmitte{min-height:70vh;display:flex;align-items:center;justify-content:center;
+    max-width:560px;margin:0 auto;padding:40px 0}
+
   /* ---------- Kopfleiste und Menü ---------- */
   .kopfleiste{position:sticky;top:0;z-index:40;background:var(--bg);
     border-bottom:1px solid var(--line);
@@ -409,7 +440,8 @@
   /* ---------- breiter Bildschirm ---------- */
   @media(min-width:900px){
     .shell{grid-template-columns:262px 1fr;gap:32px;align-items:start}
-    .side{position:sticky;top:20px}
+    .side{position:sticky;top:20px;order:0}
+    main{order:0}
     .logo{padding-top:24px}
     .fachliste{flex-direction:column}
     .optionen.breit{grid-template-columns:repeat(auto-fit,minmax(215px,1fr));align-items:stretch}
@@ -3357,15 +3389,16 @@ function ueberHtml(){
       <h1>Warum es das hier gibt</h1>
     </div>
     <div class="card">
-      <p class="einfachtext">Diese Seite ist entstanden, weil ich selbst in Mathe gehangen habe. Nicht ein bisschen — richtig.</p>
-      <p class="einfachtext">Ich habe alles probiert, was es gibt. Lösungs-Apps spucken das Ergebnis aus, und man schreibt es ab. Erklärvideos erklären irgendein Beispiel, aber nicht das, an dem man gerade sitzt. Und selbst wenn man es einmal verstanden hat, ist es eine Woche später wieder weg.</p>
+      <p class="einfachtext">Es gibt Fächer, bei denen man irgendwann aufhört, sich zu melden. Nicht, weil es einem egal wäre — sondern weil man den Anschluss verloren hat und niemand merkt, an welcher Stelle genau.</p>
+      <p class="einfachtext">Wer das kennt, weiß auch, warum die üblichen Hilfsmittel oft nicht reichen. Lösungs-Apps spucken das Ergebnis aus, und man schreibt es ab. Erklärvideos erklären irgendein Beispiel, aber nicht das, an dem man gerade sitzt. Und selbst was man einmal verstanden hat, ist zwei Wochen später wieder weg.</p>
       <p class="einfachtext">Genau an diesen drei Punkten setzt „Endlich kapiert“ an:</p>
       <ul class="liste">
-        <li>Keine Lösungen. Nur Fragen, die dich selbst hinführen.</li>
-        <li>Wer gar nichts versteht, bekommt das Thema von vorn erklärt — ohne Fachwörter, die man erst nachschlagen muss.</li>
-        <li>Und was du nicht konntest, kommt von allein wieder, bis es sitzt.</li>
+        <li><b>Keine Lösungen.</b> Nur Fragen, die dich selbst hinführen. Der letzte Schritt ist immer deiner.</li>
+        <li><b>Von vorn, wenn nötig.</b> Wer gar nicht weiß, worum es geht, bekommt das Thema erklärt — ohne Fachwörter, die man erst nachschlagen muss.</li>
+        <li><b>Nichts geht verloren.</b> Was du nicht konntest, kommt von allein wieder, in wachsenden Abständen, bis es sitzt.</li>
       </ul>
-      <p class="einfachtext" style="margin-top:14px">Die Seite wird laufend weitergebaut. Wenn dir etwas fehlt oder etwas falsch ist, schreib es mir — das hilft mehr als alles andere.</p>
+      <p class="einfachtext" style="margin-top:14px">Die Seite ist kostenlos, zeigt keine Werbung und verkauft keine Daten. Sie wird laufend weitergebaut.</p>
+      <p class="einfachtext">Wenn dir etwas fehlt oder etwas falsch ist, sag uns Bescheid — über <b>Hilfe und Feedback</b>. Das hilft mehr als alles andere.</p>
     </div>
     <div class="card" style="text-align:center">
       <button class="btn" onclick="alsGast()">Einfach ausprobieren</button>
@@ -3412,43 +3445,102 @@ function datenschutzHtml(){
       <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
       <span class="tag">Datenschutz</span>
       <h1>Datenschutzerklärung</h1>
-      <div class="feedback tipp">Entwurf — beschreibt, was die Seite tatsächlich tut. Bitte ausfüllen und vor der Veröffentlichung prüfen lassen.</div>
+      <div class="feedback tipp">Entwurf — beschreibt, was die Seite tatsächlich tut. Bitte die markierten Stellen ausfüllen und vor der Veröffentlichung prüfen lassen.</div>
+      <p class="einfachtext">Hier steht, was mit deinen Daten passiert. Wir haben versucht, es so zu schreiben, dass man es auch ohne Jurastudium versteht. Die kurze Fassung: Ohne Konto speichern wir nichts. Mit Konto speichern wir, was nötig ist, damit dein Wiederholungsplan funktioniert — und sonst nichts.</p>
     </div>
+
     <div class="card">
-      <p class="ueberschrift">Wer ist verantwortlich?</p>
-      <p class="einfachtext">${PLATZ} (Name), ${PLATZ} (Anschrift), E-Mail: hilfe@endlichkapiert.com</p>
+      <p class="ueberschrift">1. Wer ist verantwortlich?</p>
+      <p class="einfachtext">Verantwortlich im Sinne der DSGVO ist:<br>
+      ${PLATZ} (Vor- und Nachname)<br>
+      ${PLATZ} (Straße und Hausnummer)<br>
+      ${PLATZ} (Postleitzahl und Ort), Deutschland<br>
+      E-Mail: hilfe@endlichkapiert.com</p>
+      <p class="einfachtext">Ein Datenschutzbeauftragter ist nicht bestellt, weil die gesetzlichen Voraussetzungen dafür nicht vorliegen.</p>
 
-      <p class="ueberschrift" style="margin-top:22px">Welche Daten werden gespeichert?</p>
+      <p class="ueberschrift" style="margin-top:26px">2. Wenn du die Seite nur aufrufst</p>
+      <p class="einfachtext">Damit dir die Seite überhaupt angezeigt werden kann, verarbeitet unser Hoster automatisch technische Daten, die dein Browser übermittelt:</p>
       <ul class="liste">
-        <li><b>Ohne Konto:</b> gar keine. Wer ohne Anmeldung übt, hinterlässt bei uns keine Daten.</li>
-        <li><b>Mit Konto:</b> deine E-Mail-Adresse und ein verschlüsseltes Passwort.</li>
-        <li><b>Beim Üben:</b> welches Thema du geübt hast, wann, und ob du Fehler gemacht hast. Daraus entsteht dein Wiederholungsplan.</li>
-        <li><b>Bei einer Meldung:</b> dein Text und, falls angegeben, deine E-Mail-Adresse für die Antwort.</li>
+        <li>deine IP-Adresse</li>
+        <li>Datum und Uhrzeit des Aufrufs</li>
+        <li>die aufgerufene Adresse und die übertragene Datenmenge</li>
+        <li>Browser, Betriebssystem und ggf. die zuvor besuchte Seite</li>
+      </ul>
+      <p class="einfachtext">Das ist technisch nicht vermeidbar und passiert auf jeder Webseite im Internet. Wir werten diese Daten nicht aus, führen sie nicht mit anderen Daten zusammen und erstellen daraus keine Profile. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO — unser berechtigtes Interesse daran, die Seite sicher und stabil bereitzustellen. Die Protokolle werden vom Hoster nach kurzer Zeit automatisch gelöscht.</p>
+      <p class="einfachtext">Die Verbindung ist durchgehend mit TLS verschlüsselt (erkennbar am <b>https://</b> in der Adresszeile).</p>
+
+      <p class="ueberschrift" style="margin-top:26px">3. Wenn du ohne Konto übst</p>
+      <p class="einfachtext">Dann speichern wir über dich <b>gar nichts</b> auf unseren Servern. Welche Aufgabe du gerade löst, bleibt nur in deinem Browser und ist weg, sobald du die Seite schließt. Der Preis dafür: Es gibt keinen Wiederholungsplan, weil wir uns nichts merken können.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">4. Wenn du ein Konto anlegst</p>
+      <p class="einfachtext">Für ein Konto brauchen wir:</p>
+      <ul class="liste">
+        <li><b>deine E-Mail-Adresse</b> — als Anmeldename und um dir den Bestätigungslink und ggf. ein neues Passwort schicken zu können</li>
+        <li><b>dein Passwort</b> — nur in verschlüsselter Form (als sogenannter Hash). Niemand, auch wir nicht, kann es lesen.</li>
+        <li><b>Zeitpunkt der Registrierung und der letzten Anmeldung</b></li>
+      </ul>
+      <p class="einfachtext">Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO — ohne diese Daten können wir dir das Konto, das du angefragt hast, nicht bereitstellen.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">5. Was beim Üben gespeichert wird</p>
+      <p class="einfachtext">Damit der Wiederholungsplan funktioniert, merken wir uns zu deinem Konto:</p>
+      <ul class="liste">
+        <li>welches Fach, welche Klassenstufe und welches Thema du geübt hast</li>
+        <li>wann das war und ob du dabei Fehler gemacht hast</li>
+        <li>daraus berechnet: wie sicher ein Thema bei dir sitzt und wann es wieder drankommt</li>
+      </ul>
+      <p class="einfachtext">Wir speichern <b>nicht</b>, welche einzelne Antwort du angeklickt hast, und wir leiten daraus keine Bewertung deiner Person ab. Es findet keine automatisierte Entscheidung im Sinne von Art. 22 DSGVO statt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">6. Wenn du uns schreibst</p>
+      <p class="einfachtext">Über „Hilfe und Feedback“ kannst du uns eine Nachricht schicken. Gespeichert werden dein Text, die angegebene E-Mail-Adresse für die Antwort und einige technische Angaben, die bei der Fehlersuche helfen: auf welcher Seite du warst, welches Thema geöffnet war, Gerätetyp, Browser und Fensterbreite. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Bearbeitung deiner Anfrage). Erledigte Anfragen löschen wir, sobald sie nicht mehr gebraucht werden.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">7. Support-Freigabe — nur, wenn du sie erteilst</p>
+      <p class="einfachtext">Standardmäßig kann niemand in deinen Lernfortschritt sehen. Wenn du bei einem Problem Hilfe brauchst, kannst du unter <b>Mein Konto</b> eine Freigabe erteilen. Dann darf der Support <b>24 Stunden lang</b> deinen Lernfortschritt einsehen — nicht dein Passwort. Jeder Zugriff wird protokolliert, und du kannst die Freigabe jederzeit sofort wieder beenden. Rechtsgrundlage ist deine Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO, die du jederzeit für die Zukunft widerrufen kannst.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">8. Wer die Daten sonst noch bekommt</p>
+      <p class="einfachtext">Wir verkaufen keine Daten und geben sie nicht zu Werbezwecken weiter. Werbung gibt es auf dieser Seite nicht. Wir setzen aber zwei technische Dienstleister ein, die die Daten in unserem Auftrag und nach unseren Weisungen verarbeiten (Auftragsverarbeitung nach Art. 28 DSGVO):</p>
+      <ul class="liste">
+        <li><b>Vercel Inc.</b>, 340 S Lemon Ave #4133, Walnut, CA 91789, USA — liefert die Webseite aus. Dabei fallen die unter Punkt 2 genannten technischen Daten an.</li>
+        <li><b>Supabase Inc.</b>, 970 Toa Payoh North #07-04, Singapur — betreibt die Datenbank und die Anmeldung. Hier liegen dein Konto und dein Lernfortschritt. Der von uns gewählte Serverstandort ist ${PLATZ} (Region im Supabase-Konto nachsehen und eintragen).</li>
+      </ul>
+      <p class="einfachtext">Mit beiden Anbietern bestehen Verträge zur Auftragsverarbeitung.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">9. Übermittlung in Länder außerhalb der EU</p>
+      <p class="einfachtext">Beide Anbieter sind Unternehmen außerhalb der EU. Auch wenn die Server in Europa stehen, lässt sich ein Zugriff aus dem Ausland — etwa im Rahmen von Wartung und Support — nicht vollständig ausschließen. Die Übermittlung wird abgesichert durch die Standardvertragsklauseln der EU-Kommission nach Art. 46 Abs. 2 lit. c DSGVO und, soweit einschlägig, durch die Zertifizierung nach dem EU-US Data Privacy Framework. In Drittländern gilt möglicherweise nicht dasselbe Datenschutzniveau wie in der EU; insbesondere können dort Behörden weitergehende Zugriffsrechte haben.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">10. Cookies und Speicherung im Browser</p>
+      <p class="einfachtext">Wir verwenden <b>keine</b> Werbe-, Marketing- oder Analyse-Cookies und binden keine Zählpixel oder Social-Media-Buttons ein. Deshalb gibt es hier auch kein Cookie-Banner.</p>
+      <p class="einfachtext">Gespeichert wird in deinem Browser nur, was für den Betrieb nötig ist: deine Einstellungen (Hell- oder Dunkelmodus, Schriftgröße, Art der Antwortabfrage), der Hinweis, dass du den Baustellen-Hinweis gesehen hast, und — wenn du angemeldet bist — die Information, die dich angemeldet hält. Das fällt unter § 25 Abs. 2 TDDDG (unbedingt erforderliche Speicherung). Du kannst das jederzeit über die Einstellungen deines Browsers löschen.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">11. Wie lange wir speichern</p>
+      <ul class="liste">
+        <li><b>Konto und Lernfortschritt:</b> solange dein Konto besteht.</li>
+        <li><b>Löschst du dein Konto</b>, werden alle zugehörigen Daten sofort und vollständig gelöscht — nicht nur ausgeblendet.</li>
+        <li><b>Support-Anfragen:</b> bis sie erledigt sind, danach werden sie gelöscht.</li>
+        <li><b>Technische Protokolle des Hosters:</b> kurzfristig, automatisch.</li>
       </ul>
 
-      <p class="ueberschrift" style="margin-top:22px">Wozu?</p>
-      <p class="einfachtext">Ausschließlich, um die Seite bereitzustellen und dir deinen Wiederholungsplan zu zeigen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Erfüllung des Nutzungsverhältnisses).</p>
+      <p class="ueberschrift" style="margin-top:26px">12. Kinder und Jugendliche</p>
+      <p class="einfachtext">Diese Seite richtet sich an Schülerinnen und Schüler ab Klasse 5. Wenn du jünger als 16 Jahre bist, dürfen wir dein Konto nur mit Einverständnis deiner Eltern oder Erziehungsberechtigten anlegen (Art. 8 DSGVO). Frag sie also bitte vorher. <b>Ohne Konto kannst du die ganze Seite nutzen, ohne dass irgendetwas gespeichert wird</b> — das ist der einfachste Weg, wenn du dir unsicher bist.</p>
 
-      <p class="ueberschrift" style="margin-top:22px">Wer bekommt die Daten?</p>
-      <p class="einfachtext">Niemand, der sie nicht braucht. Für Betrieb und Speicherung setzen wir ein:</p>
+      <p class="ueberschrift" style="margin-top:26px">13. Deine Rechte</p>
+      <p class="einfachtext">Du hast jederzeit das Recht auf:</p>
       <ul class="liste">
-        <li><b>Vercel Inc.</b> — Auslieferung der Seite</li>
-        <li><b>Supabase Inc.</b> — Speicherung von Konto und Lernfortschritt</li>
+        <li><b>Auskunft</b> darüber, welche Daten wir zu dir gespeichert haben (Art. 15)</li>
+        <li><b>Berichtigung</b> falscher Daten (Art. 16)</li>
+        <li><b>Löschung</b> (Art. 17)</li>
+        <li><b>Einschränkung der Verarbeitung</b> (Art. 18)</li>
+        <li><b>Datenübertragbarkeit</b> — deine Daten in einem gängigen Format zu erhalten (Art. 20)</li>
+        <li><b>Widerspruch</b> gegen Verarbeitungen, die auf berechtigtem Interesse beruhen (Art. 21)</li>
+        <li><b>Widerruf</b> einer erteilten Einwilligung, mit Wirkung für die Zukunft (Art. 7 Abs. 3)</li>
       </ul>
-      <p class="einfachtext" style="margin-top:12px">Mit beiden bestehen Verträge zur Auftragsverarbeitung. Es findet keine Weitergabe zu Werbezwecken statt. Werbung wird auf dieser Seite nicht ausgespielt.</p>
+      <p class="einfachtext">Für Auskunft oder Löschung reicht eine formlose Nachricht an hilfe@endlichkapiert.com. Löschen kannst du auch selbst und sofort: unter <b>Mein Konto → Konto löschen</b>.</p>
 
-      <p class="ueberschrift" style="margin-top:22px">Wie lange?</p>
-      <p class="einfachtext">So lange dein Konto besteht. Löschst du dein Konto, werden alle zugehörigen Daten sofort und vollständig gelöscht.</p>
+      <p class="ueberschrift" style="margin-top:26px">14. Beschwerderecht</p>
+      <p class="einfachtext">Wenn du der Meinung bist, dass wir mit deinen Daten nicht richtig umgehen, kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Zuständig für uns ist ${PLATZ} (Aufsichtsbehörde des Bundeslandes eintragen). Du kannst dich aber auch an die Behörde deines eigenen Wohnorts wenden.</p>
 
-      <p class="ueberschrift" style="margin-top:22px">Deine Rechte</p>
-      <p class="einfachtext">Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren.</p>
-      <p class="einfachtext">Löschen kannst du selbst und sofort: im Menü unter <b>Mein Konto → Konto löschen</b>.</p>
-
-      <p class="ueberschrift" style="margin-top:22px">Kinder und Jugendliche</p>
-      <p class="einfachtext">Diese Seite richtet sich an Schülerinnen und Schüler. Wenn du jünger als 16 Jahre bist, lass dir bitte von deinen Eltern erlauben, ein Konto anzulegen. Ohne Konto kannst du alles nutzen, ohne dass Daten gespeichert werden.</p>
-
-      <p class="ueberschrift" style="margin-top:22px">Cookies und Tracking</p>
-      <p class="einfachtext">Diese Seite verwendet keine Werbe- oder Analyse-Cookies. Gespeichert werden nur deine Einstellungen (Aussehen, Schriftgröße) direkt in deinem Browser sowie eine Anmelde-Information, solange du eingeloggt bist.</p>
+      <p class="ueberschrift" style="margin-top:26px">15. Änderungen dieser Erklärung</p>
+      <p class="einfachtext">Die Seite wird weiterentwickelt. Ändert sich etwas an der Datenverarbeitung, passen wir diese Erklärung an. Es gilt jeweils die hier veröffentlichte Fassung.</p>
+      <p class="einfachtext small soft" style="margin-top:22px">Stand: ${PLATZ} (Datum eintragen)</p>
     </div>`;
 }
 
@@ -3754,6 +3846,105 @@ function uebersichtHtml(){
 
     ${istAdmin ? `<div class="card"><button class="btn full admin" onclick="zeigeDashboard()">Dashboard öffnen</button></div>` : ""}`;
 }
+/* ================================================================
+   BAUSTELLEN-/WARTUNGSMODUS
+
+   Hier stellst du alles mit EINEM Wort um:
+
+   WARTUNG      = true   -> Baustellen-Band oben + Hinweis beim ersten Besuch
+                  false  -> ganz normale Seite, kein Hinweis, für Google sichtbar
+
+   WARTUNG_HART = false  -> Besucher dürfen trotzdem alles ansehen
+                  true   -> niemand kommt rein, es kommt nur die Wartungsseite
+
+   Mehr musst du nicht ändern.
+   ================================================================ */
+
+const WARTUNG      = true;
+const WARTUNG_HART = false;
+
+/* Wenn du den Hinweis noch einmal allen zeigen willst: Zahl hochzählen. */
+const WARTUNG_STAND = "1";
+
+let wartungGesehen = true;
+try { wartungGesehen = localStorage.getItem("ek_baustelle") === WARTUNG_STAND; } catch(e){}
+
+function wartungVerstanden(){
+  wartungGesehen = true;
+  try { localStorage.setItem("ek_baustelle", WARTUNG_STAND); } catch(e){}
+  render();
+}
+function wartungZeigen(){
+  wartungGesehen = false;
+  try { localStorage.removeItem("ek_baustelle"); } catch(e){}
+  render();
+}
+
+/* Solange gebaut wird, soll Google die Seite nicht in die Suche aufnehmen.
+   Der Eintrag steht fest im Kopf der Seite und wird hier wieder entfernt,
+   sobald WARTUNG auf false steht. */
+(function(){
+  if (WARTUNG || WARTUNG_HART) return;
+  const m = document.getElementById("robots");
+  if (m) m.remove();
+})();
+
+/* ---------- schmales Band ganz oben ---------- */
+function wartungBandHtml(){
+  if (!WARTUNG) return "";
+  return `
+    <div class="baustelle">
+      <span class="bzeichen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 4.5 2.8 20h18.4z"/><path d="M12 10v4"/><path d="M12 17h.01"/>
+        </svg>
+      </span>
+      <span class="btext"><b>Baustelle.</b> Diese Seite wird gerade gebaut und getestet —
+        noch nichts hier ist fertig.</span>
+      <button class="bknopf" onclick="wartungZeigen()">Was heißt das?</button>
+    </div>`;
+}
+
+/* ---------- Hinweis beim ersten Besuch ---------- */
+function wartungTorHtml(){
+  if (!WARTUNG || wartungGesehen) return "";
+  return `
+    <div class="torgrund"></div>
+    <div class="tor" role="dialog" aria-modal="true">
+      <span class="tag">Testbetrieb</span>
+      <h2>Diese Seite ist noch im Bau</h2>
+      <p class="soft">Schön, dass du da bist — aber du sollst wissen, worauf du dich einlässt:</p>
+      <ul class="torliste">
+        <li><b>Nichts hier ist fertig.</b> Endlich kapiert entsteht gerade erst. Aufgaben,
+            Erklärungen und Aussehen ändern sich fast täglich.</li>
+        <li><b>Es können Fehler drin sein.</b> Auch in den Aufgaben selbst. Verlass dich bitte
+            noch nicht darauf, wenn du für eine Arbeit lernst.</li>
+        <li><b>Gespeicherter Fortschritt kann verloren gehen</b>, wenn im Hintergrund umgebaut wird.</li>
+        <li><b>Es ist kein fertiges Angebot.</b> Es gibt noch keinen festen Support und keine
+            Zusage, dass alles läuft.</li>
+      </ul>
+      <p class="small soft">Wenn dir etwas auffällt, sag mir Bescheid — über
+        <b>Menü → Hilfe und Feedback</b>. Darüber freue ich mich wirklich.</p>
+      <button class="btn full" style="margin-top:16px" onclick="wartungVerstanden()">
+        Verstanden — ich schau mich trotzdem um</button>
+    </div>`;
+}
+
+/* ---------- harte Wartung: niemand kommt rein ---------- */
+function wartungSeiteHtml(){
+  return `
+    <div class="wartungmitte">
+      <div class="card">
+        <span class="tag">Wartung</span>
+        <h1>Wir bauen gerade</h1>
+        <p class="soft">Endlich kapiert ist im Moment nicht erreichbar, weil daran gearbeitet wird.
+          Schau später noch einmal vorbei — es lohnt sich.</p>
+        <p class="small soft" style="margin-top:18px">Etwas Dringendes? Schreib an
+          <b>hilfe@endlichkapiert.com</b>.</p>
+      </div>
+    </div>`;
+}
 /* ---------- Verbindung zur Datenbank ---------- */
 const SUPABASE_URL = "https://ygiouoxwuupkbjepqhxm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3EHXsWVndJyI5h3gxYGCqQ_a1SCx4il";
@@ -3799,6 +3990,7 @@ function setzeEinstellung(feld, wert){
   einstellungen[feld] = wert;
   speichereEinstellungen(); wendeEinstellungenAn(); render();
 }
+let letzteAnsicht = null;
 let anmeldeModus = "anmelden";
 let hinweis = "";
 const gastZaehler = {};   // merkt sich pro Thema, welche Aufgabe zuletzt dran war
@@ -4082,9 +4274,29 @@ function renderSeite(){
 /* ---------- Hauptbereich ---------- */
 function render(gewaehlt){
   const kopf = document.getElementById("kopf");
-  if (kopf) kopf.innerHTML = kopfleisteHtml() + menueHtml();
   const fussEl = document.getElementById("fussleiste");
+
+  /* Harte Wartung: gar nichts anderes zeigen. */
+  if (WARTUNG_HART){
+    if (kopf) kopf.innerHTML = "";
+    if (fussEl) fussEl.innerHTML = "";
+    const sh = document.getElementById("shell");
+    if (sh) sh.classList.add("voll");
+    const demo = document.querySelector(".demo");
+    if (demo) demo.style.display = "none";
+    el.innerHTML = wartungSeiteHtml();
+    return;
+  }
+
+  if (kopf) kopf.innerHTML = wartungBandHtml() + kopfleisteHtml() + menueHtml() + wartungTorHtml();
   if (fussEl) fussEl.innerHTML = fussleisteHtml();
+
+  /* Wer unten in der Fußleiste etwas anklickt, soll die neue Seite auch sehen
+     und nicht erst nach oben wischen müssen. */
+  if (ansicht !== letzteAnsicht){
+    letzteAnsicht = ansicht;
+    try { window.scrollTo(0, 0); } catch(e){}
+  }
   renderSeite();
   const shell = document.getElementById("shell");
   shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen"].includes(ansicht));
