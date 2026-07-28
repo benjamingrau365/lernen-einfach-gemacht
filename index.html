@@ -363,6 +363,49 @@
   .card.faellig{border-color:var(--ac)}
   .btn.admin{background:var(--ac-dark)}
 
+  /* ---------- Startseite (Übersicht) ---------- */
+  .ueberschrift svg{width:16px;height:16px;vertical-align:-3px;margin-right:7px;
+    color:var(--ac);flex:none}
+  .kopfkarte{background:linear-gradient(150deg,var(--ac-soft) 0%,var(--card) 62%)}
+  .kopfzeile{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  .kopfzeile h1{margin:8px 0 6px}
+  .serie{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:0;background:var(--card);border:1.5px solid var(--ac);border-radius:16px;
+    padding:9px 14px;min-width:74px}
+  .serie svg{width:22px;height:22px;color:var(--ac)}
+  .serie b{font-size:22px;line-height:1.1;color:var(--ac-dark)}
+  .serie span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+  .ziel{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+  .zielkopf{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15.5px}
+  .zielkopf svg{width:18px;height:18px;color:var(--ac);flex:none}
+  .zielpunkte{display:flex;gap:7px}
+  .zielpunkte i{width:15px;height:15px;border-radius:50%;border:2px solid var(--line);display:block}
+  .zielpunkte i.voll{background:var(--ac);border-color:var(--ac)}
+
+  .kachelpaar{display:grid;grid-template-columns:1fr;gap:0}
+  .kachel{display:flex;flex-direction:column}
+  .kachel .small{flex:1}
+  .fachknoepfe{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+  .fachknoepfe .btn{text-align:center}
+
+  .empfehlung{background:var(--bg);border-radius:13px;padding:14px 16px}
+  .empfehlung b{display:block;font-size:19px;letter-spacing:-.01em}
+  .empfehlung span{font-size:14px;color:var(--soft)}
+
+  .merksatz{border-left:4px solid var(--ac)}
+  .merktext{font-size:19.5px;line-height:1.5;margin:4px 0 10px}
+
+  .fachzeile{display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center;
+    padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .fachzeile:last-of-type{border-bottom:none}
+  .fachzeile:hover .fachname{color:var(--ac-dark)}
+  .fachname{font-weight:600;font-size:17px}
+  .fachzahl{font-size:13.5px;color:var(--soft);white-space:nowrap;text-align:right}
+  .fachbalken{grid-column:1 / -1;height:9px;border-radius:999px;background:var(--bg);
+    border:1px solid var(--line);overflow:hidden;display:block}
+  .fachbalken i{display:block;height:100%;background:var(--ac);border-radius:999px;min-width:0}
+
   /* ---------- breiter Bildschirm ---------- */
   @media(min-width:900px){
     .shell{grid-template-columns:262px 1fr;gap:32px;align-items:start}
@@ -383,6 +426,9 @@
     .wahlgitter{grid-template-columns:1fr 1fr}
     .fussinhalt{grid-template-columns:repeat(4,1fr);gap:30px}
     .wahlgitter.drei{grid-template-columns:1fr 1fr 1fr}
+    .kachelpaar{grid-template-columns:1fr 1fr;gap:14px}
+    .kachelpaar .card{margin-bottom:0}
+    .merktext{font-size:21px}
     .optionen3{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
   }
 </style>
@@ -3483,6 +3529,231 @@ function fussleisteHtml(){
       <p class="fussschluss">Endlich kapiert · Ein Lernprojekt aus Deutschland</p>
     </footer>`;
 }
+/* ---------- Startseite der App (Übersicht) ---------- */
+
+/* Kleine gezeichnete Symbole, nehmen die Textfarbe an */
+const SYM = {
+  flamme:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s4 4.5 4 8a4 4 0 0 1-8 0c0-1.2.4-2.2 1-3 .2 1 .8 1.7 1.5 1.7.9 0 1.5-.8 1.5-2 0-1.6-.7-3.2-2-4.7z"/><path d="M6.5 13.5C6.5 17.6 9 20.5 12 20.5s5.5-2.9 5.5-7"/></svg>`,
+  ziel:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>`,
+  uhr:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>`,
+  pfeil:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4h-4"/></svg>`,
+  wuerfel:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.3" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.3" fill="currentColor" stroke="none"/></svg>`,
+  gluehbirne:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17h6"/><path d="M10 20.5h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5.9 1.1 1 1.6h5c.1-.5.4-1.1 1-1.6A6 6 0 0 0 12 3z"/></svg>`,
+  lupe:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>`,
+  balken:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>`,
+  buch:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>`,
+  stern:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 9.7l5.4-.8z"/></svg>`
+};
+
+/* ---------- Aktivität: Serie und Tagesziel ---------- */
+let aktivitaet = {serie: 0, heute: 0, geladen: false};
+const TAGESZIEL = 5;
+
+async function ladeAktivitaet(){
+  aktivitaet = {serie: 0, heute: 0, geladen: false};
+  if (!benutzer) { aktivitaet.geladen = true; return; }
+  try {
+    const {data} = await db.from("uebungen").select("erstellt")
+      .order("erstellt", {ascending:false}).limit(400);
+    const zeilen = data || [];
+    const tagText = d => new Date(d).toLocaleDateString("de-DE");
+    const heuteText = new Date().toLocaleDateString("de-DE");
+    aktivitaet.heute = zeilen.filter(z => tagText(z.erstellt) === heuteText).length;
+
+    const tage = [...new Set(zeilen.map(z => tagText(z.erstellt)))];
+    let serie = 0;
+    const pruef = new Date();
+    /* Wer heute noch nicht geübt hat, verliert die Serie nicht — wir fangen bei gestern an. */
+    if (!tage.includes(pruef.toLocaleDateString("de-DE"))) pruef.setDate(pruef.getDate() - 1);
+    while (tage.includes(pruef.toLocaleDateString("de-DE"))){
+      serie++; pruef.setDate(pruef.getDate() - 1);
+    }
+    aktivitaet.serie = serie;
+  } catch(e){ /* dann eben ohne */ }
+  aktivitaet.geladen = true;
+}
+
+/* ---------- Merksatz des Tages ---------- */
+function merksatzDesTages(){
+  const alle = [];
+  for (const [thema, e] of Object.entries(ERKLAERUNGEN))
+    (e.regeln || []).forEach(r => { if (r.length > 20 && r.length < 110) alle.push({thema, satz: r}); });
+  if (!alle.length) return null;
+  const tag = Math.floor(Date.now() / 86400000);
+  return alle[tag % alle.length];
+}
+
+/* ---------- Empfehlung aus den eigenen Daten ---------- */
+function empfehlung(){
+  if (!benutzer || !fortschritt.length) return null;
+  const mit = fortschritt.filter(z => (z.fehler || 0) > 0);
+  if (!mit.length) return null;
+  return mit.slice().sort((a,b) =>
+    (b.fehler / Math.max(1,b.versuche)) - (a.fehler / Math.max(1,a.versuche)) || b.fehler - a.fehler)[0];
+}
+
+/* ---------- Überrasch mich ---------- */
+function ueberraschMich(){
+  const mitFehlern = fortschritt.filter(z => (z.fehler || 0) > 0 && AUFGABEN[z.thema]);
+  if (mitFehlern.length && Math.random() < 0.6){
+    starte(pick(mitFehlern).thema); return;
+  }
+  const alle = Object.keys(AUFGABEN);
+  starte(pick(alle));
+}
+
+/* ---------- Fortschritt je Fach ---------- */
+function fachFortschritt(){
+  return Object.entries(KATALOG).map(([fk, f]) => {
+    let moeglich = 0;
+    for (const liste of Object.values(f.themen)) moeglich += liste.filter(t => AUFGABEN[t]).length;
+    const zeilen = fortschritt.filter(z => z.fach === fk);
+    const sicher = zeilen.filter(z => z.stufe >= 4).length;
+    const begonnen = zeilen.length;
+    return {schluessel: fk, name: f.name, moeglich, sicher, begonnen};
+  });
+}
+
+function begruessung(){
+  const h = new Date().getHours();
+  if (h < 5)  return "Noch wach";
+  if (h < 11) return "Guten Morgen";
+  if (h < 14) return "Mahlzeit";
+  if (h < 18) return "Guten Tag";
+  return "Guten Abend";
+}
+
+/* ---------- Die Ansicht ---------- */
+function uebersichtHtml(){
+  const offen = benutzer ? fortschritt.filter(z => tageBis(z.naechste_wiederholung) <= 0) : [];
+  const zuletzt = benutzer && fortschritt.length
+    ? fortschritt.slice().sort((a,b) => new Date(b.zuletzt_geuebt) - new Date(a.zuletzt_geuebt))[0] : null;
+  const merk = merksatzDesTages();
+  const tipp = empfehlung();
+  const faecher = fachFortschritt();
+  const punkte = n => Array.from({length: TAGESZIEL}, (_,i) =>
+    `<i class="${i < n ? "voll" : ""}"></i>`).join("");
+  const serieText = aktivitaet.serie === 0
+    ? "Heute ist ein guter Tag zum Anfangen."
+    : aktivitaet.serie === 1 ? "Tag 1 — der Anfang ist gemacht."
+    : `${aktivitaet.serie} Tage in Folge.`;
+
+  return `
+    <div class="card kopfkarte">
+      <div class="kopfzeile">
+        <div>
+          <span class="tag">${benutzer ? "Schön, dass du da bist" : "Du übst ohne Konto"}</span>
+          <h1>${begruessung()}</h1>
+        </div>
+        ${benutzer ? `<div class="serie">${SYM.flamme}<b>${aktivitaet.serie}</b><span>Tage</span></div>` : ""}
+      </div>
+      ${benutzer ? `
+        <p class="soft" style="margin-bottom:14px">${serieText}</p>
+        <div class="ziel">
+          <span class="zielkopf">${SYM.ziel} Heute: ${aktivitaet.heute} von ${TAGESZIEL} Aufgaben</span>
+          <span class="zielpunkte">${punkte(Math.min(aktivitaet.heute, TAGESZIEL))}</span>
+        </div>
+        <p class="small soft" style="margin-top:10px">${aktivitaet.heute >= TAGESZIEL
+          ? "Tagesziel geschafft. Alles Weitere ist geschenkt."
+          : aktivitaet.heute > 0 ? `Noch ${TAGESZIEL - aktivitaet.heute} — dann ist heute im Kasten.`
+          : "Fünf Aufgaben reichen für heute. Mehr geht immer, muss aber nicht."}</p>`
+        : `<p class="soft">Du kannst alles ausprobieren. Ein Konto brauchst du erst, wenn dein Fortschritt gespeichert werden soll.</p>`}
+    </div>
+
+    ${offen.length ? `
+    <div class="card faellig">
+      <p class="ueberschrift">${SYM.uhr} Heute fällig</p>
+      <p class="small soft" style="margin-bottom:12px">${offen.length} ${offen.length === 1 ? "Thema wartet" : "Themen warten"} auf die Wiederholung. Das ist der Teil, der wirklich etwas bringt.</p>
+      ${offen.slice(0,4).map(z => `
+        <button class="thema" onclick="starte('${z.thema.replace(/'/g,"\\'")}')">
+          <span>${z.thema}</span>
+          <span class="pill">${KATALOG[z.fach] ? KATALOG[z.fach].name : z.fach} ${z.klasse}</span>
+        </button>`).join("")}
+      ${offen.length > 4 ? `<p class="small soft" style="margin-top:10px">und ${offen.length - 4} weitere</p>` : ""}
+    </div>` : ""}
+
+    <div class="kachelpaar">
+      <div class="card kachel">
+        <p class="ueberschrift">${SYM.wuerfel} Keine Ahnung, was üben?</p>
+        <p class="small soft">Wir suchen dir etwas aus — am liebsten das, wo du zuletzt gehakt hast.</p>
+        <button class="btn full" style="margin-top:14px" onclick="ueberraschMich()">Überrasch mich</button>
+      </div>
+
+      ${zuletzt ? `
+      <div class="card kachel">
+        <p class="ueberschrift">${SYM.pfeil} Weitermachen</p>
+        <p class="small soft">Zuletzt warst du hier:</p>
+        <button class="thema" style="margin-top:12px" onclick="starte('${zuletzt.thema.replace(/'/g,"\\'")}')">
+          <span>${zuletzt.thema}</span>
+          <span class="pill">${KATALOG[zuletzt.fach] ? KATALOG[zuletzt.fach].name : zuletzt.fach} ${zuletzt.klasse}</span>
+        </button>
+      </div>`
+      : `
+      <div class="card kachel">
+        <p class="ueberschrift">${SYM.buch} Fach wählen</p>
+        <p class="small soft">Such dir aus, worin du üben willst.</p>
+        <div class="fachknoepfe">
+          ${Object.entries(KATALOG).map(([k,v]) =>
+            `<button class="btn ghost" onclick="waehleFach('${k}')">${v.name}</button>`).join("")}
+        </div>
+      </div>`}
+    </div>
+
+    ${tipp ? `
+    <div class="card">
+      <p class="ueberschrift">${SYM.lupe} Das solltest du dir ansehen</p>
+      <div class="empfehlung">
+        <div>
+          <b>${tipp.thema}</b>
+          <span>${KATALOG[tipp.fach] ? KATALOG[tipp.fach].name : tipp.fach} ${tipp.klasse} · ${tipp.versuche}× geübt, ${tipp.fehler}× gehakt</span>
+        </div>
+      </div>
+      <p class="small soft" style="margin:12px 0">Hier hakt es bei dir am häufigsten. Vielleicht liegt es gar nicht an der Aufgabe, sondern am Thema selbst.</p>
+      ${hatErklaerung(tipp.thema) ? `<button class="btn full" onclick="zeigeErklaerung('${tipp.thema.replace(/'/g,"\\'")}')">Thema von vorn erklärt</button>` : ""}
+      <button class="btn ghost full" style="margin-top:10px" onclick="starte('${tipp.thema.replace(/'/g,"\\'")}')">Trotzdem üben</button>
+    </div>` : ""}
+
+    ${merk ? `
+    <div class="card merksatz">
+      <p class="ueberschrift">${SYM.gluehbirne} Merksatz des Tages</p>
+      <p class="merktext">„${merk.satz}“</p>
+      <p class="small soft">${themaInfo(merk.thema).fach === "mathe" ? "Mathe" : "Deutsch"} · ${merk.thema}</p>
+      ${hatErklaerung(merk.thema) ? `<button class="btn ghost full" style="margin-top:12px" onclick="zeigeErklaerung('${merk.thema.replace(/'/g,"\\'")}')">Thema ansehen</button>` : ""}
+    </div>` : ""}
+
+    <div class="card">
+      <p class="ueberschrift">${SYM.balken} ${benutzer ? "Dein Fortschritt" : "Was drin ist"}</p>
+      ${faecher.map(f => `
+        <div class="fachzeile" onclick="waehleFach('${f.schluessel}')">
+          <span class="fachname">${f.name}</span>
+          <span class="fachzahl">${benutzer ? `${f.sicher} von ${f.moeglich} sicher` : `${f.moeglich} Themen`}</span>
+          ${benutzer ? `<span class="fachbalken"><i style="width:${f.moeglich ? Math.round(f.sicher / f.moeglich * 100) : 0}%"></i></span>` : ""}
+        </div>`).join("")}
+      <p class="small soft" style="margin-top:12px">${benutzer
+        ? "„Sicher“ heißt: mehrfach fehlerfrei gelöst, mit Abstand dazwischen. Genau das ist der Unterschied zwischen können und geraten."
+        : "Mit einem Konto siehst du hier, wie viel du schon sicher kannst."}</p>
+      <button class="btn ghost full" style="margin-top:14px" onclick="zurFachwahl()">Alle Fächer und Klassen ansehen</button>
+    </div>
+
+    ${benutzer ? `
+    <div class="card">
+      <div class="zahlen">
+        <div><b>${fortschritt.length}</b><span>Themen begonnen</span></div>
+        <div><b>${fortschritt.reduce((a,z) => a + (z.versuche || 0), 0)}</b><span>Aufgaben gelöst</span></div>
+        <div><b>${fortschritt.filter(z => z.stufe >= 4).length}</b><span>sitzen sicher</span></div>
+        <div><b>${offen.length}</b><span>heute fällig</span></div>
+      </div>
+      <button class="btn ghost full" style="margin-top:14px" onclick="zeigePlan()">Meinen ganzen Plan ansehen</button>
+    </div>`
+    : `
+    <div class="card">
+      <p class="ueberschrift">${SYM.stern} Ohne Konto</p>
+      <p class="small soft">Du kannst alles üben — aber nichts wird gespeichert. Der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, funktioniert nur mit Konto.</p>
+      <button class="btn full" style="margin-top:12px" onclick="zeigeAnmeldung()">Konto anlegen</button>
+    </div>`}
+
+    ${istAdmin ? `<div class="card"><button class="btn full admin" onclick="zeigeDashboard()">Dashboard öffnen</button></div>` : ""}`;
+}
 /* ---------- Verbindung zur Datenbank ---------- */
 const SUPABASE_URL = "https://ygiouoxwuupkbjepqhxm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3EHXsWVndJyI5h3gxYGCqQ_a1SCx4il";
@@ -3573,8 +3844,8 @@ function anzahlFertig(){ return Object.keys(AUFGABEN).length; }
 async function pruefeAnmeldung(){
   const {data} = await db.auth.getSession();
   benutzer = data.session ? data.session.user : null;
-  if (benutzer){ await ladeFortschritt(); await pruefeAdmin(); ansicht = "uebersicht"; }
-  else { istAdmin = false; ansicht = "willkommen"; }
+  if (benutzer){ await ladeFortschritt(); await pruefeAdmin(); await ladeAktivitaet(); ansicht = "uebersicht"; }
+  else { istAdmin = false; aktivitaet = {serie:0, heute:0, geladen:true}; ansicht = "willkommen"; }
   render();
 }
 
@@ -3601,6 +3872,7 @@ async function anmelden(){
   }
   await ladeFortschritt();
   await pruefeAdmin();
+  await ladeAktivitaet();
   ansicht = "uebersicht";
   render();
 }
@@ -3608,11 +3880,12 @@ async function anmelden(){
 async function abmelden(){
   await db.auth.signOut();
   benutzer = null; fortschritt = []; hinweis = ""; istAdmin = false;
+  aktivitaet = {serie:0, heute:0, geladen:true};
   fach = null; klasse = null;
   ansicht = "willkommen"; render();
 }
 
-function alsGast(){ benutzer = null; fortschritt = []; ansicht = "uebersicht"; render(); }
+function alsGast(){ benutzer = null; fortschritt = []; aktivitaet = {serie:0, heute:0, geladen:true}; ansicht = "uebersicht"; render(); }
 function zeigeAnmeldung(){ ansicht = "anmelden"; hinweis = ""; render(); }
 function zeigeWillkommen(){ ansicht = "willkommen"; render(); }
 
@@ -3659,6 +3932,7 @@ async function speichereErgebnis(){
   }, {onConflict:"user_id,fach,thema"});
 
   await ladeFortschritt();
+  await ladeAktivitaet();
 }
 
 /* ---------- Navigation ---------- */
@@ -3823,76 +4097,10 @@ function render(gewaehlt){
   if (ansicht === "willkommen"){ el.innerHTML = willkommenHtml(); return; }
   if (ansicht === "anmelden"){ el.innerHTML = anmeldenHtml(); return; }
 
-  /* ---- Übersicht: die Startseite der App ---- */
+  /* ---- Übersicht: die Startseite der App (siehe start.js) ---- */
   if (ansicht === "uebersicht"){
-    const offen = benutzer ? fortschritt.filter(z => tageBis(z.naechste_wiederholung) <= 0) : [];
-    const zuletzt = benutzer && fortschritt.length
-      ? fortschritt.slice().sort((a,b) => new Date(b.zuletzt_geuebt) - new Date(a.zuletzt_geuebt))[0]
-      : null;
-    const gesamtGeuebt = fortschritt.reduce((a,z) => a + (z.versuche || 0), 0);
-    const sitzt = fortschritt.filter(z => z.stufe >= 4).length;
-
-    el.innerHTML = `
-      <div class="card">
-        <span class="tag">${benutzer ? "Schön, dass du wieder da bist" : "Du übst ohne Konto"}</span>
-        <h1>${offen.length ? "Etwas wartet auf dich" : "Was möchtest du üben?"}</h1>
-        <p class="soft">${offen.length
-          ? `${offen.length} ${offen.length === 1 ? "Thema ist" : "Themen sind"} heute zur Wiederholung dran. Das ist der Teil, der wirklich etwas bringt.`
-          : benutzer ? "Such dir ein Fach aus — oder mach dort weiter, wo du aufgehört hast."
-                     : "Such dir ein Fach aus. Ein Konto brauchst du erst, wenn dein Fortschritt gespeichert werden soll."}</p>
-      </div>
-
-      ${offen.length ? `
-      <div class="card faellig">
-        <p class="ueberschrift">Heute fällig</p>
-        ${offen.slice(0,4).map(z => `
-          <button class="thema" onclick="starte('${z.thema.replace(/'/g,"\\'")}')">
-            <span>${z.thema}</span>
-            <span class="pill">${KATALOG[z.fach] ? KATALOG[z.fach].name : z.fach} ${z.klasse}</span>
-          </button>`).join("")}
-        ${offen.length > 4 ? `<p class="small soft" style="margin-top:10px">und ${offen.length - 4} weitere</p>` : ""}
-      </div>` : ""}
-
-      ${zuletzt && !offen.length ? `
-      <div class="card">
-        <p class="ueberschrift">Weitermachen</p>
-        <button class="thema" onclick="starte('${zuletzt.thema.replace(/'/g,"\\'")}')">
-          <span>${zuletzt.thema}</span>
-          <span class="pill">${KATALOG[zuletzt.fach] ? KATALOG[zuletzt.fach].name : zuletzt.fach} ${zuletzt.klasse}</span>
-        </button>
-      </div>` : ""}
-
-      <div class="card">
-        <p class="ueberschrift">Fach wählen</p>
-        <div class="wahlgitter">
-          ${Object.entries(KATALOG).map(([k,v]) => {
-            let f = 0, g = 0;
-            for (const liste of Object.values(v.themen)){ g += liste.length; f += liste.filter(t => AUFGABEN[t]).length; }
-            return `<button class="grosswahl" onclick="waehleFach('${k}')">
-              <b>${v.name}</b><span>${f} von ${g} Themen fertig</span></button>`;
-          }).join("")}
-        </div>
-      </div>
-
-      ${benutzer ? `
-      <div class="card">
-        <p class="ueberschrift">Dein Stand</p>
-        <div class="zahlen">
-          <div><b>${fortschritt.length}</b><span>Themen begonnen</span></div>
-          <div><b>${gesamtGeuebt}</b><span>Aufgaben gelöst</span></div>
-          <div><b>${sitzt}</b><span>sitzen sicher</span></div>
-          <div><b>${offen.length}</b><span>heute fällig</span></div>
-        </div>
-        <button class="btn ghost full" style="margin-top:14px" onclick="zeigePlan()">Meinen ganzen Plan ansehen</button>
-      </div>`
-      : `
-      <div class="card">
-        <p class="ueberschrift">Ohne Konto</p>
-        <p class="small soft">Du kannst alles üben — aber nichts wird gespeichert. Der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, funktioniert nur mit Konto.</p>
-        <button class="btn full" style="margin-top:12px" onclick="zeigeAnmeldung()">Konto anlegen</button>
-      </div>`}
-
-      ${istAdmin ? `<div class="card"><button class="btn full admin" onclick="zeigeDashboard()">Dashboard öffnen</button></div>` : ""}`;
+    el.innerHTML = uebersichtHtml();
+    if (benutzer && !aktivitaet.geladen) ladeAktivitaet().then(() => { if (ansicht === "uebersicht") render(); });
     return;
   }
 
