@@ -13,6 +13,15 @@
     --red:#b3382f; --red-soft:#fdecea;
     --amber:#8a5a09; --amber-soft:#fdf3e0;
   }
+  html.dunkel{
+    --bg:#131a18; --card:#1b2422; --ink:#e9f1ee; --soft:#9cb0a9; --line:#2c3a36;
+    --ac:#2ebd95; --ac-soft:#17322a; --ac-dark:#6fdcbb;
+    --red:#ff9b90; --red-soft:#3a2220;
+    --amber:#e6bd6d; --amber-soft:#332a17;
+  }
+  html.grossschrift body{font-size:19.5px}
+  html.grossschrift .frage{font-size:22px}
+  html.grossschrift button.pick{font-size:18.5px}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);
@@ -183,6 +192,78 @@
   .probe .opt.gut{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark);font-weight:600}
   .fuss{text-align:center;color:var(--soft);font-size:14px;padding:26px 10px 0;line-height:1.6}
 
+  /* ---------- geführte Auswahl ---------- */
+  .wahlgitter{display:grid;gap:12px;margin-bottom:14px}
+  .grosswahl{display:block;width:100%;text-align:left;background:var(--card);
+    border:1.5px solid var(--line);border-radius:16px;padding:20px 22px;font:inherit;
+    color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+  .grosswahl:hover{border-color:var(--ac);background:var(--ac-soft)}
+  .grosswahl b{display:block;font-size:21px;letter-spacing:-.01em;margin-bottom:3px}
+  .grosswahl span{font-size:14.5px;color:var(--soft)}
+  .pfad{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .pfad button{background:var(--ac-soft);border:none;border-radius:999px;padding:5px 13px;
+    font:inherit;font-size:13.5px;font-weight:700;color:var(--ac-dark);cursor:pointer}
+  .pfad button:hover{background:var(--ac);color:#fff}
+  .pfad span{color:var(--soft);font-size:15px}
+  .wechseln{background:none;border:none;padding:0;font:inherit;font-size:14px;
+    color:var(--soft);text-decoration:underline;cursor:pointer}
+  .wechseln:hover{color:var(--ac-dark)}
+  .pill.neutral{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
+
+  /* ---------- Erklärung ---------- */
+  .themazeile{display:flex;gap:8px;align-items:stretch}
+  .themazeile .thema{flex:1;margin:0}
+  .erklknopf{flex:none;width:46px;border:1.5px solid var(--line);background:var(--card);
+    border-radius:13px;font:inherit;font-size:19px;font-weight:800;color:var(--soft);cursor:pointer}
+  .erklknopf:hover{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
+  ol.beispielschritte{margin:0 0 16px;padding-left:22px}
+  ol.beispielschritte li{padding:5px 0;font-size:16px;color:var(--soft)}
+  .ergebnis{background:var(--ac-soft);color:var(--ac-dark);border-radius:11px;
+    padding:13px 16px;font-weight:700;font-size:17px;text-align:center}
+
+  /* ---------- Erklärung und Einstellungen ---------- */
+  .einfachtext{font-size:17px;line-height:1.7;margin:0 0 14px;max-width:62ch}
+  .einfachtext:last-child{margin-bottom:0}
+  .begriffe{display:grid;gap:0}
+  .begriff{padding:12px 0;border-bottom:1px solid var(--line)}
+  .begriff:last-child{border-bottom:none}
+  .begriff b{display:block;font-size:16.5px;color:var(--ac-dark)}
+  .begriff span{font-size:16px;color:var(--soft)}
+  .feedback.hilfe{background:var(--amber-soft);color:var(--amber)}
+  .optionen3{display:grid;gap:10px}
+  .option{width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);
+    border-radius:13px;padding:14px 16px;font:inherit;color:var(--ink);cursor:pointer}
+  .option:hover{border-color:var(--ac)}
+  .option.an{border-color:var(--ac);background:var(--ac-soft)}
+  .option b{display:block;font-size:16.5px}
+  .option span{font-size:14px;color:var(--soft)}
+  .option.an b{color:var(--ac-dark)}
+
+  /* ---------- Dashboard ---------- */
+  .planbtn.admin{border-color:var(--ac);background:var(--ac-soft)}
+  .planbtn.admin small{color:var(--ac-dark)}
+  .balken{display:flex;gap:5px;align-items:flex-end;height:130px}
+  .balkensaeule{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+  .balkensaeule .saeule{width:100%;background:var(--ac);border-radius:5px 5px 0 0;min-height:3px}
+  .balkensaeule span{font-size:10px;color:var(--soft);margin-top:6px;white-space:nowrap}
+  .rangzeile{display:flex;align-items:center;gap:10px;padding:7px 0}
+  .rangname{flex:0 0 40%;font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rangbalken{flex:1;background:var(--bg);border-radius:999px;height:10px;overflow:hidden}
+  .rangbalken i{display:block;height:100%;background:var(--ac);border-radius:999px}
+  .rangzahl{flex:0 0 42px;text-align:right;font-size:14px;color:var(--soft);font-variant-numeric:tabular-nums}
+  .meldung{border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:10px}
+  .meldung.erledigt{opacity:.55}
+  .meldungkopf{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+  .meldungkopf b{color:var(--ac-dark)}
+  .meldungkopf span{color:var(--soft)}
+  .meldungtext{margin:8px 0;font-size:16px;white-space:pre-wrap}
+  .meldungmail{display:block;font-size:14px;color:var(--ac-dark);margin-bottom:8px}
+  textarea.feld{resize:vertical;font-family:inherit;line-height:1.5}
+  select.feld{appearance:none;background-image:none}
+  .fusslink{background:none;border:none;font:inherit;font-size:14px;color:var(--soft);
+    text-decoration:underline;cursor:pointer;padding:6px 0}
+  .fusslink:hover{color:var(--ac-dark)}
+
   /* ---------- breiter Bildschirm ---------- */
   @media(min-width:900px){
     .shell{grid-template-columns:262px 1fr;gap:32px;align-items:start}
@@ -196,9 +277,13 @@
     .aufg .zeile1{font-size:44px}
     .aufg.text .zeile1{font-size:24px;text-align:center}
     .themen{grid-template-columns:1fr 1fr}
+    .themen{align-items:start}
     .shell.voll{grid-template-columns:1fr;max-width:880px}
     .gegen{grid-template-columns:1fr 1fr}
     .hero{padding:34px 0 14px}
+    .wahlgitter{grid-template-columns:1fr 1fr}
+    .wahlgitter.drei{grid-template-columns:1fr 1fr 1fr}
+    .optionen3{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
   }
 </style>
 </head>
@@ -210,12 +295,12 @@
   </aside>
   <main>
     <div id="screen"></div>
-    <p class="demo">Prototyp · Themen mit „üben“ sind fertig gebaut, der Rest zeigt den geplanten Umfang.</p>
+    <p class="demo">Endlich kapiert · Mathe Klasse 5 bis 7 und Deutsch Klasse 5 bis 7 sind fertig — die übrigen Klassen kommen nach und nach.</p>
   </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ---------- Themenkatalog: das Gerüst, an dem später alles hängt ---------- */
+/* ---------- Themenkatalog ---------- */
 const KATALOG = {
   mathe: {
     name:"Mathe",
@@ -241,215 +326,2335 @@ const KATALOG = {
   }
 };
 
-/* ---------- Fertig gebaute Aufgaben ---------- */
+/* ---------- Werkzeuge für die Aufgabenerzeugung ---------- */
+const rnd  = (a,b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+/* deutsche Zahlschreibweise: 3.847 und 12,5 */
+const z = n => Number(n).toLocaleString("de-DE", {maximumFractionDigits: 4});
+/* Euro mit zwei Nachkommastellen */
+const eur = n => Number(n).toLocaleString("de-DE", {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
+/* zieht `anzahl` verschiedene Elemente aus einer Liste */
+function zieheVerschiedene(liste, anzahl){
+  const kopie = liste.slice(), raus = [];
+  while (raus.length < anzahl && kopie.length) raus.push(kopie.splice(rnd(0, kopie.length-1), 1)[0]);
+  return raus;
+}
+function ggt(a,b){ return b ? ggt(b, a % b) : a; }
+function kgv(a,b){ return a * b / ggt(a,b); }
+/* Option-Kurzschreibweise */
+const R = (t, fb) => ({t, ok:1, fb});
+const F = (t, fb) => ({t, ok:0, fb});
+
+/* ---------- Aufgabenerzeuger ---------- */
 const AUFGABEN = {
-  "Gleichungen umstellen":{
-    fach:"mathe", klasse:7, typ:"formel", text:"3x + 5 = 20", loesung:"x = 5",
-    schluss:"Du hast die Gleichung selbst gelöst — ich habe dir nur Fragen gestellt.",
-    schritte:[
-      {frage:"Am Ende soll nur noch <b>x</b> alleine dastehen. Was steht ihm auf der linken Seite gerade im Weg?",
-       tipp:"Schau dir die linke Seite an: 3x + 5. Da klebt noch etwas am 3x dran.",
-       optionen:[{t:"Die + 5",ok:1,fb:"Genau. Die + 5 muss zuerst weg."},
-                 {t:"Die 3 vor dem x",ok:0,fb:"Die 3 kommt dran — aber erst später. Zuerst das, was addiert wird."},
-                 {t:"Die 20 auf der rechten Seite",ok:0,fb:"Die 20 steht auf der anderen Seite, die stört das x nicht."}]},
-      {frage:"Wie wirst du die <b>+ 5</b> los?",
-       tipp:"Was du auf einer Seite machst, musst du auf beiden Seiten machen. Das Gegenteil von „plus 5“ ist …",
-       optionen:[{t:"Auf beiden Seiten 5 abziehen",ok:1,fb:"Richtig — auf beiden Seiten dasselbe, dann bleibt es im Gleichgewicht."},
-                 {t:"Auf beiden Seiten 5 addieren",ok:0,fb:"Dann hättest du + 10 statt + 5. Du brauchst das Gegenteil."},
-                 {t:"Beide Seiten durch 5 teilen",ok:0,fb:"Teilen hilft gegen Mal-Rechnen, nicht gegen Plus."}]},
-      {frage:"Du ziehst auf beiden Seiten 5 ab. Was steht jetzt da?",
-       tipp:"Links: 3x + 5 − 5. Rechts: 20 − 5.",
-       optionen:[{t:"3x = 15",ok:1,fb:"Sauber. Jetzt ist nur noch die 3 im Weg."},
-                 {t:"3x = 25",ok:0,fb:"Du hast rechts addiert statt abgezogen. 20 − 5 = 15."},
-                 {t:"x = 15",ok:0,fb:"Noch nicht — die 3 vor dem x steht ja noch da."}]},
-      {frage:"Letzter Schritt: <b>3x = 15</b>. Wie kommst du auf das x?",
-       tipp:"3x heißt „3 mal x“. Das Gegenteil von mal ist …",
-       optionen:[{t:"Beide Seiten durch 3 teilen",ok:1,fb:"Genau — und damit hast du es."},
-                 {t:"Auf beiden Seiten 3 abziehen",ok:0,fb:"Abziehen hilft gegen Plus. Hier wird mal gerechnet."},
-                 {t:"Beide Seiten mit 3 multiplizieren",ok:0,fb:"Dann wird es größer statt kleiner."}]}
-    ]},
 
-  "Prozent und Zinsen":{
-    fach:"mathe", klasse:7, typ:"text",
-    text:"Ein Handy kostet 480 €. Im Angebot ist es 15 % günstiger. Was kostet es jetzt?",
-    loesung:"408 €",
-    schluss:"Der schwierige Teil war nicht das Rechnen — sondern herauszufinden, was überhaupt gerechnet werden muss.",
-    schritte:[
-      {frage:"Bevor du rechnest: Was ist überhaupt <b>gesucht</b>?",
-       tipp:"Lies den letzten Satz der Aufgabe. Dort steht fast immer, was raus soll.",
-       optionen:[{t:"Der neue Preis",ok:1,fb:"Richtig. Nicht der Rabatt — der neue Preis."},
-                 {t:"Wie viel Euro gespart wird",ok:0,fb:"Das ist ein Zwischenschritt, aber nicht die Frage."},
-                 {t:"Wie viel Prozent Rabatt es gibt",ok:0,fb:"Die 15 % stehen schon da, die sind gegeben."}]},
-      {frage:"Bei Prozent gilt immer: irgendetwas sind die <b>100 %</b>. Was ist hier 100 %?",
-       tipp:"100 % ist immer der volle Wert — bevor sich etwas ändert.",
-       optionen:[{t:"Die 480 €",ok:1,fb:"Genau. Der alte Preis ist der ganze Kuchen."},
-                 {t:"Die 15 %",ok:0,fb:"Das ist der Anteil, der wegfällt — nicht das Ganze."},
-                 {t:"Der neue Preis",ok:0,fb:"Den suchen wir gerade, der kann nicht der Ausgangswert sein."}]},
-      {frage:"15 % gehen weg. <b>Wie viel Prozent zahlst du dann noch?</b>",
-       tipp:"Das Ganze sind 100 %. Davon fallen 15 % weg.",
-       optionen:[{t:"85 %",ok:1,fb:"Ja. Damit rechnest du weiter — in einem Schritt statt in zweien."},
-                 {t:"15 %",ok:0,fb:"Das ist der Rabatt, nicht der Rest."},
-                 {t:"115 %",ok:0,fb:"Es wird günstiger, nicht teurer."}]},
-      {frage:"Du zahlst 85 % von 480 €. <b>Welche Rechnung</b> ist das?",
-       tipp:"85 % = 0,85. Und „von“ heißt beim Rechnen: mal.",
-       optionen:[{t:"480 · 0,85",ok:1,fb:"Perfekt. Das ist der ganze Trick bei Prozent-Textaufgaben."},
-                 {t:"480 · 0,15",ok:0,fb:"Das wäre der Rabatt in Euro — nur ein Zwischenschritt."},
-                 {t:"480 : 0,85",ok:0,fb:"Geteilt brauchst du, wenn du rückwärts rechnest."}]}
-    ]},
+/* ===================== MATHE · KLASSE 5 ===================== */
 
-  "Brüche":{
-    fach:"mathe", klasse:6, typ:"formel", text:"3/4 + 1/6", loesung:"11/12",
+"Natürliche Zahlen":[
+
+ /* Runden auf Hunderter */
+ () => {
+   let n, t, h, e;
+   do { n = rnd(1000, 9999); t = Math.floor(n/1000); h = Math.floor(n/100)%10; e = Math.floor(n/10)%10; }
+   while (new Set([t,h,e]).size < 3);
+   const auf = e >= 5;
+   const erg = Math.round(n/100) * 100;
+   const gegen = auf ? erg - 100 : erg + 100;
+   return {
+    typ:"formel", text:`Runde ${z(n)} auf Hunderter`, loesung: z(erg),
+    schluss:"Beim Runden zählt immer nur die eine Ziffer rechts neben der Rundungsstelle.",
+    schritte:[
+     {frage:`Welche Ziffer steht bei <b>${z(n)}</b> an der <b>Hunderterstelle</b>?`,
+      tipp:"Von rechts: Einer, Zehner, Hunderter.",
+      optionen:[R(`Die ${h}`, "Richtig. Das ist die Stelle, auf die gerundet wird."),
+                F(`Die ${e}`, "Die steht an der Zehnerstelle."),
+                F(`Die ${t}`, "Die steht an der Tausenderstelle.")]},
+     {frage:"Welche Ziffer <b>entscheidet</b>, ob auf- oder abgerundet wird?",
+      tipp:"Immer die Ziffer direkt rechts neben der Rundungsstelle.",
+      optionen:[R(`Die ${e} rechts daneben`, "Genau. Nur diese eine Ziffer entscheidet."),
+                F(`Die ${n%10} ganz rechts`, "Die steht zu weit weg, sie spielt keine Rolle."),
+                F("Alle Ziffern zusammen", "Nein — nur die eine direkt rechts daneben.")]},
+     {frage:`Die entscheidende Ziffer ist eine <b>${e}</b>. Was heißt das?`,
+      tipp:"0 bis 4 heißt abrunden, 5 bis 9 heißt aufrunden.",
+      optionen: auf
+        ? [R("Aufrunden", `${e} ist 5 oder größer — also aufrunden.`),
+           F("Abrunden", `Abgerundet wird nur bis 4. Die ${e} liegt darüber.`)]
+        : [R("Abrunden", `${e} liegt unter 5 — also abrunden.`),
+           F("Aufrunden", "Aufgerundet wird erst ab 5.")]},
+     {frage:"Wie heißt das Ergebnis?",
+      tipp:"Die Hunderterziffer bleibt oder wächst um eins, dahinter stehen zwei Nullen.",
+      optionen:[R(z(erg), "Richtig."),
+                F(z(gegen), auf ? "Das wäre abgerundet." : "Das wäre aufgerundet."),
+                F(z(Math.floor(n/10)*10), "Beim Runden auf Hunderter müssen hinten zwei Nullen stehen.")]}]};
+ },
+
+ /* Stellenwert einer Ziffer */
+ () => {
+   const stellen = [
+     {name:"Einer", wert:1, pos:0}, {name:"Zehner", wert:10, pos:1},
+     {name:"Hunderter", wert:100, pos:2}, {name:"Tausender", wert:1000, pos:3}
+   ];
+   const st = pick(stellen.slice(1));
+   let n, ziffer;
+   do { n = rnd(10000, 99999); ziffer = Math.floor(n / st.wert) % 10; } while (ziffer === 0);
+   const erg = ziffer * st.wert;
+   const andere = pick(stellen.filter(x => x.name !== st.name));
+   return {
+    typ:"text", text:`Welchen <b>Wert</b> hat die Ziffer <b>${ziffer}</b> in der Zahl ${z(n)}?`,
+    loesung: z(erg),
+    schluss:"Der Wert einer Ziffer hängt davon ab, an welcher Stelle sie steht — nicht davon, wie groß die Ziffer selbst ist.",
+    schritte:[
+     {frage:`An welcher Stelle steht die <b>${ziffer}</b> in ${z(n)}?`,
+      tipp:"Zähl von rechts: Einer, Zehner, Hunderter, Tausender, Zehntausender.",
+      optionen: zieheVerschiedene([R(st.name, "Richtig."), F(andere.name, `Nein, das ist die Stelle mit dem Wert ${z(andere.wert)}.`)], 2)},
+     {frage:`Wie viel ist <b>ein einzelner ${st.name}</b> wert?`,
+      tipp:"Einer = 1, Zehner = 10, Hunderter = 100, Tausender = 1000.",
+      optionen:[R(z(st.wert), "Genau."),
+                F(z(st.wert*10), "Das ist die nächsthöhere Stelle."),
+                F(z(st.wert/10), "Das ist die nächstniedrigere Stelle.")]},
+     {frage:`Du hast <b>${ziffer}</b> davon. Welche Rechnung ergibt den Wert?`,
+      tipp:"Anzahl mal Stellenwert.",
+      optionen:[R(`${ziffer} · ${z(st.wert)}`, "Richtig."),
+                F(`${ziffer} + ${z(st.wert)}`, "Addieren passt hier nicht."),
+                F(`${z(st.wert)} : ${ziffer}`, "Geteilt würde den Wert verkleinern.")]},
+     {frage:`Und das ergibt?`,
+      tipp:`${ziffer} mal ${z(st.wert)}.`,
+      optionen:[R(z(erg), "Fertig."),
+                F(z(ziffer), "Das ist nur die Ziffer selbst, ohne ihren Stellenwert."),
+                F(z(erg*10), "Eine Stelle zu weit.")]}]};
+ }
+],
+
+"Grundrechenarten":[
+
+ /* Punkt vor Strich */
+ () => {
+   const a = rnd(5, 30), b = rnd(2, 9), c = rnd(2, 9);
+   const erg = a + b*c, falsch = (a + b) * c;
+   return {
+    typ:"formel", text:`${a} + ${b} · ${c}`, loesung: z(erg),
+    schluss:"Punkt vor Strich — Mal und Geteilt kommen immer vor Plus und Minus.",
+    schritte:[
+     {frage:"Welche Rechnung machst du <b>zuerst</b>?",
+      tipp:"Es gibt eine feste Reihenfolge, egal wie die Aufgabe dasteht.",
+      optionen:[R(`${b} · ${c}`, "Richtig — Punkt vor Strich."),
+                F(`${a} + ${b}`, `Das wäre von links nach rechts. Dann käme ${z(falsch)} heraus, und das ist falsch.`)]},
+     {frage:`Was ergibt <b>${b} · ${c}</b>?`,
+      tipp:`${b} mal die ${c}.`,
+      optionen:[R(z(b*c), "Ja."),
+                F(z(b+c), "Das wäre plus statt mal."),
+                F(z(b*c + 1), "Rechne das kleine Einmaleins noch mal nach.")]},
+     {frage:`Jetzt steht da <b>${a} + ${z(b*c)}</b>. Wie viel ist das?`,
+      tipp:"Ganz normal zusammenzählen.",
+      optionen:(() => {
+        const kand = [a*b*c, erg-2, erg+2, erg-1].filter((x,i,arr) => x !== erg && arr.indexOf(x) === i);
+        return [R(z(erg), "Genau."),
+                F(z(kand[0]), kand[0] === a*b*c ? "Hier wird zum Schluss addiert, nicht multipliziert."
+                                                : `Rechne noch mal nach: ${a} + ${z(b*c)}.`),
+                F(z(kand[1]), `Rechne noch mal nach: ${a} + ${z(b*c)}.`)];
+      })()}]};
+ },
+
+ /* Klammer, dann Punkt, dann Strich */
+ () => {
+   let a, b;
+   do { a = rnd(2, 12); b = rnd(2, 12); } while (a + b === a * b);
+   const c = rnd(2, 8), d = rnd(2, 20);
+   const erg = (a + b) * c - d;
+   return {
+    typ:"formel", text:`(${a} + ${b}) · ${c} − ${d}`, loesung: z(erg),
+    schluss:"Erst Klammer, dann Punkt, dann Strich. In dieser Reihenfolge, immer.",
+    schritte:[
+     {frage:"Womit fängst du an?",
+      tipp:"Eine Sache hat immer Vorrang, sogar vor dem Malzeichen.",
+      optionen:[R("Mit der Klammer", "Richtig. Klammer schlägt alles."),
+                F(`Mit ${b} · ${c}`, `Die ${b} steht in der Klammer und gehört zur ${a}.`),
+                F(`Mit ${c} − ${d}`, "Minus kommt zuletzt.")]},
+     {frage:"Was kommt in der Klammer heraus?",
+      tipp:`${a} plus ${b}.`,
+      optionen:[R(z(a+b), `Ja. Jetzt heißt die Aufgabe ${z(a+b)} · ${c} − ${d}.`),
+                F(z(a*b), "Das wäre mal statt plus.")]},
+     {frage:`Jetzt <b>${z(a+b)} · ${c} − ${d}</b>. Was kommt zuerst?`,
+      tipp:"Punkt vor Strich.",
+      optionen:[R(`${z(a+b)} · ${c} = ${z((a+b)*c)}`, "Genau."),
+                F(`${c} − ${d} = ${z(c-d)}`, "Mal geht vor Minus.")]},
+     {frage:`Letzter Schritt: <b>${z((a+b)*c)} − ${d}</b>`,
+      tipp:"Einfach abziehen.",
+      optionen:[R(z(erg), "Fertig."),
+                F(z((a+b)*c + d), "Da wurde addiert statt abgezogen.")]}]};
+ }
+],
+
+"Größen und Einheiten":[
+
+ /* Kilogramm und Gramm */
+ () => {
+   const kg = rnd(2, 9), g = rnd(1, 19) * 50;
+   const erg = kg*1000 + g;
+   return {
+    typ:"formel", text:`${kg} kg ${z(g)} g = ___ g`, loesung: z(erg) + " g",
+    schluss:"Erst die große Einheit umrechnen, dann den Rest dazuzählen.",
+    schritte:[
+     {frage:"Wie viele Gramm sind <b>1 Kilogramm</b>?",
+      tipp:"Kilo heißt tausend.",
+      optionen:[R("1.000 g", "Richtig."),
+                F("100 g", "Das wäre ein Zehntel Kilogramm."),
+                F("10.000 g", "Das wären 10 Kilogramm.")]},
+     {frage:`Was rechnest du also mit den <b>${kg} kg</b>?`,
+      tipp:`${kg} Kilogramm sind ${kg} mal tausend Gramm.`,
+      optionen:[R(`${kg} · 1.000 = ${z(kg*1000)} g`, "Genau."),
+                F(`${kg} : 1.000`, "Geteilt würde die Zahl kleiner — Gramm sind aber kleinere Portionen, davon braucht man mehr."),
+                F(`${kg} + 1.000`, "Addieren passt hier nicht, es wird umgerechnet.")]},
+     {frage:`Jetzt fehlen noch die <b>${z(g)} g</b>. Was machst du damit?`,
+      tipp:"Die stehen schon in der richtigen Einheit.",
+      optionen:[R("Einfach dazuzählen", "Richtig, sie sind ja schon in Gramm."),
+                F("Auch mal 1.000 nehmen", "Nur die Kilogramm mussten umgerechnet werden.")]},
+     {frage:`<b>${z(kg*1000)} + ${z(g)}</b> ergibt?`,
+      tipp:"Ganz normal zusammenzählen.",
+      optionen:[R(z(erg) + " g", "Fertig."),
+                F(z(kg*1000 + g*10) + " g", "Achte auf die Stellen.")]}]};
+ },
+
+ /* Stunden und Minuten */
+ () => {
+   const h = rnd(1, 4), m = rnd(1, 11) * 5;
+   const erg = h*60 + m;
+   return {
+    typ:"formel", text:`${h} h ${m} min = ___ min`, loesung: z(erg) + " min",
+    schluss:"Bei der Zeit wird nicht in Zehnerschritten gerechnet — eine Stunde hat 60 Minuten, nicht 100.",
+    schritte:[
+     {frage:"Wie viele Minuten hat <b>eine Stunde</b>?",
+      tipp:"Schau auf eine Uhr.",
+      optionen:[R("60", "Richtig — und genau das ist die Falle bei Zeitangaben."),
+                F("100", "Bei der Zeit wird nicht in Hundertern gerechnet."),
+                F("90", "90 Minuten sind eineinhalb Stunden.")]},
+     {frage:`Was ergeben die <b>${h} ${h === 1 ? "Stunde" : "Stunden"}</b> in Minuten?`,
+      tipp:`${h} mal 60.`,
+      optionen:[R(`${h} · 60 = ${z(h*60)}`, "Genau."),
+                F(`${h} · 100 = ${z(h*100)}`, "Eine Stunde hat 60 Minuten, nicht 100."),
+                F(`${h} + 60 = ${z(h+60)}`, "Hier wird umgerechnet, nicht addiert.")]},
+     {frage:`Und jetzt die <b>${m} Minuten</b> dazu: ${z(h*60)} + ${m}`,
+      tipp:"Die Minuten stehen schon in der richtigen Einheit.",
+      optionen:[R(z(erg) + " min", "Fertig."),
+                F(z(h*100 + m) + " min", "Da wurde mit 100 statt mit 60 gerechnet.")]}]};
+ }
+],
+
+"Flächen und Umfang":[
+
+ /* Umfang */
+ () => {
+   let l, b; do { l = rnd(3, 18); b = rnd(2, 15); } while (l === b);
+   const erg = 2*l + 2*b;
+   return {
+    typ:"text", text:`Ein Rechteck ist ${l} cm lang und ${b} cm breit. Wie groß ist der <b>Umfang</b>?`,
+    loesung: z(erg) + " cm",
+    schluss:"Umfang ist der Weg einmal außen herum — deshalb zählt jede Seite mit.",
+    schritte:[
+     {frage:"Was bedeutet <b>Umfang</b>?",
+      tipp:"Stell dir vor, du läufst außen um das Rechteck herum.",
+      optionen:[R("Die Länge aller vier Seiten zusammen", "Genau."),
+                F("Der Platz innen drin", "Das ist der Flächeninhalt."),
+                F("Nur die längste Seite", "Nein, alle vier Seiten zählen.")]},
+     {frage:"Ein Rechteck hat <b>wie viele</b> Seiten von jeder Sorte?",
+      tipp:"Gegenüberliegende Seiten sind gleich lang.",
+      optionen:[R("Zwei lange und zwei kurze", "Richtig."),
+                F("Eine lange und eine kurze", "Dann wäre es kein geschlossenes Rechteck."),
+                F("Vier gleich lange", "Das wäre ein Quadrat.")]},
+     {frage:"Welche Rechnung passt?",
+      tipp:`Zweimal ${l} und zweimal ${b}.`,
+      optionen:[R(`2 · ${l} + 2 · ${b}`, "Genau das ist die Umfangsformel."),
+                F(`${l} · ${b}`, "Das wäre der Flächeninhalt."),
+                F(`${l} + ${b}`, "Das sind nur zwei der vier Seiten.")]},
+     {frage:`Rechne aus: <b>${z(2*l)} + ${z(2*b)}</b>`,
+      tipp:`2·${l} = ${z(2*l)} und 2·${b} = ${z(2*b)}.`,
+      optionen:[R(z(erg) + " cm", "Fertig."),
+                F(z(l*b === erg ? erg + 2 : l*b) + " cm",
+                  l*b === erg ? "Knapp daneben — zähl die vier Seiten noch einmal zusammen."
+                              : `${z(l*b)} wäre ${l} · ${b}, also die Fläche.`)]}]};
+ },
+
+ /* Flächeninhalt */
+ () => {
+   let l, b; do { l = rnd(3, 18); b = rnd(2, 15); } while (l === b);
+   const erg = l*b;
+   return {
+    typ:"text", text:`Ein Rechteck ist ${l} cm lang und ${b} cm breit. Wie groß ist der <b>Flächeninhalt</b>?`,
+    loesung: z(erg) + " cm²",
+    schluss:"Fläche ist Länge mal Breite — und die Einheit bekommt eine kleine 2, weil zwei Längen multipliziert wurden.",
+    schritte:[
+     {frage:"Was ist der <b>Flächeninhalt</b>?",
+      tipp:"Wie viele Zentimeterquadrate passen hinein?",
+      optionen:[R("Der Platz innerhalb des Rechtecks", "Richtig."),
+                F("Der Weg außen herum", "Das ist der Umfang.")]},
+     {frage:"Welche Rechnung gehört zur Fläche?",
+      tipp:"Länge und Breite werden verbunden — aber nicht addiert.",
+      optionen:[R(`${l} · ${b}`, "Genau: Länge mal Breite."),
+                F(`${l} + ${b}`, "Addieren ergibt keine Fläche."),
+                F(`2 · ${l} + 2 · ${b}`, "Das ist die Umfangsformel.")]},
+     {frage:`Wie viel ist <b>${l} · ${b}</b>?`,
+      tipp:"Schriftlich oder in Schritten rechnen.",
+      optionen:(() => {
+        const kand = [l+b, erg-l, erg+l, erg-1].filter((x,i,arr) => x > 0 && x !== erg && arr.indexOf(x) === i);
+        return [R(z(erg), "Ja."),
+                F(z(kand[0]), kand[0] === l+b ? `Das wäre ${l} + ${b}.` : "Knapp daneben — rechne noch mal nach."),
+                F(z(kand[1]), "Knapp daneben — rechne noch mal nach.")];
+      })()},
+     {frage:"Welche <b>Einheit</b> gehört dahinter?",
+      tipp:"Es wurden zwei Längen miteinander multipliziert.",
+      optionen:[R("cm²", "Richtig — Quadratzentimeter."),
+                F("cm", "cm ist eine Länge, keine Fläche."),
+                F("cm³", "Das wäre ein Rauminhalt, dafür bräuchte man drei Längen.")]}]};
+ }
+],
+
+"Symmetrie":[
+
+ /* senkrechte Spiegelachse */
+ () => {
+   const mit  = ["A","H","I","M","O","T","U","V","W","X","Y"];
+   const ohne = ["B","F","G","J","L","N","P","R","S","Z"];
+   const richtig = pick(mit);
+   const [f1, f2] = zieheVerschiedene(ohne, 2);
+   const alle = zieheVerschiedene([richtig, f1, f2], 3);
+   return {
+    typ:"text",
+    text:`Welcher Buchstabe hat eine <b>senkrechte</b> Spiegelachse: ${alle.join(", ")}?`,
+    loesung: richtig,
+    schluss:"Bei einer senkrechten Achse muss die linke Hälfte das Spiegelbild der rechten sein.",
+    schritte:[
+     {frage:"Was heißt <b>senkrechte</b> Spiegelachse?",
+      tipp:"Senkrecht = von oben nach unten.",
+      optionen:[R("Linke und rechte Hälfte sind spiegelgleich", "Genau."),
+                F("Obere und untere Hälfte sind spiegelgleich", "Das wäre eine waagerechte Achse."),
+                F("Die Figur sieht gedreht gleich aus", "Das wäre Drehsymmetrie.")]},
+     {frage:`Prüf das <b>${f1}</b>: Sieht die linke Hälfte aus wie die gespiegelte rechte?`,
+      tipp:"Mal dir den Buchstaben auf und falte ihn in der Mitte.",
+      optionen:[R("Nein", `Richtig, das ${f1} ist links und rechts verschieden.`),
+                F("Ja", `Beim ${f1} klappt das nicht — gespiegelt zeigt es in die andere Richtung.`)]},
+     {frage:`Und das <b>${richtig}</b>?`,
+      tipp:"Falte es einmal senkrecht in der Mitte.",
+      optionen:[R("Ja", `Richtig, das ${richtig} ist senkrecht spiegelsymmetrisch.`),
+                F("Nein", `Doch — beim ${richtig} passen beide Hälften genau aufeinander.`)]},
+     {frage:"Welcher Buchstabe ist also die Antwort?",
+      tipp:"Nur einer der drei hat die Eigenschaft.",
+      optionen:[R(richtig, "Richtig."),
+                F(f2, `Das ${f2} hat keine senkrechte Spiegelachse.`)]}]};
+ },
+
+ /* Symmetrieachsen einer Figur */
+ () => {
+   const figuren = [
+     {name:"ein Quadrat", n:4, hilfe:"zwei durch die Mitte, zwei durch die Ecken"},
+     {name:"ein Rechteck", n:2, hilfe:"eine senkrecht, eine waagerecht — die Diagonalen zählen hier nicht"},
+     {name:"ein gleichseitiges Dreieck", n:3, hilfe:"von jeder Ecke zur gegenüberliegenden Seite"},
+     {name:"ein gleichschenkliges Dreieck", n:1, hilfe:"nur eine, durch die Spitze"},
+     {name:"ein regelmäßiges Fünfeck", n:5, hilfe:"von jeder Ecke aus eine"},
+     {name:"ein regelmäßiges Sechseck", n:6, hilfe:"drei durch gegenüberliegende Ecken, drei durch gegenüberliegende Seiten"}
+   ];
+   const f = pick(figuren);
+   const falsch = zieheVerschiedene([1,2,3,4,5,6,8].filter(x => x !== f.n), 2);
+   return {
+    typ:"text", text:`Wie viele <b>Symmetrieachsen</b> hat ${f.name}?`, loesung: String(f.n),
+    schluss:"Eine Symmetrieachse ist jede Linie, an der man die Figur falten kann, sodass beide Hälften genau aufeinanderliegen.",
+    schritte:[
+     {frage:"Was ist eine <b>Symmetrieachse</b>?",
+      tipp:"Denk ans Falten eines Papiers.",
+      optionen:[R("Eine Linie, an der man falten kann und beide Hälften passen genau", "Genau."),
+                F("Jede Linie, die die Figur in zwei Teile teilt", "Teilen reicht nicht — die Hälften müssen deckungsgleich sein."),
+                F("Die längste Linie in der Figur", "Damit hat Symmetrie nichts zu tun.")]},
+     {frage:`Wie musst du bei ${f.name} vorgehen?`,
+      tipp:"Probier gedanklich jede mögliche Faltlinie durch.",
+      optionen:[R("Jede Faltlinie einzeln durchprobieren", "Richtig — und nur die zählen, bei denen es wirklich passt."),
+                F("Die Ecken zählen", "Die Anzahl der Ecken ist nicht automatisch die Anzahl der Achsen."),
+                F("Die Seiten zählen", "Auch das stimmt nicht bei jeder Figur.")]},
+     {frage:`Wie viele Achsen findest du bei ${f.name}?`,
+      tipp: f.hilfe,
+      optionen: zieheVerschiedene([
+        R(String(f.n), `Richtig — ${f.hilfe}.`),
+        F(String(falsch[0]), "Zähl noch mal in Ruhe nach."),
+        F(String(falsch[1]), `Nicht ganz — ${f.hilfe}.`)], 3)}]};
+ }
+],
+
+/* ===================== MATHE · KLASSE 6 ===================== */
+
+"Brüche":[
+
+ /* Brüche addieren */
+ () => {
+   const nenner = [2,3,4,6,8,12];
+   let b, d, a, c, summe;
+   do {
+     [b, d] = zieheVerschiedene(nenner, 2);
+     a = rnd(1, b-1); c = rnd(1, d-1);
+     summe = a/b + c/d;
+   } while (summe >= 1 || kgv(b,d) === Math.max(b,d));
+   const n = kgv(b, d), fb = n/b, fd = n/d;
+   const zaehler = a*fb + c*fd;
+   return {
+    typ:"formel", text:`${a}/${b} + ${c}/${d}`, loesung:`${zaehler}/${n}`,
     schluss:"Brüche addieren ist immer derselbe Ablauf: gleicher Nenner, dann Zähler addieren.",
     schritte:[
-      {frage:"Warum kannst du hier nicht einfach 3 + 1 rechnen?",
-       tipp:"Schau auf die Zahlen unter dem Strich.",
-       optionen:[{t:"Weil die Nenner verschieden sind",ok:1,fb:"Genau. Viertel und Sechstel sind unterschiedlich große Stücke."},
-                 {t:"Weil die Zähler verschieden sind",ok:0,fb:"Die oberen Zahlen dürfen ruhig verschieden sein."},
-                 {t:"Weil man Brüche nie addieren kann",ok:0,fb:"Doch — man muss sie nur erst passend machen."}]},
-      {frage:"Du brauchst einen <b>gemeinsamen Nenner</b> für 4 und 6. Welcher passt?",
-       tipp:"Such die kleinste Zahl, in der 4 und 6 ohne Rest aufgehen.",
-       optionen:[{t:"12",ok:1,fb:"Richtig — 4 · 3 = 12 und 6 · 2 = 12."},
-                 {t:"10",ok:0,fb:"4 geht nicht in 10 auf."},
-                 {t:"24",ok:0,fb:"Funktioniert, ist aber unnötig groß. 12 reicht."}]},
-      {frage:"Was wird aus <b>3/4</b>, wenn der Nenner 12 sein soll?",
-       tipp:"Der Nenner wird mal 3 genommen. Mit dem Zähler machst du dasselbe.",
-       optionen:[{t:"9/12",ok:1,fb:"Ja — oben und unten mal 3."},
-                 {t:"3/12",ok:0,fb:"Du hast nur unten erweitert."},
-                 {t:"12/12",ok:0,fb:"Das wäre genau 1."}]},
-      {frage:"Und <b>1/6</b> mit dem Nenner 12? Dann kannst du addieren.",
-       tipp:"Der Nenner wird mal 2 genommen — der Zähler auch.",
-       optionen:[{t:"2/12 — zusammen also 11/12",ok:1,fb:"Genau. Gleiche Nenner, dann Zähler addieren."},
-                 {t:"1/12 — zusammen also 10/12",ok:0,fb:"Oben muss auch mal 2 gerechnet werden."},
-                 {t:"6/12 — zusammen also 15/12",ok:0,fb:"Da hast du Zähler und Nenner vertauscht."}]}
-    ]},
+     {frage:`Warum kannst du hier nicht einfach ${a} + ${c} rechnen?`,
+      tipp:"Schau auf die Zahlen unter dem Strich.",
+      optionen:[R("Weil die Nenner verschieden sind", "Genau. Die Stücke sind unterschiedlich groß."),
+                F("Weil die Zähler verschieden sind", "Die oberen Zahlen dürfen ruhig verschieden sein."),
+                F("Weil man Brüche nie addieren kann", "Doch — man muss sie nur erst passend machen.")]},
+     {frage:`Du brauchst einen gemeinsamen Nenner für ${b} und ${d}. Welcher ist der <b>kleinste</b>?`,
+      tipp:`Such die kleinste Zahl, in der ${b} und ${d} ohne Rest aufgehen.`,
+      optionen: zieheVerschiedene([
+        R(String(n), `Richtig — ${b} · ${fb} = ${n} und ${d} · ${fd} = ${n}.`),
+        F(String(b*d === n ? n + b : b*d), "Das ist zwar ein gemeinsamer Nenner, aber nicht der kleinste."),
+        F(String(b + d), "Einfach addieren ergibt keinen gemeinsamen Nenner.")], 3)},
+     {frage:`Was wird aus <b>${a}/${b}</b> mit dem Nenner ${n}?`,
+      tipp:`Der Nenner wird mal ${fb} genommen. Mit dem Zähler machst du dasselbe.`,
+      optionen:[R(`${a*fb}/${n}`, `Ja — oben und unten mal ${fb}.`),
+                F(`${a}/${n}`, "Du hast nur unten erweitert. Oben muss dasselbe passieren."),
+                F(`${n}/${n}`, "Das wäre genau 1.")]},
+     {frage:`Und <b>${c}/${d}</b> mit dem Nenner ${n}? Dann kannst du addieren.`,
+      tipp:`Der Nenner wird mal ${fd} genommen — der Zähler auch.`,
+      optionen:(() => {
+        const richtigZ = c*fd;
+        const kand = [c, fd, richtigZ+1, richtigZ-1].filter((x,i,arr) => x > 0 && x !== richtigZ && arr.indexOf(x) === i);
+        return [R(`${richtigZ}/${n} — zusammen also ${zaehler}/${n}`, "Genau. Gleiche Nenner, dann Zähler addieren."),
+                F(`${kand[0]}/${n} — zusammen also ${a*fb + kand[0]}/${n}`, `Der Zähler muss auch mal ${fd} genommen werden.`),
+                F(`${kand[1]}/${n} — zusammen also ${a*fb + kand[1]}/${n}`, "Nicht ganz — rechne die Erweiterung noch einmal nach.")];
+      })()}]};
+ },
 
-  "das oder dass":{
-    fach:"deutsch", klasse:6, typ:"text",
-    text:"Ich hoffe, <span class='luecke'>___</span> du morgen kommst.", loesung:"dass",
+ /* Bruchteil von einer Zahl */
+ () => {
+   const b = pick([3,4,5,6,8]);
+   const a = rnd(1, b-1);
+   const teil = rnd(2, 12);
+   const N = b * teil;
+   const erg = a * teil;
+   return {
+    typ:"text", text:`Wie viel sind <b>${a}/${b} von ${z(N)}</b>?`, loesung: z(erg),
+    schluss:"„von“ heißt beim Rechnen immer: mal. Am einfachsten gehst du über einen einzelnen Teil.",
+    schritte:[
+     {frage:"Was bedeutet das Wort <b>von</b> in dieser Aufgabe?",
+      tipp:"Es ist eine Rechenanweisung.",
+      optionen:[R("Mal", `Richtig: ${a}/${b} · ${z(N)}.`),
+                F("Minus", "Nein, abgezogen wird hier nichts."),
+                F("Plus", "Addiert wird hier auch nichts.")]},
+     {frage:`Rechne zuerst <b>ein ${b}tel</b> von ${z(N)}. Wie kommst du da hin?`,
+      tipp:"Der Nenner sagt dir, in wie viele gleiche Teile du zerlegst.",
+      optionen:[R(`${z(N)} : ${b}`, "Genau — durch den Nenner teilen."),
+                F(`${z(N)} · ${b}`, "Dann würde es größer statt kleiner."),
+                F(`${z(N)} : ${a}`, `Die ${a} ist der Zähler, nicht der Nenner.`)]},
+     {frage:`<b>${z(N)} : ${b}</b> ergibt?`,
+      tipp:"Kleines Einmaleins rückwärts.",
+      optionen:[R(z(teil), `Ja, ein ${b}tel von ${z(N)} sind ${z(teil)}.`),
+                F(z(teil + 1), "Rechne noch mal nach."),
+                F(z(N - b), "Hier wird geteilt, nicht abgezogen.")]},
+     {frage:`Du brauchst aber <b>${a}</b> davon. Letzter Schritt?`,
+      tipp:"Der Zähler sagt, wie viele dieser Teile du nimmst.",
+      optionen:[R(`${z(teil)} · ${a} = ${z(erg)}`, "Fertig."),
+                F(`${z(teil)} : ${a} = ${z(teil/a)}`, `${a} Teile sind mehr als einer, nicht weniger.`)]}]};
+ }
+],
+
+"Dezimalzahlen":[
+
+ /* Addition mit unterschiedlich vielen Nachkommastellen */
+ () => {
+   const a = rnd(1, 9) / 10;                 // z. B. 0,7
+   const b = rnd(11, 89) / 100;              // z. B. 0,25
+   const erg = Math.round((a + b) * 100) / 100;
+   const fehlerhaft = Number(String(rnd(1,9)) + String(rnd(10,99))) / 100;
+   return {
+    typ:"formel", text:`${z(a)} + ${z(b)}`, loesung: z(erg),
+    schluss:"Bei Dezimalzahlen zählt die Stelle, nicht die Ziffernanzahl — Komma unter Komma.",
+    schritte:[
+     {frage:`Warum darfst du die Ziffern nicht einfach von rechts untereinanderschreiben?`,
+      tipp:`Was bedeutet die ${Math.round(a*10)} bei ${z(a)} — Zehntel oder Hundertstel?`,
+      optionen:[R("Weil sonst Zehntel und Hundertstel zusammengezählt würden", "Genau. Man darf nur Gleiches mit Gleichem zusammenzählen."),
+                F("Weil man Kommazahlen nicht addieren darf", "Doch, man darf — nur stellenrichtig."),
+                F("Weil eine Zahl größer ist als die andere", "Damit hat es nichts zu tun.")]},
+     {frage:`Wie schreibst du <b>${z(a)}</b>, damit beide gleich viele Nachkommastellen haben?`,
+      tipp:"Eine Null hinten ändert den Wert nicht.",
+      optionen:[R(z(a).padEnd(4, "0"), `Richtig, ${Math.round(a*10)} Zehntel sind ${Math.round(a*100)} Hundertstel.`),
+                F("0,0" + Math.round(a*10), "Das wäre zehnmal kleiner."),
+                F(Math.round(a*10) + ",0", "Das wäre zehnmal größer.")]},
+     {frage:`Jetzt <b>${z(a).padEnd(4,"0")} + ${z(b)}</b>. Was kommt heraus?`,
+      tipp:`${Math.round(a*100)} Hundertstel plus ${Math.round(b*100)} Hundertstel.`,
+      optionen: zieheVerschiedene([
+        R(z(erg), "Genau."),
+        F(z(fehlerhaft), "Das entsteht, wenn man die Stellen falsch untereinanderschreibt."),
+        F(z(Math.round((a + b) * 100) / 100 + 0.1), "Knapp daneben — rechne noch mal nach.")], 3)}]};
+ },
+
+ /* Multiplikation mit Stufenzahlen */
+ () => {
+   const grund = rnd(11, 989) / 10;                       // z. B. 3,6
+   const faktor = pick([10, 100, 1000]);
+   const erg = Math.round(grund * faktor * 100) / 100;
+   const stellen = String(faktor).length - 1;
+   return {
+    typ:"formel", text:`${z(grund)} · ${z(faktor)}`, loesung: z(erg),
+    schluss:"Mal 10 heißt: Komma eine Stelle nach rechts. Bei 100 zwei Stellen, bei 1000 drei.",
+    schritte:[
+     {frage:`Was passiert mit dem <b>Komma</b>, wenn du mal ${z(faktor)} rechnest?`,
+      tipp:"Die Zahl wird größer.",
+      optionen:[R(`Es wandert ${stellen} ${stellen === 1 ? "Stelle" : "Stellen"} nach rechts`, "Genau, dadurch wird die Zahl größer."),
+                F(`Es wandert ${stellen} ${stellen === 1 ? "Stelle" : "Stellen"} nach links`, "Nach links würde die Zahl kleiner — das wäre geteilt."),
+                F("Es bleibt, wo es ist", "Dann würde sich die Zahl nicht ändern.")]},
+     {frage:`Verschieb es bei <b>${z(grund)}</b> entsprechend.`,
+      tipp:`Aus ${z(grund)} wird ${z(erg)}.`,
+      optionen:[R(z(erg), "Richtig."),
+                F(z(Math.round(grund / faktor * 10000) / 10000), "Das wäre nach links, also geteilt."),
+                F(z(Math.round(grund * faktor * 10) / 10 * 10), "Eine Stelle zu weit.")]},
+     {frage:`Kontrolle: Ist <b>${z(erg)}</b> ungefähr ${z(faktor)}-mal so groß wie ${z(grund)}?`,
+      tipp:`${z(grund)} ist ungefähr ${Math.round(grund)} — mal ${z(faktor)} sind das etwa ${z(Math.round(grund)*faktor)}.`,
+      optionen:[R("Ja, das passt", "Diese Abschätzung solltest du dir angewöhnen — sie fängt fast alle Kommafehler ab."),
+                F("Nein", `Doch: ${z(grund)} · ${z(faktor)} liegt in der Nähe von ${z(Math.round(grund)*faktor)}.`)]}]};
+ }
+],
+
+"Teilbarkeit":[
+
+ /* Teilbarkeit durch 3 */
+ () => {
+   const teilbar = Math.random() < 0.5;
+   let n;
+   do { n = rnd(100, 999); } while ((n % 3 === 0) !== teilbar);
+   const q = String(n).split("").reduce((s,x) => s + Number(x), 0);
+   return {
+    typ:"text", text:`Ist <b>${z(n)}</b> ohne Rest durch <b>3</b> teilbar?`,
+    loesung: teilbar ? "Ja" : "Nein",
+    schluss:"Für die 3 gibt es eine Abkürzung: die Quersumme. Damit sparst du dir das Ausrechnen.",
+    schritte:[
+     {frage:"Es gibt eine Regel für die 3. Welche?",
+      tipp:"Man addiert etwas an der Zahl.",
+      optionen:[R("Die Quersumme muss durch 3 teilbar sein", "Genau — alle Ziffern zusammenzählen."),
+                F("Die letzte Ziffer muss durch 3 teilbar sein", "Das gilt bei 2, 5 und 10 — bei der 3 nicht."),
+                F("Die Zahl muss gerade sein", "Das ist die Regel für die 2.")]},
+     {frage:`Wie groß ist die <b>Quersumme von ${z(n)}</b>?`,
+      tipp: String(n).split("").join(" + "),
+      optionen: zieheVerschiedene([
+        R(String(q), "Richtig."),
+        F(String(q + 1), `Rechne noch mal: ${String(n).split("").join(" + ")}.`),
+        F(String(n), "Die Quersumme ist die Summe der einzelnen Ziffern, nicht die Zahl selbst.")], 3)},
+     {frage:`Ist <b>${q}</b> durch 3 teilbar?`,
+      tipp:"3, 6, 9, 12, 15, 18, 21 …",
+      optionen: q % 3 === 0
+        ? [R("Ja", `Ja — 3 · ${q/3} = ${q}.`), F("Nein", `Doch, ${q} : 3 = ${q/3} geht glatt auf.`)]
+        : [R("Nein", `Richtig, ${q} liegt zwischen ${Math.floor(q/3)*3} und ${Math.ceil(q/3)*3}.`),
+           F("Ja", `Nein, ${q} : 3 geht nicht ohne Rest auf.`)]},
+     {frage:`Also ist ${z(n)} …`,
+      tipp:"Quersumme teilbar heißt Zahl teilbar.",
+      optionen: teilbar
+        ? [R("durch 3 teilbar", `Richtig. ${z(n)} : 3 = ${z(n/3)}.`), F("nicht durch 3 teilbar", "Die Quersumme sagt eindeutig ja.")]
+        : [R("nicht durch 3 teilbar", "Richtig."), F("durch 3 teilbar", "Die Quersumme geht nicht auf, also die Zahl auch nicht.")]}]};
+ },
+
+ /* Teilbarkeit durch 4 */
+ () => {
+   const teilbar = Math.random() < 0.5;
+   let n;
+   do { n = rnd(1000, 9999); } while ((n % 4 === 0) !== teilbar);
+   const letzte = n % 100;
+   const letzteText = String(letzte).padStart(2, "0");
+   return {
+    typ:"text", text:`Ist <b>${z(n)}</b> ohne Rest durch <b>4</b> teilbar?`,
+    loesung: teilbar ? "Ja" : "Nein",
+    schluss:"Bei der 4 musst du nie die ganze Zahl anschauen — die letzten beiden Ziffern genügen.",
+    schritte:[
+     {frage:"Welche Regel gilt für die <b>4</b>?",
+      tipp:"Es reicht ein kleiner Teil der Zahl.",
+      optionen:[R("Die letzten beiden Ziffern müssen durch 4 teilbar sein", "Genau, alles davor ist immer durch 4 teilbar."),
+                F("Die Quersumme muss durch 4 teilbar sein", "Die Quersumme hilft bei 3 und 9, nicht bei 4."),
+                F("Die letzte Ziffer muss gerade sein", "Das ist nur die Regel für 2.")]},
+     {frage:`Welche Zahl bilden die <b>letzten beiden Ziffern</b> von ${z(n)}?`,
+      tipp:"Die beiden ganz rechts.",
+      optionen: zieheVerschiedene([
+        R(letzteText, "Richtig."),
+        F(String(Math.floor(n/100)), "Das sind die ersten beiden."),
+        F(String(n % 10), "Es sind zwei Ziffern, nicht eine.")], 3)},
+     {frage:`Ist <b>${letzteText}</b> durch 4 teilbar?`,
+      tipp:"4, 8, 12, 16, 20, 24 …",
+      optionen: letzte % 4 === 0
+        ? [R("Ja", `Ja — 4 · ${letzte/4} = ${letzte}.`), F("Nein", `Doch: ${letzte} : 4 = ${letzte/4}.`)]
+        : [R(`Nein, es bleibt ein Rest von ${letzte % 4}`, `Genau — ${letzte} liegt zwischen ${Math.floor(letzte/4)*4} und ${Math.ceil(letzte/4)*4}.`),
+           F("Ja", `${letzte} : 4 geht nicht glatt auf.`)]},
+     {frage:`Also ist ${z(n)} …`,
+      tipp:"Letzte zwei Ziffern teilbar heißt Zahl teilbar.",
+      optionen: teilbar
+        ? [R("durch 4 teilbar", `Richtig. ${z(n)} : 4 = ${z(n/4)}.`), F("nicht durch 4 teilbar", "Die letzten beiden Ziffern gehen auf.")]
+        : [R("nicht durch 4 teilbar", "Richtig."), F("durch 4 teilbar", "Der Rest überträgt sich auf die ganze Zahl.")]}]};
+ }
+],
+
+"Dreisatz":[
+
+ /* Preis über den Einzelwert */
+ () => {
+   const ware = pick([
+     {ein:"Heft", mehr:"Hefte"}, {ein:"Brötchen", mehr:"Brötchen"},
+     {ein:"Stift", mehr:"Stifte"}, {ein:"Apfel", mehr:"Äpfel"}
+   ]);
+   const stueck = pick([0.25, 0.35, 0.5, 0.75, 1.2, 1.5, 2.5]);
+   const k = rnd(3, 6), m = rnd(7, 12);
+   const preisK = Math.round(stueck * k * 100) / 100;
+   const erg = Math.round(stueck * m * 100) / 100;
+   return {
+    typ:"text",
+    text:`${k} ${ware.mehr} kosten ${eur(preisK)}. Was kosten <b>${m} ${ware.mehr}</b>?`,
+    loesung: eur(erg),
+    schluss:"Der Dreisatz geht immer über den Einzelwert: erst herunter auf eins, dann hoch auf die gesuchte Anzahl.",
+    schritte:[
+     {frage:"Was ist der übliche <b>erste Schritt</b> beim Dreisatz?",
+      tipp:"Eine bestimmte Menge ist besonders praktisch.",
+      optionen:[R(`Ausrechnen, was ein einzelnes ${ware.ein} kostet`, "Genau — über den Einzelwert geht es immer."),
+                F(`Sofort mal ${m} rechnen`, `Dann hättest du den Preis für ${k*m} ${ware.mehr}.`),
+                F(`${eur(preisK)} und ${m} addieren`, "Preise und Stückzahlen kann man nicht addieren.")]},
+     {frage:`Wie kommst du auf den Preis für <b>ein</b> ${ware.ein}?`,
+      tipp:`Aus ${k} ${ware.mehr} wird 1 ${ware.ein}.`,
+      optionen:[R(`${eur(preisK)} : ${k}`, "Richtig."),
+                F(`${eur(preisK)} · ${k}`, `Ein ${ware.ein} ist billiger als ${k}, nicht teurer.`)]},
+     {frage:`<b>${eur(preisK)} : ${k}</b> ergibt?`,
+      tipp:`${Math.round(preisK*100)} Cent durch ${k}.`,
+      optionen: zieheVerschiedene([
+        R(eur(stueck), "Genau."),
+        F(eur(Math.round(stueck*100 + 10)/100), "Rechne noch mal in Cent nach."),
+        F(eur(Math.round(preisK*k*100)/100), "Das wäre mal statt geteilt.")], 3)},
+     {frage:`Letzter Schritt: ${m} ${ware.mehr} zu je ${eur(stueck)}`,
+      tipp:"Jetzt wird multipliziert.",
+      optionen: zieheVerschiedene([
+        R(eur(erg), "Fertig."),
+        F(eur(Math.round(stueck*(m-1)*100)/100), `Das wären ${m-1} ${ware.mehr}.`),
+        F(eur(Math.round(stueck*(m+2)*100)/100), `Das wären ${m+2} ${ware.mehr}.`)], 3)}]};
+ },
+
+ /* Mengen umrechnen */
+ () => {
+   const proStueck = rnd(2, 9);
+   const k = rnd(3, 8), m = rnd(9, 15);
+   const gesamtK = proStueck * k, erg = proStueck * m;
+   const sache = pick([
+     {ding:"Packungen", inhalt:"Kekse"}, {ding:"Kisten", inhalt:"Flaschen"},
+     {ding:"Beutel", inhalt:"Murmeln"}, {ding:"Tüten", inhalt:"Bonbons"}
+   ]);
+   return {
+    typ:"text",
+    text:`In ${k} ${sache.ding} sind ${z(gesamtK)} ${sache.inhalt}. Wie viele ${sache.inhalt} sind in <b>${m} ${sache.ding}</b>?`,
+    loesung: z(erg) + " " + sache.inhalt,
+    schluss:"Immer derselbe Weg: durch die gegebene Anzahl teilen, mal die gesuchte Anzahl nehmen.",
+    schritte:[
+     {frage:"Womit fängst du an?",
+      tipp:"Wieder über den Wert für ein einzelnes Stück.",
+      optionen:[R(`${z(gesamtK)} : ${k}`, `Genau, die Anzahl pro ${sache.ding.slice(0,-1)}.`),
+                F(`${z(gesamtK)} · ${m}`, "Das wäre viel zu viel."),
+                F(`${m} − ${k}`, "Die Differenz hilft hier nicht weiter.")]},
+     {frage:`<b>${z(gesamtK)} : ${k}</b> ergibt?`,
+      tipp:"Einmaleins rückwärts.",
+      optionen: zieheVerschiedene([
+        R(z(proStueck), "Richtig."),
+        F(z(proStueck + 1), "Rechne noch mal nach."),
+        F(z(gesamtK - k), "Hier wird geteilt, nicht abgezogen.")], 3)},
+     {frage:`Und ${m} ${sache.ding} zu je ${z(proStueck)} ${sache.inhalt}?`,
+      tipp:"Jetzt multiplizieren.",
+      optionen: zieheVerschiedene([
+        R(z(erg), "Fertig."),
+        F(z(proStueck * (m - 1)), `Das wären ${m-1} ${sache.ding}.`),
+        F(z(erg + proStueck * 2), `Das wären ${m+2} ${sache.ding}.`)], 3)}]};
+ }
+],
+
+"Winkel messen":[
+
+ /* Winkelart bestimmen */
+ () => {
+   const art = pick(["spitz","recht","stumpf","gestreckt"]);
+   const w = art === "recht" ? 90 : art === "gestreckt" ? 180
+           : art === "spitz" ? rnd(5, 89) : rnd(91, 179);
+   const namen = {spitz:"Ein spitzer Winkel", recht:"Ein rechter Winkel",
+                  stumpf:"Ein stumpfer Winkel", gestreckt:"Ein gestreckter Winkel"};
+   const andere = zieheVerschiedene(Object.keys(namen).filter(a => a !== art), 2);
+   return {
+    typ:"text", text:`Ein Winkel misst <b>${w}°</b>. Welche Art von Winkel ist das?`,
+    loesung: namen[art],
+    schluss:"Spitz unter 90°, recht genau 90°, stumpf zwischen 90° und 180°, gestreckt genau 180°.",
+    schritte:[
+     {frage:"Wie viel Grad hat ein <b>rechter</b> Winkel?",
+      tipp:"Die Ecke eines Blatt Papiers.",
+      optionen:[R("90°", "Richtig — das ist die wichtigste Grenze."),
+                F("180°", "180° ist ein gestreckter Winkel, also eine gerade Linie."),
+                F("45°", "45° ist ein halber rechter Winkel.")]},
+     {frage:`Vergleich: Ist <b>${w}°</b> kleiner, gleich oder größer als 90°?`,
+      tipp:"Reiner Zahlenvergleich.",
+      optionen: zieheVerschiedene([
+        R(w < 90 ? "Kleiner" : w === 90 ? "Genau 90°" : "Größer", "Genau."),
+        F(w < 90 ? "Größer" : "Kleiner", `${w} und 90 noch mal vergleichen.`),
+        F(w === 90 ? "Größer" : "Genau 90°", `${w}° ist nicht genau 90°.`)], 3)},
+     {frage:`Und im Vergleich zu <b>180°</b>?`,
+      tipp:"180° wäre eine ganz gerade Linie.",
+      optionen: zieheVerschiedene([
+        R(w < 180 ? "Kleiner als 180°" : "Genau 180°", "Richtig."),
+        F(w < 180 ? "Genau 180°" : "Kleiner als 180°", `${w}° noch mal mit 180 vergleichen.`)], 2)},
+     {frage:"Wie heißt so ein Winkel?",
+      tipp: art === "spitz" ? "Unter 90°." : art === "recht" ? "Genau 90°."
+          : art === "stumpf" ? "Zwischen 90° und 180°." : "Genau 180°.",
+      optionen: zieheVerschiedene([
+        R(namen[art], "Richtig."),
+        F(namen[andere[0]], "Das passt zu einem anderen Bereich."),
+        F(namen[andere[1]], "Auch das ist ein anderer Bereich.")], 3)}]};
+ },
+
+ /* Ergänzungswinkel */
+ () => {
+   const ganz = pick([90, 180]);
+   const a = rnd(10, ganz - 10);
+   const erg = ganz - a;
+   return {
+    typ:"text",
+    text:`Zwei Winkel ergänzen sich zu <b>${ganz}°</b>. Einer misst ${a}°. Wie groß ist der andere?`,
+    loesung: erg + "°",
+    schluss:"Ergänzen heißt schlicht: Rest ausrechnen. Das brauchst du später bei Dreiecken ständig.",
+    schritte:[
+     {frage:`Was heißt „ergänzen sich zu ${ganz}°“?`,
+      tipp:"Beide zusammen ergeben etwas Bestimmtes.",
+      optionen:[R(`Beide zusammen ergeben ${ganz}°`, "Genau."),
+                F(`Jeder ist ${ganz}° groß`, `Dann wären es zusammen ${ganz*2}°.`),
+                F(`Der Unterschied beträgt ${ganz}°`, "Es geht um die Summe, nicht um die Differenz.")]},
+     {frage:"Welche Rechnung führt zum zweiten Winkel?",
+      tipp:"Vom Ganzen den bekannten Teil abziehen.",
+      optionen:[R(`${ganz}° − ${a}°`, "Richtig."),
+                F(`${ganz}° + ${a}°`, `Dann wäre die Summe größer als ${ganz}°.`),
+                F(`${a}° · 2`, "Es gibt keinen Grund, den Winkel zu verdoppeln.")]},
+     {frage:`<b>${ganz} − ${a}</b> ergibt?`,
+      tipp:`Von ${ganz} die ${a} abziehen.`,
+      optionen: zieheVerschiedene([
+        R(erg + "°", "Fertig."),
+        F((erg + 10) + "°", "Zehn zu wenig abgezogen."),
+        F((erg - 10) + "°", "Zehn zu viel abgezogen.")], 3)}]};
+ }
+],
+
+/* ===================== MATHE · KLASSE 7 ===================== */
+
+"Gleichungen umstellen":[
+
+ /* a·x + b = c */
+ () => {
+   const a = rnd(2, 9), x = rnd(2, 12), b = rnd(2, 20);
+   const c = a*x + b;
+   return {
+    typ:"formel", text:`${a}x + ${b} = ${c}`, loesung:`x = ${x}`,
+    schluss:"Immer dieselbe Reihenfolge: zuerst das Plus oder Minus wegräumen, dann die Zahl vor dem x.",
+    schritte:[
+     {frage:"Am Ende soll nur noch <b>x</b> alleine dastehen. Was steht ihm auf der linken Seite gerade im Weg?",
+      tipp:`Schau dir die linke Seite an: ${a}x + ${b}.`,
+      optionen:[R(`Die + ${b}`, "Genau. Erst das, was addiert wird."),
+                F(`Die ${a} vor dem x`, "Die kommt dran — aber erst später."),
+                F(`Die ${c} auf der rechten Seite`, "Die steht auf der anderen Seite, die stört das x nicht.")]},
+     {frage:`Wie wirst du die <b>+ ${b}</b> los?`,
+      tipp:"Was du auf einer Seite machst, musst du auf beiden Seiten machen.",
+      optionen:[R(`Auf beiden Seiten ${b} abziehen`, "Richtig — dann bleibt die Gleichung im Gleichgewicht."),
+                F(`Auf beiden Seiten ${b} addieren`, `Dann stünde da + ${2*b}.`),
+                F(`Beide Seiten durch ${b} teilen`, "Teilen hilft gegen Mal-Rechnen, nicht gegen Plus.")]},
+     {frage:"Was steht jetzt da?",
+      tipp:`Links: ${a}x. Rechts: ${c} − ${b}.`,
+      optionen:[R(`${a}x = ${a*x}`, "Sauber. Jetzt ist nur noch die Zahl vor dem x im Weg."),
+                F(`${a}x = ${c + b}`, "Rechts wurde addiert statt abgezogen."),
+                F(`x = ${a*x}`, `Noch nicht — die ${a} vor dem x steht ja noch da.`)]},
+     {frage:`Letzter Schritt: <b>${a}x = ${a*x}</b>`,
+      tipp:`${a}x heißt „${a} mal x“. Das Gegenteil von mal ist …`,
+      optionen:[R(`Beide Seiten durch ${a} teilen, also x = ${x}`, `Genau. Probe: ${a}·${x} + ${b} = ${c}. Stimmt.`),
+                F(`Auf beiden Seiten ${a} abziehen`, "Abziehen hilft gegen Plus. Hier wird mal gerechnet."),
+                F(`Beide Seiten mit ${a} multiplizieren`, "Dann wird es größer statt kleiner.")]}]};
+ },
+
+ /* a·x − b = c */
+ () => {
+   const a = rnd(2, 9), x = rnd(2, 12), b = rnd(2, 20);
+   const c = a*x - b;
+   return {
+    typ:"formel", text:`${a}x − ${b} = ${c}`, loesung:`x = ${x}`,
+    schluss:"Das Gegenteil von minus ist plus — und was du auf einer Seite machst, machst du auf beiden.",
+    schritte:[
+     {frage:"Was räumst du <b>zuerst</b> weg?",
+      tipp:"Erst das, was addiert oder abgezogen wird.",
+      optionen:[R(`Die − ${b}`, "Richtig, immer zuerst Plus und Minus."),
+                F(`Die ${a} vor dem x`, "Die kommt zum Schluss.")]},
+     {frage:`Wie wirst du die <b>− ${b}</b> los?`,
+      tipp:`Das Gegenteil von minus ${b}.`,
+      optionen:[R(`Auf beiden Seiten ${b} addieren`, "Genau."),
+                F(`Auf beiden Seiten ${b} abziehen`, `Dann stünde da − ${2*b}.`)]},
+     {frage:"Was steht jetzt da?",
+      tipp:`Links bleibt ${a}x, rechts ${c} + ${b}.`,
+      optionen:[R(`${a}x = ${a*x}`, "Richtig."),
+                F(`${a}x = ${c - b}`, "Da wurde rechts abgezogen statt addiert.")]},
+     {frage:`<b>${a}x = ${a*x}</b> — letzter Schritt?`,
+      tipp:"Durch die Zahl vor dem x teilen.",
+      optionen:[R(`Beide Seiten durch ${a} teilen, also x = ${x}`, `Fertig. Probe: ${a}·${x} − ${b} = ${c}. Stimmt.`),
+                F(`Beide Seiten mal ${a}, also x = ${a*a*x}`, "Mal macht es größer, du willst es kleiner.")]}]};
+ }
+],
+
+"Prozent und Zinsen":[
+
+ /* Rabatt */
+ () => {
+   const preis = rnd(4, 40) * 20;             // glatte Preise
+   const rabatt = pick([5, 10, 15, 20, 25, 30, 40]);
+   const rest = 100 - rabatt;
+   const erg = Math.round(preis * rest) / 100;
+   const ware = pick(["Ein Handy","Ein Fahrrad","Ein Rucksack","Ein Kopfhörer","Eine Jacke"]);
+   return {
+    typ:"text",
+    text:`${ware} kostet ${eur(preis)}. Im Angebot ist ${ware.startsWith("Eine") ? "sie" : "es"} ${rabatt} % günstiger. Was kostet ${ware.startsWith("Eine") ? "sie" : "es"} jetzt?`,
+    loesung: eur(erg),
+    schluss:"Der schwierige Teil ist nicht das Rechnen — sondern herauszufinden, was überhaupt gerechnet werden muss.",
+    schritte:[
+     {frage:"Bevor du rechnest: Was ist überhaupt <b>gesucht</b>?",
+      tipp:"Lies den letzten Satz der Aufgabe.",
+      optionen:[R("Der neue Preis", "Richtig. Nicht der Rabatt — der neue Preis."),
+                F("Wie viel Euro gespart wird", "Das ist ein Zwischenschritt, aber nicht die Frage."),
+                F("Wie viel Prozent Rabatt es gibt", `Die ${rabatt} % stehen schon da, die sind gegeben.`)]},
+     {frage:"Bei Prozent gilt immer: irgendetwas sind die <b>100 %</b>. Was ist hier 100 %?",
+      tipp:"100 % ist immer der volle Wert — bevor sich etwas ändert.",
+      optionen:[R(`Die ${eur(preis)}`, "Genau. Der alte Preis ist der ganze Kuchen."),
+                F(`Die ${rabatt} %`, "Das ist der Anteil, der wegfällt — nicht das Ganze."),
+                F("Der neue Preis", "Den suchen wir gerade.")]},
+     {frage:`${rabatt} % gehen weg. <b>Wie viel Prozent zahlst du dann noch?</b>`,
+      tipp:`Das Ganze sind 100 %. Davon fallen ${rabatt} % weg.`,
+      optionen:[R(`${rest} %`, "Ja. Damit rechnest du weiter — in einem Schritt statt in zweien."),
+                F(`${rabatt} %`, "Das ist der Rabatt, nicht der Rest."),
+                F(`${100 + rabatt} %`, "Es wird günstiger, nicht teurer.")]},
+     {frage:`Du zahlst ${rest} % von ${eur(preis)}. <b>Welche Rechnung</b> ist das?`,
+      tipp:`${rest} % = ${z(rest/100)}. Und „von“ heißt beim Rechnen: mal.`,
+      optionen:[R(`${z(preis)} · ${z(rest/100)}`, "Perfekt. Das ist der ganze Trick bei Prozent-Textaufgaben."),
+                F(`${z(preis)} · ${z(rabatt/100)}`, "Das wäre der Rabatt in Euro — nur ein Zwischenschritt."),
+                F(`${z(preis)} : ${z(rest/100)}`, "Geteilt brauchst du, wenn du rückwärts rechnest.")]},
+     {frage:`Rechne aus: <b>${z(preis)} · ${z(rest/100)}</b>`,
+      tipp:`1 % von ${eur(preis)} sind ${eur(preis/100)}.`,
+      optionen: zieheVerschiedene([
+        R(eur(erg), `Fertig. Gespart hast du ${eur(preis - erg)}.`),
+        F(eur(Math.round(preis * rabatt) / 100), "Das ist der Rabatt, nicht der neue Preis."),
+        F(eur(preis), "Das ist der alte Preis.")], 3)}]};
+ },
+
+ /* Prozent von einer Anzahl */
+ () => {
+   const anzahl = rnd(2, 10) * 5;
+   const p = pick([10, 20, 25, 40, 50, 60, 80]);
+   const erg = anzahl * p / 100;
+   if (!Number.isInteger(erg)) return AUFGABEN["Prozent und Zinsen"][1]();
+   const gruppe = pick([
+     {ganz:"Schüler", teil:"Mädchen"}, {ganz:"Mitglieder", teil:"Kinder"},
+     {ganz:"Autos", teil:"Elektroautos"}, {ganz:"Bücher", teil:"Krimis"}
+   ]);
+   return {
+    typ:"text",
+    text:`In einem Verein sind ${anzahl} ${gruppe.ganz}. ${p} % davon sind ${gruppe.teil}. Wie viele sind das?`,
+    loesung: z(erg) + " " + gruppe.teil,
+    schluss:"Prozent in Kommazahl umwandeln, dann mal den Grundwert — das ist der Standardweg.",
+    schritte:[
+     {frage:"Was sind hier die <b>100 %</b>?",
+      tipp:"Der volle Wert, auf den sich die Prozentangabe bezieht.",
+      optionen:[R(`Die ${anzahl} ${gruppe.ganz}`, "Richtig, die ganze Gruppe."),
+                F(`Die ${p} %`, "Das ist der Anteil, nicht das Ganze."),
+                F(`Die Anzahl der ${gruppe.teil}`, "Die suchen wir ja gerade.")]},
+     {frage:`Wie schreibst du <b>${p} %</b> als Kommazahl?`,
+      tipp:"Prozent heißt „von hundert“ — also durch 100 teilen.",
+      optionen:[R(z(p/100), `Genau: ${p} : 100 = ${z(p/100)}.`),
+                F(z(p/10), `Das wären ${p*10} %.`),
+                F(z(p/1000), `Das wären ${z(p/10)} %.`)]},
+     {frage:"Welche Rechnung führt zum Ergebnis?",
+      tipp:`„${p} % von ${anzahl}“ — und „von“ heißt mal.`,
+      optionen:[R(`${anzahl} · ${z(p/100)}`, "Richtig."),
+                F(`${anzahl} : ${z(p/100)}`, "Geteilt bräuchtest du, wenn du das Ganze suchst."),
+                F(`${anzahl} − ${p}`, "Prozente kann man nicht direkt abziehen.")]},
+     {frage:`<b>${anzahl} · ${z(p/100)}</b> ergibt?`,
+      tipp:`1 % von ${anzahl} sind ${z(anzahl/100)}.`,
+      optionen: zieheVerschiedene([
+        R(z(erg), "Fertig."),
+        F(z(anzahl * p), `Da wurde mit ${p} statt mit ${z(p/100)} gerechnet.`),
+        F(z(anzahl / 2), "Das wären 50 %.")], 3)}]};
+ },
+
+ /* Zinsen */
+ () => {
+   const kapital = rnd(2, 20) * 100;
+   const satz = pick([1, 2, 3, 4, 5]);
+   const erg = kapital * satz / 100;
+   return {
+    typ:"text",
+    text:`Du legst ${eur(kapital)} für ein Jahr auf ein Konto mit <b>${satz} % Zinsen</b>. Wie viel Zinsen bekommst du?`,
+    loesung: eur(erg),
+    schluss:"Zinsen sind nichts anderes als Prozentrechnung: Zinssatz mal angelegtes Geld.",
+    schritte:[
+     {frage:"Was ist bei Zinsen der Wert, der <b>100 %</b> entspricht?",
+      tipp:"Der Betrag, auf den die Zinsen gezahlt werden.",
+      optionen:[R(`Die angelegten ${eur(kapital)}`, "Richtig — das nennt man das Kapital."),
+                F(`Die ${satz} %`, "Das ist der Zinssatz, also der Anteil."),
+                F("Die Zinsen selbst", "Die suchen wir gerade.")]},
+     {frage:`Wie schreibst du <b>${satz} %</b> als Kommazahl?`,
+      tipp:"Prozent heißt „von hundert“ — also durch 100.",
+      optionen:[R(z(satz/100), `Genau: ${satz} : 100 = ${z(satz/100)}.`),
+                F(z(satz/10), `Das wären ${satz*10} %.`),
+                F(z(satz), `Das wären ${satz*100} %.`)]},
+     {frage:"Welche Rechnung ergibt die Zinsen für <b>ein</b> Jahr?",
+      tipp:"Zinssatz mal Kapital.",
+      optionen:[R(`${z(kapital)} · ${z(satz/100)}`, "Richtig."),
+                F(`${z(kapital)} : ${z(satz/100)}`, "Geteilt bräuchtest du beim Rückwärtsrechnen."),
+                F(`${z(kapital)} + ${satz}`, "Prozent kann man nicht einfach dazuaddieren.")]},
+     {frage:`<b>${z(kapital)} · ${z(satz/100)}</b> ergibt?`,
+      tipp:`1 % von ${eur(kapital)} sind ${eur(kapital/100)} — und du brauchst ${satz} davon.`,
+      optionen: zieheVerschiedene([
+        R(eur(erg), `Fertig. Nach einem Jahr hast du ${eur(kapital + erg)} auf dem Konto.`),
+        F(eur(erg*10), "Eine Stelle zu weit."),
+        F(eur(kapital + erg), "Das ist das Guthaben danach, nicht der Zins.")], 3)}]};
+ }
+],
+
+/* ===================== DEUTSCH ===================== */
+
+"das oder dass":[
+ () => {
+   const saetze = [
+     {vorn:"Ich hoffe,", hint:"du morgen kommst.", loes:"dass"},
+     {vorn:"Sie sagt,", hint:"sie später Zeit hat.", loes:"dass"},
+     {vorn:"Es ärgert mich,", hint:"niemand Bescheid gesagt hat.", loes:"dass"},
+     {vorn:"Wir wissen,", hint:"der Bus oft zu spät ist.", loes:"dass"},
+     {vorn:"Ich nehme", hint:"Buch mit, das dort liegt.", loes:"das"},
+     {vorn:"Kannst du mir", hint:"Heft geben?", loes:"das"},
+     {vorn:"Er hat", hint:"Fahrrad repariert.", loes:"das"},
+     {vorn:"Ich glaube,", hint:"das Wetter besser wird.", loes:"dass"},
+     {vorn:"Mich stört,", hint:"immer alle zu spät kommen.", loes:"dass"},
+     {vorn:"Sie hofft,", hint:"die Prüfung leicht wird.", loes:"dass"},
+     {vorn:"Es kann sein,", hint:"wir früher fahren.", loes:"dass"},
+     {vorn:"Mein Bruder findet,", hint:"der Film langweilig war.", loes:"dass"},
+     {vorn:"Leg", hint:"Handy bitte weg.", loes:"das"},
+     {vorn:"Ich habe", hint:"Fenster geschlossen.", loes:"das"},
+     {vorn:"Wo ist", hint:"Buch, das hier lag?", loes:"das"},
+     {vorn:"Sie mag", hint:"Lied von gestern.", loes:"das"}
+   ];
+   const s = pick(saetze);
+   const istDass = s.loes === "dass";
+   const probe = `${s.vorn} <b>dieses</b> ${s.hint}`;
+   return {
+    typ:"text",
+    text:`${s.vorn} <span class='luecke'>___</span> ${s.hint}`,
+    loesung: s.loes,
     schluss:"Diesen Test kannst du bei jedem einzelnen Satz anwenden — du musst dir keine Regel merken.",
     schritte:[
-      {frage:"Es gibt einen einfachen Test. <b>Welcher ist es?</b>",
-       tipp:"Man versucht, das Wort durch ein anderes zu ersetzen.",
-       optionen:[{t:"Man ersetzt es durch „dieses“, „jenes“ oder „welches“",ok:1,fb:"Genau das ist der Test. Klappt immer."},
-                 {t:"Man schaut, ob ein Komma davorsteht",ok:0,fb:"Ein Komma steht in beiden Fällen — hilft nicht."},
-                 {t:"Man zählt die Wörter im Satz",ok:0,fb:"Damit hat es nichts zu tun."}]},
-      {frage:"Setz den Test ein: <b>„Ich hoffe, dieses du morgen kommst.“</b> Ergibt das Sinn?",
-       tipp:"Lies den Satz laut. Klingt er richtig oder falsch?",
-       optionen:[{t:"Nein, das klingt falsch",ok:1,fb:"Richtig. Und wenn der Test nicht klappt, ist es „dass“ mit zwei s."},
-                 {t:"Ja, das geht",ok:0,fb:"Lies ihn noch mal laut — „dieses du kommst“ ergibt keinen Sinn."}]},
-      {frage:"Der Test klappt also nicht. <b>Welche Aufgabe hat das Wort dann im Satz?</b>",
-       tipp:"Es verbindet zwei Satzteile miteinander.",
-       optionen:[{t:"Es leitet einen Nebensatz ein",ok:1,fb:"Genau — es ist ein Bindewort, kein Begleiter eines Nomens."},
-                 {t:"Es gehört zu einem Nomen",ok:0,fb:"Dann wäre es „das“ mit einem s. Hier steht aber kein Nomen dahinter."}]},
-      {frage:"Also: <b>Wie schreibst du es?</b>",
-       tipp:"Test klappt nicht → zwei s.",
-       optionen:[{t:"dass",ok:1,fb:"Richtig."},
-                 {t:"das",ok:0,fb:"Das wäre nur richtig, wenn der Ersetz-Test funktioniert hätte."}]}
-    ]},
+     {frage:"Es gibt einen einfachen Test. <b>Welcher ist es?</b>",
+      tipp:"Man versucht, das Wort durch ein anderes zu ersetzen.",
+      optionen:[R("Man ersetzt es durch „dieses“, „jenes“ oder „welches“", "Genau das ist der Test. Klappt immer."),
+                F("Man schaut, ob ein Komma davorsteht", "Ein Komma steht in beiden Fällen — hilft nicht."),
+                F("Man zählt die Wörter im Satz", "Damit hat es nichts zu tun.")]},
+     {frage:`Setz den Test ein: <b>„${s.vorn} dieses ${s.hint.replace(/<[^>]+>/g,"")}“</b> — ergibt das Sinn?`,
+      tipp:"Lies den Satz laut.",
+      optionen: istDass
+        ? [R("Nein, das klingt falsch", "Richtig. Und wenn der Test nicht klappt, ist es „dass“ mit zwei s."),
+           F("Ja, das geht", "Lies ihn noch mal laut — so redet niemand.")]
+        : [R("Ja, das passt", "Richtig. Und wenn der Test klappt, ist es „das“ mit einem s."),
+           F("Nein, das klingt falsch", "Doch — „dieses“ passt hier an die Stelle.")]},
+     {frage:"<b>Welche Aufgabe hat das Wort dann im Satz?</b>",
+      tipp: istDass ? "Es verbindet zwei Satzteile miteinander." : "Es steht vor einem Nomen.",
+      optionen: istDass
+        ? [R("Es leitet einen Nebensatz ein", "Genau — es ist ein Bindewort."),
+           F("Es gehört zu einem Nomen", "Dann wäre es „das“ mit einem s.")]
+        : [R("Es gehört als Begleiter zu einem Nomen", "Genau — es ist ein Artikel."),
+           F("Es leitet einen Nebensatz ein", "Dann wäre es „dass“ mit zwei s.")]},
+     {frage:"Also: <b>Wie schreibst du es?</b>",
+      tipp: istDass ? "Test klappt nicht → zwei s." : "Test klappt → ein s.",
+      optionen: zieheVerschiedene([
+        R(s.loes, "Richtig."),
+        F(istDass ? "das" : "dass", istDass ? "Das wäre nur richtig, wenn der Ersetz-Test funktioniert hätte."
+                                            : "Zwei s stehen nur, wenn der Ersetz-Test nicht klappt.")], 2)}]};
+ }
+],
 
-  "Kommas bei Nebensätzen":{
-    fach:"deutsch", klasse:7, typ:"text",
-    text:"Ich rufe dich an <span class='luecke'>___</span> wenn ich zu Hause bin.", loesung:"Komma vor „wenn“",
-    schluss:"Zwei Verben, zwei Sätze — und dazwischen gehört ein Komma. Mehr steckt nicht dahinter.",
+"Kommas bei Nebensätzen":[
+ () => {
+   const saetze = [
+     {haupt:"Ich rufe dich an", wort:"wenn", neben:"ich zu Hause bin", v1:"rufe an", v2:"bin"},
+     {haupt:"Wir bleiben drinnen", wort:"weil", neben:"es stark regnet", v1:"bleiben", v2:"regnet"},
+     {haupt:"Sie freut sich", wort:"obwohl", neben:"sie verloren hat", v1:"freut", v2:"hat"},
+     {haupt:"Er räumt auf", wort:"bevor", neben:"die Gäste kommen", v1:"räumt auf", v2:"kommen"},
+     {haupt:"Ich weiß nicht", wort:"ob", neben:"der Zug pünktlich fährt", v1:"weiß", v2:"fährt"},
+     {haupt:"Sie ruft mich an", wort:"sobald", neben:"sie fertig ist", v1:"ruft an", v2:"ist"},
+     {haupt:"Wir warten hier", wort:"bis", neben:"der Regen aufhört", v1:"warten", v2:"aufhört"},
+     {haupt:"Er lernt viel", wort:"damit", neben:"er die Prüfung besteht", v1:"lernt", v2:"besteht"},
+     {haupt:"Ich helfe dir", wort:"wenn", neben:"du mich fragst", v1:"helfe", v2:"fragst"},
+     {haupt:"Sie bleibt zu Hause", wort:"weil", neben:"ihr Rad kaputt ist", v1:"bleibt", v2:"ist"},
+     {haupt:"Ich packe ein", wort:"was", neben:"ich morgen brauche", v1:"packe ein", v2:"brauche"},
+     {haupt:"Wir essen später", wort:"nachdem", neben:"alle angekommen sind", v1:"essen", v2:"sind"}
+   ];
+   const s = pick(saetze);
+   return {
+    typ:"text",
+    text:`${s.haupt} <span class='luecke'>___</span> ${s.wort} ${s.neben}.`,
+    loesung:`Komma vor „${s.wort}“`,
+    schluss:"Zwei Verben, zwei Sätze — und dazwischen gehört ein Komma.",
     schritte:[
-      {frage:"Zähl nach: <b>Wie viele Verben</b> stehen in dem Satz?",
-       tipp:"Verben sind Tuwörter: rufe … an, bin.",
-       optionen:[{t:"Zwei: „rufe an“ und „bin“",ok:1,fb:"Genau. Zwei Verben heißt: zwei Satzteile."},
-                 {t:"Eines: „rufe an“",ok:0,fb:"„bin“ am Ende ist auch ein Verb."},
-                 {t:"Drei",ok:0,fb:"„zu Hause“ ist kein Verb."}]},
-      {frage:"Zwei Verben, also zwei Satzteile. <b>Welcher davon ist der Nebensatz?</b>",
-       tipp:"Im Nebensatz rutscht das Verb ganz ans Ende.",
-       optionen:[{t:"„wenn ich zu Hause bin“",ok:1,fb:"Richtig — „bin“ steht ganz hinten, typisch Nebensatz."},
-                 {t:"„Ich rufe dich an“",ok:0,fb:"Der steht für sich allein, das ist der Hauptsatz."}]},
-      {frage:"<b>Was gehört zwischen Hauptsatz und Nebensatz?</b>",
-       tipp:"Es ist ein Satzzeichen.",
-       optionen:[{t:"Ein Komma",ok:1,fb:"Ja — und zwar immer, ohne Ausnahme."},
-                 {t:"Gar nichts",ok:0,fb:"Zwischen Haupt- und Nebensatz steht im Deutschen immer ein Komma."},
-                 {t:"Ein Doppelpunkt",ok:0,fb:"Der käme nur vor einer Aufzählung oder wörtlicher Rede."}]},
-      {frage:"<b>Wo genau</b> steht das Komma?",
-       tipp:"Direkt an der Stelle, wo der Nebensatz beginnt.",
-       optionen:[{t:"Direkt vor „wenn“",ok:1,fb:"Genau. Das Komma steht immer vor dem einleitenden Wort."},
-                 {t:"Nach „wenn“",ok:0,fb:"Das Wort „wenn“ gehört schon zum Nebensatz dazu."}]}
-    ]},
+     {frage:"Zähl nach: <b>Wie viele Verben</b> stehen in dem Satz?",
+      tipp:`Verben sind Tuwörter: ${s.v1}, ${s.v2}.`,
+      optionen:[R(`Zwei: „${s.v1}“ und „${s.v2}“`, "Genau. Zwei Verben heißt: zwei Satzteile."),
+                F(`Eines: „${s.v1}“`, `„${s.v2}“ am Ende ist auch ein Verb.`),
+                F("Drei", "Zähl noch mal — es sind genau zwei.")]},
+     {frage:"Zwei Verben, also zwei Satzteile. <b>Welcher davon ist der Nebensatz?</b>",
+      tipp:"Im Nebensatz rutscht das Verb ganz ans Ende.",
+      optionen:[R(`„${s.wort} ${s.neben}“`, `Richtig — „${s.v2}“ steht ganz hinten.`),
+                F(`„${s.haupt}“`, "Der steht für sich allein, das ist der Hauptsatz.")]},
+     {frage:"<b>Was gehört zwischen Hauptsatz und Nebensatz?</b>",
+      tipp:"Es ist ein Satzzeichen.",
+      optionen:[R("Ein Komma", "Ja — und zwar immer."),
+                F("Gar nichts", "Zwischen Haupt- und Nebensatz steht im Deutschen immer ein Komma."),
+                F("Ein Doppelpunkt", "Der käme nur vor einer Aufzählung oder wörtlicher Rede.")]},
+     {frage:"<b>Wo genau</b> steht das Komma?",
+      tipp:"Direkt dort, wo der Nebensatz beginnt.",
+      optionen:[R(`Direkt vor „${s.wort}“`, "Genau."),
+                F(`Nach „${s.wort}“`, `„${s.wort}“ gehört schon zum Nebensatz.`)]}]};
+ }
+],
 
-  "Nominalisierung":{
-    fach:"deutsch", klasse:7, typ:"text",
-    text:"Beim <span class='luecke'>___</span> (laufen) höre ich Musik.", loesung:"Laufen — groß",
+"Nominalisierung":[
+ () => {
+   const faelle = [
+     {vor:"Beim", verb:"laufen", nomen:"Laufen", rest:"höre ich Musik.", artikel:"dem"},
+     {vor:"Beim", verb:"kochen", nomen:"Kochen", rest:"hört sie Radio.", artikel:"dem"},
+     {vor:"Das", verb:"warten", nomen:"Warten", rest:"nervt mich.", artikel:"das"},
+     {vor:"Vom", verb:"lesen", nomen:"Lesen", rest:"werde ich müde.", artikel:"dem"},
+     {vor:"Zum", verb:"schreiben", nomen:"Schreiben", rest:"brauche ich Ruhe.", artikel:"dem"},
+     {vor:"Das", verb:"üben", nomen:"Üben", rest:"lohnt sich.", artikel:"das"},
+     {vor:"Beim", verb:"aufräumen", nomen:"Aufräumen", rest:"hilft mein Bruder.", artikel:"dem"},
+     {vor:"Beim", verb:"schwimmen", nomen:"Schwimmen", rest:"vergesse ich die Zeit.", artikel:"dem"},
+     {vor:"Das", verb:"aufstehen", nomen:"Aufstehen", rest:"fällt mir schwer.", artikel:"das"},
+     {vor:"Zum", verb:"lernen", nomen:"Lernen", rest:"gehe ich in die Bibliothek.", artikel:"dem"},
+     {vor:"Vom", verb:"rennen", nomen:"Rennen", rest:"bin ich außer Atem.", artikel:"dem"},
+     {vor:"Das", verb:"singen", nomen:"Singen", rest:"macht ihr Spaß.", artikel:"das"},
+     {vor:"Beim", verb:"malen", nomen:"Malen", rest:"wird sie ruhig.", artikel:"dem"},
+     {vor:"Zum", verb:"einschlafen", nomen:"Einschlafen", rest:"braucht er Stille.", artikel:"dem"}
+   ];
+   const f = pick(faelle);
+   const zusammen = f.vor !== "Das";
+   return {
+    typ:"text",
+    text:`${f.vor} <span class='luecke'>___</span> (${f.verb}) ${f.rest}`,
+    loesung: `${f.nomen} — groß`,
     schluss:"Wenn ein Artikel davorsteht, ist aus dem Verb ein Nomen geworden. Und Nomen schreibt man groß.",
     schritte:[
-      {frage:"Schau dir das Wort <b>vor</b> der Lücke an: „beim“. <b>Was steckt da drin?</b>",
-       tipp:"„beim“ ist eine Zusammenziehung aus zwei Wörtern.",
-       optionen:[{t:"„bei“ und „dem“",ok:1,fb:"Genau — und „dem“ ist ein Artikel, ein Begleiter."},
-                 {t:"„bei“ und „im“",ok:0,fb:"Fast — es ist „bei dem“."},
-                 {t:"Nur „bei“",ok:0,fb:"Da steckt noch ein „dem“ mit drin."}]},
-      {frage:"Da steht also ein <b>Artikel</b>. Was bedeutet das für das Wort dahinter?",
-       tipp:"Artikel stehen immer vor einer bestimmten Wortart.",
-       optionen:[{t:"Es ist ein Nomen geworden",ok:1,fb:"Richtig. Artikel + Verb = das Verb wird zum Nomen."},
-                 {t:"Es bleibt ein Verb",ok:0,fb:"Ein Verb hätte nie einen Artikel vor sich."},
-                 {t:"Es ist ein Adjektiv",ok:0,fb:"Adjektive beschreiben, hier wird das Laufen selbst zur Sache."}]},
-      {frage:"<b>Wie schreibt man Nomen</b> im Deutschen?",
-       tipp:"Das ist die Regel, die es nur im Deutschen gibt.",
-       optionen:[{t:"Groß",ok:1,fb:"Ja — und das gilt auch für Verben, die zu Nomen werden."},
-                 {t:"Klein",ok:0,fb:"Nomen werden im Deutschen immer großgeschrieben."}]},
-      {frage:"Also: <b>Wie steht es richtig im Satz?</b>",
-       tipp:"Artikel davor → Nomen → groß.",
-       optionen:[{t:"Beim Laufen höre ich Musik.",ok:1,fb:"Richtig."},
-                 {t:"Beim laufen höre ich Musik.",ok:0,fb:"Das „dem“ in „beim“ macht daraus ein Nomen — also groß."}]}
-    ]}
+     {frage:`Schau dir das Wort <b>vor</b> der Lücke an: „${f.vor}“. <b>Was steckt da drin?</b>`,
+      tipp: zusammen ? `„${f.vor}“ ist eine Zusammenziehung aus zwei Wörtern.` : "Es ist schon selbst ein Begleiter.",
+      optionen: zusammen
+        ? [R(`Eine Präposition und der Artikel „${f.artikel}“`, "Genau — und ein Artikel ist ein Begleiter."),
+           F("Nur eine Präposition", `Da steckt noch ein „${f.artikel}“ mit drin.`),
+           F("Ein Verb", "Nein, das ist kein Tuwort.")]
+        : [R("Ein Artikel", "Genau — ein Begleiter."),
+           F("Ein Verb", "Nein, das ist kein Tuwort."),
+           F("Ein Adjektiv", "Adjektive beschreiben, hier wird begleitet.")]},
+     {frage:"Da steht also ein <b>Artikel</b>. Was bedeutet das für das Wort dahinter?",
+      tipp:"Artikel stehen immer vor einer bestimmten Wortart.",
+      optionen:[R("Es ist ein Nomen geworden", "Richtig. Artikel + Verb = das Verb wird zum Nomen."),
+                F("Es bleibt ein Verb", "Ein Verb hätte nie einen Artikel vor sich."),
+                F("Es ist ein Adjektiv", "Adjektive beschreiben etwas.")]},
+     {frage:"<b>Wie schreibt man Nomen</b> im Deutschen?",
+      tipp:"Die Regel, die es nur im Deutschen gibt.",
+      optionen:[R("Groß", "Ja — auch bei Verben, die zu Nomen werden."),
+                F("Klein", "Nomen werden im Deutschen immer großgeschrieben.")]},
+     {frage:"Also: <b>Wie steht es richtig im Satz?</b>",
+      tipp:"Artikel davor → Nomen → groß.",
+      optionen:[R(`${f.vor} ${f.nomen} ${f.rest}`, "Richtig."),
+                F(`${f.vor} ${f.verb} ${f.rest}`, `Der Artikel in „${f.vor}“ macht daraus ein Nomen.`)]}]};
+ }
+]
+
 };
 
-const PLAN = [
-  {thema:"Gleichungen umstellen", fach:"Mathe 7", info:"Beim 2. Versuch gelöst", wann:"in 3 Tagen", stil:"bald"},
-  {thema:"das oder dass", fach:"Deutsch 6", info:"Beim 1. Versuch gelöst", wann:"in 6 Tagen", stil:"bald"},
-  {thema:"Prozent und Zinsen", fach:"Mathe 7", info:"Zweimal richtig hintereinander", wann:"in 2 Wochen", stil:""},
-  {thema:"Brüche", fach:"Mathe 6", info:"Viermal sicher gelöst", wann:"sitzt", stil:"sitzt"}
-];
+/* Fach und Klasse zu einem Thema finden */
+function themaInfo(name){
+  for (const [fk, f] of Object.entries(KATALOG))
+    for (const [kl, liste] of Object.entries(f.themen))
+      if (liste.includes(name)) return {fach: fk, klasse: Number(kl)};
+  return {fach:"mathe", klasse:5};
+}
+function anzahlAufgaben(name){ return AUFGABEN[name] ? AUFGABEN[name].length : 0; }
+/* Sicherheitsnetz: entfernt Antwortmöglichkeiten, die zufällig gleich lauten.
+   Beim Würfeln kann es passieren, dass eine falsche Antwort denselben Wert
+   trifft wie die richtige — dann wäre die Frage nicht lösbar. */
+function entdoppeln(aufgabe){
+  (aufgabe.schritte || []).forEach(s => {
+    const gesehen = new Set(), behalten = [];
+    const schluessel = o => String(o.t).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+    s.optionen.filter(o => o.ok).forEach(o => { gesehen.add(schluessel(o)); behalten.push(o); });
+    s.optionen.filter(o => !o.ok).forEach(o => {
+      const k = schluessel(o);
+      if (!gesehen.has(k)){ gesehen.add(k); behalten.push(o); }
+    });
+    s.optionen = behalten;
+  });
+  return aufgabe;
+}
 
+/* erzeugt eine frische Aufgabe (Zahlen und Wörter jedes Mal neu) */
+function baueAufgabe(name, welche){
+  const liste = AUFGABEN[name];
+  const bauer = liste[welche % liste.length];
+  const aufgabe = typeof bauer === "function" ? bauer() : JSON.parse(JSON.stringify(bauer));
+  return entdoppeln(aufgabe);
+}
+/* ---------- Weitere Deutsch-Themen ---------- */
+Object.assign(AUFGABEN, {
+
+"Wortarten erkennen":[
+ () => {
+   const faelle = [
+     {satz:"Der schnelle <b>Hund</b> läuft über die Wiese.", wort:"Hund", art:"Nomen",
+      rolle:"Es bezeichnet ein Lebewesen", merkmal:"Es hat einen Artikel vor sich und wird großgeschrieben"},
+     {satz:"Die Kinder <b>spielen</b> im Garten.", wort:"spielen", art:"Verb",
+      rolle:"Es sagt, was geschieht", merkmal:"Man kann es beugen: ich spiele, du spielst"},
+     {satz:"Das Auto ist sehr <b>schnell</b>.", wort:"schnell", art:"Adjektiv",
+      rolle:"Es beschreibt, wie etwas ist", merkmal:"Man kann es steigern: schnell, schneller, am schnellsten"},
+     {satz:"<b>Er</b> geht heute früher nach Hause.", wort:"Er", art:"Pronomen",
+      rolle:"Es steht stellvertretend für ein Nomen", merkmal:"Man könnte stattdessen einen Namen einsetzen"},
+     {satz:"<b>Die</b> Lehrerin kommt gleich.", wort:"Die", art:"Artikel",
+      rolle:"Es begleitet ein Nomen", merkmal:"Es steht immer direkt vor einem Nomen"},
+     {satz:"Meine Schwester <b>liest</b> ein Buch.", wort:"liest", art:"Verb",
+      rolle:"Es sagt, was geschieht", merkmal:"Man kann es beugen: ich lese, du liest"},
+     {satz:"Wir kaufen eine <b>Jacke</b>.", wort:"Jacke", art:"Nomen",
+      rolle:"Es bezeichnet einen Gegenstand", merkmal:"Es hat einen Artikel vor sich und wird großgeschrieben"},
+     {satz:"Der Kuchen schmeckt <b>süß</b>.", wort:"süß", art:"Adjektiv",
+      rolle:"Es beschreibt, wie etwas ist", merkmal:"Man kann es steigern: süß, süßer, am süßesten"}
+   ];
+   const f = pick(faelle);
+   const rollen = {
+     "Nomen":"Es bezeichnet ein Lebewesen, ein Ding oder einen Begriff",
+     "Verb":"Es sagt, was geschieht",
+     "Adjektiv":"Es beschreibt, wie etwas ist",
+     "Pronomen":"Es steht stellvertretend für ein Nomen",
+     "Artikel":"Es begleitet ein Nomen"
+   };
+   const andereArten = zieheVerschiedene(Object.keys(rollen).filter(a => a !== f.art), 2);
+   return {
+    typ:"text", text:`Welche <b>Wortart</b> ist das hervorgehobene Wort?<br><br>${f.satz}`,
+    loesung: f.art,
+    schluss:"Wortarten erkennst du an ihrer Aufgabe im Satz — nicht an ihrer Länge oder Stellung.",
+    schritte:[
+     {frage:`Was macht das Wort <b>„${f.wort}“</b> in diesem Satz?`,
+      tipp:"Überleg, welche Aufgabe es übernimmt.",
+      optionen: zieheVerschiedene([
+        R(f.rolle, "Genau."),
+        F(rollen[andereArten[0]], `Das würde auf ein ${andereArten[0]} zutreffen.`),
+        F(rollen[andereArten[1]], `Das würde auf ein ${andereArten[1]} zutreffen.`)], 3)},
+     {frage:"Wie heißt diese Wortart?",
+      tipp: f.merkmal,
+      optionen: zieheVerschiedene([
+        R(f.art, "Richtig."),
+        F(andereArten[0], `Ein ${andereArten[0]} hat eine andere Aufgabe.`),
+        F(andereArten[1], `Ein ${andereArten[1]} passt hier nicht.`)], 3)},
+     {frage:`Woran erkennst du ein <b>${f.art}</b> sicher wieder?`,
+      tipp:"Es gibt für jede Wortart ein typisches Merkmal.",
+      optionen: zieheVerschiedene([
+        R(f.merkmal, "Genau das ist das Erkennungszeichen."),
+        F("Es steht immer am Satzanfang", "Die Stellung im Satz sagt nichts über die Wortart."),
+        F("Es ist immer das längste Wort", "Mit der Länge hat es nichts zu tun.")], 3)}]};
+ }
+],
+
+"Satzglieder bestimmen":[
+ () => {
+   const faelle = [
+     {satz:"Der Lehrer erklärt den Schülern die Aufgabe.", teil:"Der Lehrer", glied:"Subjekt", frage:"Wer oder was?"},
+     {satz:"Der Lehrer erklärt den Schülern die Aufgabe.", teil:"die Aufgabe", glied:"Akkusativobjekt", frage:"Wen oder was?"},
+     {satz:"Der Lehrer erklärt den Schülern die Aufgabe.", teil:"den Schülern", glied:"Dativobjekt", frage:"Wem?"},
+     {satz:"Meine Schwester schenkt mir ein Buch.", teil:"Meine Schwester", glied:"Subjekt", frage:"Wer oder was?"},
+     {satz:"Meine Schwester schenkt mir ein Buch.", teil:"ein Buch", glied:"Akkusativobjekt", frage:"Wen oder was?"},
+     {satz:"Der Hund bringt dem Kind den Ball.", teil:"dem Kind", glied:"Dativobjekt", frage:"Wem?"},
+     {satz:"Der Hund bringt dem Kind den Ball.", teil:"Der Hund", glied:"Subjekt", frage:"Wer oder was?"},
+     {satz:"Die Nachbarin gießt jeden Tag die Blumen.", teil:"die Blumen", glied:"Akkusativobjekt", frage:"Wen oder was?"}
+   ];
+   const f = pick(faelle);
+   const alle = {
+     "Subjekt":"Wer oder was?", "Akkusativobjekt":"Wen oder was?",
+     "Dativobjekt":"Wem?", "Prädikat":"Was geschieht?"
+   };
+   const andere = zieheVerschiedene(Object.keys(alle).filter(g => g !== f.glied), 2);
+   return {
+    typ:"text",
+    text:`Welches <b>Satzglied</b> ist „${f.teil}“?<br><br>${f.satz.replace(f.teil, "<b>" + f.teil + "</b>")}`,
+    loesung: f.glied,
+    schluss:"Satzglieder findest du immer über die passende Frage. Die Frage bestimmt das Satzglied, nicht die Stellung im Satz.",
+    schritte:[
+     {frage:"Satzglieder findet man über Fragen. <b>Womit fängst du an?</b>",
+      tipp:"Zuerst braucht man immer die Tätigkeit im Satz.",
+      optionen:[R("Mit dem Verb — was geschieht?", "Richtig, das Prädikat ist der Ausgangspunkt."),
+                F("Mit dem letzten Wort", "Die Stellung hilft nicht weiter."),
+                F("Mit dem längsten Wort", "Damit hat es nichts zu tun.")]},
+     {frage:`Mit welcher <b>Frage</b> findest du „${f.teil}“?`,
+      tipp:"Probier die Fragen der Reihe nach durch.",
+      optionen: zieheVerschiedene([
+        R(f.frage, `Genau — „${f.frage}“ führt zu „${f.teil}“.`),
+        F(alle[andere[0]], `Damit fändest du das ${andere[0]}.`),
+        F(alle[andere[1]], `Damit fändest du das ${andere[1]}.`)], 3)},
+     {frage:"Wie heißt dieses Satzglied?",
+      tipp:`Die Frage „${f.frage}“ gehört zu einem bestimmten Satzglied.`,
+      optionen: zieheVerschiedene([
+        R(f.glied, "Richtig."),
+        F(andere[0], `Dafür wäre die Frage „${alle[andere[0]]}“ nötig.`),
+        F(andere[1], `Dafür wäre die Frage „${alle[andere[1]]}“ nötig.`)], 3)}]};
+ }
+],
+
+"Groß- und Kleinschreibung":[
+ () => {
+   const faelle = [
+     {vorn:"Wir gehen heute in die", wort:"schule", gross:"Schule", nach:".", istGross:true, grund:"Es steht ein Artikel davor: die Schule."},
+     {vorn:"Ich habe ein neues", wort:"fahrrad", gross:"Fahrrad", nach:" bekommen.", istGross:true, grund:"Es steht ein Artikel davor: ein Fahrrad."},
+     {vorn:"Sie kann sehr gut", wort:"singen", gross:"singen", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Verb."},
+     {vorn:"Das laute", wort:"singen", gross:"Singen", nach:" störte alle.", istGross:true, grund:"„Das“ ist ein Artikel — daraus wird ein Nomen."},
+     {vorn:"Er läuft sehr", wort:"schnell", gross:"schnell", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Adjektiv."},
+     {vorn:"Beim", wort:"kochen", gross:"Kochen", nach:" hört sie Radio.", istGross:true, grund:"„Beim“ enthält den Artikel „dem“."},
+     {vorn:"Der kleine", wort:"hund", gross:"Hund", nach:" bellt.", istGross:true, grund:"Es steht ein Artikel davor: der Hund."},
+     {vorn:"Wir wollen morgen früh", wort:"aufstehen", gross:"aufstehen", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Verb."}
+   ];
+   const f = pick(faelle);
+   return {
+    typ:"text",
+    text:`${f.vorn} <span class='luecke'>___</span> (${f.wort})${f.nach}`,
+    loesung: `${f.gross} — ${f.istGross ? "groß" : "klein"}`,
+    schluss:"Der sicherste Test: Steht ein Begleiter davor oder könnte einer davorstehen? Dann groß.",
+    schritte:[
+     {frage:"Was ist der sicherste <b>Test</b> für die Großschreibung?",
+      tipp:"Es geht um ein kleines Wort davor.",
+      optionen:[R("Steht ein Artikel davor oder könnte einer davorstehen?", "Genau — der, die, das, ein, dem."),
+                F("Ist das Wort lang?", "Mit der Länge hat es nichts zu tun."),
+                F("Steht es am Satzende?", "Die Stellung entscheidet nicht.")]},
+     {frage:`Steht bei <b>„${f.wort}“</b> in diesem Satz ein Begleiter davor?`,
+      tipp: f.vorn.match(/^(Der|Die|Das|Ein|Eine|Beim|Zum|Vom|Im)\b/) || /\b(die|der|das|ein|eine|dem)\b/i.test(f.vorn)
+            ? "Schau dir das Wort direkt davor genau an." : "Schau dir das Wort direkt davor genau an.",
+      optionen: f.istGross
+        ? [R("Ja", f.grund), F("Nein", "Doch — " + f.grund.toLowerCase())]
+        : [R("Nein", f.grund), F("Ja", "Nein — davor steht kein Begleiter, sondern ein anderes Wort.")]},
+     {frage:"Was für eine Wortart ist es damit?",
+      tipp: f.istGross ? "Artikel davor bedeutet immer dasselbe." : "Ohne Begleiter bleibt es, was es war.",
+      optionen: f.istGross
+        ? [R("Ein Nomen", "Richtig — und Nomen werden großgeschrieben."),
+           F("Weiterhin ein Verb oder Adjektiv", "Mit einem Artikel davor geht das nicht.")]
+        : [R("Weiterhin ein Verb oder Adjektiv", "Richtig — also klein."),
+           F("Ein Nomen", "Dafür fehlt der Begleiter davor.")]},
+     {frage:"Wie schreibst du es also?",
+      tipp: f.istGross ? "Nomen → groß." : "Verb oder Adjektiv → klein.",
+      optionen: zieheVerschiedene([
+        R(f.gross, "Richtig."),
+        F(f.istGross ? f.wort : f.wort.charAt(0).toUpperCase() + f.wort.slice(1),
+          f.istGross ? "Der Artikel davor macht daraus ein Nomen." : "Ohne Begleiter bleibt es klein.")], 2)}]};
+ }
+],
+
+"Wörtliche Rede":[
+ () => {
+   const faelle = [
+     {begleit:"Anna sagt", rede:"Ich habe keine Zeit.", vorn:true},
+     {begleit:"Der Lehrer ruft", rede:"Kommt bitte herein!", vorn:true},
+     {begleit:"Mein Vater fragt", rede:"Wo warst du so lange?", vorn:true},
+     {begleit:"sagt Tom", rede:"Das war nicht meine Schuld", vorn:false},
+     {begleit:"fragt die Nachbarin", rede:"Hast du meinen Schlüssel gesehen", vorn:false},
+     {begleit:"antwortet sie leise", rede:"Ich weiß es nicht", vorn:false}
+   ];
+   const f = pick(faelle);
+   const loesung = f.vorn
+     ? `${f.begleit}: „${f.rede}“`
+     : `„${f.rede}“, ${f.begleit}.`;
+   return {
+    typ:"text",
+    text: f.vorn
+      ? `${f.begleit} <span class='luecke'>___</span> „${f.rede}“`
+      : `„${f.rede}“ <span class='luecke'>___</span> ${f.begleit}.`,
+    loesung: loesung,
+    schluss:"Begleitsatz vorne → Doppelpunkt. Begleitsatz hinten → Komma nach der Rede.",
+    schritte:[
+     {frage:"Was ist der <b>Begleitsatz</b>?",
+      tipp:"Der Teil, der sagt, wer spricht.",
+      optionen:[R(`„${f.begleit}“`, "Genau — er sagt, wer spricht."),
+                F(`„${f.rede}“`, "Das ist die wörtliche Rede selbst, also das Gesagte.")]},
+     {frage:"Steht der Begleitsatz <b>vor</b> oder <b>hinter</b> der wörtlichen Rede?",
+      tipp:"Schau auf die Reihenfolge im Satz.",
+      optionen: f.vorn
+        ? [R("Davor", "Richtig."), F("Dahinter", "Nein, er steht am Anfang.")]
+        : [R("Dahinter", "Richtig."), F("Davor", "Nein, er steht am Ende.")]},
+     {frage:"Welches <b>Satzzeichen</b> gehört dann an die Lücke?",
+      tipp: f.vorn ? "Vor der Rede kündigt ein Zeichen sie an." : "Nach der Rede trennt ein Zeichen ab.",
+      optionen: f.vorn
+        ? [R("Ein Doppelpunkt", "Genau — der Begleitsatz kündigt die Rede an."),
+           F("Ein Komma", "Das Komma kommt nur, wenn der Begleitsatz hinten steht."),
+           F("Gar nichts", "Ein Zeichen muss dort stehen.")]
+        : [R("Ein Komma", "Genau — es trennt die Rede vom Begleitsatz."),
+           F("Ein Doppelpunkt", "Der käme nur, wenn der Begleitsatz vorne stünde."),
+           F("Gar nichts", "Ein Zeichen muss dort stehen.")]},
+     {frage:"Wie sieht der ganze Satz richtig aus?",
+      tipp:"Anführungszeichen nicht vergessen.",
+      optionen: zieheVerschiedene([
+        R(loesung, "Richtig."),
+        F(f.vorn ? `${f.begleit}, „${f.rede}“` : `„${f.rede}“: ${f.begleit}.`,
+          f.vorn ? "Bei vorangestelltem Begleitsatz steht ein Doppelpunkt." : "Der Doppelpunkt gehört nur nach vorne gestellten Begleitsätzen.")], 2)}]};
+ }
+],
+
+"Zeitformen":[
+ () => {
+   const faelle = [
+     {form:"ich gehe", zeit:"Präsens", teile:1, hinweis:"Nur ein Wort, und es beschreibt die Gegenwart."},
+     {form:"ich ging", zeit:"Präteritum", teile:1, hinweis:"Nur ein Wort, aber es beschreibt Vergangenes."},
+     {form:"ich bin gegangen", zeit:"Perfekt", teile:2, hinweis:"Hilfsverb „sein“ in der Gegenwart plus Partizip."},
+     {form:"ich war gegangen", zeit:"Plusquamperfekt", teile:2, hinweis:"Hilfsverb „sein“ in der Vergangenheit plus Partizip."},
+     {form:"ich werde gehen", zeit:"Futur I", teile:2, hinweis:"Hilfsverb „werden“ plus Grundform."},
+     {form:"ich habe gelesen", zeit:"Perfekt", teile:2, hinweis:"Hilfsverb „haben“ in der Gegenwart plus Partizip."},
+     {form:"ich hatte gelesen", zeit:"Plusquamperfekt", teile:2, hinweis:"Hilfsverb „haben“ in der Vergangenheit plus Partizip."},
+     {form:"ich lese", zeit:"Präsens", teile:1, hinweis:"Nur ein Wort, Gegenwart."},
+     {form:"ich las", zeit:"Präteritum", teile:1, hinweis:"Nur ein Wort, Vergangenheit."},
+     {form:"ich werde lesen", zeit:"Futur I", teile:2, hinweis:"Hilfsverb „werden“ plus Grundform."}
+   ];
+   const f = pick(faelle);
+   const alleZeiten = ["Präsens","Präteritum","Perfekt","Plusquamperfekt","Futur I"];
+   const andere = zieheVerschiedene(alleZeiten.filter(x => x !== f.zeit), 2);
+   return {
+    typ:"text", text:`Welche <b>Zeitform</b> ist „${f.form}“?`, loesung: f.zeit,
+    schluss:"Zähl zuerst die Teile: ein Wort heißt Präsens oder Präteritum, zwei Wörter heißen Perfekt, Plusquamperfekt oder Futur.",
+    schritte:[
+     {frage:`Aus wie vielen Teilen besteht <b>„${f.form}“</b>? (Das „ich“ zählt nicht mit.)`,
+      tipp:"Zähl die Verbformen.",
+      optionen: f.teile === 1
+        ? [R("Aus einem Wort", "Richtig — dann kommen nur Präsens oder Präteritum infrage."),
+           F("Aus zwei Wörtern", "Nein, es steht nur eine Verbform da.")]
+        : [R("Aus zwei Wörtern", "Richtig — Hilfsverb plus zweite Form."),
+           F("Aus einem Wort", "Nein, es sind zwei Verbformen.")]},
+     {frage:"Was folgt daraus?",
+      tipp: f.teile === 1 ? "Einteilige Formen sind Gegenwart oder einfache Vergangenheit."
+                          : "Zweiteilige Formen brauchen ein Hilfsverb.",
+      optionen: f.teile === 1
+        ? [R("Es ist Präsens oder Präteritum", "Genau."),
+           F("Es ist Perfekt oder Futur", "Dafür bräuchte es ein Hilfsverb.")]
+        : [R("Es ist Perfekt, Plusquamperfekt oder Futur", "Genau."),
+           F("Es ist Präsens oder Präteritum", "Die bestehen nur aus einem Wort.")]},
+     {frage:"Welche Zeitform ist es genau?",
+      tipp: f.hinweis,
+      optionen: zieheVerschiedene([
+        R(f.zeit, `Richtig — ${f.hinweis}`),
+        F(andere[0], "Die hat einen anderen Aufbau."),
+        F(andere[1], "Auch die passt vom Aufbau nicht.")], 3)}]};
+ }
+],
+
+"Kommas bei Aufzählungen":[
+ () => {
+   const faelle = [
+     {vorn:"Ich kaufe", teile:["Äpfel","Birnen","Bananen"], schluss:"und"},
+     {vorn:"Im Rucksack sind", teile:["Bücher","Hefte","Stifte"], schluss:"und"},
+     {vorn:"Wir besuchen", teile:["Berlin","Hamburg","München"], schluss:"und"},
+     {vorn:"Du kannst", teile:["lesen","malen","spielen"], schluss:"oder"},
+     {vorn:"Sie ist", teile:["freundlich","ehrlich","hilfsbereit"], schluss:"und"},
+     {vorn:"Zum Frühstück gibt es", teile:["Brot","Käse","Marmelade"], schluss:"und"}
+   ];
+   const f = pick(faelle);
+   const richtig = `${f.vorn} ${f.teile[0]}, ${f.teile[1]} ${f.schluss} ${f.teile[2]}.`;
+   const falsch  = `${f.vorn} ${f.teile[0]}, ${f.teile[1]}, ${f.schluss} ${f.teile[2]}.`;
+   return {
+    typ:"text",
+    text:`${f.vorn} ${f.teile[0]} <span class='luecke'>___</span> ${f.teile[1]} <span class='luecke'>___</span> ${f.schluss} ${f.teile[2]}.`,
+    loesung: richtig,
+    schluss:`Zwischen den Gliedern ein Komma — aber niemals vor „${f.schluss}“.`,
+    schritte:[
+     {frage:"Wie viele Glieder hat diese Aufzählung?",
+      tipp:`${f.teile.join(", ")}`,
+      optionen:[R("Drei", "Richtig."),
+                F("Zwei", "Zähl noch mal — es sind drei."),
+                F("Vier", "Es sind genau drei.")]},
+     {frage:`Was gehört zwischen <b>${f.teile[0]}</b> und <b>${f.teile[1]}</b>?`,
+      tipp:"Zwischen Aufzählungsgliedern trennt ein Zeichen.",
+      optionen:[R("Ein Komma", "Genau."),
+                F("Gar nichts", "Ohne Komma liefe die Aufzählung ineinander."),
+                F("Ein Punkt", "Ein Punkt beendet den ganzen Satz.")]},
+     {frage:`Und was gehört <b>vor „${f.schluss}“</b>?`,
+      tipp:`Das ist die Ausnahme, die man sich merken muss.`,
+      optionen:[R("Gar nichts", `Richtig — vor „${f.schluss}“ steht in einer Aufzählung kein Komma.`),
+                F("Ein Komma", `Nein, genau vor „${f.schluss}“ bleibt es weg.`)]},
+     {frage:"Wie sieht der Satz richtig aus?",
+      tipp:`Ein Komma in der Mitte, keines vor „${f.schluss}“.`,
+      optionen: zieheVerschiedene([
+        R(richtig, "Richtig."),
+        F(falsch, `Vor „${f.schluss}“ darf kein Komma stehen.`)], 2)}]};
+ }
+],
+
+"Adjektive steigern":[
+ () => {
+   const faelle = [
+     {grund:"schnell", komp:"schneller", sup:"am schnellsten", art:"regelmäßig"},
+     {grund:"leise", komp:"leiser", sup:"am leisesten", art:"regelmäßig"},
+     {grund:"schön", komp:"schöner", sup:"am schönsten", art:"regelmäßig"},
+     {grund:"alt", komp:"älter", sup:"am ältesten", art:"mit Umlaut"},
+     {grund:"jung", komp:"jünger", sup:"am jüngsten", art:"mit Umlaut"},
+     {grund:"stark", komp:"stärker", sup:"am stärksten", art:"mit Umlaut"},
+     {grund:"gut", komp:"besser", sup:"am besten", art:"unregelmäßig"},
+     {grund:"viel", komp:"mehr", sup:"am meisten", art:"unregelmäßig"},
+     {grund:"gern", komp:"lieber", sup:"am liebsten", art:"unregelmäßig"},
+     {grund:"hoch", komp:"höher", sup:"am höchsten", art:"unregelmäßig"}
+   ];
+   const f = pick(faelle);
+   const naiv = f.grund + "er";
+   const naivSup = "am " + f.grund + "sten";
+   return {
+    typ:"text", text:`Steigere das Adjektiv <b>„${f.grund}“</b>.`,
+    loesung: `${f.grund} – ${f.komp} – ${f.sup}`,
+    schluss:"Drei Stufen: Grundform, Vergleichsform, Höchstform. Ein paar wichtige Adjektive sind dabei unregelmäßig — die muss man kennen.",
+    schritte:[
+     {frage:"Wie heißen die <b>drei Stufen</b> der Steigerung?",
+      tipp:"Von der einfachen Form bis zur höchsten.",
+      optionen:[R("Grundform, Vergleichsform, Höchstform", "Genau — auch Positiv, Komparativ und Superlativ genannt."),
+                F("Gegenwart, Vergangenheit, Zukunft", "Das sind Zeitformen bei Verben."),
+                F("Einzahl, Mehrzahl, Höchstzahl", "Das gibt es so nicht.")]},
+     {frage:`Ist <b>„${f.grund}“</b> regelmäßig oder unregelmäßig?`,
+      tipp: f.art === "regelmäßig" ? "Reicht ein angehängtes „-er“?"
+           : f.art === "mit Umlaut" ? "Verändert sich der Selbstlaut?"
+           : "Ändert sich das ganze Wort?",
+      optionen: zieheVerschiedene([
+        R(f.art === "regelmäßig" ? "Regelmäßig — es bekommt einfach ein „-er“"
+          : f.art === "mit Umlaut" ? "Regelmäßig, aber mit Umlaut" : "Unregelmäßig — die Form ändert sich ganz",
+          f.art === "unregelmäßig" ? "Richtig, die musst du auswendig können." : "Richtig."),
+        F(f.art === "unregelmäßig" ? "Regelmäßig — es bekommt einfach ein „-er“" : "Unregelmäßig — die Form ändert sich ganz",
+          f.art === "unregelmäßig" ? `„${naiv}“ gibt es nicht.` : "So stark ändert sich dieses Wort nicht.")], 2)},
+     {frage:`Wie heißt die <b>Vergleichsform</b> von „${f.grund}“?`,
+      tipp:`Man benutzt sie mit „als“: schneller als …`,
+      optionen: zieheVerschiedene([
+        R(f.komp, "Richtig."),
+        F(naiv === f.komp ? f.grund + "erer" : naiv,
+          naiv === f.komp ? "Doppelt gesteigert wird nicht." : `„${naiv}“ ist hier nicht die richtige Form.`),
+        F("mehr " + f.grund, "Im Deutschen steigert man nicht mit „mehr“ davor — das ist Englisch.")], 3)},
+     {frage:`Und die <b>Höchstform</b>?`,
+      tipp:"Sie beginnt mit „am“.",
+      optionen: zieheVerschiedene([
+        R(f.sup, "Fertig."),
+        F(naivSup === f.sup ? "der " + f.grund + "ste" : naivSup,
+          naivSup === f.sup ? "Die Höchstform beginnt hier mit „am“." : `„${naivSup}“ ist nicht die gebräuchliche Form.`)], 2)}]};
+ }
+]
+
+});
+/* ---------- Erklärungen ----------
+   Aufbau: worum · einfach (von ganz vorn) · begriffe (Wörter, die man kennen muss)
+           · bild · regeln · beispiel                                            */
+
+const SVG_STIL = `style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto"`;
+
+const ERKLAERUNGEN = {
+
+/* ===================== MATHE ===================== */
+
+"Natürliche Zahlen": {
+  worum:"Wo eine Ziffer in einer Zahl steht, entscheidet darüber, wie viel sie wert ist.",
+  einfach:[
+    "Eine Zahl schreiben wir aus Ziffern zusammen: 0, 1, 2, 3 und so weiter. In der Zahl 347 stecken drei Ziffern.",
+    "Jede Ziffer hat einen Platz. Ganz rechts stehen die Einer. Links daneben die Zehner. Dann die Hunderter, dann die Tausender.",
+    "Deshalb ist die 3 in 347 nicht drei wert, sondern dreihundert. Dieselbe Ziffer, ein anderer Platz, ein anderer Wert.",
+    "Runden heißt: Wir machen die Zahl absichtlich ungenauer, damit sie leichter zu merken ist. 347 wird zu 300, wenn wir auf Hunderter runden."
+  ],
+  begriffe:[
+    ["Ziffer","Ein einzelnes Zeichen: 0 bis 9."],
+    ["Stelle","Der Platz, an dem eine Ziffer steht — Einer, Zehner, Hunderter …"],
+    ["Runden","Eine Zahl absichtlich vergröbern, damit sie glatter wird."]
+  ],
+  regeln:[
+    "Von rechts nach links: Einer, Zehner, Hunderter, Tausender.",
+    "Beim Runden schaust du nur auf die eine Ziffer rechts neben der Rundungsstelle.",
+    "Diese Ziffer ist 0 bis 4 → abrunden. Sie ist 5 bis 9 → aufrunden.",
+    "Alles rechts von der Rundungsstelle wird zu Null."
+  ],
+  beispiel:{aufgabe:"Runde 3.847 auf Hunderter",
+    schritte:["Hunderterstelle suchen: die 8.","Rechts daneben steht die 4.","4 ist kleiner als 5 → abrunden.","Alles rechts davon wird Null."],
+    ergebnis:"3.800"}
+},
+
+"Grundrechenarten": {
+  worum:"Wenn in einer Aufgabe mehrere Rechenzeichen stehen, gibt es eine feste Reihenfolge — nicht einfach von links nach rechts.",
+  einfach:[
+    "Es gibt vier Grundrechenarten: plus, minus, mal und geteilt.",
+    "Plus und minus nennt man Strichrechnung, weil ihre Zeichen aus Strichen bestehen: + und −.",
+    "Mal und geteilt nennt man Punktrechnung, weil ihre Zeichen Punkte haben: · und :",
+    "Steht beides in einer Aufgabe, wird die Punktrechnung zuerst gemacht. Deshalb der Merksatz: Punkt vor Strich.",
+    "Klammern sind noch stärker. Was in Klammern steht, wird immer zuerst gerechnet."
+  ],
+  begriffe:[
+    ["Strichrechnung","Plus und minus."],
+    ["Punktrechnung","Mal und geteilt."],
+    ["Klammer","Die runden Zeichen ( ). Sie sagen: das hier zuerst."]
+  ],
+  regeln:["1. Klammern zuerst.","2. Dann Punkt: mal und geteilt.","3. Zuletzt Strich: plus und minus.","Merksatz: Klammer vor Punkt vor Strich."],
+  beispiel:{aufgabe:"12 + 4 · 5",
+    schritte:["Keine Klammer da → zuerst der Punkt: 4 · 5 = 20.","Dann bleibt 12 + 20."],
+    ergebnis:"32   (nicht 80 — das käme heraus, wenn man von links rechnet)"}
+},
+
+"Größen und Einheiten": {
+  worum:"Dieselbe Menge kann man mit verschiedenen Einheiten aufschreiben. Umrechnen heißt: Menge gleich, Einheit anders.",
+  einfach:[
+    "Eine Größe ist etwas, das man messen kann: eine Länge, ein Gewicht, eine Zeit.",
+    "Damit andere verstehen, wie viel gemeint ist, schreibt man eine Einheit dahinter: 5 Meter, 3 Kilogramm, 20 Minuten.",
+    "Für dieselbe Größe gibt es große und kleine Einheiten. Ein Meter ist groß, ein Zentimeter ist klein.",
+    "Wechselst du von einer großen Einheit zu einer kleinen, brauchst du mehr davon — die Zahl wird größer. 2 Meter sind 200 Zentimeter.",
+    "Umgekehrt wird die Zahl kleiner: 200 Zentimeter sind nur 2 Meter."
+  ],
+  begriffe:[
+    ["Größe","Etwas Messbares: Länge, Gewicht, Zeit, Menge."],
+    ["Einheit","Das Wort hinter der Zahl: m, cm, kg, g, min."],
+    ["Umrechnen","Dieselbe Menge in einer anderen Einheit aufschreiben."]
+  ],
+  regeln:[
+    "1 kg = 1.000 g · 1 km = 1.000 m · 1 m = 100 cm · 1 l = 1.000 ml",
+    "Bei der Zeit gilt etwas anderes: 1 h = 60 min, 1 min = 60 s.",
+    "Von groß nach klein: mal rechnen — die Zahl wird größer.",
+    "Von klein nach groß: geteilt rechnen — die Zahl wird kleiner."
+  ],
+  beispiel:{aufgabe:"3 kg 250 g = ___ g",
+    schritte:["Kilogramm umrechnen: 3 · 1.000 = 3.000 g.","Die 250 g stehen schon in Gramm.","Zusammenzählen."],
+    ergebnis:"3.250 g"}
+},
+
+"Flächen und Umfang": {
+  worum:"Umfang ist der Weg außen herum. Flächeninhalt ist der Platz innen drin. Zwei verschiedene Dinge, die oft verwechselt werden.",
+  einfach:[
+    "Stell dir ein Fußballfeld vor. Wenn du einmal ganz außen an der Linie entlangläufst, ist der Weg, den du zurücklegst, der Umfang.",
+    "Der Rasen, auf dem gespielt wird — also die ganze Fläche innerhalb der Linien — ist der Flächeninhalt.",
+    "Ein Umfang ist eine Länge. Deshalb steht dahinter eine Längeneinheit wie cm oder m.",
+    "Eine Fläche misst man in Quadraten. Ein Quadrat mit 1 cm Seitenlänge heißt ein Quadratzentimeter, kurz cm². Die kleine 2 sagt: hier wurden zwei Längen miteinander multipliziert.",
+    "Ein Rechteck hat immer zwei lange und zwei kurze Seiten, die sich gegenüberliegen und gleich lang sind."
+  ],
+  begriffe:[
+    ["Umfang","Die Länge einmal außen herum."],
+    ["Flächeninhalt","Der Platz innerhalb der Figur."],
+    ["cm²","Quadratzentimeter — die Einheit für Flächen."]
+  ],
+  regeln:[
+    "Umfang beim Rechteck: 2 · Länge + 2 · Breite   → Einheit cm",
+    "Fläche beim Rechteck: Länge · Breite   → Einheit cm²",
+    "Beim Quadrat sind alle vier Seiten gleich lang."
+  ],
+  beispiel:{aufgabe:"Rechteck, 7 cm lang und 4 cm breit",
+    schritte:["Umfang: 2 · 7 + 2 · 4 = 14 + 8","Fläche: 7 · 4"],
+    ergebnis:"Umfang 22 cm · Fläche 28 cm²"},
+  bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="Rechteck: Umfang und Fläche">
+    <rect x="14" y="30" width="150" height="86" fill="none" stroke="#10a37f" stroke-width="4"/>
+    <text x="89" y="22" text-anchor="middle" font-size="13" fill="currentColor">7 cm</text>
+    <text x="8" y="78" text-anchor="middle" font-size="13" fill="currentColor" transform="rotate(-90 8 78)">4 cm</text>
+    <text x="89" y="138" text-anchor="middle" font-size="13" fill="#10a37f">Umfang: außen herum</text>
+    <rect x="230" y="30" width="150" height="86" fill="#10a37f" fill-opacity="0.18" stroke="#10a37f" stroke-width="1.5"/>
+    <g stroke="#10a37f" stroke-opacity="0.45" stroke-width="1">
+      <path d="M251 30V116M272 30V116M293 30V116M314 30V116M335 30V116M356 30V116"/>
+      <path d="M230 51H380M230 73H380M230 95H380"/>
+    </g>
+    <text x="305" y="138" text-anchor="middle" font-size="13" fill="#10a37f">Fläche: der Platz innen</text>
+  </svg>`
+},
+
+"Symmetrie": {
+  worum:"Eine Figur ist symmetrisch, wenn man sie an einer Linie falten kann und beide Hälften genau aufeinanderliegen.",
+  einfach:[
+    "Nimm ein Blatt Papier und male eine Figur darauf. Jetzt falte das Blatt einmal in der Mitte.",
+    "Wenn beide Hälften der Figur genau übereinanderliegen — kein Stück ragt heraus — dann war die Faltlinie eine Symmetrieachse.",
+    "Manche Figuren haben mehrere solche Linien. Ein Quadrat kannst du senkrecht falten, waagerecht falten und über beide Diagonalen. Das sind vier.",
+    "Manche Figuren haben gar keine. Ein Buchstabe wie F sieht gespiegelt völlig anders aus.",
+    "Senkrecht heißt von oben nach unten. Waagerecht heißt von links nach rechts."
+  ],
+  begriffe:[
+    ["Symmetrieachse","Die Linie, an der man falten kann."],
+    ["senkrecht","Von oben nach unten."],
+    ["waagerecht","Von links nach rechts."],
+    ["Diagonale","Eine Linie von Ecke zu Ecke."]
+  ],
+  regeln:[
+    "Senkrechte Achse: linke und rechte Hälfte sind spiegelgleich.",
+    "Waagerechte Achse: obere und untere Hälfte sind spiegelgleich.",
+    "Quadrat 4 · Rechteck 2 · gleichseitiges Dreieck 3 · Kreis unendlich viele."
+  ],
+  beispiel:{aufgabe:"Wie viele Symmetrieachsen hat ein Quadrat?",
+    schritte:["Senkrecht durch die Mitte: passt.","Waagerecht durch die Mitte: passt.","Beide Diagonalen: passen auch."],
+    ergebnis:"4 Achsen"},
+  bild:`<svg viewBox="0 0 200 200" ${SVG_STIL} role="img" aria-label="Quadrat mit vier Symmetrieachsen">
+    <rect x="35" y="35" width="130" height="130" fill="#10a37f" fill-opacity="0.15" stroke="#10a37f" stroke-width="3"/>
+    <g stroke="#10a37f" stroke-width="2" stroke-dasharray="6 5">
+      <path d="M100 20V180"/><path d="M20 100H180"/><path d="M28 28L172 172"/><path d="M172 28L28 172"/>
+    </g>
+  </svg>`
+},
+
+"Brüche": {
+  worum:"Ein Bruch beschreibt Teile eines Ganzen — zum Beispiel drei Viertel einer Pizza.",
+  einfach:[
+    "Stell dir eine Pizza vor. Du schneidest sie in vier gleich große Stücke.",
+    "Nimmst du drei davon, hast du drei Viertel. Man schreibt das als 3/4.",
+    "Die Zahl unten sagt: in wie viele Stücke wurde geschnitten. Sie heißt Nenner.",
+    "Die Zahl oben sagt: wie viele Stücke nimmst du. Sie heißt Zähler.",
+    "Zwei Brüche zusammenzählen geht nur, wenn die Stücke gleich groß sind. Viertel und Sechstel kann man nicht direkt addieren — man muss sie erst in gleich große Stücke umrechnen.",
+    "Das nennt man erweitern: oben und unten mit derselben Zahl multiplizieren. Der Wert bleibt gleich, nur die Stücke werden kleiner und mehr."
+  ],
+  begriffe:[
+    ["Nenner","Die Zahl unten. Sie nennt, in wie viele Teile geteilt wurde."],
+    ["Zähler","Die Zahl oben. Sie zählt, wie viele Teile genommen werden."],
+    ["Erweitern","Oben und unten mit derselben Zahl multiplizieren."],
+    ["Gemeinsamer Nenner","Ein Nenner, den beide Brüche haben können."]
+  ],
+  regeln:[
+    "Addieren geht nur bei gleichem Nenner.",
+    "Erweitern ändert den Wert nicht: 1/2 = 2/4 = 3/6.",
+    "Bei gleichem Nenner nur die Zähler addieren, der Nenner bleibt stehen.",
+    "„von“ heißt beim Rechnen: mal."
+  ],
+  beispiel:{aufgabe:"3/4 + 1/6",
+    schritte:["Gemeinsamer Nenner für 4 und 6: die 12.","3/4 erweitern mit 3 → 9/12","1/6 erweitern mit 2 → 2/12","Zähler addieren: 9 + 2"],
+    ergebnis:"11/12"},
+  bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Bruchstreifen">
+    <text x="0" y="24" font-size="13" fill="currentColor">3/4</text>
+    <g stroke="#10a37f" stroke-width="2">
+      <rect x="40" y="6" width="80" height="26" fill="#10a37f"/><rect x="120" y="6" width="80" height="26" fill="#10a37f"/>
+      <rect x="200" y="6" width="80" height="26" fill="#10a37f"/><rect x="280" y="6" width="80" height="26" fill="none"/>
+    </g>
+    <text x="0" y="76" font-size="13" fill="currentColor">1/6</text>
+    <g stroke="#10a37f" stroke-width="2">
+      <rect x="40" y="58" width="53.3" height="26" fill="#10a37f"/><rect x="93.3" y="58" width="53.3" height="26" fill="none"/>
+      <rect x="146.6" y="58" width="53.3" height="26" fill="none"/><rect x="199.9" y="58" width="53.3" height="26" fill="none"/>
+      <rect x="253.2" y="58" width="53.3" height="26" fill="none"/><rect x="306.5" y="58" width="53.5" height="26" fill="none"/>
+    </g>
+    <text x="0" y="134" font-size="13" fill="currentColor">/12</text>
+    <g stroke="#10a37f" stroke-width="1.5">
+      <rect x="40" y="116" width="26.6" height="26" fill="#10a37f"/><rect x="66.6" y="116" width="26.6" height="26" fill="#10a37f"/>
+      <rect x="93.2" y="116" width="26.6" height="26" fill="#10a37f"/><rect x="119.8" y="116" width="26.6" height="26" fill="#10a37f"/>
+      <rect x="146.4" y="116" width="26.6" height="26" fill="#10a37f"/><rect x="173" y="116" width="26.6" height="26" fill="#10a37f"/>
+      <rect x="199.6" y="116" width="26.6" height="26" fill="#10a37f"/><rect x="226.2" y="116" width="26.6" height="26" fill="#10a37f"/>
+      <rect x="252.8" y="116" width="26.6" height="26" fill="#10a37f"/>
+      <rect x="279.4" y="116" width="26.6" height="26" fill="#10a37f" fill-opacity="0.45"/>
+      <rect x="306" y="116" width="26.6" height="26" fill="#10a37f" fill-opacity="0.45"/>
+      <rect x="332.6" y="116" width="27.4" height="26" fill="none"/>
+    </g>
+    <text x="40" y="163" font-size="12" fill="#10a37f">9 volle + 2 helle Kästchen = 11 von 12</text>
+  </svg>`
+},
+
+"Dezimalzahlen": {
+  worum:"Eine Dezimalzahl ist eine Zahl mit Komma. Hinter dem Komma geht das Zerteilen weiter.",
+  einfach:[
+    "Vor dem Komma stehen ganze Stücke, hinter dem Komma die angefangenen.",
+    "2,5 Liter heißt: zwei ganze Liter und ein halber.",
+    "Die erste Stelle nach dem Komma sind Zehntel, die zweite Hundertstel. 0,7 sind sieben Zehntel, 0,25 sind fünfundzwanzig Hundertstel.",
+    "Wichtig: 0,7 ist genau dasselbe wie 0,70. Eine Null hinten dran ändert nichts, so wie 7 Euro dasselbe sind wie 7,00 Euro.",
+    "Beim Zusammenzählen musst du Komma unter Komma schreiben, nicht die Ziffern rechtsbündig. Sonst zählst du Zehntel und Hundertstel zusammen, und das geht schief."
+  ],
+  begriffe:[
+    ["Dezimalzahl","Eine Zahl mit Komma."],
+    ["Zehntel","Die erste Stelle nach dem Komma."],
+    ["Hundertstel","Die zweite Stelle nach dem Komma."]
+  ],
+  regeln:[
+    "0,7 = 0,70 = 0,700 — angehängte Nullen ändern nichts.",
+    "Beim Addieren Komma unter Komma.",
+    "Mal 10 → Komma eine Stelle nach rechts. Mal 100 → zwei Stellen.",
+    "Geteilt durch 10 → Komma eine Stelle nach links."
+  ],
+  beispiel:{aufgabe:"0,7 + 0,25",
+    schritte:["Gleich viele Nachkommastellen: 0,70 + 0,25","70 Hundertstel plus 25 Hundertstel"],
+    ergebnis:"0,95   (nicht 0,32 — das entsteht beim falschen Untereinanderschreiben)"}
+},
+
+"Teilbarkeit": {
+  worum:"Teilbar heißt: Die Division geht ohne Rest auf. Dafür gibt es kurze Prüfregeln, mit denen du nicht rechnen musst.",
+  einfach:[
+    "12 Bonbons kannst du gerecht an 3 Kinder verteilen: jedes bekommt 4, nichts bleibt übrig. Also ist 12 durch 3 teilbar.",
+    "13 Bonbons gehen nicht auf: eines bleibt liegen. Das übrig gebliebene Stück nennt man Rest.",
+    "Bei großen Zahlen wäre das Ausrechnen mühsam. Deshalb gibt es Tricks, sogenannte Teilbarkeitsregeln.",
+    "Für die 3 zählt man einfach alle Ziffern zusammen. Das nennt man Quersumme. Bei 738 sind das 7 + 3 + 8 = 18.",
+    "Ist die Quersumme durch 3 teilbar, ist es auch die ganze Zahl. Das klingt seltsam, funktioniert aber immer."
+  ],
+  begriffe:[
+    ["teilbar","Die Division geht ohne Rest auf."],
+    ["Rest","Was übrig bleibt, wenn es nicht aufgeht."],
+    ["Quersumme","Alle Ziffern einer Zahl zusammengezählt."]
+  ],
+  regeln:[
+    "Durch 2: letzte Ziffer ist gerade.",
+    "Durch 3: Quersumme ist durch 3 teilbar.",
+    "Durch 4: die letzten beiden Ziffern sind durch 4 teilbar.",
+    "Durch 5: letzte Ziffer ist 0 oder 5.",
+    "Durch 9: Quersumme ist durch 9 teilbar."
+  ],
+  beispiel:{aufgabe:"Ist 738 durch 3 teilbar?",
+    schritte:["Quersumme: 7 + 3 + 8 = 18","Ist 18 durch 3 teilbar? Ja, 3 · 6 = 18."],
+    ergebnis:"Ja — 738 : 3 = 246"}
+},
+
+"Dreisatz": {
+  worum:"Du kennst den Wert für eine Menge und willst ihn für eine andere Menge wissen. Der Weg führt immer über ein einzelnes Stück.",
+  einfach:[
+    "Drei Hefte kosten 4,50 €. Wie viel kosten sieben? Direkt kann man das nicht sehen.",
+    "Der Trick: Rechne zuerst aus, was ein einziges Heft kostet. Dazu teilst du durch 3.",
+    "4,50 € : 3 = 1,50 €. Ein Heft kostet also 1,50 €.",
+    "Jetzt ist der Rest leicht: Sieben Hefte kosten siebenmal so viel, also 1,50 € · 7.",
+    "Das Verfahren heißt Dreisatz, weil man es in drei Sätzen aufschreiben kann: Was ist gegeben, was kostet eines, was kosten die gesuchten."
+  ],
+  begriffe:[
+    ["Dreisatz","Der Weg über den Wert für ein einzelnes Stück."],
+    ["Einzelwert","Was ein Stück kostet oder wiegt."]
+  ],
+  regeln:[
+    "Schritt 1: durch die gegebene Anzahl teilen → Wert für eines.",
+    "Schritt 2: mal die gesuchte Anzahl nehmen.",
+    "Nie direkt von der einen Menge zur anderen springen."
+  ],
+  beispiel:{aufgabe:"3 Hefte kosten 4,50 €. Was kosten 7 Hefte?",
+    schritte:["Ein Heft: 4,50 € : 3 = 1,50 €","Sieben Hefte: 1,50 € · 7"],
+    ergebnis:"10,50 €"}
+},
+
+"Winkel messen": {
+  worum:"Ein Winkel misst, wie weit zwei Linien auseinandergehen. Gemessen wird in Grad.",
+  einfach:[
+    "Zwei Linien treffen sich in einem Punkt. Wie weit sie auseinandergehen, ist der Winkel.",
+    "Gemessen wird in Grad, geschrieben mit einem kleinen Kreis: 90°.",
+    "Die wichtigste Marke ist der rechte Winkel mit 90°. Den findest du an jeder Ecke eines Blattes Papier oder eines Tisches.",
+    "Ist der Winkel kleiner als 90°, nennt man ihn spitz — er sieht aus wie eine Spitze.",
+    "Ist er größer als 90°, aber kleiner als 180°, heißt er stumpf — er ist weiter aufgeklappt.",
+    "Bei genau 180° sind die beiden Linien eine gerade Linie. Eine volle Umdrehung sind 360°."
+  ],
+  begriffe:[
+    ["Grad","Die Einheit für Winkel, geschrieben als kleiner Kreis: °"],
+    ["Scheitelpunkt","Der Punkt, an dem sich die beiden Linien treffen."]
+  ],
+  regeln:[
+    "Unter 90° = spitzer Winkel",
+    "Genau 90° = rechter Winkel",
+    "Zwischen 90° und 180° = stumpfer Winkel",
+    "Genau 180° = gestreckter Winkel",
+    "Volle Umdrehung = 360°"
+  ],
+  beispiel:{aufgabe:"Ein Winkel misst 135°. Welche Art ist das?",
+    schritte:["Größer als 90°? Ja.","Kleiner als 180°? Auch ja."],
+    ergebnis:"Ein stumpfer Winkel"},
+  bild:`<svg viewBox="0 0 400 130" ${SVG_STIL} role="img" aria-label="spitzer, rechter und stumpfer Winkel">
+    <g stroke="currentColor" stroke-width="3" fill="none">
+      <path d="M30 100H110"/><path d="M30 100L96 62"/>
+      <path d="M160 100H240"/><path d="M160 100V38"/>
+      <path d="M290 100H370"/><path d="M290 100L246 58"/>
+    </g>
+    <g fill="none" stroke="#10a37f" stroke-width="2.5">
+      <path d="M56 100A26 26 0 0 0 52 87"/><path d="M186 100A26 26 0 0 0 160 74"/><path d="M316 100A26 26 0 0 1 271 82"/>
+    </g>
+    <g font-size="12" fill="currentColor" text-anchor="middle">
+      <text x="70" y="122">spitz (unter 90°)</text><text x="200" y="122">recht (90°)</text><text x="320" y="122">stumpf (über 90°)</text>
+    </g>
+  </svg>`
+},
+
+"Gleichungen umstellen": {
+  worum:"In einer Gleichung versteckt sich eine unbekannte Zahl hinter dem x. Deine Aufgabe ist, sie freizulegen.",
+  einfach:[
+    "Denk an eine Waage, die im Gleichgewicht ist. Links liegt genauso viel wie rechts. Das Gleichheitszeichen ist die Mitte der Waage.",
+    "In 3x + 5 = 20 heißt das: Wenn du eine bestimmte Zahl dreimal nimmst und 5 dazuzählst, kommst du auf 20. Welche Zahl ist das?",
+    "Das x ist nur ein Platzhalter für diese unbekannte Zahl.",
+    "Um sie zu finden, räumst du alles um das x herum weg. Aber jedes Mal auf beiden Seiten gleichzeitig — sonst kippt die Waage.",
+    "3x bedeutet übrigens 3 mal x. Das Malzeichen wird bei Buchstaben einfach weggelassen.",
+    "Am Ende kannst du prüfen, ob es stimmt: Setz deine gefundene Zahl in die Gleichung ein und rechne nach."
+  ],
+  begriffe:[
+    ["Gleichung","Zwei Ausdrücke mit einem Gleichheitszeichen dazwischen."],
+    ["x","Ein Platzhalter für die gesuchte Zahl."],
+    ["Probe","Die gefundene Zahl einsetzen und nachrechnen."]
+  ],
+  regeln:[
+    "Alles, was du links machst, musst du auch rechts machen.",
+    "Ziel: x steht am Ende allein.",
+    "Reihenfolge: zuerst Plus und Minus wegräumen, danach Mal und Geteilt.",
+    "Gegenteile: plus ↔ minus, mal ↔ geteilt."
+  ],
+  beispiel:{aufgabe:"3x + 5 = 20",
+    schritte:["Auf beiden Seiten 5 abziehen → 3x = 15","Beide Seiten durch 3 teilen → x = 5","Probe: 3 · 5 + 5 = 20 ✓"],
+    ergebnis:"x = 5"}
+},
+
+"Prozent und Zinsen": {
+  worum:"Prozent heißt „von hundert“. Damit kann man Anteile vergleichen, egal wie groß das Ganze ist.",
+  einfach:[
+    "Stell dir vor, alles wird in 100 gleiche Teile zerlegt. Ein Prozent ist genau eines dieser 100 Teile.",
+    "25 % heißt also: 25 von 100 Teilen. Das ist dasselbe wie ein Viertel.",
+    "Das Ganze — der volle Wert, bevor sich etwas ändert — ist immer 100 %.",
+    "Um mit Prozent zu rechnen, macht man daraus eine Kommazahl: durch 100 teilen. Aus 25 % wird 0,25.",
+    "„25 % von 80“ rechnet man dann als 80 · 0,25. Das Wörtchen „von“ heißt beim Rechnen immer mal.",
+    "Bei Rabatt gibt es eine Abkürzung: 15 % weniger heißt, du zahlst noch 85 %. Also einfach mal 0,85 — in einem Schritt statt in zweien.",
+    "Zinsen sind nichts Neues: Das Geld auf dem Konto ist der volle Wert, der Zinssatz ist der Prozentanteil."
+  ],
+  begriffe:[
+    ["Prozent","Ein Hundertstel. Zeichen: %"],
+    ["Grundwert","Das Ganze, also die 100 %."],
+    ["Zinssatz","Wie viel Prozent Zinsen es pro Jahr gibt."]
+  ],
+  regeln:[
+    "Das Ganze ist immer 100 %.",
+    "Prozent in Kommazahl: durch 100 teilen.",
+    "„von“ heißt beim Rechnen: mal.",
+    "Rabatt in einem Schritt: 15 % weniger = mal 0,85.",
+    "Zinsen = Kapital · Zinssatz."
+  ],
+  beispiel:{aufgabe:"Ein Handy kostet 480 €, im Angebot 15 % günstiger.",
+    schritte:["100 % − 15 % = 85 % zahlst du noch.","85 % = 0,85","480 · 0,85"],
+    ergebnis:"408 €"}
+},
+
+/* ===================== DEUTSCH ===================== */
+
+"das oder dass": {
+  worum:"Zwei Wörter, die gleich klingen, aber verschiedene Aufgaben haben. Es gibt einen Test, der immer funktioniert.",
+  einfach:[
+    "„das“ mit einem s gehört zu einem Nomen. Es steht davor oder ersetzt es: das Buch — ich nehme das.",
+    "„dass“ mit zwei s verbindet zwei Satzteile. Es leitet einen Nebensatz ein: Ich hoffe, dass du kommst.",
+    "Beim Sprechen hört man keinen Unterschied. Deshalb braucht man einen Test.",
+    "Der Test: Versuch, das Wort durch „dieses“, „jenes“ oder „welches“ zu ersetzen.",
+    "Passt es und der Satz klingt noch richtig? Dann ist es „das“ mit einem s.",
+    "Klingt es falsch? Dann ist es „dass“ mit zwei s."
+  ],
+  begriffe:[
+    ["Nomen","Ein Ding, Lebewesen oder Begriff — mit Artikel und großgeschrieben."],
+    ["Nebensatz","Ein Satzteil, der allein nicht stehen kann."],
+    ["Bindewort","Ein Wort, das Satzteile verbindet."]
+  ],
+  regeln:[
+    "Test: durch „dieses“, „jenes“ oder „welches“ ersetzen.",
+    "Klappt der Test → „das“ mit einem s.",
+    "Klappt er nicht → „dass“ mit zwei s.",
+    "Ein Komma davor gibt es in beiden Fällen — das hilft nicht."
+  ],
+  beispiel:{aufgabe:"Ich hoffe, ___ du morgen kommst.",
+    schritte:["Test: „Ich hoffe, dieses du morgen kommst.“","Klingt falsch → Test klappt nicht."],
+    ergebnis:"dass"}
+},
+
+"Kommas bei Nebensätzen": {
+  worum:"Zwischen Hauptsatz und Nebensatz steht immer ein Komma. Du musst nur erkennen, wo der eine aufhört.",
+  einfach:[
+    "Ein Hauptsatz kann allein stehen: „Ich rufe dich an.“ Das ergibt für sich Sinn.",
+    "Ein Nebensatz kann das nicht: „wenn ich zu Hause bin“ — allein klingt das unfertig.",
+    "Wie erkennt man, dass ein Satz aus zwei Teilen besteht? An den Verben. Jeder Satzteil hat sein eigenes Verb.",
+    "„Ich rufe dich an, wenn ich zu Hause bin.“ Hier stecken zwei Verben: „rufe an“ und „bin“. Also zwei Satzteile.",
+    "Im Nebensatz rutscht das Verb ans Ende. Das ist das sicherste Erkennungszeichen.",
+    "Zwischen die beiden Teile gehört ein Komma — und zwar direkt vor das einleitende Wort."
+  ],
+  begriffe:[
+    ["Hauptsatz","Kann allein stehen."],
+    ["Nebensatz","Kann nicht allein stehen, das Verb steht am Ende."],
+    ["Verb","Das Tuwort: laufen, sein, rufen."]
+  ],
+  regeln:[
+    "Zwei Verben heißt: zwei Satzteile.",
+    "Im Nebensatz steht das Verb ganz hinten.",
+    "Typische Einleitungswörter: weil, wenn, dass, obwohl, damit, bevor, ob, bis.",
+    "Das Komma steht direkt vor diesem Wort."
+  ],
+  beispiel:{aufgabe:"Ich rufe dich an ___ wenn ich zu Hause bin.",
+    schritte:["Verben: „rufe an“ und „bin“ → zwei Satzteile.","Nebensatz: „wenn ich zu Hause bin“."],
+    ergebnis:"Komma direkt vor „wenn“"}
+},
+
+"Nominalisierung": {
+  worum:"Manchmal wird aus einem Verb oder Adjektiv ein Nomen. Dann wird es großgeschrieben.",
+  einfach:[
+    "„laufen“ ist ein Verb — ein Tuwort. Verben schreibt man klein.",
+    "Aber: „Das Laufen macht Spaß.“ Hier ist aus dem Tuwort eine Sache geworden, über die man spricht.",
+    "Erkennen kannst du das an dem kleinen Wort davor: der, die, das, dem. Solche Wörter heißen Artikel.",
+    "Ein Artikel steht immer vor einem Nomen. Steht er also vor einem Verb, ist aus dem Verb ein Nomen geworden.",
+    "Achtung bei zusammengezogenen Formen: „beim“ ist „bei dem“, „zum“ ist „zu dem“, „vom“ ist „von dem“. Da versteckt sich der Artikel."
+  ],
+  begriffe:[
+    ["Nomen","Ding, Lebewesen oder Begriff — wird großgeschrieben."],
+    ["Artikel","Begleiter des Nomens: der, die, das, ein, dem."],
+    ["Nominalisierung","Aus einem Verb oder Adjektiv wird ein Nomen."]
+  ],
+  regeln:[
+    "Artikel davor → Nomen → groß.",
+    "Versteckte Artikel: beim, zum, vom, im, am.",
+    "Auch nach „etwas“, „nichts“, „viel“, „alles“ wird großgeschrieben.",
+    "Test: Kannst du ein „das“ davorsetzen? Dann groß."
+  ],
+  beispiel:{aufgabe:"Beim ___ (laufen) höre ich Musik.",
+    schritte:["„Beim“ enthält den Artikel „dem“.","Artikel + Verb → Nomen."],
+    ergebnis:"Beim Laufen höre ich Musik."}
+},
+
+"Wortarten erkennen": {
+  worum:"Jedes Wort im Deutschen gehört zu einer Gruppe — je nachdem, welche Aufgabe es im Satz hat.",
+  einfach:[
+    "Wörter haben verschiedene Jobs. Manche benennen etwas, manche sagen, was passiert, manche beschreiben.",
+    "Nomen benennen Dinge, Lebewesen oder Begriffe: Hund, Tisch, Freude. Sie haben einen Artikel und werden großgeschrieben.",
+    "Verben sagen, was geschieht: laufen, denken, sein. Man kann sie beugen — ich laufe, du läufst.",
+    "Adjektive beschreiben, wie etwas ist: schnell, blau, müde. Man kann sie steigern — schnell, schneller, am schnellsten.",
+    "Artikel sind kleine Begleiter des Nomens: der, die, das, ein, eine.",
+    "Pronomen ersetzen ein Nomen, damit man es nicht ständig wiederholen muss: er, sie, wir, mein."
+  ],
+  begriffe:[
+    ["Nomen","Benennt etwas. Groß geschrieben, mit Artikel."],
+    ["Verb","Sagt, was geschieht. Beugbar."],
+    ["Adjektiv","Beschreibt. Steigerbar."],
+    ["Artikel","Begleiter: der, die, das, ein."],
+    ["Pronomen","Ersetzt ein Nomen: er, sie, es."]
+  ],
+  regeln:[
+    "Nomen: Artikel davor möglich, wird großgeschrieben.",
+    "Verb: kann gebeugt werden (ich …, du …).",
+    "Adjektiv: kann gesteigert werden.",
+    "Die Stellung im Satz sagt nichts über die Wortart."
+  ],
+  beispiel:{aufgabe:"Der schnelle Hund läuft.",
+    schritte:["„Der“ begleitet ein Nomen → Artikel","„schnelle“ beschreibt → Adjektiv","„Hund“ ist ein Lebewesen mit Artikel → Nomen","„läuft“ sagt, was passiert → Verb"],
+    ergebnis:"Artikel · Adjektiv · Nomen · Verb"}
+},
+
+"Satzglieder bestimmen": {
+  worum:"Ein Satz besteht aus Bausteinen. Man findet sie, indem man passende Fragen an den Satz stellt.",
+  einfach:[
+    "Ein Satzglied ist ein Baustein des Satzes — nicht unbedingt nur ein Wort. „Der nette Lehrer“ ist ein einziges Satzglied.",
+    "Der wichtigste Baustein ist das Prädikat. Das ist das Verb, es sagt, was geschieht. Damit fängst du immer an.",
+    "Dann fragst du: Wer oder was tut das? Die Antwort ist das Subjekt.",
+    "Weitere Bausteine findest du über andere Fragen: „Wen oder was?“ führt zum Akkusativobjekt, „Wem?“ zum Dativobjekt.",
+    "Ein Test hilft: Ein Satzglied kann man als Ganzes an den Satzanfang schieben, ohne dass der Satz kaputtgeht."
+  ],
+  begriffe:[
+    ["Satzglied","Ein Baustein des Satzes, oft mehrere Wörter."],
+    ["Prädikat","Das Verb. Frage: Was geschieht?"],
+    ["Subjekt","Wer oder was etwas tut."],
+    ["Objekt","Ergänzung: Wen oder was? Wem?"]
+  ],
+  regeln:[
+    "Prädikat: Was geschieht?",
+    "Subjekt: Wer oder was?",
+    "Akkusativobjekt: Wen oder was?",
+    "Dativobjekt: Wem?",
+    "Verschiebeprobe: Satzglieder lassen sich als Ganzes verschieben."
+  ],
+  beispiel:{aufgabe:"Der Lehrer erklärt den Schülern die Aufgabe.",
+    schritte:["Was geschieht? → erklärt (Prädikat)","Wer erklärt? → Der Lehrer (Subjekt)","Wem? → den Schülern (Dativobjekt)","Was? → die Aufgabe (Akkusativobjekt)"],
+    ergebnis:"Subjekt · Prädikat · Dativobjekt · Akkusativobjekt"}
+},
+
+"Groß- und Kleinschreibung": {
+  worum:"Im Deutschen werden Nomen großgeschrieben. Der Rest folgt wenigen Regeln.",
+  einfach:[
+    "Das Deutsche ist damit fast allein auf der Welt: Bei uns werden alle Nomen großgeschrieben, nicht nur Namen.",
+    "Ein Nomen erkennst du am Artikel davor: der Tisch, die Freude, ein Fahrrad.",
+    "Verben und Adjektive schreibt man klein: laufen, schnell, leise.",
+    "Aber Vorsicht: Sobald ein Artikel davorsteht, wird auch ein Verb zum Nomen — und dann groß. „Das Laufen“, „beim Kochen“.",
+    "Der sicherste Test ist deshalb immer derselbe: Steht ein Begleiter davor oder könnte einer davorstehen? Dann groß.",
+    "Und natürlich: Am Satzanfang wird immer großgeschrieben."
+  ],
+  begriffe:[
+    ["Nomen","Ding, Lebewesen, Begriff — immer groß."],
+    ["Begleiter","Artikel wie der, die, das, ein, dem."]
+  ],
+  regeln:[
+    "Alle Nomen groß.",
+    "Satzanfänge groß.",
+    "Verben und Adjektive klein — außer sie werden zu Nomen.",
+    "Test: Artikel davor möglich? Dann groß."
+  ],
+  beispiel:{aufgabe:"Wir haben viel ___ (gelacht) — das ___ (lachen) tat gut.",
+    schritte:["„gelacht“ steht allein als Verb → klein","„das lachen“ hat einen Artikel davor → Nomen → groß"],
+    ergebnis:"gelacht · Lachen"}
+},
+
+"Wörtliche Rede": {
+  worum:"Wenn du aufschreibst, was jemand wörtlich gesagt hat, kommt das in Anführungszeichen — mit festen Regeln für die Satzzeichen.",
+  einfach:[
+    "Wörtliche Rede heißt: Du schreibst genau die Worte auf, die jemand gesagt hat.",
+    "Diese Worte kommen in Anführungszeichen: „Ich komme gleich.“",
+    "Dazu gehört meistens ein Begleitsatz, der sagt, wer spricht: Anna sagt … / … sagt Anna.",
+    "Steht der Begleitsatz vorne, kündigt er die Rede an. Dann kommt ein Doppelpunkt: Anna sagt: „Ich komme gleich.“",
+    "Steht der Begleitsatz hinten, muss er von der Rede getrennt werden. Dann kommt ein Komma: „Ich komme gleich“, sagt Anna.",
+    "Frage- und Ausrufezeichen bleiben immer innerhalb der Anführungszeichen, weil sie zum Gesagten gehören."
+  ],
+  begriffe:[
+    ["Wörtliche Rede","Der genaue Wortlaut, in Anführungszeichen."],
+    ["Begleitsatz","Der Teil, der sagt, wer spricht."]
+  ],
+  regeln:[
+    "Wörtliche Rede steht in Anführungszeichen: „…“",
+    "Begleitsatz vorne → Doppelpunkt davor.",
+    "Begleitsatz hinten → Komma nach der Rede.",
+    "Frage- und Ausrufezeichen bleiben innerhalb der Anführungszeichen."
+  ],
+  beispiel:{aufgabe:"Anna sagt ___ „Ich habe keine Zeit.“",
+    schritte:["Der Begleitsatz „Anna sagt“ steht vorne.","Vor der Rede steht dann ein Doppelpunkt."],
+    ergebnis:"Anna sagt: „Ich habe keine Zeit.“"}
+},
+
+"Zeitformen": {
+  worum:"Zeitformen zeigen, wann etwas passiert: jetzt, früher oder später.",
+  einfach:[
+    "Ein Verb ist ein Tuwort: gehen, lesen, sein. Es verändert seine Form, je nachdem wann etwas passiert.",
+    "Diese verschiedenen Formen heißen Zeitformen.",
+    "Passiert es jetzt gerade, ist es die Gegenwart: ich gehe. Der Fachbegriff dafür ist Präsens.",
+    "Ist es vorbei, gibt es zwei Möglichkeiten. Beim Schreiben und Erzählen nimmt man meistens: ich ging. Das heißt Präteritum.",
+    "Beim Sprechen sagt man eher: ich bin gegangen. Das heißt Perfekt. Es besteht aus zwei Teilen — einem Hilfsverb (haben oder sein) und einer zweiten Verbform.",
+    "War etwas noch früher als etwas anderes Vergangenes, nimmt man: ich war gegangen. Das heißt Plusquamperfekt, also Vorvergangenheit.",
+    "Für die Zukunft nimmt man werden: ich werde gehen. Das ist das Futur.",
+    "Merkhilfe: Besteht die Form aus einem Wort, ist es Präsens oder Präteritum. Besteht sie aus zwei, ist es Perfekt, Plusquamperfekt oder Futur."
+  ],
+  begriffe:[
+    ["Verb","Das Tuwort: gehen, lesen, sein."],
+    ["Hilfsverb","haben, sein oder werden — hilft beim Bilden der Zeitform."],
+    ["Präsens","Gegenwart: ich gehe."],
+    ["Präteritum","Einfache Vergangenheit: ich ging."],
+    ["Perfekt","Vollendete Gegenwart: ich bin gegangen."],
+    ["Plusquamperfekt","Vorvergangenheit: ich war gegangen."],
+    ["Futur I","Zukunft: ich werde gehen."]
+  ],
+  regeln:[
+    "Ein Wort → Präsens oder Präteritum.",
+    "haben/sein in der Gegenwart + Partizip → Perfekt.",
+    "haben/sein in der Vergangenheit + Partizip → Plusquamperfekt.",
+    "werden + Grundform → Futur I."
+  ],
+  beispiel:{aufgabe:"„Ich habe das Buch gelesen.“ Welche Zeitform?",
+    schritte:["Zwei Teile: „habe“ + „gelesen“.","„habe“ ist die Gegenwart von haben.","haben in der Gegenwart + Partizip → Perfekt."],
+    ergebnis:"Perfekt"}
+},
+
+"Kommas bei Aufzählungen": {
+  worum:"Bei Aufzählungen trennt ein Komma die Glieder — mit einer wichtigen Ausnahme.",
+  einfach:[
+    "Eine Aufzählung ist, wenn du mehrere Dinge hintereinander nennst: Äpfel, Birnen und Bananen.",
+    "Damit man beim Lesen weiß, wo ein Ding aufhört und das nächste anfängt, setzt man Kommas dazwischen.",
+    "Das letzte Glied wird aber nicht mit Komma angehängt, sondern mit „und“ oder „oder“.",
+    "Und genau davor steht kein Komma. Das ist der Punkt, an dem die meisten Fehler passieren.",
+    "Im Englischen ist das übrigens anders — dort darf ein Komma vor „and“ stehen. Im Deutschen nicht."
+  ],
+  begriffe:[
+    ["Aufzählung","Mehrere Dinge hintereinander genannt."],
+    ["Glied","Ein einzelner Teil der Aufzählung."]
+  ],
+  regeln:[
+    "Zwischen den Gliedern steht ein Komma.",
+    "Vor „und“ und vor „oder“ steht kein Komma.",
+    "Das gilt für Nomen, Adjektive und ganze Satzteile gleichermaßen."
+  ],
+  beispiel:{aufgabe:"Ich kaufe Äpfel ___ Birnen ___ und Bananen.",
+    schritte:["Zwischen Äpfel und Birnen: Komma.","Vor „und“: kein Komma."],
+    ergebnis:"Ich kaufe Äpfel, Birnen und Bananen."}
+},
+
+"Adjektive steigern": {
+  worum:"Adjektive kann man vergleichen. Dafür gibt es drei Stufen.",
+  einfach:[
+    "Ein Adjektiv beschreibt, wie etwas ist: schnell, groß, gut.",
+    "Wenn du zwei Dinge vergleichst, brauchst du eine gesteigerte Form: Das Auto ist schneller als das Fahrrad.",
+    "Und wenn etwas das Äußerste ist, brauchst du die Höchstform: Das Flugzeug ist am schnellsten.",
+    "Die drei Stufen heißen Grundform, Vergleichsform und Höchstform. Die Fachwörter dafür sind Positiv, Komparativ und Superlativ.",
+    "Meistens hängt man einfach an: schnell – schneller – am schnellsten.",
+    "Bei manchen kurzen Wörtern kommt zusätzlich ein Umlaut dazu: alt – älter – am ältesten.",
+    "Und ein paar wichtige Wörter ändern sich ganz: gut – besser – am besten. Die muss man auswendig können."
+  ],
+  begriffe:[
+    ["Adjektiv","Beschreibt, wie etwas ist."],
+    ["Grundform","Die einfache Form: schnell."],
+    ["Vergleichsform","Mit „als“: schneller als …"],
+    ["Höchstform","Mit „am“: am schnellsten."]
+  ],
+  regeln:[
+    "Grundform – Vergleichsform – Höchstform",
+    "Meistens: -er und am -sten anhängen.",
+    "Manchmal zusätzlich ein Umlaut: alt – älter.",
+    "Unregelmäßig: gut – besser – am besten · viel – mehr – am meisten · gern – lieber – am liebsten"
+  ],
+  beispiel:{aufgabe:"gut → ? → ?",
+    schritte:["„guter“ gibt es nicht — das Wort ist unregelmäßig.","Die Formen muss man kennen."],
+    ergebnis:"gut – besser – am besten"}
+}
+
+};
+
+function hatErklaerung(thema){ return !!ERKLAERUNGEN[thema]; }
+/* ---------- Dashboard und Hilfe-Formular ---------- */
+
+let istAdmin = false;
+let statistik = null;
+let meldungen = [];
+let ladeFehler = "";
+let meldungGesendet = false;
+let vorMelden = "willkommen";
+
+async function pruefeAdmin(){
+  istAdmin = false;
+  if (!benutzer) return;
+  try {
+    const {data, error} = await db.rpc("ist_admin");
+    istAdmin = !error && data === true;
+  } catch(e){ istAdmin = false; }
+}
+
+async function ladeDashboard(){
+  ladeFehler = "";
+  try {
+    const {data, error} = await db.rpc("statistik");
+    if (error) throw error;
+    statistik = data;
+  } catch(e){
+    statistik = null;
+    ladeFehler = "Die Zahlen konnten nicht geladen werden. Ist der SQL-Befehl schon ausgeführt?";
+  }
+  try {
+    const {data} = await db.from("meldungen").select("*").order("erstellt", {ascending:false}).limit(50);
+    meldungen = data || [];
+  } catch(e){ meldungen = []; }
+}
+
+async function zeigeDashboard(){
+  ansicht = "dashboard"; statistik = null; render();
+  await ladeDashboard();
+  render();
+}
+
+async function meldungAbhaken(id, erledigt){
+  await db.from("meldungen").update({erledigt: !erledigt}).eq("id", id);
+  await ladeDashboard();
+  render();
+}
+
+function zeigeMelden(){
+  if (ansicht !== "melden") vorMelden = ansicht;
+  meldungGesendet = false;
+  ansicht = "melden"; render();
+}
+function zurueckVonMelden(){ ansicht = vorMelden === "melden" ? "willkommen" : vorMelden; render(); }
+
+async function meldungSenden(){
+  const bereich = document.getElementById("mBereich").value;
+  const nachricht = document.getElementById("mText").value.trim();
+  const email = document.getElementById("mMail").value.trim();
+  if (nachricht.length < 5){ ladeFehler = "Bitte schreib kurz, worum es geht."; return render(); }
+  ladeFehler = "";
+  const {error} = await db.from("meldungen").insert({
+    bereich: bereich,
+    nachricht: nachricht,
+    email: email || (benutzer ? benutzer.email : null)
+  });
+  if (error){ ladeFehler = "Das Absenden hat nicht geklappt. Versuch es später noch einmal."; return render(); }
+  meldungGesendet = true;
+  render();
+}
+
+/* ---------- Ansichten ---------- */
+
+function dashboardHtml(){
+  if (ladeFehler && !statistik){
+    return `<div class="card">
+      <button class="zurueck" onclick="zurFachwahl()">← Zurück</button>
+      <h1>Dashboard</h1>
+      <div class="feedback nope">${ladeFehler}</div>
+    </div>`;
+  }
+  if (!statistik){
+    return `<div class="card"><p class="laden">Zahlen werden geladen …</p></div>`;
+  }
+  const s = statistik;
+  const themen = (s.themen || []).slice(0, 12);
+  const maxAnzahl = Math.max(1, ...themen.map(t => t.anzahl));
+  const schwer = themen.slice().sort((a,b) => b.fehlerquote - a.fehlerquote).slice(0, 5);
+  const tage = s.tage || [];
+  const maxTag = Math.max(1, ...tage.map(t => t.anzahl));
+
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurFachwahl()">← Zurück zum Üben</button>
+      <span class="tag">Nur für dich sichtbar</span>
+      <h1>Dashboard</h1>
+      <p class="soft">Ausschließlich Zahlen — keine Namen, keine E-Mail-Adressen, keine einzelnen Personen.</p>
+    </div>
+
+    <div class="card">
+      <div class="zahlen">
+        <div><b>${s.nutzer_gesamt}</b><span>Nutzer gesamt</span></div>
+        <div><b>${s.nutzer_neu_7t}</b><span>neu (7 Tage)</span></div>
+        <div><b>${s.nutzer_aktiv_7t}</b><span>aktiv (7 Tage)</span></div>
+        <div><b>${s.uebungen_gesamt}</b><span>Übungen gesamt</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Übungen der letzten 14 Tage</p>
+      ${tage.length
+        ? `<div class="balken">${tage.map(t => `
+            <div class="balkensaeule" title="${t.tag}: ${t.anzahl}">
+              <div class="saeule" style="height:${Math.round(t.anzahl / maxTag * 100)}%"></div>
+              <span>${t.tag}</span>
+            </div>`).join("")}</div>`
+        : `<p class="small soft" style="margin:0">Noch keine Übungen aufgezeichnet.</p>`}
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Daran scheitern die meisten</p>
+      ${schwer.length
+        ? schwer.map(t => `
+            <div class="zeile">
+              <div><b>${t.thema}</b><span>${KATALOG[t.fach] ? KATALOG[t.fach].name : t.fach} ${t.klasse} · ${t.anzahl}× geübt</span></div>
+              <div class="wann ${t.fehlerquote >= 50 ? "" : "spaeter"}">${t.fehlerquote} % Fehler</div>
+            </div>`).join("")
+        : `<p class="small soft" style="margin:0">Noch keine Daten.</p>`}
+      <p class="small soft" style="margin-top:14px">Hohe Werte heißen nicht, dass das Thema schlecht ist — es heißt, dass die Erklärung dort am meisten bringt.</p>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Am häufigsten geübt</p>
+      ${themen.length
+        ? themen.map(t => `
+            <div class="rangzeile">
+              <span class="rangname">${t.thema}</span>
+              <span class="rangbalken"><i style="width:${Math.round(t.anzahl / maxAnzahl * 100)}%"></i></span>
+              <span class="rangzahl">${t.anzahl}</span>
+            </div>`).join("")
+        : `<p class="small soft" style="margin:0">Noch keine Daten.</p>`}
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Meldungen aus dem Hilfe-Formular ${s.offene_meldungen ? `· ${s.offene_meldungen} offen` : ""}</p>
+      ${meldungen.length
+        ? meldungen.map(m => `
+            <div class="meldung ${m.erledigt ? "erledigt" : ""}">
+              <div class="meldungkopf">
+                <b>${m.bereich || "Sonstiges"}</b>
+                <span>${new Date(m.erstellt).toLocaleDateString("de-DE")}</span>
+              </div>
+              <p class="meldungtext">${(m.nachricht || "").replace(/</g, "&lt;")}</p>
+              ${m.email ? `<a class="meldungmail" href="mailto:${m.email}">Antworten an ${m.email}</a>` : ""}
+              <button class="wechseln" onclick="meldungAbhaken(${m.id}, ${m.erledigt})">
+                ${m.erledigt ? "wieder öffnen" : "als erledigt abhaken"}
+              </button>
+            </div>`).join("")
+        : `<p class="small soft" style="margin:0">Noch keine Meldungen.</p>`}
+    </div>`;
+}
+
+function meldenHtml(){
+  if (meldungGesendet){
+    return `<div class="card">
+      <span class="tag">Danke</span>
+      <h1>Deine Nachricht ist angekommen</h1>
+      <p class="soft">Wir schauen sie uns an. Wenn du eine E-Mail-Adresse angegeben hast, melden wir uns dort.</p>
+      <button class="btn full" style="margin-top:16px" onclick="zurueckVonMelden()">Zurück</button>
+    </div>`;
+  }
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonMelden()">← Zurück</button>
+      <span class="tag">Hilfe</span>
+      <h1>Was ist das Problem?</h1>
+      <p class="soft">Ob eine Aufgabe falsch ist, etwas nicht funktioniert oder du einen Wunsch hast — schreib es einfach hin.</p>
+    </div>
+    <div class="card">
+      <p class="ueberschrift">Worum geht es?</p>
+      <select class="feld" id="mBereich">
+        <option>Eine Aufgabe ist falsch</option>
+        <option>Ich verstehe eine Erklärung nicht</option>
+        <option>Etwas funktioniert nicht</option>
+        <option>Ich habe einen Wunsch</option>
+        <option>Sonstiges</option>
+      </select>
+      <textarea class="feld" id="mText" rows="5" placeholder="Beschreib es in deinen Worten. Wenn es um eine Aufgabe geht: welches Fach, welche Klasse, welches Thema?"></textarea>
+      <input class="feld" id="mMail" type="email" placeholder="Deine E-Mail für eine Antwort (freiwillig)"
+             value="${benutzer ? benutzer.email : ""}">
+      ${ladeFehler ? `<div class="feedback nope">${ladeFehler}</div>` : ""}
+      <button class="btn full" style="margin-top:14px" onclick="meldungSenden()">Absenden</button>
+      <p class="small soft" style="margin-top:14px">Du kannst auch direkt schreiben an <a href="mailto:hilfe@endlichkapiert.com">hilfe@endlichkapiert.com</a>.</p>
+    </div>`;
+}
 /* ---------- Verbindung zur Datenbank ---------- */
 const SUPABASE_URL = "https://ygiouoxwuupkbjepqhxm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3EHXsWVndJyI5h3gxYGCqQ_a1SCx4il";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* Abstände der Wiederholungen in Tagen, je nach Sicherheitsstufe */
 const INTERVALLE = [1, 3, 7, 14, 30, 90];
 const TAG = 86400000;
 
 /* ---------- Zustand ---------- */
-let ansicht = "laden";      // laden | anmelden | start | loesen | fertig | plan
-let benutzer = null;        // eingeloggter Nutzer, sonst null
-let gast = false;           // ohne Konto ausprobieren
-let fortschritt = [];       // Zeilen aus der Datenbank
-let fach = "mathe", klasse = 7;
-let aktuell = null, aktuellName = "", schrittNr = 0;
-let beantwortet = false, tippOffen = false, fehlversuche = 0;
-let anmeldeModus = "anmelden";  // anmelden | registrieren
+let ansicht = "laden";   // laden | willkommen | anmelden | fachwahl | klassenwahl | start | loesen | fertig | plan
+let benutzer = null;
+let fortschritt = [];
+let fach = null, klasse = null;
+let aktuell = null, aktuellName = "", variante = 0;
+let schrittNr = 0, beantwortet = false, tippOffen = false, fehlversuche = 0;
+let reihenfolge = [];   // in welcher Reihenfolge die Antworten gerade angezeigt werden
+let falschGeklickt = [];   // welche Antworten in diesem Schritt schon danebenlagen
+let fehlerImSchritt = 0;
+let aufgeloest = false;    // nach drei Fehlversuchen wird die Lösung gezeigt
+let erklaerungAngeboten = false;
+
+/* ---------- Einstellungen ---------- */
+const einstellungen = {modus:"auto", schrift:"normal", autoTipp:true};
+function ladeEinstellungen(){
+  try {
+    const roh = window.localStorage.getItem("ek-einstellungen");
+    if (roh) Object.assign(einstellungen, JSON.parse(roh));
+  } catch(e){ /* ohne Speicher geht es auch, nur nicht dauerhaft */ }
+}
+function speichereEinstellungen(){
+  try { window.localStorage.setItem("ek-einstellungen", JSON.stringify(einstellungen)); }
+  catch(e){ /* egal */ }
+}
+function wendeEinstellungenAn(){
+  let dunkel = einstellungen.modus === "dunkel";
+  if (einstellungen.modus === "auto" && window.matchMedia)
+    dunkel = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.classList.toggle("dunkel", dunkel);
+  document.documentElement.classList.toggle("grossschrift", einstellungen.schrift === "gross");
+}
+function setzeEinstellung(feld, wert){
+  einstellungen[feld] = wert;
+  speichereEinstellungen(); wendeEinstellungenAn(); render();
+}
+let anmeldeModus = "anmelden";
 let hinweis = "";
+const gastZaehler = {};   // merkt sich pro Thema, welche Aufgabe zuletzt dran war
 
 const el = document.getElementById("screen");
 const seiteEl = document.getElementById("seite");
 
 /* ---------- Hilfsfunktionen ---------- */
-function tageBis(zeitpunkt){
-  return Math.ceil((new Date(zeitpunkt).getTime() - Date.now()) / TAG);
+/* Mischt die Positionen 0..n-1 zufällig (Fisher-Yates).
+   Wird einmal pro Schritt gezogen, damit sich die Reihenfolge
+   beim erneuten Zeichnen nach einer falschen Antwort nicht ändert. */
+function mischeReihenfolge(anzahl){
+  const a = Array.from({length: anzahl}, (_, i) => i);
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
-function wannText(zeile){
-  const t = tageBis(zeile.naechste_wiederholung);
-  if (zeile.stufe >= 4 && t > 20) return {text:"sitzt", stil:"sitzt"};
+function neueReihenfolge(){
+  reihenfolge = mischeReihenfolge(aktuell.schritte[schrittNr].optionen.length);
+}
+function tageBis(z){ return Math.ceil((new Date(z).getTime() - Date.now()) / TAG); }
+function wannText(z){
+  const t = tageBis(z.naechste_wiederholung);
+  if (z.stufe >= 4 && t > 20) return {text:"sitzt", stil:"sitzt"};
   if (t <= 0) return {text:"jetzt fällig", stil:""};
   if (t === 1) return {text:"morgen", stil:"spaeter"};
   if (t < 14) return {text:`in ${t} Tagen`, stil:"spaeter"};
   return {text:`in ${Math.round(t/7)} Wochen`, stil:"spaeter"};
 }
-function faellig(){
-  return fortschritt.filter(z => tageBis(z.naechste_wiederholung) <= 0).length;
+function faellig(){ return fortschritt.filter(z => tageBis(z.naechste_wiederholung) <= 0).length; }
+function zeileZu(thema){ return fortschritt.find(z => z.thema === thema); }
+function anzahlGeplant(){
+  let n = 0;
+  for (const f of Object.values(KATALOG))
+    for (const l of Object.values(f.themen)) n += l.length;
+  return n;
 }
+function anzahlFertig(){ return Object.keys(AUFGABEN).length; }
 
 /* ---------- Anmeldung ---------- */
 async function pruefeAnmeldung(){
   const {data} = await db.auth.getSession();
   benutzer = data.session ? data.session.user : null;
-  if (benutzer){ await ladeFortschritt(); ansicht = "start"; }
-  else { ansicht = "willkommen"; }
+  if (benutzer){ await ladeFortschritt(); await pruefeAdmin(); ansicht = "fachwahl"; }
+  else { istAdmin = false; ansicht = "willkommen"; }
   render();
 }
 
@@ -474,22 +2679,22 @@ async function anmelden(){
     if (error){ hinweis = uebersetze(error.message); return render(); }
     benutzer = data.user;
   }
-  gast = false;
   await ladeFortschritt();
-  ansicht = "start";
+  await pruefeAdmin();
+  ansicht = "fachwahl";
   render();
 }
 
 async function abmelden(){
   await db.auth.signOut();
-  benutzer = null; gast = false; fortschritt = []; hinweis = "";
-  ansicht = "willkommen";
-  render();
+  benutzer = null; fortschritt = []; hinweis = ""; istAdmin = false;
+  fach = null; klasse = null;
+  ansicht = "willkommen"; render();
 }
 
-function alsGast(){
-  gast = true; benutzer = null; fortschritt = []; ansicht = "start"; render();
-}
+function alsGast(){ benutzer = null; fortschritt = []; ansicht = "fachwahl"; render(); }
+function zeigeAnmeldung(){ ansicht = "anmelden"; hinweis = ""; render(); }
+function zeigeWillkommen(){ ansicht = "willkommen"; render(); }
 
 function uebersetze(m){
   const t = (m||"").toLowerCase();
@@ -501,61 +2706,108 @@ function uebersetze(m){
   return "Da ist etwas schiefgegangen: " + m;
 }
 
-/* ---------- Daten lesen und schreiben ---------- */
+/* ---------- Daten ---------- */
 async function ladeFortschritt(){
-  if (!benutzer) { fortschritt = []; return; }
+  if (!benutzer){ fortschritt = []; return; }
   const {data, error} = await db.from("fortschritt").select("*")
     .order("naechste_wiederholung", {ascending:true});
   fortschritt = error ? [] : (data || []);
 }
 
 async function speichereErgebnis(){
-  if (!benutzer) return;   // Gäste speichern nichts
-  const a = aktuell;
+  if (!benutzer) return;
+  const info = themaInfo(aktuellName);
 
   await db.from("uebungen").insert({
-    user_id: benutzer.id, fach: a.fach, klasse: a.klasse, thema: aktuellName,
+    user_id: benutzer.id, fach: info.fach, klasse: info.klasse, thema: aktuellName,
     geschafft: true, fehlversuche: fehlversuche
   });
 
-  const alt = fortschritt.find(z => z.fach === a.fach && z.thema === aktuellName);
+  const alt = zeileZu(aktuellName);
   let stufe;
   if (!alt) stufe = fehlversuche === 0 ? 1 : 0;
   else if (fehlversuche === 0) stufe = Math.min(alt.stufe + 1, INTERVALLE.length - 1);
   else stufe = Math.max(alt.stufe - 1, 0);
 
-  const naechste = new Date(Date.now() + INTERVALLE[stufe] * TAG).toISOString();
-  const zeile = {
-    user_id: benutzer.id, fach: a.fach, klasse: a.klasse, thema: aktuellName,
+  await db.from("fortschritt").upsert({
+    user_id: benutzer.id, fach: info.fach, klasse: info.klasse, thema: aktuellName,
     stufe: stufe,
     versuche: (alt ? alt.versuche : 0) + 1,
     fehler: (alt ? alt.fehler : 0) + (fehlversuche > 0 ? 1 : 0),
     zuletzt_geuebt: new Date().toISOString(),
-    naechste_wiederholung: naechste
-  };
-  await db.from("fortschritt").upsert(zeile, {onConflict:"user_id,fach,thema"});
+    naechste_wiederholung: new Date(Date.now() + INTERVALLE[stufe] * TAG).toISOString()
+  }, {onConflict:"user_id,fach,thema"});
+
   await ladeFortschritt();
 }
 
-/* ---------- Bedienung ---------- */
-function setFach(f){ fach=f; if(ansicht!=="start") ansicht="start"; render(); }
-function setKlasse(k){ klasse=k; if(ansicht!=="start") ansicht="start"; render(); }
-function zeigePlan(){ ansicht = ansicht==="plan" ? "start" : "plan"; render(); }
-function starte(name){
-  aktuellName=name; aktuell=AUFGABEN[name];
-  schrittNr=0; beantwortet=false; tippOffen=false; fehlversuche=0;
-  ansicht="loesen"; render();
+/* ---------- Navigation ---------- */
+function waehleFach(f){ fach = f; klasse = null; ansicht = "klassenwahl"; render(); }
+function waehleKlasse(k){ klasse = k; ansicht = "start"; render(); }
+function zurFachwahl(){ ansicht = "fachwahl"; render(); }
+function zurKlassenwahl(){ ansicht = "klassenwahl"; render(); }
+function zeigePlan(){ ansicht = ansicht === "plan" ? (klasse ? "start" : "fachwahl") : "plan"; render(); }
+
+function starte(name, welche){
+  aktuellName = name;
+  const anzahl = anzahlAufgaben(name);
+  if (welche === undefined){
+    const alt = zeileZu(name);
+    const basis = alt ? alt.versuche : (gastZaehler[name] || 0);
+    welche = basis % anzahl;
+  }
+  variante = welche % anzahl;
+  aktuell = baueAufgabe(name, variante);   // Zahlen werden hier frisch gewürfelt
+  gastZaehler[name] = (gastZaehler[name] || 0) + 1;
+  schrittNr = 0; beantwortet = false; tippOffen = false; fehlversuche = 0;
+  schrittZuruecksetzen();
+  neueReihenfolge();
+  ansicht = "loesen"; render();
 }
+function naechsteVariante(){ starte(aktuellName, variante + 1); }
+let vorErklaerung = "start";
+function zeigeErklaerung(thema){
+  if (thema) aktuellName = thema;
+  vorErklaerung = ansicht;
+  ansicht = "erklaerung"; render();
+}
+function zurueckVonErklaerung(){ ansicht = vorErklaerung === "erklaerung" ? "start" : vorErklaerung; render(); }
+let vorEinstellungen = "willkommen";
+function zeigeEinstellungen(){
+  if (ansicht !== "einstellungen") vorEinstellungen = ansicht;
+  ansicht = "einstellungen"; render();
+}
+function zurueckVonEinstellungen(){ ansicht = vorEinstellungen; render(); }
+function nochmalGleichesThema(){ starte(aktuellName, variante); }
+
 function antwort(i){
-  if(beantwortet) return;
-  if(aktuell.schritte[schrittNr].optionen[i].ok) beantwortet=true;
-  else fehlversuche++;
+  if (beantwortet) return;
+  if (falschGeklickt.includes(i)) return;          // dieselbe falsche Antwort nicht zweimal
+  if (aktuell.schritte[schrittNr].optionen[i].ok){
+    beantwortet = true;
+    render(i);
+    return;
+  }
+  falschGeklickt.push(i);
+  fehlerImSchritt++;
+  fehlversuche++;
+  /* Stufe 1: Tipp erscheint von allein */
+  if (fehlerImSchritt === 1 && einstellungen.autoTipp) tippOffen = true;
+  /* Stufe 2: Erklärung zum Thema wird angeboten */
+  if (fehlerImSchritt === 2) erklaerungAngeboten = true;
+  /* Stufe 3: Lösung wird gezeigt, damit niemand hängen bleibt */
+  if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
   render(i);
 }
+function schrittZuruecksetzen(){
+  falschGeklickt = []; fehlerImSchritt = 0; aufgeloest = false; erklaerungAngeboten = false;
+}
 async function weiter(){
-  schrittNr++; beantwortet=false; tippOffen=false;
-  if(schrittNr >= aktuell.schritte.length){
-    ansicht="fertig"; render();
+  schrittNr++; beantwortet = false; tippOffen = false;
+  schrittZuruecksetzen();
+  if (schrittNr < aktuell.schritte.length) neueReihenfolge();
+  if (schrittNr >= aktuell.schritte.length){
+    ansicht = "fertig"; render();
     await speichereErgebnis();
     render();
     return;
@@ -563,221 +2815,150 @@ async function weiter(){
   render();
 }
 function wechsleModus(){
-  anmeldeModus = anmeldeModus==="anmelden" ? "registrieren" : "anmelden";
-  hinweis=""; render();
-}
-function anzahlGeplant(){
-  let n=0;
-  for(const f of Object.values(KATALOG))
-    for(const liste of Object.values(f.themen)) n+=liste.length;
-  return n;
+  anmeldeModus = anmeldeModus === "anmelden" ? "registrieren" : "anmelden";
+  hinweis = ""; render();
 }
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
-  if (ansicht === "anmelden" || ansicht === "laden" || ansicht === "willkommen"){ seiteEl.innerHTML = ""; return; }
+  const ohne = ["laden","willkommen","anmelden","fachwahl","klassenwahl","melden"];
+  if (ohne.includes(ansicht)){ seiteEl.innerHTML = ""; return; }
 
   const kopfBox = benutzer
-    ? `<div class="userbox"><b>${benutzer.email}</b>
-         <button onclick="abmelden()">Abmelden</button></div>`
+    ? `<div class="userbox"><b>${benutzer.email}</b><button onclick="abmelden()">Abmelden</button></div>`
     : `<div class="userbox gast"><b>Du übst ohne Konto</b>
          <button onclick="zeigeAnmeldung()">Konto anlegen und Fortschritt speichern</button></div>`;
 
   const offen = benutzer ? faellig() : 0;
   const planText = benutzer
-    ? (offen > 0 ? `${offen} ${offen===1?"Thema ist":"Themen sind"} fällig` : `${fortschritt.length} Themen gespeichert`)
+    ? (offen > 0 ? `${offen} ${offen === 1 ? "Thema ist" : "Themen sind"} fällig` : `${fortschritt.length} Themen gespeichert`)
     : "Nur mit Konto";
+
+  const wahl = (fach && klasse)
+    ? `<div class="sidebox" style="padding:14px 15px">
+         <p class="sidelabel" style="margin-bottom:6px">Du übst gerade</p>
+         <b style="display:block;font-size:16.5px;margin-bottom:8px">${KATALOG[fach].name} · Klasse ${klasse}</b>
+         <button class="wechseln" onclick="zurFachwahl()">Fach oder Klasse wechseln</button>
+       </div>` : "";
 
   seiteEl.innerHTML = `
     ${kopfBox}
-    <div class="sidebox">
-      <p class="sidelabel">Fach</p>
-      <div class="fachliste">
-        ${Object.entries(KATALOG).map(([k,v])=>
-          `<button class="${fach===k?"an":""}" onclick="setFach('${k}')">${v.name}</button>`).join("")}
-      </div>
-      <p class="sidelabel" style="margin-top:16px">Klasse</p>
-      <div class="klassenliste">
-        ${[5,6,7,8,9,10].map(k=>
-          `<button class="${klasse===k?"an":""}" onclick="setKlasse(${k})">${k}</button>`).join("")}
-      </div>
-    </div>
+    ${wahl}
     <button class="planbtn" onclick="zeigePlan()">
-      ${ansicht==="plan" ? "Zurück zu den Themen" : "Mein Plan"}
-      <small>${ansicht==="plan" ? "Themenübersicht öffnen" : planText}</small>
-    </button>`;
+      ${ansicht === "plan" ? "Zurück zu den Themen" : "Mein Plan"}
+      <small>${ansicht === "plan" ? "Themenübersicht öffnen" : planText}</small>
+    </button>
+    <button class="planbtn" style="margin-top:10px" onclick="zeigeEinstellungen()">Einstellungen<small>Aussehen, Schrift, Hilfe</small></button>
+    <button class="planbtn" style="margin-top:10px" onclick="zeigeMelden()">Hilfe und Feedback<small>Problem melden</small></button>
+    ${istAdmin ? `<button class="planbtn admin" style="margin-top:10px" onclick="zeigeDashboard()">Dashboard<small>Zahlen und Meldungen</small></button>` : ""}`;
 }
 
 /* ---------- Hauptbereich ---------- */
-function zeigeAnmeldung(){ ansicht="anmelden"; hinweis=""; render(); }
-function zeigeWillkommen(){ ansicht="willkommen"; render(); }
-
 function render(gewaehlt){
   renderSeite();
   const shell = document.getElementById("shell");
-  const breit = (ansicht === "willkommen" || ansicht === "anmelden" || ansicht === "laden");
-  shell.classList.toggle("voll", breit);
+  shell.classList.toggle("voll", ["laden","willkommen","anmelden","fachwahl","klassenwahl","melden"].includes(ansicht));
 
-  if(ansicht === "willkommen"){
-    el.innerHTML = `
-      <div class="hero">
-        <span class="tag">Mathe und Deutsch · Klasse 5 bis 10</span>
-        <h1>„Ich hab’s im Unterricht<br>einfach nicht kapiert.“</h1>
-        <p class="lede">Dann bist du hier richtig. <b>Endlich kapiert</b> gibt dir nie die Lösung — es stellt dir Fragen, bis du selbst draufkommst. Und sorgt dafür, dass du es diesmal nicht wieder vergisst.</p>
-        <div class="knopfreihe">
-          <button class="btn" onclick="alsGast()">Kostenlos ausprobieren</button>
-          <button class="btn ghost" onclick="zeigeAnmeldung()">Anmelden</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <p class="ueberschrift">Kennst du das?</p>
-        <ul class="liste">
-          <li>Die Lösung steht da — aber du verstehst nicht, wie man darauf kommt.</li>
-          <li>Bei Textaufgaben weißt du nicht mal, was du überhaupt rechnen sollst.</li>
-          <li>Du hast es verstanden. Eine Woche später ist es wieder weg.</li>
-          <li>Du nimmst dir vor zu üben — und machst es dann doch nicht.</li>
-        </ul>
-      </div>
-
-      <div class="card">
-        <p class="ueberschrift">So funktioniert es</p>
-        <ol class="schritte">
-          <li><b>Du suchst dir dein Thema</b><span>Fach und Klassenstufe wählen, Thema antippen. Mehr nicht.</span></li>
-          <li><b>Du wirst hingeführt, nicht bedient</b><span>Statt einer fertigen Lösung bekommst du kleine Fragen. Auch wenn du auf „Ich weiß nicht weiter“ drückst, kommt nur ein Hinweis — den letzten Schritt machst immer du.</span></li>
-          <li><b>Es kommt von allein wieder</b><span>Was du nicht konntest, legt dir die App nach einem Tag wieder vor. Dann nach drei Tagen, nach einer Woche, nach einem Monat — bis es wirklich sitzt.</span></li>
-        </ol>
-      </div>
-
-      <div class="card">
-        <p class="ueberschrift">So sieht das aus</p>
-        <div class="probe">
-          <div class="auf">3x + 5 = 20</div>
-          <p class="fr">Am Ende soll nur noch <b>x</b> alleine dastehen. Was steht ihm auf der linken Seite gerade im Weg?</p>
-          <div class="opt gut">Die + 5</div>
-          <div class="opt">Die 3 vor dem x</div>
-          <div class="opt">Die 20 auf der rechten Seite</div>
-        </div>
-        <p class="small soft" style="margin-top:14px">Vier solcher Fragen — und du hast die Gleichung selbst gelöst.</p>
-      </div>
-
-      <div class="card">
-        <p class="ueberschrift">Warum nicht einfach eine Lösungs-App?</p>
-        <div class="gegen">
-          <div class="andere">
-            <b>Andere Apps</b>
-            Du fotografierst die Aufgabe, bekommst das Ergebnis und schreibst es ab. Bei der nächsten Aufgabe stehst du genauso da wie vorher.
-          </div>
-          <div class="wir">
-            <b>Endlich kapiert</b>
-            Du kommst selbst darauf — und wirst daran erinnert, bevor du es vergessen hast. Beim nächsten Mal weißt du, wie es geht.
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <p class="ueberschrift">Was drin ist</p>
-        <div class="zahlen">
-          <div><b>2</b><span>Fächer</span></div>
-          <div><b>6</b><span>Klassenstufen</span></div>
-          <div><b>${anzahlGeplant()}</b><span>Themen</span></div>
-          <div><b>0 €</b><span>zum Ausprobieren</span></div>
-        </div>
-        <p class="small soft" style="margin-top:14px">Mathe und Deutsch von Klasse 5 bis 10. Englisch, Französisch, Geschichte und Erdkunde kommen dazu.</p>
-      </div>
-
-      <div class="card" style="text-align:center">
-        <h2 style="margin-bottom:8px">Probier es einfach aus</h2>
-        <p class="soft" style="margin:0 auto 18px;max-width:44ch">Ohne Anmeldung, ohne Kosten. Ein Konto brauchst du erst, wenn die App sich deinen Fortschritt merken soll.</p>
-        <button class="btn" onclick="alsGast()">Jetzt ausprobieren</button>
-      </div>
-
-      <p class="fuss">Endlich kapiert · Ein Lernprojekt aus Deutschland</p>`;
-    return;
-  }
-
-  if(ansicht === "laden"){
+  if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
     return;
   }
 
-  if(ansicht === "anmelden"){
-    const reg = anmeldeModus === "registrieren";
+  if (ansicht === "willkommen"){ el.innerHTML = willkommenHtml(); return; }
+  if (ansicht === "anmelden"){ el.innerHTML = anmeldenHtml(); return; }
+
+  /* ---- Fachwahl ---- */
+  if (ansicht === "fachwahl"){
     el.innerHTML = `
       <div class="card">
-        <button class="zurueck" onclick="zeigeWillkommen()">← Zur Startseite</button>
-        <span class="tag">Endlich kapiert</span>
-        <h1>${reg ? "Konto anlegen" : "Willkommen zurück"}</h1>
-        <p class="soft">${reg
-          ? "Mit einem Konto merkt sich die App, was du nicht konntest, und legt es dir später wieder vor."
-          : "Melde dich an, damit dein Wiederholungsplan wieder da ist."}</p>
+        <span class="tag">Schritt 1 von 3</span>
+        <h1>Welches Fach?</h1>
+        <p class="soft">Such dir aus, worin du gerade Hilfe brauchst.</p>
+      </div>
+      <div class="wahlgitter">
+        ${Object.entries(KATALOG).map(([k,v])=>{
+          let fertig = 0, gesamt = 0;
+          for (const liste of Object.values(v.themen)){
+            gesamt += liste.length;
+            fertig += liste.filter(t => AUFGABEN[t]).length;
+          }
+          return `<button class="grosswahl" onclick="waehleFach('${k}')">
+            <b>${v.name}</b>
+            <span>${fertig} von ${gesamt} Themen fertig</span>
+          </button>`;
+        }).join("")}
       </div>
       <div class="card">
-        <input class="feld" id="mail" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
-        <input class="feld" id="pw" type="password" placeholder="Passwort (mindestens 6 Zeichen)"
-               autocomplete="${reg?"new-password":"current-password"}"
-               onkeydown="if(event.key==='Enter')anmelden()">
-        ${hinweis ? `<div class="feedback ${hinweis.startsWith("Fast")?"ok":"nope"}" style="margin-top:4px">${hinweis}</div>` : ""}
-        <button class="btn full" style="margin-top:14px" onclick="anmelden()">
-          ${reg ? "Konto anlegen" : "Anmelden"}
-        </button>
-        <button class="btn ghost full" style="margin-top:10px" onclick="wechsleModus()">
-          ${reg ? "Ich habe schon ein Konto" : "Noch kein Konto? Hier anlegen"}
-        </button>
-      </div>
-      <div class="card">
-        <h4 style="margin:0 0 8px">Erst mal nur anschauen?</h4>
-        <p class="small soft">Du kannst alles ausprobieren, ohne dich anzumelden. Dann wird allerdings nichts gespeichert — und der Wiederholungsplan ist genau der Teil, der etwas bringt.</p>
-        <button class="btn ghost full" style="margin-top:12px" onclick="alsGast()">Ohne Konto ausprobieren</button>
+        <p class="small soft" style="margin:0 0 12px">Englisch, Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu.</p>
+        <button class="btn ghost full" onclick="zeigeEinstellungen()">Einstellungen</button>
+        <button class="btn ghost full" style="margin-top:10px" onclick="zeigeMelden()">Hilfe und Feedback</button>
+        ${istAdmin ? `<button class="btn full admin planbtn" style="margin-top:10px;text-align:center" onclick="zeigeDashboard()">Dashboard öffnen</button>` : ""}
       </div>`;
     return;
   }
 
-  if(ansicht === "start"){
+  /* ---- Klassenwahl ---- */
+  if (ansicht === "klassenwahl"){
+    const themen = KATALOG[fach].themen;
+    el.innerHTML = `
+      <div class="card">
+        <button class="zurueck" onclick="zurFachwahl()">← Anderes Fach</button>
+        <span class="tag">Schritt 2 von 3 · ${KATALOG[fach].name}</span>
+        <h1>Welche Klasse?</h1>
+        <p class="soft">Nimm die Klassenstufe, in der du gerade bist — oder die, in der du hängengeblieben bist.</p>
+      </div>
+      <div class="wahlgitter drei">
+        ${[5,6,7,8,9,10].map(k=>{
+          const fertig = themen[k].filter(t => AUFGABEN[t]).length;
+          return `<button class="grosswahl" onclick="waehleKlasse(${k})">
+            <b>Klasse ${k}</b>
+            <span>${fertig > 0 ? fertig + " von " + themen[k].length + " fertig" : "in Arbeit"}</span>
+          </button>`;
+        }).join("")}
+      </div>`;
+    return;
+  }
+
+  /* ---- Themenliste ---- */
+  if (ansicht === "start"){
     const themen = KATALOG[fach].themen[klasse];
     el.innerHTML = `
       <div class="card">
-        <span class="tag">Klasse 5 bis 10</span>
+        <div class="pfad">
+          <button onclick="zurFachwahl()">${KATALOG[fach].name}</button>
+          <span>›</span>
+          <button onclick="zurKlassenwahl()">Klasse ${klasse}</button>
+        </div>
         <h1>Such dir dein Thema</h1>
-        <p class="soft">Du bekommst nie die Lösung — nur Fragen, die dich hinführen. Und was du nicht konntest, kommt später von allein wieder.</p>
+        <p class="soft">Du bekommst nie die Lösung — nur Fragen, die dich hinführen.</p>
       </div>
 
       <div class="card">
-        <div class="kopf"><h2 style="margin:0">${KATALOG[fach].name}, Klasse ${klasse}</h2></div>
         <div class="themen">
           ${themen.map(t=>{
-            const da = !!AUFGABEN[t];
-            const gespeichert = fortschritt.find(z => z.fach===fach && z.thema===t);
-            let pille = `<span class="pill bald">kommt</span>`;
-            if (da){
-              if (gespeichert){
-                const w = wannText(gespeichert);
-                pille = `<span class="pill" style="${w.stil==="spaeter"?"background:var(--bg);color:var(--soft);border:1px solid var(--line)":""}">${w.text}</span>`;
-              } else {
-                pille = `<span class="pill">üben</span>`;
-              }
+            const n = anzahlAufgaben(t);
+            if (!n) return `<div class="thema aus"><span>${t}</span><span class="pill bald">kommt</span></div>`;
+            const z = zeileZu(t);
+            let pille;
+            if (z){
+              const w = wannText(z);
+              pille = `<span class="pill ${w.stil === "sitzt" ? "" : "neutral"}">${w.text}</span>`;
+            } else {
+              pille = `<span class="pill">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
             }
-            return da
-              ? `<button class="thema" onclick="starte('${t.replace(/'/g,"\\'")}')"><span>${t}</span>${pille}</button>`
-              : `<div class="thema aus"><span>${t}</span>${pille}</div>`;
+            const sicher = t.replace(/'/g,"\\'");
+            return `<div class="themazeile">
+              <button class="thema" onclick="starte('${sicher}')"><span>${t}</span>${pille}</button>
+              ${hatErklaerung(t) ? `<button class="erklknopf" title="Erklärung" onclick="zeigeErklaerung('${sicher}')">?</button>` : ""}
+            </div>`;
           }).join("")}
         </div>
-        <p class="small soft" style="margin-top:16px">Später tippst du hier einfach deine eigene Aufgabe ein — die App erkennt selbst, zu welchem Thema sie gehört.</p>
-      </div>
-
-      <div class="card">
-        <div class="zahlen">
-          <div><b>2</b><span>Fächer</span></div>
-          <div><b>6</b><span>Klassenstufen</span></div>
-          <div><b>${anzahlGeplant()}</b><span>Themen geplant</span></div>
-          <div><b>${Object.keys(AUFGABEN).length}</b><span>schon fertig</span></div>
-        </div>
-        <p class="small soft" style="margin-top:14px">Englisch, Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu. Das Gerüst steht schon.</p>
       </div>`;
     return;
   }
 
-  if(ansicht === "plan"){
+  /* ---- Plan ---- */
+  if (ansicht === "plan"){
     let inhalt;
     if (!benutzer){
       inhalt = `<div class="card">
@@ -785,19 +2966,19 @@ function render(gewaehlt){
         <p class="small soft">Ohne Anmeldung kann sich die App nicht merken, was du geübt hast.</p>
         <button class="btn full" style="margin-top:12px" onclick="zeigeAnmeldung()">Konto anlegen</button>
       </div>`;
-    } else if (fortschritt.length === 0){
+    } else if (!fortschritt.length){
       inhalt = `<div class="card">
         <h4 style="margin:0 0 8px">Noch nichts drin</h4>
         <p class="small soft">Sobald du dein erstes Thema durchgearbeitet hast, taucht es hier auf — mit dem Datum, an dem es wieder dran ist.</p>
-        <button class="btn full" style="margin-top:12px" onclick="ansicht='start';render()">Erstes Thema üben</button>
+        <button class="btn full" style="margin-top:12px" onclick="zurFachwahl()">Erstes Thema üben</button>
       </div>`;
     } else {
       inhalt = `<div class="card">
         ${fortschritt.map(z=>{
           const w = wannText(z);
-          const info = `${KATALOG[z.fach]?KATALOG[z.fach].name:z.fach} ${z.klasse} · ${z.versuche}× geübt${z.fehler?`, ${z.fehler}× gehakt`:""}`;
+          const fname = KATALOG[z.fach] ? KATALOG[z.fach].name : z.fach;
           return `<div class="zeile">
-            <div><b>${z.thema}</b><span>${info}</span></div>
+            <div><b>${z.thema}</b><span>${fname} ${z.klasse} · ${z.versuche}× geübt${z.fehler ? `, ${z.fehler}× gehakt` : ""}</span></div>
             <div class="wann ${w.stil}">${w.text}</div>
           </div>`;
         }).join("")}
@@ -813,10 +2994,100 @@ function render(gewaehlt){
     return;
   }
 
-  if(ansicht === "fertig"){
+  if (ansicht === "dashboard"){ el.innerHTML = dashboardHtml(); return; }
+  if (ansicht === "melden"){ el.innerHTML = meldenHtml(); return; }
+
+  /* ---- Einstellungen ---- */
+  if (ansicht === "einstellungen"){
+    const wahl = (feld, wert, titel, unter) => `
+      <button class="option ${einstellungen[feld] === wert ? "an" : ""}" onclick="setzeEinstellung('${feld}', ${typeof wert === "string" ? `'${wert}'` : wert})">
+        <b>${titel}</b>${unter ? `<span>${unter}</span>` : ""}
+      </button>`;
+    el.innerHTML = `
+      <div class="card">
+        <button class="zurueck" onclick="zurueckVonEinstellungen()">← Zurück</button>
+        <span class="tag">Einstellungen</span>
+        <h1>Wie hättest du es gern?</h1>
+        <p class="soft">Alles hier lässt sich jederzeit wieder ändern.</p>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Aussehen</p>
+        <div class="optionen3">
+          ${wahl("modus","hell","Hell","Heller Hintergrund")}
+          ${wahl("modus","dunkel","Dunkel","Schont die Augen abends")}
+          ${wahl("modus","auto","Automatisch","Wie dein Gerät eingestellt ist")}
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Schriftgröße</p>
+        <div class="optionen3">
+          ${wahl("schrift","normal","Normal","")}
+          ${wahl("schrift","gross","Groß","Besser lesbar")}
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Hilfe beim Üben</p>
+        <div class="optionen3">
+          ${wahl("autoTipp",true,"Tipp kommt von allein","Nach dem ersten Fehler")}
+          ${wahl("autoTipp",false,"Tipp nur auf Knopfdruck","Ich will es erst selbst versuchen")}
+        </div>
+        <p class="small soft" style="margin-top:14px">Nach dem zweiten Fehler wird dir die Erklärung zum Thema angeboten. Nach dem dritten wird die Lösung gezeigt, damit du nicht stecken bleibst.</p>
+      </div>`;
+    return;
+  }
+
+  /* ---- Erklärung ---- */
+  if (ansicht === "erklaerung"){
+    const e = ERKLAERUNGEN[aktuellName];
+    if (!e){
+      el.innerHTML = `<div class="card"><h2>Für dieses Thema gibt es noch keine Erklärung</h2>
+        <button class="btn full" style="margin-top:12px" onclick="zurueckVonErklaerung()">Zurück</button></div>`;
+      return;
+    }
+    el.innerHTML = `
+      <div class="card">
+        <button class="zurueck" onclick="zurueckVonErklaerung()">← Zurück</button>
+        <span class="tag">Erklärung</span>
+        <h1>${aktuellName}</h1>
+        <p class="soft">${e.worum}</p>
+      </div>
+      <div class="card">
+        <p class="ueberschrift">Von vorn erklärt</p>
+        ${e.einfach.map(t => `<p class="einfachtext">${t}</p>`).join("")}
+      </div>
+      ${e.begriffe ? `<div class="card">
+        <p class="ueberschrift">Wörter, die du kennen musst</p>
+        <div class="begriffe">${e.begriffe.map(([w,b]) => `<div class="begriff"><b>${w}</b><span>${b}</span></div>`).join("")}</div>
+      </div>` : ""}
+      ${e.bild ? `<div class="card"><p class="ueberschrift">Zum Anschauen</p>${e.bild}</div>` : ""}
+      <div class="card">
+        <p class="ueberschrift">Das Wichtigste</p>
+        <ul class="liste">${e.regeln.map(r => `<li>${r}</li>`).join("")}</ul>
+      </div>
+      <div class="card">
+        <p class="ueberschrift">Ein Beispiel</p>
+        <div class="probe">
+          <div class="auf" style="font-size:20px">${e.beispiel.aufgabe}</div>
+          <ol class="beispielschritte">${e.beispiel.schritte.map(x => `<li>${x}</li>`).join("")}</ol>
+          <div class="ergebnis">${e.beispiel.ergebnis}</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:center">
+        <p class="soft" style="margin:0 auto 16px;max-width:42ch">Alles klar? Dann probier es an einer Aufgabe — du wirst Schritt für Schritt hingeführt.</p>
+        <button class="btn" onclick="starte(aktuellName)">Jetzt üben</button>
+      </div>`;
+    return;
+  }
+
+  /* ---- Fertig ---- */
+  if (ansicht === "fertig"){
+    const n = anzahlAufgaben(aktuellName);
     const gespeichert = benutzer
       ? `<div class="feedback ok" style="margin-bottom:18px"><b>${aktuellName}</b> ist gespeichert. Du siehst dieses Thema automatisch wieder — je sicherer du wirst, desto später.</div>`
-      : `<div class="feedback tipp" style="margin-bottom:18px">Ohne Konto wird nichts gespeichert. Mit Konto käme <b>${aktuellName}</b> jetzt automatisch auf deinen Wiederholungsplan.</div>`;
+      : `<div class="feedback tipp" style="margin-bottom:18px">Ohne Konto wird nichts gespeichert. Mit Konto käme <b>${aktuellName}</b> jetzt auf deinen Wiederholungsplan.</div>`;
     el.innerHTML = `
       <div class="card">
         <span class="tag">Geschafft</span>
@@ -826,53 +3097,173 @@ function render(gewaehlt){
       <div class="card">
         <h2>Was du gemacht hast</h2>
         <ul class="schritte-log">
-          ${aktuell.schritte.map(s=>`<li>${s.frage.replace(/<[^>]+>/g,"")}</li>`).join("")}
+          ${aktuell.schritte.map(s => `<li>${s.frage.replace(/<[^>]+>/g,"")}</li>`).join("")}
         </ul>
         ${gespeichert}
-        <button class="btn full" onclick="zeigePlan()">Meinen Plan ansehen</button>
-        <button class="btn ghost full" style="margin-top:10px" onclick="ansicht='start';render()">Nächstes Thema</button>
+        ${n > 1 ? `<button class="btn full" onclick="naechsteVariante()">Noch eine Aufgabe zu diesem Thema</button>
+                   <button class="btn ghost full" style="margin-top:10px" onclick="zeigePlan()">Meinen Plan ansehen</button>`
+                : `<button class="btn full" onclick="zeigePlan()">Meinen Plan ansehen</button>`}
+        <button class="btn ghost full" style="margin-top:10px" onclick="ansicht='start';render()">Anderes Thema</button>
       </div>`;
     return;
   }
 
-  /* ansicht === "loesen" */
+  /* ---- Aufgabe lösen ---- */
   const s = aktuell.schritte[schrittNr];
-  const balken = aktuell.schritte.map((_,i)=>`<i class="${i<=schrittNr?"an":""}"></i>`).join("");
-  const optionenHtml = s.optionen.map((o,i)=>{
-    let cls="";
-    if(gewaehlt!==undefined && i===gewaehlt) cls = o.ok?"richtig":"falsch";
-    else if(beantwortet && o.ok) cls="richtig";
-    return `<button class="pick ${cls}" ${beantwortet?"disabled":""} onclick="antwort(${i})">${o.t}</button>`;
+  const balken = aktuell.schritte.map((_,i) => `<i class="${i <= schrittNr ? "an" : ""}"></i>`).join("");
+  if (reihenfolge.length !== s.optionen.length) neueReihenfolge();
+  const optionenHtml = reihenfolge.map(i => {
+    const o = s.optionen[i];
+    let cls = "";
+    if (falschGeklickt.includes(i)) cls = "falsch";
+    else if (beantwortet && o.ok) cls = "richtig";
+    const gesperrt = beantwortet || falschGeklickt.includes(i);
+    return `<button class="pick ${cls}" ${gesperrt ? "disabled" : ""} onclick="antwort(${i})">${o.t}</button>`;
   }).join("");
 
-  let fb="";
-  if(gewaehlt!==undefined){
-    const o=s.optionen[gewaehlt];
-    fb=`<div class="feedback ${o.ok?"ok":"nope"}">${o.fb}</div>`;
+  let fb = "";
+  if (gewaehlt !== undefined){
+    const o = s.optionen[gewaehlt];
+    fb = `<div class="feedback ${o.ok ? "ok" : "nope"}">${o.fb}</div>`;
   }
-  if(tippOffen && !beantwortet) fb += `<div class="feedback tipp"><b>Tipp:</b> ${s.tipp}</div>`;
+  if (tippOffen && !aufgeloest) fb += `<div class="feedback tipp"><b>Tipp:</b> ${s.tipp}</div>`;
+  if (erklaerungAngeboten && !beantwortet && hatErklaerung(aktuellName))
+    fb += `<div class="feedback hilfe">
+             <b>Kommst du nicht weiter?</b> Dann liegt es vielleicht am Thema, nicht an der Aufgabe.
+             <button class="btn ghost full" style="margin-top:12px" onclick="zeigeErklaerung()">${aktuellName} von vorn erklärt</button>
+           </div>`;
+  if (aufgeloest)
+    fb += `<div class="feedback ok"><b>Kein Problem.</b> Die richtige Antwort ist grün markiert — schau sie dir in Ruhe an und geh dann weiter.</div>`;
 
+  const anz = anzahlAufgaben(aktuellName);
   el.innerHTML = `
     <div class="card">
       <button class="zurueck" onclick="ansicht='start';render()">← Zurück zur Übersicht</button>
       <div class="fortschritt">${balken}</div>
       <div class="kopf">
-        <span class="tag" style="margin-bottom:0">${KATALOG[aktuell.fach].name} ${aktuell.klasse} · ${aktuellName}</span>
-        <span class="small soft">Schritt ${schrittNr+1} von ${aktuell.schritte.length}</span>
+        <span class="tag" style="margin-bottom:0">${aktuellName}${anz > 1 ? ` · Aufgabe ${variante + 1} von ${anz}` : ""}</span>
+        <span class="small soft">Schritt ${schrittNr + 1} von ${aktuell.schritte.length}</span>
       </div>
-      <div class="aufg ${aktuell.typ==="text"?"text":""}"><div class="zeile1">${aktuell.text}</div></div>
+      <div class="aufg ${aktuell.typ === "text" ? "text" : ""}"><div class="zeile1">${aktuell.text}</div></div>
       <p class="frage">${s.frage}</p>
       <div class="optionen breit">${optionenHtml}</div>
       ${fb}
       ${beantwortet
         ? `<button class="btn full" id="weiterBtn" style="margin-top:18px" onclick="weiter()">Weiter</button>`
         : `<button class="btn ghost full" id="tippBtn" style="margin-top:12px" onclick="tippOffen=true;render()">Ich weiß nicht weiter</button>`}
+      ${hatErklaerung(aktuellName) && !beantwortet
+        ? `<button class="btn ghost full" id="erklBtn" style="margin-top:10px" onclick="zeigeErklaerung()">Ich verstehe das Thema gar nicht</button>` : ""}
     </div>
     <div class="card">
       <p class="small soft" style="margin:0">Auch beim Tipp bekommst du keine Lösung — nur einen Hinweis. Den letzten Schritt machst immer du.</p>
     </div>`;
 }
 
+/* ---------- Startseite und Anmeldung ---------- */
+function willkommenHtml(){
+  return `
+    <div class="hero">
+      <span class="tag">Mathe und Deutsch · Klasse 5 bis 10</span>
+      <h1>„Ich hab’s im Unterricht<br>einfach nicht kapiert.“</h1>
+      <p class="lede">Dann bist du hier richtig. <b>Endlich kapiert</b> gibt dir nie die Lösung — es stellt dir Fragen, bis du selbst draufkommst. Und sorgt dafür, dass du es diesmal nicht wieder vergisst.</p>
+      <div class="knopfreihe">
+        <button class="btn" onclick="alsGast()">Kostenlos ausprobieren</button>
+        <button class="btn ghost" onclick="zeigeAnmeldung()">Anmelden</button>
+        <button class="btn ghost" onclick="zeigeEinstellungen()">Einstellungen</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Kennst du das?</p>
+      <ul class="liste">
+        <li>Die Lösung steht da — aber du verstehst nicht, wie man darauf kommt.</li>
+        <li>Bei Textaufgaben weißt du nicht mal, was du überhaupt rechnen sollst.</li>
+        <li>Du hast es verstanden. Eine Woche später ist es wieder weg.</li>
+        <li>Du nimmst dir vor zu üben — und machst es dann doch nicht.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">So funktioniert es</p>
+      <ol class="schritte">
+        <li><b>Du suchst dir dein Thema</b><span>Fach wählen, Klasse wählen, Thema antippen.</span></li>
+        <li><b>Du wirst hingeführt, nicht bedient</b><span>Statt einer fertigen Lösung bekommst du kleine Fragen. Auch wenn du auf „Ich weiß nicht weiter“ drückst, kommt nur ein Hinweis — den letzten Schritt machst immer du.</span></li>
+        <li><b>Es kommt von allein wieder</b><span>Was du nicht konntest, legt dir die App nach einem Tag wieder vor. Dann nach drei Tagen, nach einer Woche, nach einem Monat — bis es wirklich sitzt.</span></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">So sieht das aus</p>
+      <div class="probe">
+        <div class="auf">3x + 5 = 20</div>
+        <p class="fr">Am Ende soll nur noch <b>x</b> alleine dastehen. Was steht ihm auf der linken Seite gerade im Weg?</p>
+        <div class="opt gut">Die + 5</div>
+        <div class="opt">Die 3 vor dem x</div>
+        <div class="opt">Die 20 auf der rechten Seite</div>
+      </div>
+      <p class="small soft" style="margin-top:14px">Vier solcher Fragen — und du hast die Gleichung selbst gelöst.</p>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Warum nicht einfach eine Lösungs-App?</p>
+      <div class="gegen">
+        <div class="andere"><b>Andere Apps</b>Du fotografierst die Aufgabe, bekommst das Ergebnis und schreibst es ab. Bei der nächsten Aufgabe stehst du genauso da wie vorher.</div>
+        <div class="wir"><b>Endlich kapiert</b>Du kommst selbst darauf — und wirst daran erinnert, bevor du es vergessen hast. Beim nächsten Mal weißt du, wie es geht.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Was drin ist</p>
+      <div class="zahlen">
+        <div><b>2</b><span>Fächer</span></div>
+        <div><b>6</b><span>Klassenstufen</span></div>
+        <div><b>${anzahlGeplant()}</b><span>Themen</span></div>
+        <div><b>0 €</b><span>zum Ausprobieren</span></div>
+      </div>
+      <p class="small soft" style="margin-top:14px">Mathe und Deutsch von Klasse 5 bis 10. Englisch, Französisch, Geschichte und Erdkunde kommen dazu.</p>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <h2 style="margin-bottom:8px">Probier es einfach aus</h2>
+      <p class="soft" style="margin:0 auto 18px;max-width:44ch">Ohne Anmeldung, ohne Kosten. Ein Konto brauchst du erst, wenn die App sich deinen Fortschritt merken soll.</p>
+      <button class="btn" onclick="alsGast()">Jetzt ausprobieren</button>
+    </div>
+
+    <p class="fuss">Endlich kapiert · Ein Lernprojekt aus Deutschland<br>
+      <button class="fusslink" onclick="zeigeMelden()">Hilfe und Feedback</button></p>`;
+}
+
+function anmeldenHtml(){
+  const reg = anmeldeModus === "registrieren";
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zeigeWillkommen()">← Zur Startseite</button>
+      <span class="tag">Endlich kapiert</span>
+      <h1>${reg ? "Konto anlegen" : "Willkommen zurück"}</h1>
+      <p class="soft">${reg
+        ? "Mit einem Konto merkt sich die App, was du nicht konntest, und legt es dir später wieder vor."
+        : "Melde dich an, damit dein Wiederholungsplan wieder da ist."}</p>
+    </div>
+    <div class="card">
+      <input class="feld" id="mail" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
+      <input class="feld" id="pw" type="password" placeholder="Passwort (mindestens 6 Zeichen)"
+             autocomplete="${reg ? "new-password" : "current-password"}"
+             onkeydown="if(event.key==='Enter')anmelden()">
+      ${hinweis ? `<div class="feedback ${hinweis.startsWith("Fast") ? "ok" : "nope"}" style="margin-top:4px">${hinweis}</div>` : ""}
+      <button class="btn full" style="margin-top:14px" onclick="anmelden()">${reg ? "Konto anlegen" : "Anmelden"}</button>
+      <button class="btn ghost full" style="margin-top:10px" onclick="wechsleModus()">
+        ${reg ? "Ich habe schon ein Konto" : "Noch kein Konto? Hier anlegen"}
+      </button>
+    </div>
+    <div class="card">
+      <h4 style="margin:0 0 8px">Erst mal nur anschauen?</h4>
+      <p class="small soft">Du kannst alles ausprobieren, ohne dich anzumelden. Dann wird allerdings nichts gespeichert — und der Wiederholungsplan ist genau der Teil, der etwas bringt.</p>
+      <button class="btn ghost full" style="margin-top:12px" onclick="alsGast()">Ohne Konto ausprobieren</button>
+    </div>`;
+}
+
+ladeEinstellungen();
+wendeEinstellungenAn();
 render();
 pruefeAnmeldung();
 </script>
