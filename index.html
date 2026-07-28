@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lernen einfach gemacht</title>
-<meta name="description" content="Lernen einfach gemacht: Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe und Deutsch, Klasse 5 bis 10.">
+<title>Endlich kapiert</title>
+<meta name="description" content="Endlich kapiert: Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe und Deutsch, Klasse 5 bis 10.">
 <meta name="theme-color" content="#10a37f">
 <style>
   :root{
@@ -21,10 +21,10 @@
 
   .shell{max-width:1140px;margin:0 auto;padding:0 20px 64px;display:grid;grid-template-columns:1fr;gap:0}
 
-  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;
+  .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;
     letter-spacing:-.01em;padding:20px 2px 18px;line-height:1.25}
   .logo .dot{width:30px;height:30px;border-radius:9px;background:var(--ac);flex:none;
-    display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800}
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:800;letter-spacing:.02em}
 
   .side{align-self:start}
   .sidebox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
@@ -164,7 +164,7 @@
 <body>
 <div class="shell">
   <aside class="side">
-    <div class="logo"><span class="dot">L</span> <span>Lernen einfach gemacht</span></div>
+    <div class="logo"><span class="dot">EK</span> <span>Endlich kapiert</span></div>
     <div id="seite"></div>
   </aside>
   <main>
@@ -580,7 +580,7 @@ function render(gewaehlt){
     const reg = anmeldeModus === "registrieren";
     el.innerHTML = `
       <div class="card">
-        <span class="tag">Lernen einfach gemacht</span>
+        <span class="tag">Endlich kapiert</span>
         <h1>${reg ? "Konto anlegen" : "Willkommen zurück"}</h1>
         <p class="soft">${reg
           ? "Mit einem Konto merkt sich die App, was du nicht konntest, und legt es dir später wieder vor."
