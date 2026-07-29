@@ -29,16 +29,28 @@
     --heroink:#eafaf4; --heroglanz1:#3fd3a7; --heroglanz2:#7ff0cb;
     --bau1:#d9a63c; --bau2:#b8862a; --bauink:#241a03;
   }
-  html.grossschrift body{font-size:19.5px}
-  html.grossschrift .frage{font-size:22px}
-  html.grossschrift button.pick{font-size:18.5px}
+  /* Schriftgröße-Regler: skaliert den gesamten Inhalt über die Variable --fs */
+  .reglerreihe{display:flex;align-items:center;gap:14px}
+  .reglerreihe .reglerklein{font-size:15px;color:var(--soft);font-weight:800;flex:none}
+  .reglerreihe .reglergross{font-size:27px;color:var(--soft);font-weight:800;flex:none;line-height:1}
+  .schriftregler{flex:1;-webkit-appearance:none;appearance:none;height:8px;border-radius:999px;
+    background:var(--line);outline:none;margin:0}
+  .schriftregler::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;
+    border-radius:50%;background:var(--ac);border:3px solid var(--card);
+    box-shadow:0 2px 8px -2px rgba(0,0,0,.4);cursor:pointer}
+  .schriftregler::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--ac);
+    border:3px solid var(--card);box-shadow:0 2px 8px -2px rgba(0,0,0,.4);cursor:pointer}
+  .schriftregler:focus-visible{outline:2px solid var(--ac);outline-offset:4px}
+  .schriftvorschau{border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+    margin-bottom:14px;background:var(--bg)}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
 
-  .shell{max-width:1140px;margin:0 auto;padding:14px 20px 64px;display:grid;grid-template-columns:1fr;gap:0}
+  .shell{max-width:1140px;margin:0 auto;padding:14px 20px 64px;display:grid;grid-template-columns:1fr;gap:0;
+    zoom:var(--fs,1)}
 
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;
     letter-spacing:-.01em;padding:20px 2px 18px;line-height:1.25}
@@ -4507,12 +4519,24 @@ let erklaerungAngeboten = false;
 let letzteEingabe = "";
 
 /* ---------- Einstellungen ---------- */
-const einstellungen = {modus:"auto", schrift:"normal", autoTipp:true, eingabe:"gemischt"};
+const SCHRIFT_MIN = 0.85, SCHRIFT_MAX = 1.45;
+const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true, eingabe:"gemischt"};
 function ladeEinstellungen(){
   try {
     const roh = window.localStorage.getItem("ek-einstellungen");
-    if (roh) Object.assign(einstellungen, JSON.parse(roh));
+    if (roh){
+      const daten = JSON.parse(roh);
+      Object.assign(einstellungen, daten);
+      /* Alte Einstellung ("gross"/"normal") auf die neue Skala übertragen */
+      if (daten.schriftSkala === undefined)
+        einstellungen.schriftSkala = daten.schrift === "gross" ? 1.15 : 1;
+    }
   } catch(e){ /* ohne Speicher geht es auch, nur nicht dauerhaft */ }
+  einstellungen.schriftSkala = begrenzeSkala(einstellungen.schriftSkala);
+}
+function begrenzeSkala(v){
+  v = parseFloat(v); if (isNaN(v)) v = 1;
+  return Math.min(SCHRIFT_MAX, Math.max(SCHRIFT_MIN, v));
 }
 function speichereEinstellungen(){
   try { window.localStorage.setItem("ek-einstellungen", JSON.stringify(einstellungen)); }
@@ -4523,11 +4547,19 @@ function wendeEinstellungenAn(){
   if (einstellungen.modus === "auto" && window.matchMedia)
     dunkel = window.matchMedia("(prefers-color-scheme: dark)").matches;
   document.documentElement.classList.toggle("dunkel", dunkel);
-  document.documentElement.classList.toggle("grossschrift", einstellungen.schrift === "gross");
+  document.documentElement.style.setProperty("--fs", einstellungen.schriftSkala || 1);
 }
 function setzeEinstellung(feld, wert){
   einstellungen[feld] = wert;
   speichereEinstellungen(); wendeEinstellungenAn(); render();
+}
+/* Schriftgröße-Regler: live anwenden ohne render(), damit das Wischen flüssig bleibt */
+function setSchriftSkala(v){
+  einstellungen.schriftSkala = begrenzeSkala(v);
+  document.documentElement.style.setProperty("--fs", einstellungen.schriftSkala);
+  speichereEinstellungen();
+  const anz = document.getElementById("schriftwert");
+  if (anz) anz.textContent = Math.round(einstellungen.schriftSkala * 100) + " %";
 }
 let letzteAnsicht = null;
 let anmeldeModus = "anmelden";
@@ -5069,10 +5101,17 @@ function render(gewaehlt){
 
       <div class="card">
         <p class="ueberschrift">Schriftgröße</p>
-        <div class="optionen3">
-          ${wahl("schrift","normal","Normal","")}
-          ${wahl("schrift","gross","Groß","Besser lesbar")}
+        <div class="schriftvorschau">So sieht dein Text aus. Wisch am Regler, bis es angenehm ist.</div>
+        <div class="reglerreihe">
+          <span class="reglerklein">A</span>
+          <input class="schriftregler" type="range" min="${SCHRIFT_MIN}" max="${SCHRIFT_MAX}" step="0.05"
+                 value="${einstellungen.schriftSkala || 1}" oninput="setSchriftSkala(this.value)"
+                 aria-label="Schriftgröße einstellen">
+          <span class="reglergross">A</span>
         </div>
+        <p class="small soft" style="margin:12px 0 0;text-align:center">
+          Nach rechts wischen = größer, nach links = kleiner · <b id="schriftwert">${Math.round((einstellungen.schriftSkala || 1) * 100)} %</b>
+        </p>
       </div>
 
       <div class="card">
