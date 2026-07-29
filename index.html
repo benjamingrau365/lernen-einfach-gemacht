@@ -323,6 +323,27 @@
   .rangzahl{flex:0 0 42px;text-align:right;font-size:14px;color:var(--soft);font-variant-numeric:tabular-nums}
   .meldung{border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:10px}
   .meldung.erledigt{opacity:.55}
+  /* Admin: Werkzeugleiste, Filter-Reiter, Bauplan */
+  .dashwerkzeug{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .dashwerkzeug .btn{padding:9px 16px}
+  .dashwerkzeug .stand{font-size:13px;color:var(--soft)}
+  .tickettabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
+  .tickettab{background:var(--bg);border:1px solid var(--line);border-radius:999px;
+    padding:7px 13px;font-size:13.5px;font-weight:600;color:var(--soft);cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px}
+  .tickettab:hover{color:var(--ac-dark);border-color:var(--ac)}
+  .tickettab.an{background:var(--ac-soft);border-color:var(--ac);color:var(--ac-dark)}
+  .tickettab span{background:var(--card);border:1px solid var(--line);border-radius:999px;
+    padding:0 7px;font-size:12px;min-width:20px;text-align:center}
+  .tickettab.an span{background:var(--ac);color:#fff;border-color:transparent}
+  .luecke{padding:10px 0;border-top:1px solid var(--line)}
+  .luecke:first-of-type{border-top:none}
+  .lueckekopf{font-weight:700;font-size:14.5px;margin-bottom:8px;display:flex;
+    justify-content:space-between;gap:10px}
+  .lueckekopf span{color:var(--soft);font-weight:500;font-size:13px}
+  .lueckechips{display:flex;flex-wrap:wrap;gap:6px}
+  .lueckechips .chip{background:var(--amber-soft);color:var(--amber);border-radius:999px;
+    padding:4px 11px;font-size:12.5px;font-weight:600}
   .meldungkopf{display:flex;justify-content:space-between;gap:10px;font-size:14px}
   .meldungkopf b{color:var(--ac-dark)}
   .meldungkopf span{color:var(--soft)}
@@ -2886,6 +2907,9 @@ let meldungCode = "";
 let meineAnfragen = [];
 let freigaben = null;
 let protokoll = null;
+let ticketTab = "offen";
+let nutzerSort = "neu";
+let dashboardStand = null;
 
 /* Was war der Nutzer gerade am Tun? Das hängen wir an die Meldung an. */
 function meldeKontext(){
@@ -2930,6 +2954,123 @@ async function ladeDashboard(){
     const {data} = await db.from("meldungen").select("*").order("erstellt", {ascending:false}).limit(50);
     meldungen = data || [];
   } catch(e){ meldungen = []; }
+  dashboardStand = new Date();
+}
+
+async function dashboardAktualisieren(){
+  statistik = null; render();
+  await ladeDashboard();
+  render();
+}
+
+/* ---------- Admin-Helfer: CSV, Filter, Bauplan ---------- */
+function csvExport(dateiname, kopf, zeilen){
+  const esc = v => `"${String(v == null ? "" : v).replace(/"/g, '""')}"`;
+  const txt = [kopf.map(esc).join(";"), ...zeilen.map(r => r.map(esc).join(";"))].join("\r\n");
+  const blob = new Blob(["﻿" + txt], {type: "text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = dateiname;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+/* Status einer Meldung ableiten (offen / beantwortet / erledigt) */
+function ticketStatus(m){
+  return m.status || (m.erledigt ? "erledigt" : (m.antwort ? "beantwortet" : "offen"));
+}
+
+/* Tickets live filtern (Reiter + Suche) — ohne render(), damit die Suche den Fokus behält */
+function ticketFiltern(tab){
+  if (tab){
+    ticketTab = tab;
+    document.querySelectorAll(".tickettab").forEach(b => b.classList.toggle("an", b.dataset.tab === tab));
+  }
+  const q = (document.getElementById("ticketsuche") ? document.getElementById("ticketsuche").value : "").toLowerCase().trim();
+  let n = 0;
+  document.querySelectorAll(".meldung[data-status]").forEach(el => {
+    const okTab = ticketTab === "alle" || el.dataset.status === ticketTab;
+    const okQ = !q || (el.dataset.text || "").indexOf(q) !== -1;
+    const zeigen = okTab && okQ;
+    el.style.display = zeigen ? "" : "none";
+    if (zeigen) n++;
+  });
+  const leer = document.getElementById("ticketleer");
+  if (leer) leer.style.display = n ? "none" : "";
+}
+
+/* Nutzerliste live durchsuchen — ohne render() */
+function nutzerFiltern(){
+  const q = (document.getElementById("nutzersuche") ? document.getElementById("nutzersuche").value : "").toLowerCase().trim();
+  let n = 0;
+  document.querySelectorAll(".nutzerzeile[data-text]").forEach(el => {
+    const zeigen = !q || (el.dataset.text || "").indexOf(q) !== -1;
+    el.style.display = zeigen ? "" : "none";
+    if (zeigen) n++;
+  });
+  const leer = document.getElementById("nutzerleer");
+  if (leer) leer.style.display = n ? "none" : "";
+}
+function nutzerSortieren(art){ nutzerSort = art; render(); }
+
+function nutzerCsvExport(){
+  if (!nutzer || !nutzer.length) return;
+  csvExport("konten.csv", ["E-Mail", "Angemeldet", "Übungen", "Zuletzt geübt"],
+    nutzer.map(n => [n.email || "", n.angemeldet || "", n.uebungen || 0, n.letzte_uebung || ""]));
+}
+function kennzahlenCsvExport(){
+  const s = statistik; if (!s) return;
+  csvExport("kennzahlen.csv", ["Kennzahl", "Wert"], [
+    ["Nutzer gesamt", s.nutzer_gesamt],
+    ["Neu (7 Tage)", s.nutzer_neu_7t],
+    ["Aktiv (7 Tage)", s.nutzer_aktiv_7t],
+    ["Übungen gesamt", s.uebungen_gesamt],
+    ["Kamen wieder", s.rueckkehrer],
+    ["Ø Fehler je Aufgabe", s.schnitt_fehler],
+    ["Wiederholungen fällig", s.faellig_gesamt],
+    ["Rückkehrquote %", s.nutzer_gesamt ? Math.round((s.rueckkehrer || 0) / s.nutzer_gesamt * 100) : 0]
+  ]);
+}
+function themenCsvExport(){
+  const s = statistik; if (!s || !(s.themen || []).length) return;
+  csvExport("themen.csv", ["Thema", "Fach", "Klasse", "Geübt", "Fehlerquote %"],
+    s.themen.map(t => [t.thema, KATALOG[t.fach] ? KATALOG[t.fach].name : t.fach, t.klasse, t.anzahl, t.fehlerquote]));
+}
+
+/* Bauplan: alle Themen, für die es noch keine Aufgaben gibt */
+function bauplanLuecken(){
+  const raus = [];
+  for (const [fk, f] of Object.entries(KATALOG)){
+    for (const [kl, liste] of Object.entries(f.themen)){
+      const offen = liste.filter(t => !AUFGABEN[t]);
+      if (offen.length) raus.push({fach: f.name, klasse: Number(kl), offen});
+    }
+  }
+  return raus;
+}
+function bauplanCsvExport(){
+  const l = bauplanLuecken();
+  const zeilen = [];
+  l.forEach(g => g.offen.forEach(t => zeilen.push([t, g.fach, g.klasse])));
+  if (!zeilen.length) return;
+  csvExport("bauplan.csv", ["Thema", "Fach", "Klasse"], zeilen);
+}
+function bauplanHtml(){
+  const l = bauplanLuecken();
+  const gesamtOffen = l.reduce((a, g) => a + g.offen.length, 0);
+  return `
+    <div class="card">
+      <p class="ueberschrift">Was fehlt noch · ${gesamtOffen} Themen ohne Aufgaben</p>
+      ${gesamtOffen === 0
+        ? `<p class="small soft" style="margin:0">Stark — jedes Thema im Katalog hat schon Aufgaben. 🎉</p>`
+        : `<p class="small soft" style="margin:0 0 12px">Das sind die Themen, für die es noch keine Aufgaben gibt — deine To-do-Liste zum Bauen.</p>
+           ${l.map(g => `
+             <div class="luecke">
+               <div class="lueckekopf">${g.fach} · Klasse ${g.klasse} <span>${g.offen.length} offen</span></div>
+               <div class="lueckechips">${g.offen.map(t => `<span class="chip">${t}</span>`).join("")}</div>
+             </div>`).join("")}
+           <button class="btn ghost full" style="margin-top:14px" onclick="bauplanCsvExport()">Als CSV herunterladen</button>`}
+    </div>`;
 }
 
 async function ladeNutzerliste(){
@@ -3021,6 +3162,10 @@ function dashboardHtml(){
       <span class="tag">Nur für dich sichtbar</span>
       <h1>Dashboard</h1>
       <p class="soft">Zahlen, Inhalt und offene Punkte. Die Liste der Konten liegt weiter unten und ist bewusst zugeklappt.</p>
+      <div class="dashwerkzeug">
+        <button class="btn ghost" onclick="dashboardAktualisieren()">↻ Aktualisieren</button>
+        <span class="stand">Stand: ${dashboardStand ? dashboardStand.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"}) : "—"}</span>
+      </div>
     </div>
 
     <div class="card">
@@ -3037,6 +3182,7 @@ function dashboardHtml(){
         <div><b>${s.nutzer_gesamt ? Math.round((s.rueckkehrer || 0) / s.nutzer_gesamt * 100) : 0} %</b><span>Rückkehrquote</span></div>
       </div>
       <p class="small soft" style="margin-top:12px"><b>Die Rückkehrquote ist deine wichtigste Zahl.</b> Sie sagt, wie viele Menschen an mehr als einem Tag geübt haben. Wer einmal kommt und nie wieder, hat nichts gelernt — egal wie viele Aufgaben er gelöst hat.</p>
+      <button class="btn ghost full" style="margin-top:12px" onclick="kennzahlenCsvExport()">Kennzahlen als CSV</button>
     </div>
 
     <div class="card">
@@ -3072,11 +3218,14 @@ function dashboardHtml(){
               <span class="rangzahl">${t.anzahl}</span>
             </div>`).join("")
         : `<p class="small soft" style="margin:0">Noch keine Daten.</p>`}
+      ${themen.length ? `<button class="btn ghost full" style="margin-top:14px" onclick="themenCsvExport()">Themen als CSV</button>` : ""}
     </div>
 
     ${wannHtml(s)}
 
     ${inhaltHtml()}
+
+    ${bauplanHtml()}
 
     ${aufgabenlisteHtml(s)}
 
@@ -3087,10 +3236,25 @@ function dashboardHtml(){
     ${protokollHtml()}
 
     <div class="card">
-      <p class="ueberschrift">Tickets ${s.offene_meldungen ? `· ${s.offene_meldungen} offen` : ""}</p>
-      ${meldungen.length
-        ? meldungen.map(m => `
-            <div class="meldung ${m.erledigt ? "erledigt" : ""}">
+      <p class="ueberschrift">Tickets · ${meldungen.length} gesamt</p>
+      ${meldungen.length ? (() => {
+        const zaehl = {alle: meldungen.length, offen: 0, beantwortet: 0, erledigt: 0};
+        meldungen.forEach(m => { zaehl[ticketStatus(m)] = (zaehl[ticketStatus(m)] || 0) + 1; });
+        const reiter = [["offen","Offen"],["beantwortet","Beantwortet"],["erledigt","Erledigt"],["alle","Alle"]];
+        return `
+        <div class="tickettabs">
+          ${reiter.map(([k,label]) => `
+            <button class="tickettab ${ticketTab === k ? "an" : ""}" data-tab="${k}" onclick="ticketFiltern('${k}')">
+              ${label} <span>${zaehl[k] || 0}</span>
+            </button>`).join("")}
+        </div>
+        <input class="feld" id="ticketsuche" type="search" placeholder="Suchen (Nummer, Bereich, Text) …" oninput="ticketFiltern()" style="margin-bottom:12px">
+        ${meldungen.map(m => {
+          const st = ticketStatus(m);
+          const suchtext = ((m.code || "") + " " + (m.bereich || "") + " " + (m.nachricht || "")).toLowerCase().replace(/"/g,"&quot;");
+          return `
+            <div class="meldung ${m.erledigt ? "erledigt" : ""}" data-status="${st}" data-text="${suchtext}"
+                 style="${(ticketTab === "alle" || st === ticketTab) ? "" : "display:none"}">
               <div class="meldungkopf">
                 <b>${m.code || "—"} · ${m.bereich || "Sonstiges"}</b>
                 <span>${new Date(m.erstellt).toLocaleDateString("de-DE")}</span>
@@ -3105,8 +3269,10 @@ function dashboardHtml(){
               <button class="wechseln" onclick="ticketErledigt(${m.id}, ${m.erledigt})">
                 ${m.erledigt ? "wieder öffnen" : "als erledigt abhaken"}
               </button>
-            </div>`).join("")
-        : `<p class="small soft" style="margin:0">Noch keine Tickets.</p>`}
+            </div>`;
+        }).join("")}
+        <p class="small soft" id="ticketleer" style="margin:0;display:none">Keine Tickets in dieser Ansicht.</p>`;
+      })() : `<p class="small soft" style="margin:0">Noch keine Tickets.</p>`}
     </div>`;
 }
 
@@ -3242,15 +3408,30 @@ function nutzerHtml(){
       <button class="btn ghost full" onclick="ladeNutzerliste()">Liste trotzdem öffnen</button>
     </div>`;
   if (nutzer === null) return `<div class="card"><p class="laden">Liste wird geladen …</p></div>`;
+  const sortiert = nutzer.slice().sort((a, b) => {
+    if (nutzerSort === "email") return (a.email || "").localeCompare(b.email || "");
+    if (nutzerSort === "uebungen") return (b.uebungen || 0) - (a.uebungen || 0);
+    if (nutzerSort === "aktiv") return new Date(b.letzte_uebung || 0) - new Date(a.letzte_uebung || 0);
+    return new Date(b.angemeldet || 0) - new Date(a.angemeldet || 0); // "neu"
+  });
+  const sortReiter = [["neu","Neueste"],["aktiv","Zuletzt aktiv"],["uebungen","Meiste Übungen"],["email","E-Mail A–Z"]];
   return `
     <div class="card">
       <p class="ueberschrift">Angemeldete Konten · ${nutzer.length}</p>
-      ${nutzer.length ? nutzer.map(n => `
-        <div class="zeile">
-          <div><b>${(n.email || "—").replace(/</g,"&lt;")}</b>
-               <span>angemeldet ${datum(n.angemeldet)} · ${n.uebungen} Übungen · zuletzt geübt ${datum(n.letzte_uebung)}</span></div>
-          ${n.email ? `<a class="wann spaeter" style="text-decoration:none" href="mailto:${n.email}">schreiben</a>` : ""}
-        </div>`).join("")
+      ${nutzer.length ? `
+        <div class="tickettabs">
+          ${sortReiter.map(([k,label]) => `
+            <button class="tickettab ${nutzerSort === k ? "an" : ""}" onclick="nutzerSortieren('${k}')">${label}</button>`).join("")}
+        </div>
+        <input class="feld" id="nutzersuche" type="search" placeholder="Nach E-Mail suchen …" oninput="nutzerFiltern()" style="margin-bottom:12px">
+        <button class="btn ghost full" style="margin-bottom:12px" onclick="nutzerCsvExport()">Als CSV herunterladen</button>
+        ${sortiert.map(n => `
+          <div class="zeile nutzerzeile" data-text="${(n.email || "").toLowerCase().replace(/"/g,"&quot;")}">
+            <div><b>${(n.email || "—").replace(/</g,"&lt;")}</b>
+                 <span>angemeldet ${datum(n.angemeldet)} · ${n.uebungen} Übungen · zuletzt geübt ${datum(n.letzte_uebung)}</span></div>
+            ${n.email ? `<a class="wann spaeter" style="text-decoration:none" href="mailto:${n.email}">schreiben</a>` : ""}
+          </div>`).join("")}
+        <p class="small soft" id="nutzerleer" style="margin:0;display:none">Keine Treffer.</p>`
         : `<p class="small soft" style="margin:0">Die Liste konnte nicht geladen werden. Ist die SQL-Erweiterung schon ausgeführt?</p>`}
       <button class="btn ghost full" style="margin-top:14px" onclick="nutzerVerbergen()">Liste wieder schließen</button>
     </div>`;
