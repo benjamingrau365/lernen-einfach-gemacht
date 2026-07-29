@@ -3391,7 +3391,7 @@ function menueLernen(f, k){
 function kopfleisteHtml(){
   return `
     <div class="kopfleiste">
-      <button class="marke" onclick="zeigeWillkommen()">
+      <button class="marke" onclick="zurStartseite()">
         <span class="ekkuerzel">EK</span>
         <span class="ahabirne" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="url(#ekbirne)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="ekbirne" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--heroglanz1)"/><stop offset="1" stop-color="var(--heroglanz2)"/></linearGradient></defs><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></span>
       </button>
@@ -4410,6 +4410,9 @@ async function abmelden(){
 function alsGast(){ benutzer = null; fortschritt = []; aktivitaet = {serie:0, heute:0, geladen:true}; ansicht = "uebersicht"; render(); }
 function zeigeAnmeldung(){ ansicht = "anmelden"; hinweis = ""; render(); }
 function zeigeWillkommen(){ ansicht = "willkommen"; render(); }
+/* Klick aufs Logo: dieselbe Startseite wie beim Aufruf der URL
+   (eingeloggt -> Dashboard, sonst -> Willkommensseite) */
+function zurStartseite(){ ansicht = benutzer ? "uebersicht" : "willkommen"; menueOffen = false; menueAuf = null; render(); }
 
 function uebersetze(m){
   const t = (m||"").toLowerCase();
