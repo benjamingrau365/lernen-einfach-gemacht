@@ -189,16 +189,22 @@
   .hero h1{font-size:clamp(48px,11vw,92px);line-height:1.0;letter-spacing:-.04em;
     font-weight:900;margin:0 auto;color:var(--heroink);max-width:14ch;
     text-wrap:balance;text-shadow:0 2px 22px rgba(16,163,127,.12)}
-  .hero h1 .glanz{display:inline-block;position:relative;
+  .glanz{display:inline-block;position:relative;
     background:linear-gradient(100deg,var(--heroglanz1) 0%,var(--heroglanz2) 50%,var(--heroglanz1) 100%);
     background-size:200% 100%;
     -webkit-background-clip:text;background-clip:text;color:transparent;
     animation:glanzschimmer 5s ease-in-out infinite}
   @keyframes glanzschimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-  @media(prefers-reduced-motion:reduce){.hero h1 .glanz{animation:none}}
-  .hero h1 .glanz::after{content:"";position:absolute;left:0;right:0;bottom:-.14em;
+  @media(prefers-reduced-motion:reduce){.glanz{animation:none}}
+  .glanz::after{content:"";position:absolute;left:0;right:0;bottom:-.14em;
     height:.16em;border-radius:999px;
     background:linear-gradient(90deg,transparent,var(--heroglanz1),var(--heroglanz2),transparent);opacity:.85}
+
+  /* Großer, zentrierter Markentitel — auch im eingeloggten Dashboard */
+  .startkopf{text-align:center;margin:2px 0 20px;padding:6px 0 8px}
+  .startkopf .grosstitel{font-size:clamp(44px,10vw,84px);line-height:1.0;letter-spacing:-.04em;
+    font-weight:900;margin:0 auto;color:var(--heroink);max-width:14ch;text-wrap:balance;
+    text-shadow:0 2px 22px rgba(16,163,127,.12)}
 
   .hero .lede{font-size:clamp(17px,2.4vw,20px);color:var(--soft);
     max-width:52ch;margin:26px auto 0}
@@ -3847,6 +3853,9 @@ function uebersichtHtml(){
     : `${aktivitaet.serie} Tage in Folge.`;
 
   return `
+    <div class="startkopf">
+      <h1 class="grosstitel">Endlich <span class="glanz">kapiert</span></h1>
+    </div>
     <div class="card kopfkarte">
       <div class="kopfzeile">
         <div>
