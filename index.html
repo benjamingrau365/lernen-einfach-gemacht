@@ -4531,6 +4531,39 @@ function setzeEinstellung(feld, wert){
 }
 let letzteAnsicht = null;
 let anmeldeModus = "anmelden";
+
+/* ---------- Zurück-Button des Handys/Browsers ---------- */
+let navPop = false;    // true, während wir einen Zurück-Klick verarbeiten
+let navInit = false;   // erster History-Eintrag noch nicht gesetzt
+
+function navSnapshot(){
+  return {v: ansicht, fach: fach, klasse: klasse, aktuellName: aktuellName,
+          variante: variante, anmeldeModus: anmeldeModus};
+}
+function navSpeichern(){
+  const s = navSnapshot();
+  if (!navInit){ history.replaceState(s, ""); navInit = true; }
+  else { history.pushState(s, ""); }
+}
+window.addEventListener("popstate", function(e){
+  navPop = true;
+  if (menueOffen) menueOffen = false;
+  const s = e.state;
+  if (s && s.v){
+    fach = s.fach; klasse = s.klasse; aktuellName = s.aktuellName;
+    variante = s.variante || 0; anmeldeModus = s.anmeldeModus || "anmelden";
+    if (s.v === "loesen"){
+      if (aktuellName) starte(aktuellName, variante);
+      else { ansicht = klasse ? "start" : "uebersicht"; render(); }
+    } else {
+      ansicht = s.v; render();
+    }
+  } else {
+    ansicht = benutzer ? "uebersicht" : "willkommen"; render();
+  }
+  letzteAnsicht = ansicht;
+  navPop = false;
+});
 let hinweis = "";
 const gastZaehler = {};   // merkt sich pro Thema, welche Aufgabe zuletzt dran war
 
@@ -4849,6 +4882,7 @@ function render(gewaehlt){
   /* Wer unten in der Fußleiste etwas anklickt, soll die neue Seite auch sehen
      und nicht erst nach oben wischen müssen. */
   if (ansicht !== letzteAnsicht){
+    if (!navPop && ansicht !== "laden") navSpeichern();
     letzteAnsicht = ansicht;
     try { window.scrollTo(0, 0); } catch(e){}
   }
