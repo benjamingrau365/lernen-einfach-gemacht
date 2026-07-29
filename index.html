@@ -486,15 +486,18 @@
   .kopfrechts .serie--mini b{font-size:16px}
   .kopfrechts .kopfcta{padding:11px 19px;font-size:clamp(14px,3.6vw,15.5px);white-space:nowrap}
   @media(max-width:640px){
-    .kopfleiste{padding:14px 16px}
+    .kopfleiste{padding:14px 14px}
     .marke .slogan{display:none}
-    .marke{gap:11px}
+    .marke{gap:10px}
     .kopfrechts{gap:7px}
-    .kopfrechts .kopfcta{padding:10px 15px}
+    .kopfrechts .kopfcta{padding:9px 12px;font-size:13px}
   }
   @media(max-width:400px){
     .kopfrechts .serie--mini{padding:7px 10px}
     .kopfrechts .serie--mini b{font-size:15px}
+    .kopfrechts .kopfcta{padding:8px 10px;font-size:12px}
+    .marke .ahabirne{width:48px;height:48px}
+    .marke .ekkuerzel{font-size:22px}
   }
   .marke .glanz::after{display:none}
   .marke .dot{width:clamp(42px,11vw,48px);height:clamp(42px,11vw,48px);border-radius:14px;
@@ -3602,7 +3605,7 @@ function kopfleisteHtml(){
       </nav>
       <div class="kopfrechts">
         ${benutzer && aktivitaet.geladen ? `<div class="serie serie--mini" title="Deine Serie">${SYM.flamme}<b>${aktivitaet.serie}</b></div>` : ""}
-        <button class="btn kopfcta" onclick="${benutzer ? "zurFachwahl()" : "zeigeAnmeldung()"}">${benutzer ? "Üben" : "Anmelden"}</button>
+        <button class="btn kopfcta" onclick="${benutzer ? "zurFachwahl()" : "zeigeAnmeldung()"}">${benutzer ? "Üben" : "Anmelden / Registrieren"}</button>
         <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
           <i></i><i></i><i></i>
         </button>
