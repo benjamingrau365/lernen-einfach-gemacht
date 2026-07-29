@@ -438,6 +438,23 @@
   .marke .slogan{font-size:clamp(11px,3vw,14px);font-weight:600;letter-spacing:.01em;
     color:var(--soft);white-space:nowrap}
   .marke .markentext{white-space:nowrap;letter-spacing:.03em}
+  /* rechte Gruppe: Serie + Aktions-Button + Menü */
+  .kopfrechts{display:flex;align-items:center;gap:9px;flex:none}
+  .kopfrechts .serie--mini{flex-direction:row;gap:6px;min-width:0;padding:8px 13px;border-radius:999px}
+  .kopfrechts .serie--mini svg{width:19px;height:19px}
+  .kopfrechts .serie--mini b{font-size:16px}
+  .kopfrechts .kopfcta{padding:11px 19px;font-size:clamp(14px,3.6vw,15.5px);white-space:nowrap}
+  @media(max-width:640px){
+    .kopfleiste{padding:14px 16px}
+    .marke .slogan{display:none}
+    .marke{gap:11px}
+    .kopfrechts{gap:7px}
+    .kopfrechts .kopfcta{padding:10px 15px}
+  }
+  @media(max-width:400px){
+    .kopfrechts .serie--mini{padding:7px 10px}
+    .kopfrechts .serie--mini b{font-size:15px}
+  }
   .marke .glanz::after{display:none}
   .marke .dot{width:clamp(42px,11vw,48px);height:clamp(42px,11vw,48px);border-radius:14px;
     background:linear-gradient(135deg,var(--heroglanz1),var(--heroglanz2));flex:none;
@@ -471,12 +488,12 @@
     box-shadow:0 0 20px -1px var(--heroglanz2),0 10px 24px -9px var(--heroglanz1)}
   .marke .leuchtbirne svg{width:clamp(28px,7vw,32px);height:clamp(28px,7vw,32px)}
   /* A + B kombiniert: heller XL-Kreis mit Rahmen, Verlauf-Birne und Leuchten */
-  .marke .ahabirne{width:clamp(54px,14vw,68px);height:clamp(54px,14vw,68px);border-radius:50%;flex:none;
+  .marke .ahabirne{width:clamp(48px,12vw,62px);height:clamp(48px,12vw,62px);border-radius:50%;flex:none;
     display:flex;align-items:center;justify-content:center;
     background:radial-gradient(120% 120% at 50% 32%,var(--ac-soft),var(--card));
     border:1.5px solid var(--line);
     box-shadow:0 0 22px -2px var(--heroglanz2),0 12px 28px -10px var(--heroglanz1)}
-  .marke .ahabirne svg{width:clamp(32px,8vw,40px);height:clamp(32px,8vw,40px)}
+  .marke .ahabirne svg{width:clamp(29px,7vw,37px);height:clamp(29px,7vw,37px)}
   .burger{background:none;border:1.5px solid var(--line);border-radius:11px;
     width:46px;height:42px;display:flex;flex-direction:column;justify-content:center;
     align-items:center;gap:5px;cursor:pointer;padding:0}
@@ -3376,9 +3393,13 @@ function kopfleisteHtml(){
         <span class="ahabirne" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="url(#ekbirne)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="ekbirne" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--heroglanz1)"/><stop offset="1" stop-color="var(--heroglanz2)"/></linearGradient></defs><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></span>
         <span class="markewort"><b>Endlich <span class="kap">kapiert</span></b><span class="slogan">Du kommst selbst drauf</span></span>
       </button>
-      <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
-        <i></i><i></i><i></i>
-      </button>
+      <div class="kopfrechts">
+        ${benutzer && aktivitaet.geladen ? `<div class="serie serie--mini" title="Deine Serie">${SYM.flamme}<b>${aktivitaet.serie}</b></div>` : ""}
+        <button class="btn kopfcta" onclick="${benutzer ? "zurFachwahl()" : "zeigeAnmeldung()"}">${benutzer ? "Üben" : "Anmelden"}</button>
+        <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
+          <i></i><i></i><i></i>
+        </button>
+      </div>
     </div>`;
 }
 
