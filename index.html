@@ -42,7 +42,7 @@
     border:3px solid var(--card);box-shadow:0 2px 8px -2px rgba(0,0,0,.4);cursor:pointer}
   .schriftregler:focus-visible{outline:2px solid var(--ac);outline-offset:4px}
   .schriftvorschau{border:1px solid var(--line);border-radius:12px;padding:12px 14px;
-    margin-bottom:14px;background:var(--bg)}
+    margin-top:14px;background:var(--bg);zoom:var(--fs,1)}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--bg);color:var(--ink);
@@ -51,6 +51,9 @@
 
   .shell{max-width:1140px;margin:0 auto;padding:14px 20px 64px;display:grid;grid-template-columns:1fr;gap:0;
     zoom:var(--fs,1)}
+  /* Auf der Einstellungs-Seite bleibt der Inhalt fest, damit der Regler nicht
+     unter dem Finger wegrutscht — die Vorschau-Box zeigt die Größe. */
+  .shell.keinzoom{zoom:1}
 
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;
     letter-spacing:-.01em;padding:20px 2px 18px;line-height:1.25}
@@ -4921,6 +4924,7 @@ function render(gewaehlt){
   renderSeite();
   const shell = document.getElementById("shell");
   shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"].includes(ansicht));
+  shell.classList.toggle("keinzoom", ansicht === "einstellungen");
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -5101,7 +5105,6 @@ function render(gewaehlt){
 
       <div class="card">
         <p class="ueberschrift">Schriftgröße</p>
-        <div class="schriftvorschau">So sieht dein Text aus. Wisch am Regler, bis es angenehm ist.</div>
         <div class="reglerreihe">
           <span class="reglerklein">A</span>
           <input class="schriftregler" type="range" min="${SCHRIFT_MIN}" max="${SCHRIFT_MAX}" step="0.05"
@@ -5112,6 +5115,7 @@ function render(gewaehlt){
         <p class="small soft" style="margin:12px 0 0;text-align:center">
           Nach rechts wischen = größer, nach links = kleiner · <b id="schriftwert">${Math.round((einstellungen.schriftSkala || 1) * 100)} %</b>
         </p>
+        <div class="schriftvorschau">So sieht dein Text in dieser Größe aus.</div>
       </div>
 
       <div class="card">
