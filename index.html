@@ -451,6 +451,14 @@
   .marke .stapel .u{font-size:clamp(20px,5.4vw,26px);font-weight:900;letter-spacing:-.02em;
     background:linear-gradient(100deg,var(--heroglanz1),var(--heroglanz2));
     -webkit-background-clip:text;background-clip:text;color:transparent}
+  /* Idee 6: Marke als Pille */
+  .marke .pille{display:inline-flex;align-items:center;gap:10px;padding:7px 18px 7px 7px;
+    border-radius:999px;background:var(--ac-soft);border:1px solid var(--line);
+    box-shadow:0 6px 18px -14px rgba(0,0,0,.5)}
+  .marke .pille .dot{width:clamp(30px,7.5vw,34px);height:clamp(30px,7.5vw,34px);border-radius:10px;
+    font-size:clamp(12px,3.2vw,14px);box-shadow:none}
+  .marke .pille b{font-size:clamp(15px,4vw,18px);font-weight:800;letter-spacing:-.01em;
+    color:var(--ink);white-space:nowrap}
   .burger{background:none;border:1.5px solid var(--line);border-radius:11px;
     width:46px;height:42px;display:flex;flex-direction:column;justify-content:center;
     align-items:center;gap:5px;cursor:pointer;padding:0}
@@ -3348,8 +3356,7 @@ function kopfleisteHtml(){
     <div class="kopfleiste">
       <span class="kopfspacer" aria-hidden="true"></span>
       <button class="marke" onclick="zeigeWillkommen()">
-        <span class="dot">EK</span>
-        <span class="stapel"><span class="o">Endlich</span><span class="u">kapiert</span></span>
+        <span class="pille"><span class="dot">EK</span><b>Endlich kapiert</b></span>
       </button>
       <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
         <i></i><i></i><i></i>
