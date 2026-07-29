@@ -459,6 +459,12 @@
     font-size:clamp(12px,3.2vw,14px);box-shadow:none}
   .marke .pille b{font-size:clamp(15px,4vw,18px);font-weight:800;letter-spacing:-.01em;
     color:var(--ink);white-space:nowrap}
+  /* Idee B: leuchtende Glühbirne + Kürzel */
+  .marke .leuchtbirne{width:clamp(48px,12vw,56px);height:clamp(48px,12vw,56px);border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    background:linear-gradient(140deg,var(--heroglanz1),var(--heroglanz2));
+    box-shadow:0 0 20px -1px var(--heroglanz2),0 10px 24px -9px var(--heroglanz1)}
+  .marke .leuchtbirne svg{width:clamp(28px,7vw,32px);height:clamp(28px,7vw,32px)}
   .burger{background:none;border:1.5px solid var(--line);border-radius:11px;
     width:46px;height:42px;display:flex;flex-direction:column;justify-content:center;
     align-items:center;gap:5px;cursor:pointer;padding:0}
@@ -3356,7 +3362,7 @@ function kopfleisteHtml(){
     <div class="kopfleiste">
       <span class="kopfspacer" aria-hidden="true"></span>
       <button class="marke" onclick="zeigeWillkommen()">
-        <span class="pille"><span class="dot">EK</span><b>Endlich kapiert</b></span>
+        <span class="leuchtbirne" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></span><span class="markentext">EK</span>
       </button>
       <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
         <i></i><i></i><i></i>
