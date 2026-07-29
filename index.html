@@ -444,6 +444,13 @@
     display:flex;align-items:center;justify-content:center;
     background:var(--ac-soft);border:1.5px solid var(--line);color:var(--ac-dark)}
   .marke .bulb svg{width:clamp(22px,5.5vw,26px);height:clamp(22px,5.5vw,26px)}
+  /* Idee 4: gestapelte Marke */
+  .marke .stapel{display:flex;flex-direction:column;line-height:1;text-align:left}
+  .marke .stapel .o{font-size:clamp(10px,2.8vw,12px);font-weight:800;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--soft)}
+  .marke .stapel .u{font-size:clamp(20px,5.4vw,26px);font-weight:900;letter-spacing:-.02em;
+    background:linear-gradient(100deg,var(--heroglanz1),var(--heroglanz2));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
   .burger{background:none;border:1.5px solid var(--line);border-radius:11px;
     width:46px;height:42px;display:flex;flex-direction:column;justify-content:center;
     align-items:center;gap:5px;cursor:pointer;padding:0}
@@ -3342,6 +3349,7 @@ function kopfleisteHtml(){
       <span class="kopfspacer" aria-hidden="true"></span>
       <button class="marke" onclick="zeigeWillkommen()">
         <span class="dot">EK</span>
+        <span class="stapel"><span class="o">Endlich</span><span class="u">kapiert</span></span>
       </button>
       <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
         <i></i><i></i><i></i>
