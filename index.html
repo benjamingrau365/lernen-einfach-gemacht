@@ -45,12 +45,15 @@
     margin-top:14px;background:var(--bg)}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
+  /* Schriftgröße skaliert die GANZE Seite (inkl. Kopfleiste und Menü) … */
+  html{zoom:var(--fs,1)}
+  /* … nur das Logo bleibt konstant (Gegen-Zoom) */
+  .marke{zoom:calc(1 / var(--fs,1))}
   body{background:var(--bg);color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
 
-  .shell{max-width:1140px;margin:0 auto;padding:14px 20px 64px;display:grid;grid-template-columns:1fr;gap:0;
-    zoom:var(--fs,1)}
+  .shell{max-width:1140px;margin:0 auto;padding:14px 20px 64px;display:grid;grid-template-columns:1fr;gap:0}
 
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;
     letter-spacing:-.01em;padding:20px 2px 18px;line-height:1.25}
