@@ -200,11 +200,14 @@
     height:.16em;border-radius:999px;
     background:linear-gradient(90deg,transparent,var(--heroglanz1),var(--heroglanz2),transparent);opacity:.85}
 
-  /* Großer, zentrierter Markentitel — auch im eingeloggten Dashboard */
-  .startkopf{text-align:center;margin:2px 0 20px;padding:6px 0 8px}
+  /* Markentitel als eigener Hero-Block (v. a. Handy) */
+  .startkopf{text-align:center;margin:14px 0 18px;padding:clamp(30px,7vw,46px) 20px;
+    border-radius:24px;border:1px solid var(--line);overflow:hidden;
+    background:radial-gradient(120% 150% at 50% -10%,var(--hero1) 0%,var(--hero2) 55%,var(--hero3) 100%)}
   .startkopf .grosstitel{font-size:clamp(44px,10vw,84px);line-height:1.0;letter-spacing:-.04em;
     font-weight:900;margin:0 auto;color:var(--heroink);max-width:14ch;text-wrap:balance;
     text-shadow:0 2px 22px rgba(16,163,127,.12)}
+  .startkopf .startkopfsub{margin:14px 0 0;color:var(--soft);font-size:clamp(14px,3.6vw,17px);font-weight:600}
 
   .hero .lede{font-size:clamp(17px,2.4vw,20px);color:var(--soft);
     max-width:52ch;margin:26px auto 0}
@@ -440,6 +443,20 @@
   .marke .slogan{font-size:clamp(11px,3vw,14px);font-weight:600;letter-spacing:.01em;
     color:var(--soft);white-space:nowrap}
   .marke .markentext{white-space:nowrap;letter-spacing:.03em}
+  /* Wortmarke in der Leiste (nur Desktop) */
+  .marke .markewortmark{display:none;font-size:24px;font-weight:900;letter-spacing:-.02em;
+    color:var(--ink);white-space:nowrap}
+  .marke .markewortmark .kap{color:var(--ac-dark)}
+  /* Menü-Links in der Mitte (nur Desktop) */
+  .kopfnav{display:none;align-items:center;gap:4px}
+  .kopflink{background:none;border:none;font:inherit;font-size:16px;font-weight:600;
+    color:var(--soft);cursor:pointer;padding:9px 15px;border-radius:11px}
+  .kopflink:hover{color:var(--ac-dark);background:var(--ac-soft)}
+  @media(min-width:820px){
+    .marke .markewortmark{display:inline}
+    .kopfnav{display:flex}
+    .startkopf{display:none}
+  }
   /* rechte Gruppe: Serie + Aktions-Button + Menü */
   .kopfrechts{display:flex;align-items:center;gap:9px;flex:none}
   .kopfrechts .serie--mini{flex-direction:row;gap:6px;min-width:0;padding:8px 13px;border-radius:999px}
@@ -3394,7 +3411,13 @@ function kopfleisteHtml(){
       <button class="marke" onclick="zurStartseite()">
         <span class="ekkuerzel">EK</span>
         <span class="ahabirne" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="url(#ekbirne)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="ekbirne" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--heroglanz1)"/><stop offset="1" stop-color="var(--heroglanz2)"/></linearGradient></defs><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></span>
+        <span class="markewortmark">Endlich <span class="kap">kapiert</span></span>
       </button>
+      <nav class="kopfnav">
+        <button class="kopflink" onclick="zurFachwahl()">Lernen</button>
+        <button class="kopflink" onclick="zeigeSeite('faq')">Hilfe</button>
+        <button class="kopflink" onclick="zeigeSeite('ueber')">Über</button>
+      </nav>
       <div class="kopfrechts">
         ${benutzer && aktivitaet.geladen ? `<div class="serie serie--mini" title="Deine Serie">${SYM.flamme}<b>${aktivitaet.serie}</b></div>` : ""}
         <button class="btn kopfcta" onclick="${benutzer ? "zurFachwahl()" : "zeigeAnmeldung()"}">${benutzer ? "Üben" : "Anmelden"}</button>
@@ -3924,6 +3947,7 @@ function uebersichtHtml(){
   return `
     <div class="startkopf">
       <h1 class="grosstitel">Endlich <span class="glanz">kapiert</span></h1>
+      <p class="startkopfsub">Du kommst selbst drauf</p>
     </div>
     <div class="card kopfkarte">
       <div class="kopfzeile">
