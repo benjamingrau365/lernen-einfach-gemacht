@@ -426,12 +426,19 @@
   /* ---------- Kopfleiste und Menü ---------- */
   .kopfleiste{position:sticky;top:0;z-index:40;background:var(--bg);
     border-bottom:1px solid var(--line);
-    display:flex;align-items:center;justify-content:space-between;
-    padding:12px 20px;max-width:1140px;margin:0 auto}
-  .marke{display:flex;align-items:center;gap:10px;background:none;border:none;
-    font:inherit;font-weight:700;font-size:17px;color:var(--ink);cursor:pointer;padding:4px}
-  .marke .dot{width:30px;height:30px;border-radius:9px;background:var(--ac);flex:none;
-    display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:800}
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:14px 20px;max-width:1140px;margin:0 auto}
+  .kopfspacer{width:46px;flex:none}
+  .marke{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:12px;
+    background:none;border:none;font:inherit;font-weight:800;
+    font-size:clamp(19px,5.2vw,27px);letter-spacing:-.01em;color:var(--ink);cursor:pointer;padding:4px}
+  .marke .markentext{white-space:nowrap}
+  .marke .glanz::after{display:none}
+  .marke .dot{width:clamp(38px,10vw,44px);height:clamp(38px,10vw,44px);border-radius:13px;
+    background:linear-gradient(135deg,var(--heroglanz1),var(--heroglanz2));flex:none;
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    font-size:clamp(15px,4vw,18px);font-weight:900;letter-spacing:.02em;
+    box-shadow:0 8px 20px -8px var(--heroglanz1)}
   .burger{background:none;border:1.5px solid var(--line);border-radius:11px;
     width:46px;height:42px;display:flex;flex-direction:column;justify-content:center;
     align-items:center;gap:5px;cursor:pointer;padding:0}
@@ -3327,8 +3334,9 @@ function menueLernen(f, k){
 function kopfleisteHtml(){
   return `
     <div class="kopfleiste">
+      <span class="kopfspacer" aria-hidden="true"></span>
       <button class="marke" onclick="zeigeWillkommen()">
-        <span class="dot">EK</span><span>Endlich kapiert</span>
+        <span class="dot">EK</span><span class="markentext">Endlich <span class="glanz">kapiert</span></span>
       </button>
       <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
         <i></i><i></i><i></i>
