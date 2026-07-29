@@ -4775,6 +4775,9 @@ function wechsleModus(){
   anmeldeModus = anmeldeModus === "anmelden" ? "registrieren" : "anmelden";
   hinweis = ""; render();
 }
+/* Direkt anmelden bzw. registrieren — beide Buttons sind gleichzeitig sichtbar */
+function meldeAn(){ anmeldeModus = "anmelden"; anmelden(); }
+function registriere(){ anmeldeModus = "registrieren"; anmelden(); }
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
@@ -5274,26 +5277,21 @@ function willkommenHtml(){
 }
 
 function anmeldenHtml(){
-  const reg = anmeldeModus === "registrieren";
   return `
     <div class="card">
       <button class="zurueck" onclick="zeigeWillkommen()">← Zur Startseite</button>
       <span class="tag">Endlich kapiert</span>
-      <h1>${reg ? "Konto anlegen" : "Willkommen zurück"}</h1>
-      <p class="soft">${reg
-        ? "Mit einem Konto merkt sich die App, was du nicht konntest, und legt es dir später wieder vor."
-        : "Melde dich an, damit dein Wiederholungsplan wieder da ist."}</p>
+      <h1>Anmelden oder Konto anlegen</h1>
+      <p class="soft">Schon ein Konto? Dann melde dich an. Noch keins? Leg in wenigen Sekunden ein neues an — dann merkt sich die App, was du nicht konntest, und legt es dir später wieder vor.</p>
     </div>
     <div class="card">
       <input class="feld" id="mail" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input class="feld" id="pw" type="password" placeholder="Passwort (mindestens 6 Zeichen)"
-             autocomplete="${reg ? "new-password" : "current-password"}"
-             onkeydown="if(event.key==='Enter')anmelden()">
+             autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')meldeAn()">
       ${hinweis ? `<div class="feedback ${hinweis.startsWith("Fast") ? "ok" : "nope"}" style="margin-top:4px">${hinweis}</div>` : ""}
-      <button class="btn full" style="margin-top:14px" onclick="anmelden()">${reg ? "Konto anlegen" : "Anmelden"}</button>
-      <button class="btn ghost full" style="margin-top:10px" onclick="wechsleModus()">
-        ${reg ? "Ich habe schon ein Konto" : "Noch kein Konto? Hier anlegen"}
-      </button>
+      <button class="btn full" style="margin-top:14px" onclick="meldeAn()">Anmelden</button>
+      <button class="btn ghost full" style="margin-top:10px" onclick="registriere()">Neues Konto anlegen</button>
     </div>
     <div class="card">
       <h4 style="margin:0 0 8px">Erst mal nur anschauen?</h4>
