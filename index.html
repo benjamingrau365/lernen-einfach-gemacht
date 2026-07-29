@@ -429,8 +429,10 @@
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:18px 20px;max-width:1140px;margin:0 auto}
   .kopfspacer{width:46px;flex:none}
-  .marke{flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-start;gap:14px;
+  .marke{flex:none;display:flex;align-items:center;justify-content:flex-start;gap:12px;
     background:none;border:none;font:inherit;color:var(--ink);cursor:pointer;padding:4px;text-align:left}
+  .marke .ekkuerzel{font-size:clamp(23px,6.2vw,34px);font-weight:900;letter-spacing:.03em;
+    color:var(--ink);white-space:nowrap}
   .marke .markewort{display:flex;flex-direction:column;line-height:1.12;min-width:0}
   .marke .markewort b{font-size:clamp(20px,5.4vw,28px);font-weight:900;letter-spacing:-.02em;
     color:var(--ink);white-space:nowrap}
@@ -3390,8 +3392,8 @@ function kopfleisteHtml(){
   return `
     <div class="kopfleiste">
       <button class="marke" onclick="zeigeWillkommen()">
+        <span class="ekkuerzel">EK</span>
         <span class="ahabirne" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="url(#ekbirne)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="ekbirne" x1="4" y1="2" x2="20" y2="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="var(--heroglanz1)"/><stop offset="1" stop-color="var(--heroglanz2)"/></linearGradient></defs><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg></span>
-        <span class="markewort"><b>Endlich <span class="kap">kapiert</span></b><span class="slogan">Du kommst selbst drauf</span></span>
       </button>
       <div class="kopfrechts">
         ${benutzer && aktivitaet.geladen ? `<div class="serie serie--mini" title="Deine Serie">${SYM.flamme}<b>${aktivitaet.serie}</b></div>` : ""}
