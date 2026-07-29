@@ -15,12 +15,19 @@
     --ac:#10a37f; --ac-soft:#e4f5ef; --ac-dark:#0b7a5f;
     --red:#b3382f; --red-soft:#fdecea;
     --amber:#8a5a09; --amber-soft:#fdf3e0;
+    /* Farben für die große Titelfläche auf der Startseite */
+    --hero1:#ffffff; --hero2:#eaf8f2; --hero3:#d3eee4;
+    --heroink:#0b5c48; --heroglanz1:#10a37f; --heroglanz2:#43c79c;
+    --bau1:#f6c453; --bau2:#eda92c; --bauink:#3d2c05;
   }
   html.dunkel{
     --bg:#131a18; --card:#1b2422; --ink:#e9f1ee; --soft:#9cb0a9; --line:#2c3a36;
     --ac:#2ebd95; --ac-soft:#17322a; --ac-dark:#6fdcbb;
     --red:#ff9b90; --red-soft:#3a2220;
     --amber:#e6bd6d; --amber-soft:#332a17;
+    --hero1:#1e2b28; --hero2:#17322a; --hero3:#123a2d;
+    --heroink:#eafaf4; --heroglanz1:#3fd3a7; --heroglanz2:#7ff0cb;
+    --bau1:#d9a63c; --bau2:#b8862a; --bauink:#241a03;
   }
   html.grossschrift body{font-size:19.5px}
   html.grossschrift .frage{font-size:22px}
@@ -161,11 +168,53 @@
     cursor:pointer;padding:0;margin-bottom:14px;text-decoration:underline}
   .zurueck:hover{color:var(--ac-dark)}
 
-  /* ---------- Startseite ---------- */
-  .hero{padding:26px 0 10px}
-  .hero h1{font-size:clamp(30px,5.4vw,46px);line-height:1.12;letter-spacing:-.025em;margin:0 0 18px}
-  .hero .lede{font-size:19px;color:var(--soft);max-width:56ch;margin:0 0 26px}
+  /* ---------- Startseite: die große Titelfläche ----------
+     Der Titel steht mittig auf einer farbigen Fläche, nicht mehr
+     einfach links in der Ecke. */
+  .hero{position:relative;overflow:hidden;text-align:center;border-radius:24px;
+    border:1px solid var(--line);margin:0 0 14px;
+    padding:clamp(36px,7vw,68px) clamp(18px,4vw,40px) clamp(32px,6vw,56px);
+    background:radial-gradient(900px 460px at 50% -12%,
+      var(--hero1) 0%, var(--hero2) 46%, var(--hero3) 100%)}
+  /* zwei weiche Farbkleckse im Hintergrund */
+  .hero::before,.hero::after{content:"";position:absolute;border-radius:50%;
+    filter:blur(58px);opacity:.5;pointer-events:none}
+  .hero::before{width:300px;height:300px;left:-130px;top:-130px;background:var(--heroglanz2);opacity:.3}
+  .hero::after{width:320px;height:320px;right:-150px;bottom:-170px;background:var(--heroglanz1);opacity:.22}
+  .heroinhalt{position:relative;max-width:760px;margin:0 auto}
+
+  .hero .tag{background:var(--card);border:1px solid var(--line);
+    box-shadow:0 6px 18px -14px rgba(0,0,0,.5);margin-bottom:18px}
+
+  .hero h1{font-size:clamp(38px,8.4vw,66px);line-height:1.03;letter-spacing:-.035em;
+    font-weight:800;margin:0;color:var(--heroink)}
+  .hero h1 .glanz{display:inline-block;position:relative;
+    background:linear-gradient(100deg,var(--heroglanz1) 0%,var(--heroglanz2) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero h1 .glanz::after{content:"";position:absolute;left:2%;right:2%;bottom:-.11em;
+    height:.14em;border-radius:999px;
+    background:linear-gradient(90deg,transparent,var(--heroglanz1),transparent);opacity:.75}
+
+  .hero .lede{font-size:clamp(17px,2.4vw,20px);color:var(--soft);
+    max-width:52ch;margin:26px auto 0}
+  .hero .lede b{color:var(--ac-dark)}
   .knopfreihe{display:flex;gap:12px;flex-wrap:wrap}
+  .hero .knopfreihe{justify-content:center;margin-top:28px}
+  .hero .btn{padding:15px 26px}
+  .hero .btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  .hero .btn.ghost:hover{color:var(--ac-dark)}
+
+  .heromerkmale{display:flex;flex-wrap:wrap;justify-content:center;
+    gap:10px 26px;margin-top:30px;color:var(--soft);font-size:15px}
+  .heromerkmale span{display:inline-flex;align-items:center;gap:8px}
+  .heromerkmale i{flex:none;width:20px;height:20px;border-radius:50%;background:var(--ac-soft);
+    color:var(--ac-dark);font-style:normal;font-size:11px;font-weight:900;
+    display:flex;align-items:center;justify-content:center}
+  @media(max-width:560px){
+    .heromerkmale{flex-direction:column;align-items:center;gap:9px}
+    .hero .knopfreihe{flex-direction:column}
+    .hero .knopfreihe .btn{width:100%}
+  }
   .abschnitt{margin-bottom:16px}
   .ueberschrift{font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;
     color:var(--ac-dark);font-weight:700;margin:0 0 10px}
@@ -281,17 +330,76 @@
   }
 
   /* ---------- Baustellenband und Hinweis ---------- */
-  .baustelle{background:var(--amber-soft);border-bottom:1px solid var(--line);
-    color:var(--amber);display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-    padding:9px 20px;font-size:14.5px;line-height:1.4}
-  .baustelle .bzeichen{flex:none;display:flex}
+  .baustelle{position:relative;background:linear-gradient(90deg,var(--bau1),var(--bau2));
+    color:var(--bauink);display:flex;align-items:center;justify-content:center;
+    gap:10px;flex-wrap:wrap;padding:10px 20px;font-size:14.5px;line-height:1.4;
+    font-weight:600;text-align:center}
+  /* die schrägen Streifen wie am Absperrband */
+  .baustelle::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(135deg,rgba(0,0,0,.07) 0 14px,transparent 14px 28px)}
+  .baustelle .bzeichen{position:relative;flex:none;display:flex}
   .baustelle svg{width:19px;height:19px}
-  .baustelle .btext{flex:1;min-width:200px}
-  .baustelle b{font-weight:700}
-  .bknopf{flex:none;background:none;border:1.5px solid var(--amber);color:var(--amber);
-    border-radius:999px;font:inherit;font-size:13.5px;font-weight:600;
+  .baustelle .btext{position:relative}
+  .baustelle b{font-weight:800}
+  .bknopf{position:relative;flex:none;background:rgba(255,255,255,.75);
+    border:1.5px solid rgba(0,0,0,.18);color:var(--bauink);
+    border-radius:999px;font:inherit;font-size:13.5px;font-weight:700;
     padding:4px 13px;cursor:pointer}
-  .bknopf:hover{background:var(--amber);color:var(--bg)}
+  .bknopf:hover{background:#fff}
+  /* auf dem Handy soll das Band nicht den halben Bildschirm einnehmen */
+  @media(max-width:560px){
+    .baustelle{padding:8px 14px;gap:8px;font-size:13.5px}
+    .baustelle .bknopf:last-child{display:none}
+  }
+
+  /* Hinweiskasten auf der Startseite */
+  .baubox{background:var(--amber-soft);border:1px solid var(--amber);border-radius:18px;
+    padding:22px 24px;margin-bottom:14px}
+  .baubox .baukopf{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .baubox .bausymbol{flex:none;width:44px;height:44px;border-radius:14px;
+    background:linear-gradient(145deg,var(--bau1),var(--bau2));color:var(--bauink);
+    display:flex;align-items:center;justify-content:center}
+  .baubox .bausymbol svg{width:23px;height:23px}
+  .baubox h2{margin:0;font-size:20px;letter-spacing:-.015em;color:var(--amber)}
+  .baubox p{color:var(--amber);opacity:.92}
+
+  .baugitter{display:grid;grid-template-columns:1fr;gap:8px;margin:16px 0 4px}
+  @media(min-width:620px){ .baugitter{grid-template-columns:1fr 1fr} }
+  .bauzeile{display:flex;align-items:center;gap:10px;background:var(--card);
+    border:1px solid var(--line);border-radius:13px;padding:11px 13px;font-size:15.5px}
+  .bauzeile .bauname{flex:1;min-width:0}
+  .baustand{flex:none;font-size:11px;font-weight:800;letter-spacing:.05em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px}
+  .baustand.fertig{background:var(--ac-soft);color:var(--ac-dark)}
+  .baustand.arbeit{background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber)}
+  .baustand.geplant{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
+
+  .baubalken{height:8px;border-radius:999px;background:var(--bg);
+    border:1px solid var(--line);overflow:hidden;margin:10px 0 6px}
+  .baubalken i{display:block;height:100%;background:var(--ac);border-radius:999px}
+
+  /* je Fach ein kleiner Block mit den sechs Klassen als Plättchen */
+  .baufaecher{display:grid;grid-template-columns:1fr;gap:10px;margin:16px 0 4px}
+  @media(min-width:620px){ .baufaecher{grid-template-columns:1fr 1fr} }
+  .baufach{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px 16px}
+  .baufachkopf{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .baufachkopf b{font-size:16.5px}
+  .baufachkopf span{font-size:13.5px;color:var(--soft)}
+  .bauchips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .bauchip{flex:1;min-width:38px;text-align:center;border-radius:9px;padding:7px 4px;
+    font-size:14px;font-weight:700;border:1.5px solid var(--line);
+    background:var(--bg);color:var(--soft)}
+  .bauchip.fertig{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
+  .bauchip.arbeit{border-color:var(--amber);background:var(--amber-soft);color:var(--amber)}
+  .baulegende{display:flex;gap:8px 18px;flex-wrap:wrap;margin-top:12px;
+    font-size:13.5px;color:var(--amber)}
+  .baulegende span{display:inline-flex;align-items:center;gap:7px}
+  .baulegende i{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--line);
+    background:var(--bg);display:block}
+  .baulegende i.fertig{border-color:var(--ac);background:var(--ac-soft)}
+  .baulegende i.arbeit{border-color:var(--amber);background:var(--amber-soft)}
+  .baubox .btn.ghost{background:var(--card);color:var(--amber);border-color:var(--amber)}
+  .baubox .btn.ghost:hover{background:var(--card);color:var(--amber);border-color:var(--amber)}
 
   .torgrund{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:80}
   .tor{position:fixed;z-index:90;left:50%;top:50%;transform:translate(-50%,-50%);
@@ -3193,7 +3301,7 @@ function menueSchliessen(){ menueOffen = false; menueAuf = null; render(); }
 function menueKlappen(name){ menueAuf = menueAuf === name ? null : name; render(); }
 
 function zeigeSeite(name){
-  if (!["impressum","datenschutz","agb","faq","ueber","konto","anfragen"].includes(ansicht)) vorSeite = ansicht;
+  if (!["impressum","datenschutz","agb","faq","ueber","konto","anfragen","baustelle"].includes(ansicht)) vorSeite = ansicht;
   kontoHinweis = ""; kontoFrage = "";
   ansicht = name; menueOffen = false; menueAuf = null; render();
   if (name === "konto") ladeFreigabeStand().then(render);
@@ -3243,6 +3351,7 @@ function menueHtml(){
       <button class="mpunkt" onclick="zeigeMelden();menueSchliessen()">Hilfe und Feedback</button>
       <button class="mpunkt" onclick="zeigeSeite('faq')">Häufige Fragen</button>
       <button class="mpunkt" onclick="zeigeSeite('ueber')">Über das Projekt</button>
+      ${WARTUNG ? `<button class="mpunkt" onclick="zeigeSeite('baustelle')">Woran gerade gebaut wird</button>` : ""}
 
       <p class="mtitel">Mein Bereich</p>
       ${benutzer
@@ -3601,6 +3710,7 @@ function fussleisteHtml(){
           <button class="fusslink" onclick="zeigeMelden()">Hilfe und Feedback</button>
           <button class="fusslink" onclick="zeigeSeite('faq')">Häufige Fragen</button>
           <button class="fusslink" onclick="zeigeSeite('ueber')">Über das Projekt</button>
+          ${WARTUNG ? `<button class="fusslink" onclick="zeigeSeite('baustelle')">Woran gerade gebaut wird</button>` : ""}
           ${benutzer ? `<button class="fusslink" onclick="zeigeAnfragen()">Meine Anfragen</button>` : ""}
         </div>
         <div class="fussspalte">
@@ -3753,6 +3863,8 @@ function uebersichtHtml(){
         : `<p class="soft">Du kannst alles ausprobieren. Ein Konto brauchst du erst, wenn dein Fortschritt gespeichert werden soll.</p>`}
     </div>
 
+    ${baustelleBoxHtml()}
+
     ${offen.length ? `
     <div class="card faellig">
       <p class="ueberschrift">${SYM.uhr} Heute fällig</p>
@@ -3890,20 +4002,149 @@ function wartungZeigen(){
   if (m) m.remove();
 })();
 
+/* ---------- Was ist wirklich fertig? ----------
+   Wird aus dem Katalog und den vorhandenen Aufgaben ausgerechnet.
+   Du musst hier also nichts von Hand nachpflegen: sobald du Aufgaben
+   für eine Klasse ergänzt, ändert sich der Stand auf der Seite mit. */
+function baustelleStand(){
+  const faecher = Object.entries(KATALOG).map(([schluessel, f]) => {
+    const klassen = [5,6,7,8,9,10].map(k => {
+      const liste = f.themen[k] || [];
+      const fertig = liste.filter(t => AUFGABEN[t]).length;
+      const stand = fertig === 0 ? "geplant" : (fertig < liste.length ? "arbeit" : "fertig");
+      return {klasse: k, fertig, gesamt: liste.length, stand};
+    });
+    const fertig = klassen.reduce((a,z) => a + z.fertig, 0);
+    const gesamt = klassen.reduce((a,z) => a + z.gesamt, 0);
+    return {schluessel, name: f.name, klassen, fertig, gesamt};
+  });
+  const fertig = faecher.reduce((a,f) => a + f.fertig, 0);
+  const gesamt = faecher.reduce((a,f) => a + f.gesamt, 0);
+  return {faecher, fertig, gesamt, prozent: gesamt ? Math.round(fertig / gesamt * 100) : 0};
+}
+
+/* Fächer, die noch gar nicht angefangen sind */
+const BAU_SPAETER = ["Englisch", "Französisch", "Geschichte", "Erdkunde"];
+
+const BAU_SYM = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+     stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 4.5 2.8 20h18.4z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>`;
+
+function standWort(stand){
+  return stand === "fertig" ? "fertig" : stand === "arbeit" ? "in Arbeit" : "geplant";
+}
+
 /* ---------- schmales Band ganz oben ---------- */
 function wartungBandHtml(){
   if (!WARTUNG) return "";
+  const s = baustelleStand();
   return `
     <div class="baustelle">
-      <span class="bzeichen">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 4.5 2.8 20h18.4z"/><path d="M12 10v4"/><path d="M12 17h.01"/>
-        </svg>
-      </span>
-      <span class="btext"><b>Baustelle.</b> Diese Seite wird gerade gebaut und getestet —
-        noch nichts hier ist fertig.</span>
+      <span class="bzeichen">${BAU_SYM}</span>
+      <span class="btext"><b>Baustelle.</b> An dieser Seite wird gerade gebaut —
+        ${s.fertig} von ${s.gesamt} Themen sind fertig.</span>
+      <button class="bknopf" onclick="zeigeSeite('baustelle')">Was ist schon fertig?</button>
       <button class="bknopf" onclick="wartungZeigen()">Was heißt das?</button>
+    </div>`;
+}
+
+/* ---------- Hinweiskasten auf der Startseite ---------- */
+function baustelleBoxHtml(){
+  if (!WARTUNG) return "";
+  const s = baustelleStand();
+  return `
+    <div class="baubox">
+      <div class="baukopf">
+        <span class="bausymbol">${BAU_SYM}</span>
+        <h2>Die Seite ist noch im Aufbau</h2>
+      </div>
+      <p>Alles, was du hier findest, funktioniert schon richtig — es ist nur noch nicht alles da.
+         Hier siehst du jederzeit, woran gerade gebaut wird.</p>
+      <div class="baubalken"><i style="width:${s.prozent}%"></i></div>
+      <p class="small">${s.fertig} von ${s.gesamt} Themen fertig (${s.prozent} %)</p>
+
+      <div class="baufaecher">
+        ${s.faecher.map(f => `
+          <div class="baufach">
+            <div class="baufachkopf">
+              <b>${f.name}</b><span>${f.fertig} von ${f.gesamt} Themen</span>
+            </div>
+            <div class="bauchips">
+              ${f.klassen.map(k => `
+                <span class="bauchip ${k.stand}"
+                  title="Klasse ${k.klasse}: ${k.fertig} von ${k.gesamt} Themen">${k.klasse}</span>`).join("")}
+            </div>
+          </div>`).join("")}
+      </div>
+
+      <div class="baulegende">
+        <span><i class="fertig"></i> Klasse fertig</span>
+        <span><i class="arbeit"></i> in Arbeit</span>
+        <span><i></i> noch geplant</span>
+      </div>
+
+      <button class="btn ghost full" style="margin-top:14px"
+        onclick="zeigeSeite('baustelle')">Ganzen Bauplan ansehen</button>
+    </div>`;
+}
+
+/* ---------- eigene Seite: der ganze Bauplan ---------- */
+function baustelleSeiteHtml(){
+  const s = baustelleStand();
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      <span class="tag">Baustelle</span>
+      <h1>Woran gerade gebaut wird</h1>
+      <p class="soft">„Endlich kapiert“ entsteht Stück für Stück. Damit du nicht raten musst,
+        was schon geht und was nicht, steht hier der ehrliche Stand — er rechnet sich
+        automatisch aus dem aus, was wirklich in der Seite drin ist.</p>
+      <div class="baubalken" style="margin-top:18px"><i style="width:${s.prozent}%"></i></div>
+      <p class="small soft">${s.fertig} von ${s.gesamt} Themen fertig (${s.prozent} %)</p>
+    </div>
+
+    ${s.faecher.map(f => `
+      <div class="card">
+        <p class="ueberschrift">${f.name}</p>
+        <div class="baugitter" style="margin-top:0">
+          ${f.klassen.map(k => `
+            <div class="bauzeile">
+              <span class="baustand ${k.stand}">${standWort(k.stand)}</span>
+              <span class="bauname">Klasse ${k.klasse}
+                <span class="soft">· ${k.fertig} von ${k.gesamt} Themen</span></span>
+            </div>`).join("")}
+        </div>
+      </div>`).join("")}
+
+    <div class="card">
+      <p class="ueberschrift">Kommt später dazu</p>
+      <div class="baugitter" style="margin-top:0">
+        ${BAU_SPAETER.map(n => `
+          <div class="bauzeile">
+            <span class="baustand geplant">geplant</span>
+            <span class="bauname">${n}</span>
+          </div>`).join("")}
+      </div>
+      <p class="small soft" style="margin-top:12px">Erst kommen Mathe und Deutsch bis Klasse 10
+        vollständig dran. Neue Fächer erst danach — lieber wenig, das richtig funktioniert.</p>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Was du wissen solltest</p>
+      <ul class="liste">
+        <li><b>Es können Fehler drin sein.</b> Auch in den Aufgaben. Verlass dich noch nicht
+            darauf, wenn du für eine Arbeit lernst.</li>
+        <li><b>Gespeicherter Fortschritt kann verloren gehen</b>, wenn im Hintergrund umgebaut wird.</li>
+        <li><b>Das Aussehen ändert sich noch.</b> Was heute so aussieht, sieht morgen vielleicht anders aus.</li>
+        <li><b>Es ist kostenlos</b> und bleibt es beim Ausprobieren auch.</li>
+      </ul>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <h2 style="margin-bottom:8px">Etwas gefunden, das nicht stimmt?</h2>
+      <p class="soft" style="margin:0 auto 18px;max-width:44ch">Genau dafür ist der Testbetrieb da.
+        Jede Rückmeldung hilft — auch eine kurze.</p>
+      <button class="btn" onclick="zeigeMelden()">Fehler melden</button>
     </div>`;
 }
 
@@ -3925,10 +4166,13 @@ function wartungTorHtml(){
         <li><b>Es ist kein fertiges Angebot.</b> Es gibt noch keinen festen Support und keine
             Zusage, dass alles läuft.</li>
       </ul>
-      <p class="small soft">Wenn dir etwas auffällt, sag mir Bescheid — über
-        <b>Menü → Hilfe und Feedback</b>. Darüber freue ich mich wirklich.</p>
+      <p class="small soft">Wenn dir etwas auffällt, sag uns Bescheid — über
+        <b>Menü → Hilfe und Feedback</b>. Darüber freuen wir uns wirklich.</p>
       <button class="btn full" style="margin-top:16px" onclick="wartungVerstanden()">
         Verstanden — ich schau mich trotzdem um</button>
+      <button class="btn ghost full" style="margin-top:10px"
+        onclick="wartungVerstanden();zeigeSeite('baustelle')">
+        Zuerst ansehen, was schon fertig ist</button>
     </div>`;
 }
 
@@ -3936,13 +4180,15 @@ function wartungTorHtml(){
 function wartungSeiteHtml(){
   return `
     <div class="wartungmitte">
-      <div class="card">
-        <span class="tag">Wartung</span>
-        <h1>Wir bauen gerade</h1>
-        <p class="soft">Endlich kapiert ist im Moment nicht erreichbar, weil daran gearbeitet wird.
-          Schau später noch einmal vorbei — es lohnt sich.</p>
-        <p class="small soft" style="margin-top:18px">Etwas Dringendes? Schreib an
-          <b>hilfe@endlichkapiert.com</b>.</p>
+      <div class="hero" style="margin:0">
+        <div class="heroinhalt">
+          <span class="tag">Wartung</span>
+          <h1>Wir bauen <span class="glanz">gerade</span></h1>
+          <p class="lede">Endlich kapiert ist im Moment nicht erreichbar, weil daran
+            gearbeitet wird. Schau später noch einmal vorbei — es lohnt sich.</p>
+          <p class="small soft" style="margin-top:22px">Etwas Dringendes? Schreib an
+            <b>hilfe@endlichkapiert.com</b>.</p>
+        </div>
       </div>
     </div>`;
 }
@@ -4240,7 +4486,7 @@ function wechsleModus(){
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
-  const ohne = ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen"];
+  const ohne = ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"];
   if (ohne.includes(ansicht)){ seiteEl.innerHTML = ""; return; }
 
   const kopfBox = benutzer
@@ -4292,6 +4538,16 @@ function render(gewaehlt){
   if (kopf) kopf.innerHTML = wartungBandHtml() + kopfleisteHtml() + menueHtml() + wartungTorHtml();
   if (fussEl) fussEl.innerHTML = fussleisteHtml();
 
+  /* Der Satz unter dem Inhalt soll den echten Stand zeigen, nicht einen fest
+     eingetippten — sonst stimmt er nach dem nächsten Umbau nicht mehr. */
+  const demoEl = document.querySelector(".demo");
+  if (demoEl){
+    const st = baustelleStand();
+    demoEl.textContent = WARTUNG
+      ? `Stand heute: ${st.fertig} von ${st.gesamt} Themen sind fertig — die übrigen kommen nach und nach.`
+      : "";
+  }
+
   /* Wer unten in der Fußleiste etwas anklickt, soll die neue Seite auch sehen
      und nicht erst nach oben wischen müssen. */
   if (ansicht !== letzteAnsicht){
@@ -4300,7 +4556,7 @@ function render(gewaehlt){
   }
   renderSeite();
   const shell = document.getElementById("shell");
-  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen"].includes(ansicht));
+  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"].includes(ansicht));
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -4448,6 +4704,7 @@ function render(gewaehlt){
   if (ansicht === "dashboard"){ el.innerHTML = dashboardHtml(); return; }
   if (ansicht === "konto"){ el.innerHTML = kontoHtml(); return; }
   if (ansicht === "anfragen"){ el.innerHTML = anfragenHtml(); return; }
+  if (ansicht === "baustelle"){ el.innerHTML = baustelleSeiteHtml(); return; }
   if (ansicht === "faq"){ el.innerHTML = faqHtml(); return; }
   if (ansicht === "ueber"){ el.innerHTML = ueberHtml(); return; }
   if (ansicht === "impressum"){ el.innerHTML = impressumHtml(); return; }
@@ -4646,15 +4903,24 @@ function render(gewaehlt){
 function willkommenHtml(){
   return `
     <div class="hero">
-      <span class="tag">Mathe und Deutsch · Klasse 5 bis 10</span>
-      <h1>„Ich hab’s im Unterricht<br>einfach nicht kapiert.“</h1>
-      <p class="lede">Dann bist du hier richtig. <b>Endlich kapiert</b> gibt dir nie die Lösung — es stellt dir Fragen, bis du selbst draufkommst. Und sorgt dafür, dass du es diesmal nicht wieder vergisst.</p>
-      <div class="knopfreihe">
-        <button class="btn" onclick="alsGast()">Kostenlos ausprobieren</button>
-        <button class="btn ghost" onclick="zeigeAnmeldung()">Anmelden</button>
-        <button class="btn ghost" onclick="zeigeEinstellungen()">Einstellungen</button>
+      <div class="heroinhalt">
+        <span class="tag">Mathe und Deutsch · Klasse 5 bis 10</span>
+        <h1>Endlich <span class="glanz">kapiert</span></h1>
+        <p class="lede">„Ich hab’s im Unterricht einfach nicht kapiert.“ — dann bist du hier richtig.
+          Du bekommst <b>nie die Lösung</b>, nur Fragen, die dich Schritt für Schritt selbst hinführen.</p>
+        <div class="knopfreihe">
+          <button class="btn" onclick="alsGast()">Kostenlos ausprobieren</button>
+          <button class="btn ghost" onclick="zeigeAnmeldung()">Anmelden</button>
+        </div>
+        <div class="heromerkmale">
+          <span><i>✓</i> Jede Aufgabe neu gewürfelt</span>
+          <span><i>✓</i> Fehler kommen von allein zurück</span>
+          <span><i>✓</i> Erklärung von null an</span>
+        </div>
       </div>
     </div>
+
+    ${baustelleBoxHtml()}
 
     <div class="card">
       <p class="ueberschrift">Kennst du das?</p>
