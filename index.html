@@ -5288,13 +5288,15 @@ function anmeldenHtml(){
       <p class="soft">Schon ein Konto? Dann melde dich an. Noch keins? Leg in wenigen Sekunden ein neues an — dann merkt sich die App, was du nicht konntest, und legt es dir später wieder vor.</p>
     </div>
     <div class="card">
+      <p class="ueberschrift">1. E-Mail und Passwort eingeben</p>
       <input class="feld" id="mail" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
       <input class="feld" id="pw" type="password" placeholder="Passwort (mindestens 6 Zeichen)"
              autocomplete="current-password"
              onkeydown="if(event.key==='Enter')meldeAn()">
       ${hinweis ? `<div class="feedback ${hinweis.startsWith("Fast") ? "ok" : "nope"}" style="margin-top:4px">${hinweis}</div>` : ""}
-      <button class="btn full" style="margin-top:14px" onclick="meldeAn()">Anmelden</button>
-      <button class="btn ghost full" style="margin-top:10px" onclick="registriere()">Neues Konto anlegen</button>
+      <p class="small soft" style="margin:14px 0 8px">2. Dann wählen:</p>
+      <button class="btn full" onclick="meldeAn()">Anmelden <span style="opacity:.8;font-weight:500">· ich habe schon ein Konto</span></button>
+      <button class="btn ghost full" style="margin-top:10px" onclick="registriere()">Neues Konto anlegen <span style="opacity:.7;font-weight:500">· ich bin neu hier</span></button>
     </div>
     <div class="card">
       <h4 style="margin:0 0 8px">Erst mal nur anschauen?</h4>
