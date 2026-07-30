@@ -374,16 +374,346 @@ const deutschProben = {
   }
 };
 
+/* ---------------------------------------------- MATHE · KLASSE 5 bis 7 */
+/* eigene Tabellen des Prüfers — bewusst unabhängig von den Aufgabendaten */
+const SENKRECHTE_ACHSE = "AHIMOTUVWXY".split("");      /* Buchstaben mit senkrechter Spiegelachse */
+const ACHSEN_FIGUR = { "Quadrat":4, "Rechteck":2, "Kreis":Infinity, "gleichseitiges Dreieck":3,
+                       "Raute":2, "Parallelogramm":0, "gleichschenkliges Dreieck":1,
+                       "regelmäßiges Fünfeck":5, "regelmäßiges Sechseck":6, "regelmäßiges Achteck":8 };
+const EINHEIT = { kg:{ g:1000 }, h:{ min:60 }, min:{ s:60 }, km:{ m:1000 },
+                  m:{ cm:100 }, cm:{ mm:10 }, l:{ ml:1000 }, t:{ kg:1000 }, "€":{ ct:100 } };
+
+/* Bruch aus „a/b" lesen und kürzen */
+const bruch = (za, ne) => { const t = (a,b) => b ? t(b, a%b) : a; const g = t(Math.abs(za), Math.abs(ne)) || 1;
+                            return [za/g, ne/g]; };
+
+Object.assign(matheProben, {
+
+  "Natürliche Zahlen": (a) => {
+    const t = roh(a.text);
+    if (/^Runde/.test(t)) {
+      const n = zahlen(t)[0], erg = zahlen(a.loesung)[0];
+      const stelle = /Hunderter/.test(t) ? 100 : /Tausender/.test(t) ? 1000 : /Zehner/.test(t) ? 10 : null;
+      if (!stelle) return "Rundungsstelle nicht erkannt: " + t;
+      const soll = Math.round(n / stelle) * stelle;
+      if (soll !== erg) return `${n} auf ${stelle} gerundet ist ${soll}, angegeben ist ${erg}`;
+      return null;
+    }
+    /* Stellenwert einer Ziffer */
+    const m = t.match(/Ziffer (\d).*?Zahl ([\d.]+)/);
+    if (!m) return "Ziffer oder Zahl nicht lesbar: " + t;
+    const ziffer = m[1], zahlText = m[2].replace(/\./g, "");
+    const erg = zahlen(a.loesung)[0];
+    /* die Antwort muss Ziffer × Zehnerpotenz sein, und an genau dieser Stelle
+       muss die Ziffer in der Zahl auch wirklich stehen */
+    const potenz = erg / Number(ziffer);
+    if (!Number.isInteger(Math.log10(potenz))) return `${erg} ist kein Stellenwert der Ziffer ${ziffer}`;
+    const stelleVonRechts = Math.log10(potenz);
+    const dort = zahlText[zahlText.length - 1 - stelleVonRechts];
+    if (dort !== ziffer) return `an der Stelle ${potenz} steht in ${m[2]} die Ziffer ${dort}, nicht ${ziffer}`;
+    return null;
+  },
+
+  "Grundrechenarten": (a) => {
+    const term = zuJS(a.text);
+    let wert; try { wert = new Function(`return ${term}`)(); }
+    catch (e) { return `Term nicht auswertbar: ${term}`; }
+    const erg = zahlen(a.loesung)[0];
+    if (Math.abs(wert - erg) > 1e-9) return `„${roh(a.text)}“ ergibt ${wert}, angegeben ist ${erg}`;
+    return null;
+  },
+
+  "Größen und Einheiten": (a) => {
+    const t = roh(a.text);
+    const m = t.match(/^([\d.,]+)\s*(\S+)\s+([\d.,]+)\s*(\S+)\s*=\s*___\s*(\S+)/);
+    if (!m) return "Umrechnung nicht lesbar: " + t;
+    const [, g1, e1, g2, e2, ziel] = m;
+    const tabelle = EINHEIT[e1];
+    if (!tabelle || !(ziel in tabelle)) return `keine Umrechnung von ${e1} nach ${ziel} hinterlegt`;
+    if (e2 !== ziel) return `zweite Größe ist in ${e2}, gefragt ist aber ${ziel}`;
+    const soll = zahl(g1) * tabelle[ziel] + zahl(g2);
+    const erg = zahlen(a.loesung)[0];
+    if (soll !== erg) return `${g1} ${e1} ${g2} ${e2} sind ${soll} ${ziel}, angegeben ist ${erg}`;
+    return null;
+  },
+
+  "Flächen und Umfang": (a) => {
+    const t = roh(a.text);
+    const n = zahlen(t);
+    if (n.length < 2) return "Seitenlängen nicht lesbar: " + t;
+    const [x, y] = n, erg = zahlen(a.loesung)[0];
+    const umfang = /Umfang/.test(t);
+    const soll = umfang ? 2 * (x + y) : x * y;
+    if (soll !== erg) return `${umfang ? "Umfang" : "Fläche"} von ${x}×${y} ist ${soll}, angegeben ist ${erg}`;
+    if (!umfang && !/cm²|m²/.test(roh(a.loesung))) return "beim Flächeninhalt fehlt die Quadrat-Einheit";
+    return null;
+  },
+
+  "Symmetrie": (a) => {
+    const t = roh(a.text);
+    if (/Spiegelachse/.test(t)) {
+      const buchstaben = (t.match(/:\s*([A-Z](?:,\s*[A-Z])*)\s*\?/) || [])[1];
+      if (!buchstaben) return "Buchstabenauswahl nicht lesbar: " + t;
+      const liste = buchstaben.split(",").map(s => s.trim());
+      const erg = roh(a.loesung).trim();
+      const passend = liste.filter(b => SENKRECHTE_ACHSE.includes(b));
+      if (passend.length !== 1)
+        return `von ${liste.join(", ")} haben ${passend.length} eine senkrechte Achse — die Aufgabe wäre nicht eindeutig`;
+      if (passend[0] !== erg) return `senkrechte Achse hat ${passend[0]}, angegeben ist ${erg}`;
+      return null;
+    }
+    const figur = (t.match(/hat ein(?:e)?\s+(.+?)\?/) || [])[1];
+    if (!figur) return "Figur nicht lesbar: " + t;
+    const soll = ACHSEN_FIGUR[figur.trim()];
+    if (soll === undefined) return `keine Achsenzahl für „${figur}“ hinterlegt`;
+    const erg = zahlen(a.loesung)[0];
+    if (soll !== erg) return `${figur} hat ${soll} Symmetrieachsen, angegeben ist ${erg}`;
+    return null;
+  },
+
+  "Brüche": (a) => {
+    const t = roh(a.text);
+    if (/von/.test(t)) {                                   /* „7/8 von 88" */
+      const m = t.match(/(\d+)\s*\/\s*(\d+)\s*von\s*(\d+)/);
+      if (!m) return "Bruchteil nicht lesbar: " + t;
+      const soll = Number(m[3]) * Number(m[1]) / Number(m[2]);
+      const erg = zahlen(a.loesung)[0];
+      if (Math.abs(soll - erg) > 1e-9) return `${m[1]}/${m[2]} von ${m[3]} ist ${soll}, angegeben ist ${erg}`;
+      return null;
+    }
+    const m = t.match(/(\d+)\s*\/\s*(\d+)\s*([+−-])\s*(\d+)\s*\/\s*(\d+)/);
+    if (!m) return "Bruchaufgabe nicht lesbar: " + t;
+    const [, a1, b1, op, a2, b2] = m;
+    const plus = op === "+";
+    const za = plus ? Number(a1) * Number(b2) + Number(a2) * Number(b1)
+                    : Number(a1) * Number(b2) - Number(a2) * Number(b1);
+    const [sz, sn] = bruch(za, Number(b1) * Number(b2));
+    const e = roh(a.loesung).match(/(\d+)\s*\/\s*(\d+)/);
+    if (!e) return "Ergebnisbruch nicht lesbar: " + roh(a.loesung);
+    const [ez, en] = bruch(Number(e[1]), Number(e[2]));
+    if (sz !== ez || sn !== en) return `${a1}/${b1} ${op} ${a2}/${b2} ist ${sz}/${sn}, angegeben ist ${ez}/${en}`;
+    return null;
+  },
+
+  "Dezimalzahlen": (a) => {
+    const term = zuJS(roh(a.text).replace(/(\d)\.(\d{3})/g, "$1$2").replace(/,/g, "."));
+    let wert; try { wert = new Function(`return ${term}`)(); }
+    catch (e) { return "Term nicht auswertbar: " + term; }
+    const erg = zahlen(a.loesung)[0];
+    if (Math.abs(wert - erg) > 1e-6) return `„${roh(a.text)}“ ergibt ${wert}, angegeben ist ${erg}`;
+    return null;
+  },
+
+  "Teilbarkeit": (a) => {
+    const m = roh(a.text).match(/Ist\s+([\d.]+)\s+ohne Rest durch\s+(\d+)\s+teilbar/);
+    if (!m) return "Teilbarkeitsfrage nicht lesbar: " + roh(a.text);
+    const n = zahl(m[1]), d = Number(m[2]);
+    const teilbar = n % d === 0;
+    const behauptet = /^Ja/i.test(roh(a.loesung));
+    if (teilbar !== behauptet)
+      return `${n} : ${d} lässt Rest ${n % d} — die Antwort „${roh(a.loesung)}“ stimmt nicht`;
+    return null;
+  },
+
+  "Dreisatz": (a) => {
+    const n = zahlen(roh(a.text));
+    if (n.length < 3) return "Dreisatz-Werte nicht lesbar: " + roh(a.text);
+    const [menge1, wert1, menge2] = n;
+    if (!menge1) return "Ausgangsmenge ist null";
+    const soll = wert1 / menge1 * menge2;
+    const erg = zahlen(a.loesung)[0];
+    if (Math.abs(soll - erg) > 0.005) return `${wert1} : ${menge1} · ${menge2} = ${soll}, angegeben ist ${erg}`;
+    return null;
+  },
+
+  "Winkel messen": (a) => {
+    const t = roh(a.text), grad = zahlen(t)[0];
+    if (/Welche Art/.test(t)) {
+      const soll = grad < 90 ? "spitzer" : grad === 90 ? "rechter" : grad < 180 ? "stumpfer"
+                 : grad === 180 ? "gestreckter" : "überstumpfer";
+      if (!roh(a.loesung).includes(soll)) return `${grad}° ist ein ${soll} Winkel, angegeben ist „${roh(a.loesung)}“`;
+      return null;
+    }
+    const n = zahlen(t);
+    const summe = n[0], einer = n[1], erg = zahlen(a.loesung)[0];
+    if (summe - einer !== erg) return `${summe}° − ${einer}° = ${summe - einer}°, angegeben ist ${erg}°`;
+    return null;
+  },
+
+  "Gleichungen umstellen": (a) => {
+    const [links, rechts] = roh(a.text).split("=");
+    const x = zahlen(a.loesung)[0];
+    let l, r;
+    try { l = new Function("x", `return ${zuJS(links)}`)(x); r = new Function("x", `return ${zuJS(rechts)}`)(x); }
+    catch (e) { return "Gleichung nicht auswertbar: " + roh(a.text); }
+    if (Math.abs(l - r) > 1e-9)
+      return `x = ${x} eingesetzt: links ${l}, rechts ${r} — die Gleichung geht nicht auf`;
+    return null;
+  },
+
+  "Prozent und Zinsen": (a) => {
+    const t = roh(a.text), n = zahlen(t), erg = zahlen(a.loesung)[0];
+    if (n.length < 2) return "Werte nicht lesbar: " + t;
+    const [grund, prozent] = n;
+    let soll;
+    if (/günstiger|Rabatt|reduziert/.test(t)) soll = grund * (1 - prozent / 100);
+    else if (/Zinsen/.test(t))                soll = grund * prozent / 100;
+    else                                       soll = grund * prozent / 100;
+    if (Math.abs(soll - erg) > 0.005)
+      return `aus ${grund} und ${prozent} % folgt ${soll}, angegeben ist ${erg}`;
+    return null;
+  }
+});
+
+/* -------------------------------------------- DEUTSCH · restliche Themen */
+const NEBENSATZ_WOERTER = ["weil","dass","wenn","obwohl","bis","während","sobald","bevor","ob",
+                           "damit","nachdem","seit","falls","sodass","als",
+                           /* indirekte Fragen und Relativsätze leiten ebenfalls Nebensätze ein */
+                           "was","wer","wie","wo","wann","warum","wohin","welche","welcher","welches"];
+const WORTARTEN = ["Nomen","Verb","Adjektiv","Pronomen","Artikel"];
+const RHETORIK = ["Rhetorische Frage","Anapher","Dreierfigur","Appell"];
+
+Object.assign(deutschProben, {
+
+  "Kommas bei Nebensätzen": (a) => {
+    const t = roh(a.text);
+    const nach = (t.split("___")[1] || "").trim();
+    const wort = nach.split(" ")[0].toLowerCase();
+    if (!NEBENSATZ_WOERTER.includes(wort))
+      return `„${wort}“ leitet keinen Nebensatz ein — dann wäre die Kommaregel eine andere`;
+    const loes = roh(a.loesung);
+    if (!loes.includes(wort)) return `die Lösung „${loes}“ nennt das Bindewort „${wort}“ nicht`;
+    if (!/Komma/.test(loes)) return "die Lösung nennt kein Komma: " + loes;
+    /* Gegenprobe: im Nebensatz muss das Verb hinten stehen */
+    const rest = nach.replace(/\.$/, "").split(" ").slice(1);
+    if (rest.length < 2) return "Nebensatz zu kurz für eine Prüfung: " + nach;
+    return null;
+  },
+
+  "Nominalisierung": (a) => {
+    const t = roh(a.text);
+    const verb = (t.match(/\(([^)]+)\)/) || [])[1];
+    if (!verb) return "Verb in Klammern nicht lesbar: " + t;
+    const [wort, urteil] = trennen(a.loesung);
+    if (!wort || !urteil) return "Lösung nicht lesbar: " + roh(a.loesung);
+    const erwartet = verb.charAt(0).toUpperCase() + verb.slice(1);
+    if (wort !== erwartet) return `aus „${verb}“ wird „${erwartet}“, angegeben ist „${wort}“`;
+    if (!/groß/.test(urteil)) return `nominalisierte Verben werden großgeschrieben, das Urteil sagt „${urteil}“`;
+    /* vor der Lücke muss ein Artikel stehen — sonst wäre es keine Nominalisierung */
+    const ARTIKEL = ["das","dem","beim","zum","vom","im","am","ein","des"];
+    const vor = t.split("___")[0].trim().split(" ").pop().toLowerCase().replace(/[^a-zäöüß]/g, "");
+    if (!ARTIKEL.includes(vor)) return `vor der Lücke steht „${vor}“ — ohne Artikel gibt es keine Nominalisierung`;
+    return null;
+  },
+
+  "Wortarten erkennen": (a) => {
+    const art = roh(a.loesung);
+    if (!WORTARTEN.includes(art)) return "unbekannte Wortart: " + art;
+    const treffer = [...a.text.matchAll(/<b>(.+?)<\/b>/g)].map(m => m[1]);
+    const wort = treffer[treffer.length - 1];
+    if (!wort) return "hervorgehobenes Wort nicht erkennbar";
+    const satz = roh(a.text).split("?").pop();
+    if (!satz.includes(wort)) return `„${wort}“ kommt im Satz nicht vor: ${satz}`;
+    /* harte Regel: Nomen werden im Deutschen großgeschrieben */
+    const grossGeschrieben = /^[A-ZÄÖÜ]/.test(wort);
+    const satzAnfang = satz.trim().startsWith(wort);
+    if (art === "Nomen" && !grossGeschrieben)
+      return `„${wort}“ ist als Nomen markiert, aber kleingeschrieben`;
+    if (["Verb", "Adjektiv"].includes(art) && grossGeschrieben && !satzAnfang)
+      return `„${wort}“ ist als ${art} markiert, steht aber groß mitten im Satz`;
+    return null;
+  },
+
+  "Gedichte deuten": (a) => {
+    const schema = (roh(a.loesung).match(/\((\w{4})\)/) || [])[1];
+    if (!schema) return "Reimschema nicht lesbar: " + roh(a.loesung);
+    const zeilen = a.text.split("<br>").map(z => roh(z).replace(/^\d+\.\s*/, "").trim()).filter(Boolean);
+    if (zeilen.length !== 4) return `${zeilen.length} Zeilen statt 4`;
+    /* Reim ist eine Klangfrage, die Schreibweise täuscht: „stehn" reimt auf
+       „schön", „hin" auf „Sinn". Deshalb erst auf einen Klangkern normieren:
+       Umlaute auf ihre vorderen Entsprechungen, Dehnungs-h weg, Doppelbuchstaben
+       zusammenziehen — dann die letzten zwei Laute vergleichen. */
+    const klang = (w) => w.toLowerCase().replace(/[^a-zäöüß]/g, "")
+      .replace(/ä/g, "e").replace(/ö/g, "e").replace(/ü/g, "i").replace(/ß/g, "s")
+      .replace(/([aeiou])h/g, "$1")
+      .replace(/(.)\1+/g, "$1");
+    const reimt = (i, j) => {
+      const x = klang(zeilen[i].split(" ").pop()), y = klang(zeilen[j].split(" ").pop());
+      return x.slice(-2) === y.slice(-2);
+    };
+    const paare = schema === "aabb" ? [[0,1],[2,3]] : schema === "abab" ? [[0,2],[1,3]] : [[0,3],[1,2]];
+    for (const [i, j] of paare)
+      if (!reimt(i, j))
+        return `${schema}: Zeile ${i+1} und ${j+1} müssten sich reimen — „${zeilen[i].split(" ").pop()}“ und „${zeilen[j].split(" ").pop()}“ tun das nicht`;
+    const name = roh(a.loesung).split("(")[0].trim();
+    const erwartet = schema === "aabb" ? "Paarreim" : schema === "abab" ? "Kreuzreim" : "Umarmender Reim";
+    if (name.toLowerCase() !== erwartet.toLowerCase())
+      return `${schema} heißt ${erwartet}, angegeben ist ${name}`;
+    return null;
+  },
+
+  "Rede und Rhetorik": (a) => {
+    const mittel = roh(a.loesung);
+    if (!RHETORIK.includes(mittel)) return "unbekanntes rhetorisches Mittel: " + mittel;
+    const satz = (roh(a.text).match(/„(.+?)“/) || [])[1] || "";
+    if (!satz) return "Redesatz nicht erkennbar";
+    if (mittel === "Rhetorische Frage" && !/\?$/.test(satz))
+      return `als rhetorische Frage markiert, endet aber nicht mit einem Fragezeichen: ${satz}`;
+    if (mittel !== "Rhetorische Frage" && /\?$/.test(satz))
+      return `endet mit einem Fragezeichen, ist aber als ${mittel} markiert: ${satz}`;
+    if (mittel === "Appell" && !/!$/.test(satz))
+      return `als Appell markiert, endet aber nicht mit einem Ausrufezeichen: ${satz}`;
+    if (mittel === "Anapher") {
+      const teile = satz.split(",").map(s => s.trim()).filter(Boolean);
+      if (teile.length < 2) return "Anapher braucht mehrere Satzteile: " + satz;
+      const anfang = (s) => s.split(" ").slice(0, 2).join(" ").toLowerCase();
+      const ersteZwei = teile.map(anfang);
+      if (new Set(ersteZwei).size === ersteZwei.length)
+        return `als Anapher markiert, aber kein Satzteil wiederholt den Anfang: ${satz}`;
+    }
+    if (mittel === "Dreierfigur") {
+      const teile = satz.replace(/\.$/, "").split(/,|\bund\b/).map(s => s.trim()).filter(Boolean);
+      if (teile.length !== 3) return `Dreierfigur braucht genau drei Glieder, gezählt wurden ${teile.length}: ${satz}`;
+    }
+    return null;
+  },
+
+  "Sprachwandel": (a) => {
+    const ARTEN = { "Bedeutungsverengung":/weniger|schrumpft|enger/, "Bedeutungserweiterung":/mehr|immer mehr|weiter/,
+                    "Bedeutungsverschlechterung":/schlecht/, "Bedeutungsverbesserung":/Ansehen|höher/ };
+    const art = roh(a.loesung);
+    if (!(art in ARTEN)) return "unbekannte Art des Sprachwandels: " + art;
+    const erklaerung = roh(richtige(a.schritte[1]).t);
+    if (!ARTEN[art].test(erklaerung))
+      return `„${art}“ passt nicht zur Begründung „${erklaerung}“`;
+    return null;
+  },
+
+  "Fremdwörter": (a) => {
+    const teile = (a.schritte[2].frage.match(/<b>(.+?)<\/b>/) || [])[1] || "";
+    const stuecke = roh(teile).split(",").filter(s => s.includes("="));
+    if (stuecke.length !== 2) return `es müssen genau zwei Bausteine erklärt werden, gefunden: ${stuecke.length}`;
+    const sprache = roh(richtige(a.schritte[1]).t);
+    if (!["Latein", "Griechisch"].includes(sprache)) return "unerwartete Herkunftssprache: " + sprache;
+    const deutsch = roh(richtige(a.schritte[3]).t);
+    const wort = roh(a.text).replace(/^Das Fremdwort\s*/, "").trim();
+    if (deutsch.toLowerCase() === wort.toLowerCase())
+      return `das „deutsche Wort“ ist dasselbe wie das Fremdwort: ${wort}`;
+    return null;
+  },
+
+  "Literaturepochen": (a) => {
+    const epoche = roh(a.loesung);
+    const falscheEpochen = a.schritte[2].optionen.filter(o => !o.ok).map(o => roh(o.t));
+    if (falscheEpochen.includes(epoche)) return `„${epoche}“ steht auch unter den falschen Antworten`;
+    const tipp = roh(a.schritte[2].tipp || "");
+    if (!/\d{4}/.test(tipp)) return "im Tipp fehlt die Zeitangabe";
+    return null;
+  }
+});
+
 /* --------------------------------------------------------------- LAUF */
 const NICHT_PRUEFBAR = {
-  "Fremdwörter": "Herkunft und Bedeutung sind Faktenwissen — dafür braucht es eine Quelle, keine Regel.",
-  "Sprachwandel": "Welche Bedeutung ein Wort früher hatte, ist Faktenwissen.",
-  "Literaturepochen": "Jahreszahlen, Autoren und Merkmale sind Faktenwissen.",
-  "Rede und Rhetorik": "Die Zuordnung Wirkung ↔ Mittel ist eine Deutungsfrage, keine Rechenregel.",
-  "Gedichte deuten": "Ob sich zwei Zeilen reimen, ist eine Klangfrage — maschinell nur grob prüfbar.",
-  "Nominalisierung": "Beruht auf Wortwissen, nicht auf einer eindeutig prüfbaren Regel.",
-  "Wortarten erkennen": "Die Wortart ergibt sich aus dem Sprachgefühl, nicht aus einer Rechenregel.",
-  "Kommas bei Nebensätzen": "Sinngemäß dieselbe Regel wie „Satzreihe und Satzgefüge“, dort geprüft."
 };
 
 const proben = { ...matheProben, ...deutschProben };

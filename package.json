@@ -3,7 +3,8 @@
   "private": true,
   "description": "Endlich kapiert — Mathe und Deutsch, Klasse 5 bis 10. Nie die Lösung, nur Fragen, die hinführen.",
   "scripts": {
-    "pruefen": "node pruefe-aufbau.js && node pruefe-inhalt.js && node pruefe-quellen.js",
+    "pruefen": "node pruefe-seite.js && node pruefe-aufbau.js && node pruefe-inhalt.js && node pruefe-quellen.js",
+    "pruefe:seite": "node pruefe-seite.js",
     "pruefe:aufbau": "node pruefe-aufbau.js",
     "pruefe:inhalt": "node pruefe-inhalt.js",
     "pruefe:quellen": "node pruefe-quellen.js"
