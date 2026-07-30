@@ -4710,12 +4710,21 @@ window.addEventListener("popstate", function(e){
 
 /* Nach dem Neuladen die zuletzt geöffnete Seite wiederherstellen.
    history.state überlebt einen Reload, deshalb wissen wir, wo der Nutzer war. */
+/* Aktuelle Seite merken, damit sie einen Neuladen übersteht (localStorage). */
+function seiteMerken(){
+  if (ansicht === "laden" || ansicht === "passwortNeu") return;
+  try {
+    window.localStorage.setItem("ek_seite", JSON.stringify(
+      {v: ansicht, fach: fach, klasse: klasse, aktuellName: aktuellName, variante: variante}));
+  } catch(e){}
+}
+/* Nach dem Neuladen die zuletzt geöffnete Seite wiederherstellen. */
 function startWiederherstellen(){
   if (ansicht === "passwortNeu") return;   // Reset-Link nicht überschreiben
-  const s = history.state;
+  let s = null;
+  try { s = JSON.parse(window.localStorage.getItem("ek_seite") || "null"); } catch(e){}
   if (!s || !s.v) return;
-  const nie = ["willkommen","anmelden","registrieren","passwortNeu","laden"];
-  if (nie.includes(s.v)) return;
+  if (s.v === "laden" || s.v === "passwortNeu") return;
   if (s.v === "dashboard" && !istAdmin) return;
   if (["konto","anfragen","serie"].includes(s.v) && !benutzer) return;
   fach = s.fach; klasse = s.klasse; aktuellName = s.aktuellName; variante = s.variante || 0;
@@ -5129,6 +5138,7 @@ function render(gewaehlt){
     letzteAnsicht = ansicht;
     try { window.scrollTo(0, 0); } catch(e){}
   }
+  seiteMerken();
   renderSeite();
   const shell = document.getElementById("shell");
   shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
