@@ -6,6 +6,11 @@
 <title>Endlich kapiert</title>
 <meta name="description" content="Endlich kapiert: Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe und Deutsch, Klasse 5 bis 10.">
 <meta name="theme-color" content="#10a37f">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Endlich kapiert">
 <!-- Solange gebaut wird: nicht bei Google aufnehmen. Wird automatisch entfernt,
      sobald WARTUNG im Code auf false steht. -->
 <meta name="robots" content="noindex, nofollow" id="robots">
@@ -5572,6 +5577,13 @@ db.auth.onAuthStateChange((event) => {
 });
 render();
 pruefeAnmeldung();
+
+/* App installierbar / offline-tauglich machen */
+if ("serviceWorker" in navigator){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}
 </script>
 </body>
 </html>

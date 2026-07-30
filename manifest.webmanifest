@@ -1,0 +1,15 @@
+{
+  "name": "Endlich kapiert",
+  "short_name": "Endlich kapiert",
+  "description": "Du bekommst nie die Lösung, nur Fragen, die dich Schritt für Schritt selbst hinführen. Mathe und Deutsch, Klasse 5 bis 10.",
+  "lang": "de",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#131a18",
+  "theme_color": "#10a37f",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
