@@ -4687,19 +4687,30 @@ let anmeldeModus = "anmelden";
 let navPop = false;    // true, während wir einen Zurück-Klick verarbeiten
 let navInit = false;   // erster History-Eintrag noch nicht gesetzt
 let letzterPfad = null;// zuletzt gesetzte Adresse, um Änderungen zu erkennen
-let ladeT1, ladeT2, ladeT3;
+let ladeT1, ladeT2, ladeT3, ladeT4;
 function ladebalkenStart(){
   const b = document.getElementById("ladebalken");
   if (!b) return;
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  clearTimeout(ladeT1); clearTimeout(ladeT2); clearTimeout(ladeT3);
+  clearTimeout(ladeT1); clearTimeout(ladeT2); clearTimeout(ladeT3); clearTimeout(ladeT4);
+  const z = (min, max) => min + Math.random() * (max - min);   // Zufallswert
   b.style.transition = "none"; b.style.opacity = "1"; b.style.width = "0%";
   void b.offsetWidth;   // Neustart der Animation erzwingen
-  b.style.transition = "width .55s ease, opacity .35s ease";
-  b.style.width = "70%";
-  ladeT1 = setTimeout(() => { b.style.width = "100%"; }, 450);
-  ladeT2 = setTimeout(() => { b.style.opacity = "0"; }, 800);
-  ladeT3 = setTimeout(() => { b.style.transition = "none"; b.style.width = "0%"; }, 1150);
+  /* Stufe 1: zügig auf einen zufälligen Anfangswert */
+  b.style.transition = `width ${z(0.2, 0.35).toFixed(2)}s ease, opacity .35s ease`;
+  b.style.width = z(30, 55).toFixed(0) + "%";
+  /* Stufe 2: langsamer weiter — stockt zufällig bei ~80–92 % (wie echtes Laden) */
+  const tMitte = Math.round(z(280, 620));
+  const tVoll  = tMitte + Math.round(z(280, 700));
+  const tWeg   = tVoll + Math.round(z(160, 320));
+  const tReset = tWeg + 400;
+  ladeT1 = setTimeout(() => {
+    b.style.transition = `width ${z(0.35, 0.7).toFixed(2)}s ease`;
+    b.style.width = z(80, 92).toFixed(0) + "%";
+  }, tMitte);
+  ladeT2 = setTimeout(() => { b.style.transition = "width .2s ease"; b.style.width = "100%"; }, tVoll);
+  ladeT3 = setTimeout(() => { b.style.opacity = "0"; }, tWeg);
+  ladeT4 = setTimeout(() => { b.style.transition = "none"; b.style.width = "0%"; }, tReset);
 }
 
 function navSnapshot(){
