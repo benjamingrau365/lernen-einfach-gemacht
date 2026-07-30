@@ -2,15 +2,50 @@
 
 Damit die App einmal am Tag melden darf: *„3 Themen sind heute dran."*
 
-**Der Code ist fertig.** Was fehlt, sind fünf Einstellungen, die nur du machen
-kannst, weil sie geheime Schlüssel betreffen. Alles geht **im Browser** — du
-brauchst kein Terminal und musst nichts installieren.
+---
 
-Rechne mit etwa **30 Minuten**.
+## ▶ STAND — hier geht es weiter
+
+Stand 30.07.2026. Fast alles ist fertig:
+
+| | Schritt | Stand |
+|---|---|---|
+| 1 | Tabelle `push_abos` (mit Zeilenschutz und 3 Regeln) | ✅ fertig |
+| 2 | Schlüsselpaar erzeugt | ✅ fertig |
+| 3 | `PUSH_KEY` in der `index.html` | ✅ fertig |
+| 4 | Secrets `VAPID_KEYS` + `VAPID_MAILTO`, Funktion `erinnerungen` | ✅ fertig |
+| 5 | Täglicher Aufruf (Cron) | ⚠️ **angelegt, aber der Schlüssel sitzt falsch** |
+| 6 | Funktion `vapid-schluessel` löschen | ⬜ offen |
+| — | Handy anmelden | ⬜ offen |
+
+**Es ist nichts kaputt.** Die App läuft normal. Der Cron-Job versucht abends
+einmal erfolglos zu senden und hört wieder auf — das stört nichts.
+
+### Was noch zu tun ist
+
+**A) Cron-Job neu setzen.** Der Schlüssel steht außerhalb der
+Anführungszeichen. Unten in *Schritt 5* steht die verbesserte Fassung, bei der
+der Schlüssel eine eigene Zeichenkette bekommt — da kann nichts verrutschen.
+
+**B) Handy anmelden.** Seite auf dem Handy öffnen → zum Home-Bildschirm
+hinzufügen → **von dort starten** → anmelden → Einstellungen → *Täglich
+erinnern*. Ohne angemeldetes Gerät hat die Funktion niemanden zum Benachrichtigen.
+
+**C) `vapid-schluessel` löschen.** Edge Functions → Funktion anklicken →
+*Delete function*. Sie wird nicht mehr gebraucht.
+
+Danach die Prüfabfrage ganz unten laufen lassen — die sagt in einer Tabelle,
+ob alles steht.
+
+---
+
+## Die vollständige Anleitung
+
+Alles geht **im Browser** — kein Terminal, keine Installation nötig.
 
 > Solange kein Schlüssel eingetragen ist, bleibt der Punkt „Erinnerungen" in
-> den Einstellungen unsichtbar. Es geht also nichts kaputt, wenn du mittendrin
-> aufhörst und später weitermachst.
+> den Einstellungen unsichtbar. Es geht also nichts kaputt, wenn man mittendrin
+> aufhört und später weitermacht.
 
 ---
 
@@ -127,6 +162,12 @@ Zurück in den **SQL Editor**. Vorher zwei Dinge heraussuchen:
 * **Service-Role-Key** — Project Settings → **API** → `service_role`.
   Der ist geheim und darf nirgendwo im Browser-Code stehen.
 
+Falls schon ein Job existiert, erst weg damit:
+
+```sql
+select cron.unschedule('erinnerungen-taeglich');
+```
+
 ```sql
 create extension if not exists pg_cron;
 create extension if not exists pg_net;
@@ -135,10 +176,26 @@ create extension if not exists pg_net;
 select cron.schedule('erinnerungen-taeglich', '0 16 * * *', $$
   select net.http_post(
     url     := 'https://KÜRZEL.supabase.co/functions/v1/erinnerungen',
-    headers := '{"Authorization": "Bearer DEIN-SERVICE-ROLE-KEY", "Content-Type": "application/json"}'::jsonb
+    headers := jsonb_build_object(
+      'Authorization', 'Bearer ' || 'HIER_DEN_KEY',
+      'Content-Type',  'application/json'
+    )
   );
 $$);
 ```
+
+**So wird der Schlüssel richtig eingesetzt:** Doppelklick auf das Wort
+`HIER_DEN_KEY` — dann ist genau dieses Wort markiert und die Anführungszeichen
+bleiben stehen — und dann einfügen. Danach muss die Zeile so aussehen:
+
+```sql
+      'Authorization', 'Bearer ' || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ...',
+```
+
+Also `'Bearer '` mit Leerzeichen am Ende, dann `||`, dann der Schlüssel in
+**eigenen** Anführungszeichen. Der Schlüssel steht dadurch in einer eigenen
+Zeichenkette und kann nicht mehr versehentlich aus den Anführungszeichen
+herausrutschen — das ist der häufigste Fehler an dieser Stelle.
 
 **Zur Uhrzeit:** Nachmittags ist besser als morgens. Vormittags sitzen deine
 Nutzer in der Schule und wischen die Mitteilung weg, bevor sie überhaupt üben
@@ -220,3 +277,49 @@ mir das an. Die häufigsten Stolpersteine:
 * **Kein Gerät in `push_abos`** — dann hat Schritt 3 nicht geklappt oder der
   Browser hat die Nachfrage blockiert. Auf dem iPhone: App wirklich vom
   Home-Bildschirm aus gestartet?
+
+
+---
+
+## Prüfabfrage — steht alles?
+
+Diese eine Abfrage prüft die ganze Einrichtung. Sie zeigt **keine** geheimen
+Werte an, nur ja/nein:
+
+```sql
+select 'Erweiterung pg_cron' as pruefung,
+       case when exists(select 1 from pg_extension where extname='pg_cron') then 'ja' else 'FEHLT' end as ist, 'ja' as soll
+union all select 'Erweiterung pg_net',
+       case when exists(select 1 from pg_extension where extname='pg_net') then 'ja' else 'FEHLT' end, 'ja'
+union all select 'Tabelle push_abos',
+       case when exists(select 1 from information_schema.tables where table_schema='public' and table_name='push_abos') then 'ja' else 'FEHLT' end, 'ja'
+union all select 'Zeilenschutz an',
+       coalesce((select case when relrowsecurity then 'ja' else 'AUS' end from pg_class where relname='push_abos'),'?'), 'ja'
+union all select 'Regeln auf push_abos',
+       (select count(*)::text from pg_policies where schemaname='public' and tablename='push_abos'), '3'
+union all select 'Angemeldete Geraete',
+       (select count(*)::text from public.push_abos), 'mind. 1'
+union all select 'Cron-Job da',
+       case when exists(select 1 from cron.job where jobname='erinnerungen-taeglich') then 'ja' else 'FEHLT' end, 'ja'
+union all select 'Cron-Zeitplan',
+       coalesce((select schedule from cron.job where jobname='erinnerungen-taeglich'),'-'), '0 16 * * *'
+union all select 'Cron aktiv',
+       coalesce((select case when active then 'ja' else 'AUS' end from cron.job where jobname='erinnerungen-taeglich'),'-'), 'ja'
+union all select 'Platzhalter noch drin',
+       coalesce((select case when command like '%HIER_DEN_KEY%' then 'JA! FEHLER' else 'nein' end from cron.job where jobname='erinnerungen-taeglich'),'-'), 'nein'
+union all select 'Schluessel richtig gesetzt',
+       coalesce((select case when command like '%Bearer % || %eyJ%' then 'ja' else 'FEHLT' end from cron.job where jobname='erinnerungen-taeglich'),'-'), 'ja'
+union all select 'Adresse stimmt',
+       coalesce((select case when command like '%/functions/v1/erinnerungen%' then 'ja' else 'FALSCH' end from cron.job where jobname='erinnerungen-taeglich'),'-'), 'ja'
+union all select 'Heute faellige Themen',
+       (select count(*)::text from public.fortschritt where naechste_wiederholung <= now()), 'zum Testen mind. 1';
+```
+
+Und ob der Job schon einmal gelaufen ist:
+
+```sql
+select status, return_message, start_time
+from cron.job_run_details
+where jobid = (select jobid from cron.job where jobname = 'erinnerungen-taeglich')
+order by start_time desc limit 5;
+```
