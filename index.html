@@ -697,7 +697,7 @@
   /* Dünner Ladebalken oben — Feedback beim Seitenwechsel (wie bei anderen Seiten) */
   #ladebalken{position:fixed;top:0;left:0;height:3.5px;width:0;z-index:100;opacity:0;
     background:linear-gradient(90deg,#0a8f5f,#18c169,#12b5c9,#4f7cf7,#18c169,#0a8f5f);
-    background-size:220% 100%;animation:ladefarbe 2.2s linear infinite;
+    background-size:220% 100%;animation:ladefarbe 1s linear infinite;
     box-shadow:0 0 10px #22d16e;pointer-events:none}
   @keyframes ladefarbe{0%{background-position:0% 0}100%{background-position:220% 0}}
   @media(prefers-reduced-motion:reduce){#ladebalken{animation:none}}
