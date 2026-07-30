@@ -379,7 +379,13 @@
   .meldungtext{margin:8px 0;font-size:16px;white-space:pre-wrap}
   .meldungmail{display:block;font-size:14px;color:var(--ac-dark);margin-bottom:8px}
   textarea.feld{resize:vertical;font-family:inherit;line-height:1.5}
-  select.feld{appearance:none;background-image:none}
+  select.feld{-webkit-appearance:none;appearance:none;width:100%;
+    padding:13px 42px 13px 15px;border:1.5px solid var(--line);border-radius:12px;
+    font:inherit;font-size:16.5px;margin-bottom:10px;background-color:var(--card);color:var(--ink);
+    cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238c9a95' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 14px center;background-size:16px}
+  select.feld:focus{outline:none;border-color:var(--ac)}
   .fusslink{background:none;border:none;font:inherit;font-size:14px;color:var(--soft);
     text-decoration:underline;cursor:pointer;padding:6px 0}
   .fusslink:hover{color:var(--ac-dark)}
@@ -5698,6 +5704,7 @@ function registrierenHtml(){
       <input class="feld" id="pw" type="password" placeholder="Passwort (mindestens 6 Zeichen)"
              autocomplete="new-password"
              onkeydown="if(event.key==='Enter')registriere()">
+      <p class="small soft" style="margin:4px 0 8px">Dein Bundesland <span style="opacity:.7">(freiwillig)</span> — damit wir die Themen an deinen Lehrplan anpassen können:</p>
       <select class="feld" onchange="setBundesland(this.value)" aria-label="Bundesland">${bundeslandOptionen()}</select>
       ${hinweis ? `<div class="feedback ${hinweis.startsWith("Fast") ? "ok" : "nope"}" style="margin-top:4px">${hinweis}</div>` : ""}
       <button class="btn full" style="margin-top:14px" onclick="registriere()">Konto anlegen</button>
