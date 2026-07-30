@@ -3004,6 +3004,30 @@ const ERKLAERUNGEN = {
 };
 
 function hatErklaerung(thema){ return !!ERKLAERUNGEN[thema]; }
+/* Themen einer Klasse, für die es schon Aufgaben gibt */
+function fertigeThemen(f, k){
+  return (KATALOG[f] && KATALOG[f].themen[k] ? KATALOG[f].themen[k] : []).filter(t => anzahlAufgaben(t) > 0);
+}
+/* Für eine noch leere Klasse: die nächstgelegenen fertigen Themen aus den
+   Klassen darunter — die Grundlagen, die man dafür ohnehin braucht.
+   Es wird von unmittelbar darunter nach unten gesucht, damit die
+   Vorschläge möglichst nah an der gewählten Klasse liegen. */
+function grundlagenThemen(f, k, anzahl){
+  const raus = [];
+  for (let stufe = k - 1; stufe >= 5 && raus.length < anzahl; stufe--)
+    for (const t of fertigeThemen(f, stufe)){
+      raus.push({thema: t, klasse: stufe});
+      if (raus.length >= anzahl) break;
+    }
+  return raus;
+}
+/* startet ein Thema und stellt Fach und Klasse passend dazu ein
+   (nötig, wenn aus einer leeren Klasse ein Grundlagen-Thema geübt wird) */
+function starteThemaAusKlasse(name){
+  const info = themaInfo(name);
+  fach = info.fach; klasse = info.klasse;
+  starte(name);
+}
 /* ---------- Dashboard und Hilfe-Formular ---------- */
 
 let istAdmin = false;
@@ -3296,6 +3320,46 @@ async function feedbackSenden(){
   const {error} = await meldungInsert(bereich, text, email);
   if (error){ ladeFehler = "Das Absenden hat nicht geklappt: " + (error.message || "unbekannter Fehler") + "."; return render(); }
   meldungCode = ""; meldungGesendet = true; feedbackSterne = 0; render();
+}
+/* Themenwunsch aus einer Klasse, die noch im Aufbau ist.
+   Sagt uns, was zuerst gebaut werden soll — und an wen wir Bescheid geben. */
+let wunschGesendet = false;
+async function themenwunschSenden(){
+  const nachricht = document.getElementById("wText").value.trim();
+  const feldMail = document.getElementById("wMail");
+  const email = feldMail ? feldMail.value.trim() : "";
+  if (nachricht.length < 3){ ladeFehler = "Schreib kurz, welches Thema dir fehlt."; return render(); }
+  ladeFehler = "";
+  const bereich = `Themenwunsch · ${KATALOG[fach].name} ${klasse}`;
+  const {error} = await meldungInsert(bereich, nachricht, email);
+  if (error){ ladeFehler = "Das Absenden hat nicht geklappt: " + (error.message || "unbekannter Fehler") + "."; return render(); }
+  wunschGesendet = true; render();
+}
+/* Wunsch-Feld für Klassen, in denen noch Themen fehlen.
+   kompakt = knappe Fassung unter einer Liste, die schon Themen enthält. */
+function themenwunschHtml(kompakt){
+  if (wunschGesendet)
+    return `<div class="card">
+      <div class="feedback ok" style="margin:0"><b>Angekommen — danke!</b>
+        Dein Wunsch steht auf der Liste. Wir bauen die Themen in der Reihenfolge,
+        in der sie gebraucht werden — du hast also gerade mitentschieden.</div>
+    </div>`;
+  return `
+    <div class="card">
+      <p class="ueberschrift">${SYM.gluehbirne} ${kompakt ? "Fehlt dir ein Thema?" : "Welches Thema brauchst du?"}</p>
+      <p class="small soft" style="margin:0 0 12px">Sag uns, woran du gerade hängst.
+        Wir bauen die Themen in der Reihenfolge, in der sie gebraucht werden —
+        deine Nachricht entscheidet also mit, was als Nächstes drankommt.</p>
+      <textarea class="feld" id="wText" rows="3"
+        placeholder="Zum Beispiel: Quadratische Gleichungen — ich komme mit der pq-Formel nicht klar"></textarea>
+      ${benutzer
+        ? `<p class="small soft" style="margin:2px 0 0">Wir melden uns an <b>${benutzer.email}</b>, sobald das Thema fertig ist.</p>`
+        : `<input class="feld" id="wMail" type="email" autocomplete="email"
+             placeholder="Deine E-Mail (freiwillig)">
+           <p class="small soft" style="margin:2px 0 0">Mit E-Mail sagen wir dir Bescheid, sobald das Thema fertig ist.</p>`}
+      ${ladeFehler ? `<div class="feedback nope">${ladeFehler}</div>` : ""}
+      <button class="btn full" style="margin-top:12px" onclick="themenwunschSenden()">Thema vorschlagen</button>
+    </div>`;
 }
 
 /* ---------- Ansichten ---------- */
@@ -3800,8 +3864,11 @@ function zeigeSeite(name){
 function zurueckVonSeite(){ ansicht = vorSeite || "willkommen"; render(); }
 
 function menueLernen(f, k){
-  fach = f; klasse = k; ansicht = "start"; menueOffen = false; menueAuf = null; render();
+  fach = f; klasse = k; ansicht = "start"; menueOffen = false; menueAuf = null;
+  wunschZuruecksetzen(); render();
 }
+/* Wunsch-Feld ist pro Klasse gedacht — beim Wechsel wieder leer anzeigen */
+function wunschZuruecksetzen(){ wunschGesendet = false; ladeFehler = ""; }
 
 /* Echte Links: normaler Klick -> schnelle App-Navigation; Strg/Cmd/Mittelklick
    oder Long-Press/Rechtsklick -> der Browser öffnet die Adresse ganz normal
@@ -5080,8 +5147,8 @@ async function speichereErgebnis(){
 }
 
 /* ---------- Navigation ---------- */
-function waehleFach(f){ fach = f; klasse = null; ansicht = "klassenwahl"; render(); }
-function waehleKlasse(k){ klasse = k; ansicht = "start"; render(); }
+function waehleFach(f){ fach = f; klasse = null; ansicht = "klassenwahl"; wunschZuruecksetzen(); render(); }
+function waehleKlasse(k){ klasse = k; ansicht = "start"; wunschZuruecksetzen(); render(); }
 function zurFachwahl(){ ansicht = "fachwahl"; render(); }
 function zurUebersicht(){ ansicht = "uebersicht"; render(); }
 let vorSerie = "uebersicht";
@@ -5425,13 +5492,53 @@ function render(gewaehlt){
   /* ---- Themenliste ---- */
   if (ansicht === "start"){
     const themen = KATALOG[fach].themen[klasse];
+    const fertig = themen.filter(t => anzahlAufgaben(t) > 0);
+    const kopf = `
+      <div class="pfad">
+        ${navLink("/faecher", "zurFachwahl()", KATALOG[fach].name)}
+        <span>›</span>
+        ${navLink(`/${fach}`, "zurKlassenwahl()", `Klasse ${klasse}`)}
+      </div>`;
+
+    /* ---- Klasse ist noch komplett leer: keine Sackgasse, sondern ein Weg weiter ---- */
+    if (!fertig.length){
+      const grundlagen = grundlagenThemen(fach, klasse, 5);
+      el.innerHTML = `
+        <div class="card">
+          ${kopf}
+          <span class="tag">Klasse ${klasse} · im Aufbau</span>
+          <h1>An Klasse ${klasse} wird gerade gebaut</h1>
+          <p class="soft">Wir sagen dir lieber ehrlich, dass hier noch nichts fertig ist,
+            als dich mit halben Sachen abzuspeisen. Aber du bist trotzdem nicht am falschen Ort —
+            zwei Dinge kannst du hier gerade machen.</p>
+        </div>
+
+        ${grundlagen.length ? `
+        <div class="card">
+          <p class="ueberschrift">${SYM.ziel} Damit kommst du jetzt schon weiter</p>
+          <p class="small soft" style="margin:0 0 14px">Fast alles in Klasse ${klasse} baut auf diesen Themen auf.
+            Wer sie sicher kann, tut sich später deutlich leichter — und genau das kannst du hier schon üben.</p>
+          <div class="themen">
+            ${grundlagen.map(g => {
+              const sicher = g.thema.replace(/'/g,"\\'");
+              const n = anzahlAufgaben(g.thema);
+              return `<div class="themazeile">
+                ${navLink(`/${fach}/${g.klasse}`, `starteThemaAusKlasse('${sicher}')`,
+                  `<span>${g.thema}</span><span class="pill neutral">Klasse ${g.klasse}</span>`, "thema")}
+                ${hatErklaerung(g.thema) ? `<button class="erklknopf" title="Erklärung" onclick="zeigeErklaerung('${sicher}')">?</button>` : ""}
+              </div>`;
+            }).join("")}
+          </div>
+        </div>` : ""}
+
+        ${themenwunschHtml()}`;
+      return;
+    }
+
+    /* ---- normale Themenliste (mit Wunsch-Feld, wenn noch etwas fehlt) ---- */
     el.innerHTML = `
       <div class="card">
-        <div class="pfad">
-          ${navLink("/faecher", "zurFachwahl()", KATALOG[fach].name)}
-          <span>›</span>
-          ${navLink(`/${fach}`, "zurKlassenwahl()", `Klasse ${klasse}`)}
-        </div>
+        ${kopf}
         <h1>Such dir dein Thema</h1>
         <p class="soft">Du bekommst nie die Lösung — nur Fragen, die dich hinführen.</p>
       </div>
@@ -5456,7 +5563,9 @@ function render(gewaehlt){
             </div>`;
           }).join("")}
         </div>
-      </div>`;
+      </div>
+
+      ${fertig.length < themen.length ? themenwunschHtml(true) : ""}`;
     return;
   }
 
