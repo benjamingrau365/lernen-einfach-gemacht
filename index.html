@@ -5987,6 +5987,7 @@ const SYM = {
   buch:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>`,
   stern:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 9.7l5.4-.8z"/></svg>`,
   handy:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>`,
+  rechner:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>`,
   teilen:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-.15em;display:inline-block"><path d="M12 15V3"/><path d="M8.5 6.5L12 3l3.5 3.5"/><path d="M6 12v7.5a1.5 1.5 0 0 0 1.5 1.5h9a1.5 1.5 0 0 0 1.5-1.5V12"/></svg>`,
   glocke:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6z"/><path d="M10.5 20a2 2 0 0 0 3 0"/></svg>`
 };
@@ -6501,6 +6502,15 @@ function istInstalliert(){
       || window.navigator.standalone === true;
 }
 function istApple(){ return /iPad|iPhone|iPod/.test(navigator.userAgent); }
+/* Handy oder Tablet? Am Rechner lässt sich die App zwar auch installieren,
+   dort heißt es aber nicht „aufs Handy legen“. */
+function istHandy(){
+  if (/Android|iPhone|iPod|Windows Phone|Mobile/i.test(navigator.userAgent)) return true;
+  if (/iPad/.test(navigator.userAgent)) return true;
+  /* iPads ab iOS 13 melden sich als Mac — an der Fingerbedienung erkennbar */
+  if (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) return true;
+  return false;
+}
 
 window.addEventListener("beforeinstallprompt", function(e){
   e.preventDefault();          /* wir fragen selbst, an einer passenden Stelle */
@@ -6524,18 +6534,23 @@ async function installStarten(){
 function installHinweisHtml(){
   if (istInstalliert() || installWeg) return "";
   if (!installEvent && !istApple()) return "";      /* Gerät kann es nicht oder noch nicht */
+  const handy = istHandy();
   const anleitung = istApple()
     ? `<p class="small soft" style="margin:0 0 14px">Tippe unten auf <b>Teilen</b> ${SYM.teilen}
          und dann auf <b>„Zum Home-Bildschirm“</b>. Danach liegt „Endlich kapiert“ zwischen deinen
          anderen Apps — und startet ohne Browserleiste.</p>`
-    : `<p class="small soft" style="margin:0 0 14px">Ein Tippen genügt. Danach liegt „Endlich kapiert“
-         zwischen deinen anderen Apps und startet ohne Browserleiste — auch ohne Internet.</p>`;
+    : handy
+    ? `<p class="small soft" style="margin:0 0 14px">Ein Tippen genügt. Danach liegt „Endlich kapiert“
+         zwischen deinen anderen Apps und startet ohne Browserleiste — auch ohne Internet.</p>`
+    : `<p class="small soft" style="margin:0 0 14px">Ein Klick genügt. Danach startet „Endlich kapiert“
+         in einem eigenen Fenster statt im Browser — und du findest es im Startmenü wieder.
+         Auf dem Handy kannst du es genauso hinzufügen.</p>`;
   return `
     <div class="card installkarte">
-      <p class="ueberschrift">${SYM.handy} Aufs Handy legen</p>
+      <p class="ueberschrift">${handy ? SYM.handy : SYM.rechner} ${handy ? "Aufs Handy legen" : "Als App installieren"}</p>
       ${anleitung}
       <div class="knopfreihe">
-        ${installEvent ? `<button class="btn" onclick="installStarten()">Jetzt hinzufügen</button>` : ""}
+        ${installEvent ? `<button class="btn" onclick="installStarten()">${handy ? "Jetzt hinzufügen" : "Jetzt installieren"}</button>` : ""}
         <button class="btn ghost" onclick="installWegklicken()">Nicht jetzt</button>
       </div>
     </div>`;
