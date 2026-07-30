@@ -431,6 +431,12 @@
   }
 
   /* Hinweiskasten auf der Startseite */
+  /* Hinweis „aufs Handy legen" — freundlich, aber nicht aufdringlich */
+  .installkarte{border-color:var(--ac);background:var(--ac-soft)}
+  .installkarte .ueberschrift{color:var(--ac-dark)}
+  .installkarte .ueberschrift svg{width:20px;height:20px;vertical-align:-.25em}
+  .installkarte .knopfreihe{gap:10px}
+  @media(max-width:520px){ .installkarte .knopfreihe{flex-direction:column} .installkarte .btn{width:100%} }
   .baubox{background:var(--amber-soft);border:1px solid var(--amber);border-radius:18px;
     padding:22px 24px;margin-bottom:14px}
   .baubox .baukopf{display:flex;align-items:center;gap:12px;margin-bottom:10px}
@@ -5979,7 +5985,10 @@ const SYM = {
   lupe:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>`,
   balken:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>`,
   buch:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5"/></svg>`,
-  stern:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 9.7l5.4-.8z"/></svg>`
+  stern:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 9.7l5.4-.8z"/></svg>`,
+  handy:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>`,
+  teilen:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-.15em;display:inline-block"><path d="M12 15V3"/><path d="M8.5 6.5L12 3l3.5 3.5"/><path d="M6 12v7.5a1.5 1.5 0 0 0 1.5 1.5h9a1.5 1.5 0 0 0 1.5-1.5V12"/></svg>`,
+  glocke:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6z"/><path d="M10.5 20a2 2 0 0 0 3 0"/></svg>`
 };
 
 /* ---------- Aktivität: Serie und Tagesziel ---------- */
@@ -6128,6 +6137,7 @@ function uebersichtHtml(){
         : `<p class="soft">Du kannst alles ausprobieren. Ein Konto brauchst du erst, wenn dein Fortschritt gespeichert werden soll.</p>`}
     </div>
 
+    ${installHinweisHtml()}
     ${baustelleBoxHtml()}
 
     ${offen.length ? `
@@ -6476,6 +6486,152 @@ let fehlerImSchritt = 0;
 let aufgeloest = false;    // nach drei Fehlversuchen wird die Lösung gezeigt
 let erklaerungAngeboten = false;
 let letzteEingabe = "";
+
+/* ================================================================
+   ZUM HOME-BILDSCHIRM HINZUFÜGEN
+   Die meisten wissen nicht, dass eine Webseite wie eine App auf dem
+   Handy liegen kann. Deshalb ein Hinweis — einmal wegklickbar.
+   ================================================================ */
+let installEvent = null;
+let installWeg = false;
+try { installWeg = window.localStorage.getItem("ek-install-weg") === "1"; } catch(e){}
+
+function istInstalliert(){
+  return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)
+      || window.navigator.standalone === true;
+}
+function istApple(){ return /iPad|iPhone|iPod/.test(navigator.userAgent); }
+
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();          /* wir fragen selbst, an einer passenden Stelle */
+  installEvent = e;
+  if (!installWeg) render();
+});
+window.addEventListener("appinstalled", function(){ installEvent = null; installWegklicken(true); });
+
+function installWegklicken(still){
+  installWeg = true;
+  try { window.localStorage.setItem("ek-install-weg", "1"); } catch(e){}
+  if (!still) render();
+}
+async function installStarten(){
+  if (!installEvent) return;
+  installEvent.prompt();
+  try { await installEvent.userChoice; } catch(e){}
+  installEvent = null; render();
+}
+/* Hinweiskarte — zeigt sich nur, wenn sie auch etwas nützt */
+function installHinweisHtml(){
+  if (istInstalliert() || installWeg) return "";
+  if (!installEvent && !istApple()) return "";      /* Gerät kann es nicht oder noch nicht */
+  const anleitung = istApple()
+    ? `<p class="small soft" style="margin:0 0 14px">Tippe unten auf <b>Teilen</b> ${SYM.teilen}
+         und dann auf <b>„Zum Home-Bildschirm“</b>. Danach liegt „Endlich kapiert“ zwischen deinen
+         anderen Apps — und startet ohne Browserleiste.</p>`
+    : `<p class="small soft" style="margin:0 0 14px">Ein Tippen genügt. Danach liegt „Endlich kapiert“
+         zwischen deinen anderen Apps und startet ohne Browserleiste — auch ohne Internet.</p>`;
+  return `
+    <div class="card installkarte">
+      <p class="ueberschrift">${SYM.handy} Aufs Handy legen</p>
+      ${anleitung}
+      <div class="knopfreihe">
+        ${installEvent ? `<button class="btn" onclick="installStarten()">Jetzt hinzufügen</button>` : ""}
+        <button class="btn ghost" onclick="installWegklicken()">Nicht jetzt</button>
+      </div>
+    </div>`;
+}
+
+/* ================================================================
+   ERINNERUNGEN (Push)
+   Der Wiederholungsplan kann nur wirken, wenn die App sich melden
+   darf. Ohne eingetragenen Schlüssel bleibt der Bereich unsichtbar.
+   Einrichtung: siehe ERINNERUNGEN.md
+   ================================================================ */
+const PUSH_KEY = "";          /* VAPID-Public-Key hier eintragen */
+let pushAn = false;
+let pushHinweis = "";
+
+function pushMoeglich(){
+  return !!PUSH_KEY && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+}
+/* Apple erlaubt Mitteilungen nur, wenn die App auf dem Home-Bildschirm liegt */
+function pushBrauchtInstallation(){ return istApple() && !istInstalliert(); }
+
+function schluesselAlsBytes(k){
+  const rand = "=".repeat((4 - k.length % 4) % 4);
+  const roh = window.atob((k + rand).replace(/-/g, "+").replace(/_/g, "/"));
+  return Uint8Array.from([...roh].map(c => c.charCodeAt(0)));
+}
+async function pushStandPruefen(){
+  if (!pushMoeglich()) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    pushAn = !!(await reg.pushManager.getSubscription());
+  } catch(e){ pushAn = false; }
+}
+async function pushEinschalten(){
+  pushHinweis = "";
+  if (pushBrauchtInstallation()){
+    pushHinweis = "Auf dem iPhone gehen Mitteilungen erst, wenn die App auf dem Home-Bildschirm liegt.";
+    return render();
+  }
+  try {
+    const erlaubnis = await Notification.requestPermission();
+    if (erlaubnis !== "granted"){
+      pushHinweis = "Du hast Mitteilungen abgelehnt. Du kannst das in den Einstellungen deines Browsers ändern.";
+      return render();
+    }
+    const reg = await navigator.serviceWorker.ready;
+    const abo = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: schluesselAlsBytes(PUSH_KEY)
+    });
+    const daten = abo.toJSON();
+    const {error} = await db.from("push_abos").upsert({
+      endpunkt: daten.endpoint,
+      p256dh: daten.keys.p256dh,
+      auth: daten.keys.auth,
+      benutzer_id: benutzer ? benutzer.id : null
+    }, {onConflict: "endpunkt"});
+    if (error){
+      pushHinweis = "Das Speichern hat nicht geklappt: " + (error.message || "unbekannter Fehler");
+      return render();
+    }
+    pushAn = true; render();
+  } catch(e){
+    pushHinweis = "Mitteilungen konnten nicht eingeschaltet werden: " + (e.message || e);
+    render();
+  }
+}
+async function pushAusschalten(){
+  pushHinweis = "";
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const abo = await reg.pushManager.getSubscription();
+    if (abo){
+      await db.from("push_abos").delete().eq("endpunkt", abo.endpoint);
+      await abo.unsubscribe();
+    }
+    pushAn = false; render();
+  } catch(e){ pushHinweis = "Ausschalten hat nicht geklappt."; render(); }
+}
+function erinnerungenHtml(){
+  if (!pushMoeglich()) return "";
+  return `
+    <div class="card">
+      <p class="ueberschrift">${SYM.glocke} Erinnerungen</p>
+      <p class="small soft" style="margin:0 0 12px">Der Wiederholungsplan legt dir Themen genau dann
+        wieder vor, wenn du sie sonst vergessen würdest. Damit das wirkt, darf die App dich einmal
+        am Tag daran erinnern — mehr nicht.</p>
+      ${pushBrauchtInstallation()
+        ? `<p class="small soft" style="margin:0 0 12px">Auf dem iPhone geht das erst, wenn die App
+             auf dem Home-Bildschirm liegt. Wie das geht, steht oben auf der Startseite.</p>` : ""}
+      ${pushHinweis ? `<div class="feedback nope">${pushHinweis}</div>` : ""}
+      ${pushAn
+        ? `<button class="btn ghost full" onclick="pushAusschalten()">Erinnerungen ausschalten</button>`
+        : `<button class="btn full" onclick="pushEinschalten()">Täglich erinnern</button>`}
+    </div>`;
+}
 
 /* ---------- Einstellungen ---------- */
 const SCHRIFT_MIN = 0.85, SCHRIFT_MAX = 1.45;
@@ -7306,6 +7462,8 @@ function render(gewaehlt){
         <div class="schriftvorschau">So sieht dein Text in dieser Größe aus.</div>
       </div>
 
+      ${erinnerungenHtml()}
+
       <div class="card">
         <p class="ueberschrift">Bundesland</p>
         <p class="small soft" style="margin:0 0 12px">Damit wir die Themen später an deinen Lehrplan anpassen können.</p>
@@ -7489,6 +7647,7 @@ function willkommenHtml(){
       </div>
     </div>
 
+    ${installHinweisHtml()}
     ${baustelleBoxHtml()}
 
     <div class="card">
@@ -7614,7 +7773,9 @@ pruefeAnmeldung();
 /* App installierbar / offline-tauglich machen */
 if ("serviceWorker" in navigator){
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+    navigator.serviceWorker.register("/sw.js")
+      .then(() => pushStandPruefen().then(() => { if (pushAn) render(); }))
+      .catch(() => {});
   });
 }
 </script>
