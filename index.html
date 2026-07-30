@@ -695,9 +695,9 @@
 
   .kachelpaar{display:grid;grid-template-columns:1fr;gap:0}
   /* Dünner Ladebalken oben — Feedback beim Seitenwechsel (wie bei anderen Seiten) */
-  #ladebalken{position:fixed;top:0;left:0;height:3px;width:0;z-index:100;opacity:0;
-    background:linear-gradient(90deg,var(--heroglanz1),var(--heroglanz2));
-    box-shadow:0 0 8px var(--heroglanz1);pointer-events:none}
+  #ladebalken{position:fixed;top:0;left:0;height:3.5px;width:0;z-index:100;opacity:0;
+    background:linear-gradient(90deg,#0a8f5f 0%,#18c169 50%,#2fe07e 100%);
+    box-shadow:0 0 10px #22d16e;pointer-events:none}
   .kachel{display:flex;flex-direction:column}
   .kachel .small{flex:1}
   .fachknoepfe{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
@@ -4692,11 +4692,11 @@ function ladebalkenStart(){
   clearTimeout(ladeT1); clearTimeout(ladeT2); clearTimeout(ladeT3);
   b.style.transition = "none"; b.style.opacity = "1"; b.style.width = "0%";
   void b.offsetWidth;   // Neustart der Animation erzwingen
-  b.style.transition = "width .35s ease, opacity .3s ease";
-  b.style.width = "75%";
-  ladeT1 = setTimeout(() => { b.style.width = "100%"; }, 220);
-  ladeT2 = setTimeout(() => { b.style.opacity = "0"; }, 480);
-  ladeT3 = setTimeout(() => { b.style.transition = "none"; b.style.width = "0%"; }, 820);
+  b.style.transition = "width .55s ease, opacity .35s ease";
+  b.style.width = "70%";
+  ladeT1 = setTimeout(() => { b.style.width = "100%"; }, 450);
+  ladeT2 = setTimeout(() => { b.style.opacity = "0"; }, 800);
+  ladeT3 = setTimeout(() => { b.style.transition = "none"; b.style.width = "0%"; }, 1150);
 }
 
 function navSnapshot(){
