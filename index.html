@@ -1746,6 +1746,696 @@ const AUFGABEN = {
  }
 ],
 
+/* ===================== MATHE · KLASSE 8 ===================== */
+
+"Terme umformen":[
+
+ /* gleichartige Glieder zusammenfassen */
+ () => {
+   /* 2+2 und 2·2 ergeben beides 4 — diesen einen Fall meiden, sonst
+      wäre eine falsche Antwort zufällig genauso richtig wie die richtige */
+   let a, c, b, d;
+   do { a = rnd(2, 9); c = rnd(2, 9); } while (a + c === a * c);
+   do { b = rnd(2, 15); d = rnd(2, 15); } while (b + d === b * d);
+   const xs = a + c, zs = b + d;
+   return {
+    typ:"formel", text:`${a}x + ${b} + ${c}x + ${d}`, loesung:`${xs}x + ${zs}`,
+    schluss:"Nur Gleichartiges darf zusammen: x zu x, Zahl zu Zahl. Ein x ist keine Zahl — deshalb bleiben zwei Teile stehen.",
+    schritte:[
+     {frage:"Der Term hat vier Teile. <b>Welche davon gehören zusammen?</b>",
+      tipp:"Schau, welche Teile ein x dabeihaben und welche nicht.",
+      optionen:[R(`${a}x und ${c}x — und davon getrennt ${b} und ${d}`, "Genau. Zusammenfassen darf man nur Gleichartiges."),
+                F(`${a}x und ${b} — und ${c}x und ${d}`, "Die stehen zwar nebeneinander, aber ein x und eine Zahl sind nichts Gleichartiges."),
+                F("Alle vier auf einmal", "Dann würdest du x-Teile und reine Zahlen vermischen — das geht nicht.")]},
+     {frage:`Fass zuerst die x-Teile zusammen: <b>${a}x + ${c}x</b>`,
+      tipp:`Denk es als „${a} Stück x“ plus „${c} Stück x“.`,
+      optionen:[R(`${xs}x`, "Richtig. Die Anzahl der x wird addiert, das x bleibt stehen."),
+                F(`${a*c}x`, "Hier wird addiert, nicht multipliziert."),
+                F(`${xs}x²`, "Beim Addieren ändert sich die Hochzahl nicht.")]},
+     {frage:`Und jetzt die reinen Zahlen: <b>${b} + ${d}</b>`,
+      tipp:"Ganz normale Addition.",
+      optionen: zieheVerschiedene([
+        R(String(zs), "Genau."),
+        F(String(b * d), "Das wäre mal gerechnet."),
+        F(String(Math.abs(b - d)), "Da wurde abgezogen statt addiert.")], 3)},
+     {frage:"<b>Wie lautet der fertige Term?</b>",
+      tippAntwort:`${xs}x + ${zs}`,
+      tipp:"Beide Ergebnisse hinschreiben — mehr geht nicht zusammen.",
+      optionen:[R(`${xs}x + ${zs}`, "Fertig. Weiter kann man nicht kürzen, weil x und Zahl verschieden sind."),
+                F(`${xs + zs}x`, "Hier wurde die Zahl noch ans x gehängt — sie gehört aber nicht dazu."),
+                F(String(xs + zs), "Das x ist verschwunden, es gehört aber in den Term.")]}]};
+ },
+
+ /* Klammer ausmultiplizieren */
+ () => {
+   const a = rnd(2, 8), b = rnd(2, 12), c = rnd(2, 9);
+   return {
+    typ:"formel", text:`${a} · (x + ${b}) + ${c}`, loesung:`${a}x + ${a*b + c}`,
+    schluss:"Die Zahl vor der Klammer trifft jeden Teil in der Klammer — keinen darf man auslassen.",
+    schritte:[
+     {frage:`Zuerst muss die Klammer weg. <b>Was macht die ${a} vor der Klammer?</b>`,
+      tipp:"Sie steht vor der ganzen Klammer, nicht nur vor einem Teil davon.",
+      optionen:[R(`Sie wird mit <b>jedem</b> Teil in der Klammer malgenommen`, "Genau — das nennt man ausmultiplizieren."),
+                F("Sie wird nur mit dem x malgenommen", `Dann würde die ${b} leer ausgehen, obwohl sie auch in der Klammer steht.`),
+                F("Sie wird zu allem addiert", "Zwischen Zahl und Klammer steht ein Mal, kein Plus.")]},
+     {frage:`Rechne aus: <b>${a} · x</b> und <b>${a} · ${b}</b>`,
+      tipp:`${a} mal x schreibt man kurz als ${a}x.`,
+      optionen:[R(`${a}x und ${a*b}`, "Richtig."),
+                F(`${a}x und ${a + b}`, "Der zweite Teil wurde addiert statt malgenommen."),
+                F(`${a + 1}x und ${a*b}`, "Beim ersten Teil wurde dazugezählt statt malgenommen.")]},
+     {frage:`Jetzt steht da: <b>${a}x + ${a*b} + ${c}</b>. Was geht noch zusammen?`,
+      tipp:"Suche wieder Gleichartiges.",
+      optionen:[R(`Die ${a*b} und die ${c}`, "Genau, das sind beides reine Zahlen."),
+                F(`Die ${a}x und die ${a*b}`, "Eins hat ein x, das andere nicht — das ist nicht gleichartig."),
+                F("Nichts mehr", `Doch — ${a*b} und ${c} sind beide reine Zahlen.`)]},
+     {frage:"<b>Wie lautet der fertige Term?</b>",
+      tippAntwort:`${a}x + ${a*b + c}`,
+      tipp:`${a*b} + ${c} zusammenrechnen, das x-Glied bleibt stehen.`,
+      optionen:[R(`${a}x + ${a*b + c}`, `Fertig. Probe mit x = 1: ${a} · (1 + ${b}) + ${c} = ${a*(1+b)+c}. Stimmt.`),
+                F(`${a}x + ${b + c}`, `Die ${b} wurde nicht mit ${a} malgenommen.`),
+                F(`${a + a*b + c}x`, "Die Zahlen wurden ans x gehängt — sie gehören aber nicht dazu.")]}]};
+ }
+],
+
+"Binomische Formeln":[
+
+ /* (x + b)² */
+ () => {
+   const b = rnd(2, 12);
+   return {
+    typ:"formel", text:`(x + ${b})²`, loesung:`x² + ${2*b}x + ${b*b}`,
+    schluss:"Bei (x + b)² fehlt fast immer der mittlere Teil. Merke: erstes Quadrat, doppeltes Produkt, zweites Quadrat.",
+    schritte:[
+     {frage:`Was bedeutet <b>(x + ${b})²</b> überhaupt?`,
+      tipp:"Hoch 2 heißt: mit sich selbst malnehmen.",
+      optionen:[R(`(x + ${b}) · (x + ${b})`, "Genau. Und genau deshalb entsteht mehr als nur zwei Quadrate."),
+                F(`x² + ${b}²`, "Das ist der häufigste Fehler überhaupt — dazu kommen wir gleich."),
+                F(`2 · (x + ${b})`, "Hoch 2 heißt malnehmen mit sich selbst, nicht verdoppeln.")]},
+     {frage:"Beim Ausmultiplizieren trifft <b>jeder</b> Teil der ersten Klammer jeden Teil der zweiten. <b>Wie viele Einzelprodukte sind das?</b>",
+      tipp:"2 Teile mal 2 Teile.",
+      optionen:[R("Vier", "Richtig: x·x, x·" + b + ", " + b + "·x und " + b + "·" + b + "."),
+                F("Zwei", "Dann würdest du zwei der vier Verbindungen vergessen."),
+                F("Drei", "Es sind vier — auch wenn zwei davon gleich groß sind.")]},
+     {frage:`Zwei der vier Produkte sind gleich: <b>x · ${b}</b> und <b>${b} · x</b>. Was ergibt das zusammen?`,
+      tipp:"Zweimal dasselbe.",
+      optionen:[R(`${2*b}x`, "Genau — daher das „doppelte Produkt“ in der Mitte."),
+                F(`${b}x`, "Es sind zwei gleiche Produkte, also doppelt so viel."),
+                F(String(b*b), "Die beiden werden addiert, nicht malgenommen — und das x bleibt stehen.")]},
+     {frage:"<b>Wie lautet das Ergebnis?</b>",
+      tippAntwort:`x² + ${2*b}x + ${b*b}`,
+      tipp:"x² , dann das doppelte Produkt, dann " + b + "².",
+      optionen:[R(`x² + ${2*b}x + ${b*b}`, `Richtig. Probe mit x = 1: (1 + ${b})² = ${(1+b)*(1+b)} und 1 + ${2*b} + ${b*b} = ${1 + 2*b + b*b}. Stimmt.`),
+                F(`x² + ${b*b}`, "Das ist der klassische Fehler — der mittlere Teil fehlt."),
+                F(`x² + ${b}x + ${b*b}`, "Der mittlere Teil muss verdoppelt werden — er entsteht ja zweimal.")]}]};
+ },
+
+ /* (x + b)(x − b) */
+ () => {
+   const b = rnd(2, 12);
+   return {
+    typ:"formel", text:`(x + ${b}) · (x − ${b})`, loesung:`x² − ${b*b}`,
+    schluss:"Plus mal Minus mit denselben Zahlen: die Mitte hebt sich auf, übrig bleibt die Differenz zweier Quadrate.",
+    schritte:[
+     {frage:"Hier steht einmal <b>+ " + b + "</b> und einmal <b>− " + b + "</b>. <b>Worauf läuft das hinaus?</b>",
+      tipp:"Rechne die vier Einzelprodukte im Kopf durch und schau auf die mittleren.",
+      optionen:[R("Die beiden mittleren Teile heben sich gegenseitig auf", "Genau das ist der Trick an dieser Formel."),
+                F("Es kommt dasselbe heraus wie bei (x + " + b + ")²", "Nein — dort verstärken sich die mittleren Teile, hier löschen sie sich."),
+                F("Man darf hier gar nicht ausmultiplizieren", "Doch, man darf immer ausmultiplizieren.")]},
+     {frage:`Rechne die mittleren Produkte aus: <b>x · (−${b})</b> und <b>${b} · x</b>`,
+      tipp:"Einmal minus, einmal plus, sonst dasselbe.",
+      optionen:[R(`−${b}x und +${b}x`, "Richtig — zusammen ergibt das null."),
+                F(`−${b}x und −${b}x`, `Der zweite Teil kommt von +${b} mal x, ist also positiv.`),
+                F(`−${b*b}x und +${b*b}x`, "Hier wird x mit " + b + " malgenommen, nicht " + b + " mit " + b + ".")]},
+     {frage:`Und die äußeren Produkte: <b>x · x</b> und <b>${b} · (−${b})</b>`,
+      tipp:"Plus mal Minus ergibt Minus.",
+      optionen:[R(`x² und −${b*b}`, "Genau."),
+                F(`x² und +${b*b}`, "Plus mal Minus ergibt Minus."),
+                F(`x und −${b*b}`, "x mal x ist x², nicht x.")]},
+     {frage:"<b>Wie lautet das Ergebnis?</b>",
+      tippAntwort:`x² − ${b*b}`,
+      tipp:"Die Mitte fällt weg, es bleiben zwei Teile.",
+      optionen:[R(`x² − ${b*b}`, `Richtig. Probe mit x = 1: (1 + ${b})(1 − ${b}) = ${(1+b)*(1-b)} und 1 − ${b*b} = ${1 - b*b}. Stimmt.`),
+                F(`x² + ${b*b}`, "Das Vorzeichen stimmt nicht: plus mal minus ergibt minus."),
+                F(`x² − ${2*b}x − ${b*b}`, "Der mittlere Teil hebt sich hier gerade auf, er darf nicht stehen bleiben.")]}]};
+ }
+],
+
+"Lineare Funktionen":[
+
+ /* Steigung aus zwei Punkten */
+ () => {
+   /* keine Null bei den Punktwerten und m ≠ Schrittweite — sonst fallen
+      im Aufgabentext richtige und falsche Antworten zusammen */
+   let x1, m, b, dx, x2, y1, y2;
+   do {
+     x1 = rnd(-4, 2); m = rnd(2, 6); b = rnd(-6, 6); dx = rnd(2, 4);
+     x2 = x1 + dx; y1 = m*x1 + b; y2 = m*x2 + b;
+   } while (x1 === 0 || x2 === 0 || y1 === 0 || y2 === 0 || m === dx);
+   return {
+    typ:"formel", text:`Gerade durch P(${x1} | ${y1}) und Q(${x2} | ${y2}) — wie groß ist die Steigung m?`,
+    loesung:`m = ${m}`,
+    schluss:"Steigung heißt immer: wie viel geht es hoch, geteilt durch wie weit es nach rechts geht.",
+    schritte:[
+     {frage:"<b>Was beschreibt die Steigung einer Geraden?</b>",
+      tipp:"Stell dir vor, du läufst die Gerade entlang nach rechts.",
+      optionen:[R("Wie viel die Gerade nach oben geht, wenn man ein Stück nach rechts geht", "Genau — Höhenunterschied geteilt durch Schritt nach rechts."),
+                F("Wie weit die Gerade von der Null entfernt ist", "Das ist der y-Achsenabschnitt, nicht die Steigung."),
+                F("Wie lang die Gerade ist", "Eine Gerade ist unendlich lang — das kann es nicht sein.")]},
+     {frage:`Wie weit geht es von P nach Q <b>nach rechts</b>? (von x = ${x1} bis x = ${x2})`,
+      tipp:`Rechne ${x2} − (${x1}).`,
+      optionen: zieheVerschiedene([
+        R(String(dx), "Richtig."),
+        F(String(x1 + x2), "Die beiden Werte wurden addiert statt voneinander abgezogen."),
+        F(String(Math.abs(x2) + Math.abs(x1) + 1), "Rechne genau: hinterer x-Wert minus vorderer x-Wert.")], 3)},
+     {frage:`Und wie viel geht es <b>nach oben</b>? (von y = ${y1} bis y = ${y2})`,
+      tipp:`Rechne ${y2} − (${y1}).`,
+      optionen: zieheVerschiedene([
+        R(String(y2 - y1), "Genau."),
+        F(String(y1 + y2), "Auch hier wird abgezogen, nicht addiert."),
+        F(String(y1 - y2), "Die Reihenfolge ist vertauscht — hinterer minus vorderer Wert.")], 3)},
+     {frage:`<b>Wie groß ist die Steigung?</b> (${y2 - y1} nach oben auf ${dx} nach rechts)`,
+      tippAntwort:String(m),
+      tipp:"Nach oben geteilt durch nach rechts.",
+      optionen:[R(`m = ${m}`, `Genau: ${y2 - y1} geteilt durch ${dx} ist ${m}.`),
+                F(`m = ${y2 - y1}`, `Das ist nur der Höhenunterschied — er muss noch durch ${dx} geteilt werden.`),
+                F(`m = ${dx}`, "Das ist der Schritt nach rechts, nicht die Steigung.")]}]};
+ },
+
+ /* Punkt auf der Geraden prüfen */
+ () => {
+   /* b ≠ 0, sonst wäre „ohne den hinteren Teil" dasselbe wie das richtige Ergebnis */
+   let m, b, px;
+   do { m = rnd(2, 7); b = rnd(-8, 8); px = rnd(2, 8); }
+   while (b === 0 || m * px === m + px);
+   const richtig = m*px + b, falsch = richtig + rnd(1, 2) * (rnd(0,1) ? 1 : -1) * rnd(2, 5);
+   const drauf = rnd(0, 1) === 1;
+   const py = drauf ? richtig : falsch;
+   const vz = b < 0 ? `− ${Math.abs(b)}` : `+ ${b}`;
+   return {
+    typ:"formel", text:`Liegt der Punkt P(${px} | ${py}) auf der Geraden y = ${m}x ${vz} ?`,
+    loesung: drauf ? "Ja, er liegt darauf" : "Nein, er liegt nicht darauf",
+    schluss:"Ein Punkt liegt genau dann auf einer Geraden, wenn seine beiden Werte die Gleichung erfüllen. Einsetzen, ausrechnen, vergleichen.",
+    schritte:[
+     {frage:"<b>Wie findet man heraus, ob ein Punkt auf einer Geraden liegt?</b>",
+      tipp:"Der Punkt hat einen x-Wert und einen y-Wert. Die Gleichung auch.",
+      optionen:[R("Man setzt den x-Wert ein und schaut, ob der passende y-Wert herauskommt", "Genau — das nennt man die Punktprobe."),
+                F("Man zeichnet und schaut hin", "Zeichnen ist ungenau — rechnen ist sicher."),
+                F("Man vergleicht den Punkt mit der Steigung", "Die Steigung allein sagt nichts über einen einzelnen Punkt.")]},
+     {frage:`Setz <b>x = ${px}</b> in <b>y = ${m}x ${vz}</b> ein. Was steht dann da?`,
+      tipp:`Erst ${m} mal ${px} rechnen.`,
+      optionen:[R(`y = ${m} · ${px} ${vz}`, "Richtig — nur das x wird ersetzt."),
+                F(`y = ${m} · ${px} · ${b}`, `Zwischen ${m}x und ${b} steht ein Plus oder Minus, kein Mal.`),
+                F(`y = ${px} ${vz}`, `Die ${m} vor dem x darf nicht verschwinden.`)]},
+     {frage:"<b>Was kommt heraus?</b>",
+      tipp:`${m} · ${px} = ${m*px}, und davon dann ${b < 0 ? Math.abs(b) + " abziehen" : b + " dazu"}.`,
+      optionen: zieheVerschiedene([
+        R(String(richtig), "Genau."),
+        F(String(m*px), `Der Teil ${vz} fehlt noch.`),
+        F(String(m + px + b), "Hier wurde addiert statt malgenommen.")], 3)},
+     {frage:`Herausgekommen ist <b>${richtig}</b>, der Punkt hat aber <b>y = ${py}</b>. <b>Liegt er auf der Geraden?</b>`,
+      tipp:"Nur wenn beide Werte genau gleich sind.",
+      optionen: drauf
+        ? [R("Ja, denn beide Werte sind gleich", "Richtig — die Punktprobe geht auf."),
+           F("Nein", `Doch: es kam ${richtig} heraus, und der Punkt hat ${py}. Das ist dasselbe.`)]
+        : [R("Nein, denn die Werte sind verschieden", `Richtig — ${richtig} ist nicht ${py}, also liegt er daneben.`),
+           F("Ja", `Rechne noch mal nach: ${richtig} und ${py} sind nicht dasselbe.`)]}]};
+ }
+],
+
+/* ===================== MATHE · KLASSE 9 ===================== */
+
+"Quadratische Gleichungen":[
+
+ /* x² + px + q = 0 mit ganzzahligen Lösungen */
+ () => {
+   /* Lösungen so ziehen, dass p und q nicht null werden und p ≠ 2 bleibt —
+      sonst fallen im Aufgabentext Antwortmöglichkeiten zusammen. */
+   let x1, x2;
+   do { x1 = rnd(-8, 8); x2 = rnd(-8, 8); }
+   while (x1 === x2 || x1 === 0 || x2 === 0 || x1 + x2 === 0 || x1 + x2 === -2);
+   const p = -(x1 + x2), q = x1 * x2;
+   /* bei |p| = 1 schreibt man „x" statt „1x" — so steht es auch im Heft */
+   const pZahl = Math.abs(p) === 1 ? "" : Math.abs(p);
+   const pT = p < 0 ? `− ${pZahl}x` : `+ ${pZahl}x`;
+   const qT = q < 0 ? `− ${Math.abs(q)}` : `+ ${q}`;
+   const halb = p / 2;
+   const unterWurzel = halb*halb - q;
+   const klein = Math.min(x1, x2), gross = Math.max(x1, x2);
+   return {
+    typ:"formel", text:`x² ${pT} ${qT} = 0`, loesung:`x₁ = ${klein}, x₂ = ${gross}`,
+    schluss:"Die p-q-Formel funktioniert immer, wenn die Gleichung mit einem reinen x² anfängt. Erst p und q ablesen, dann einsetzen.",
+    schritte:[
+     {frage:"Bevor du rechnest: <b>Was sind hier p und q?</b>",
+      tipp:"In der Form x² + px + q = 0 ist p die Zahl vor dem x und q die Zahl ganz hinten.",
+      optionen:[R(`p = ${p} und q = ${q}`, "Genau — mit Vorzeichen abgelesen, das ist die häufigste Fehlerquelle."),
+                F(`p = ${q} und q = ${p}`, "Vertauscht: p gehört zum x, q steht allein."),
+                F(`p = ${Math.abs(p)} und q = ${Math.abs(q)}`, "Die Vorzeichen gehören dazu, sonst stimmt das Ergebnis nicht.")]},
+     {frage:`Die p-q-Formel beginnt mit <b>−p/2</b>. Was ist das hier?`,
+      tipp:`p ist ${p}. Also −(${p}) geteilt durch 2.`,
+      optionen: zieheVerschiedene([
+        R(String(-halb), "Richtig — auf das Minus vor dem p achten."),
+        F(String(halb), "Das Minus vor dem p wurde vergessen."),
+        F(String(-p), "Es muss noch durch 2 geteilt werden.")], 3)},
+     {frage:`Unter der Wurzel steht <b>(p/2)² − q</b>. Was kommt da heraus?`,
+      tipp:`(${halb})² ist ${halb*halb}, davon ${q < 0 ? Math.abs(q) + " dazu" : q + " abziehen"}.`,
+      optionen: zieheVerschiedene([
+        R(String(unterWurzel), "Genau."),
+        F(String(halb*halb + q), `Hier wurde q addiert — in der Formel steht aber minus q.`),
+        F(String(halb - q), "Der Teil p/2 muss noch quadriert werden.")], 3)},
+     {frage:`Also <b>x = ${-halb} ± √${unterWurzel}</b>. <b>Wie heißen die beiden Lösungen?</b>`,
+      tippAntwort:`${klein} und ${gross}`,
+      tipp:`√${unterWurzel} ist ${Math.sqrt(unterWurzel)}. Einmal dazu, einmal davon abziehen.`,
+      optionen:[R(`x₁ = ${klein} und x₂ = ${gross}`, `Richtig. Probe: ${klein} · ${gross} = ${q}, und das ist genau q.`),
+                F(`x₁ = ${-halb} und x₂ = ${Math.sqrt(unterWurzel)}`, "Die beiden Teile gehören zusammen — einmal mit Plus, einmal mit Minus."),
+                F(`x = ${-halb}`, "Eine quadratische Gleichung hat hier zwei Lösungen, nicht eine.")]}]};
+ },
+
+ /* Produktform: (x − a)(x − b) = 0 */
+ () => {
+   /* keine Null und keine gespiegelten Werte — sonst wären zwei Antworten gleich */
+   let a, b;
+   do { a = rnd(-7, 7); b = rnd(-7, 7); }
+   while (a === b || a === 0 || b === 0 || a === -b);
+   const t = (v) => v < 0 ? `(x + ${Math.abs(v)})` : `(x − ${v})`;
+   const klein = Math.min(a, b), gross = Math.max(a, b);
+   return {
+    typ:"formel", text:`${t(a)} · ${t(b)} = 0`, loesung:`x₁ = ${klein}, x₂ = ${gross}`,
+    schluss:"Steht ein Produkt auf null, reicht es, wenn ein Faktor null wird. Deshalb darf man hier jede Klammer einzeln betrachten.",
+    schritte:[
+     {frage:"Hier ist ein <b>Produkt gleich null</b>. Was folgt daraus?",
+      tipp:"Wann wird ein Produkt überhaupt null?",
+      optionen:[R("Mindestens einer der beiden Faktoren muss null sein", "Genau — das ist der Satz vom Nullprodukt."),
+                F("Beide Faktoren müssen null sein", "Einer reicht schon: null mal irgendetwas ist null."),
+                F("Man muss zuerst ausmultiplizieren", "Man darf — aber man macht sich damit unnötig Arbeit.")]},
+     {frage:`Wann wird die erste Klammer <b>${t(a)}</b> null?`,
+      tipp:`Welche Zahl muss x sein, damit ${a < 0 ? "x + " + Math.abs(a) : "x − " + a} null ergibt?`,
+      optionen: zieheVerschiedene([
+        R(`x = ${a}`, "Richtig."),
+        F(`x = ${-a}`, "Vorzeichen vertauscht — setz die Zahl einmal probeweise ein."),
+        F(`x = 0`, `Dann stünde in der Klammer ${a < 0 ? Math.abs(a) : -a}, nicht null.`)], 3)},
+     {frage:`Und wann wird die zweite Klammer <b>${t(b)}</b> null?`,
+      tipp:"Genauso wie eben.",
+      optionen: zieheVerschiedene([
+        R(`x = ${b}`, "Genau."),
+        F(`x = ${-b}`, "Vorzeichen vertauscht."),
+        F(`x = ${a}`, "Das war die Lösung der ersten Klammer.")], 3)},
+     {frage:"<b>Wie lauten also beide Lösungen?</b>",
+      tippAntwort:`${klein} und ${gross}`,
+      tipp:"Beide Klammern liefern je eine Lösung.",
+      optionen:[R(`x₁ = ${klein} und x₂ = ${gross}`, "Fertig — ohne einmal die p-q-Formel zu brauchen."),
+                F(`x = ${klein}`, "Es gibt zwei Klammern, also auch zwei Lösungen."),
+                F(`x₁ = ${-klein} und x₂ = ${-gross}`, "Die Vorzeichen sind gedreht — setz sie probeweise ein.")]}]};
+ }
+],
+
+"Satz des Pythagoras":[
+
+ /* Hypotenuse gesucht */
+ () => {
+   const tripel = [[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[12,16,20],[7,24,25],[20,21,29]];
+   const [a, b, c] = pick(tripel);
+   return {
+    typ:"formel", text:`Rechtwinkliges Dreieck mit den Katheten a = ${a} cm und b = ${b} cm — wie lang ist die Hypotenuse c?`,
+    loesung:`c = ${c} cm`,
+    schluss:"a² + b² = c² gilt nur im rechtwinkligen Dreieck — und c ist immer die Seite gegenüber dem rechten Winkel.",
+    schritte:[
+     {frage:"<b>Welche Seite ist die Hypotenuse?</b>",
+      tipp:"Sie ist immer die längste Seite im rechtwinkligen Dreieck.",
+      optionen:[R("Die Seite, die dem rechten Winkel gegenüberliegt", "Genau — und sie ist immer die längste."),
+                F("Die längere der beiden Seiten am rechten Winkel", "Die beiden Seiten am rechten Winkel heißen Katheten."),
+                F("Es ist egal, welche man nimmt", "Nein — in der Formel steht c an einer festen Stelle.")]},
+     {frage:"<b>Wie heißt die Formel?</b>",
+      tipp:"Die beiden kurzen Seiten auf der einen, die lange auf der anderen Seite.",
+      optionen:[R("a² + b² = c²", "Richtig."),
+                F("a + b = c", "Ohne Quadrate stimmt es nicht — sonst wäre der Umweg immer gleich lang wie der direkte Weg."),
+                F("a² − b² = c²", "Addiert, nicht abgezogen — c ist ja die längste Seite.")]},
+     {frage:`Setz ein: <b>${a}² + ${b}²</b>. Was kommt heraus?`,
+      tipp:`${a}² = ${a*a} und ${b}² = ${b*b}.`,
+      optionen: zieheVerschiedene([
+        R(String(a*a + b*b), "Genau — das ist c², noch nicht c."),
+        F(String((a+b)*(a+b)), "Erst quadrieren, dann addieren — nicht umgekehrt."),
+        F(String(a*b), "Die Quadrate werden addiert, die Seiten nicht malgenommen.")], 3)},
+     {frage:`<b>c² = ${c*c}</b> — wie lang ist c?`,
+      tippAntwort:String(c),
+      tipp:"Die Wurzel zieht das Quadrat wieder weg.",
+      optionen:[R(`c = ${c} cm`, `Richtig. Probe: ${a}² + ${b}² = ${a*a} + ${b*b} = ${c*c} = ${c}².`),
+                F(`c = ${c*c} cm`, "Das ist c², die Wurzel fehlt noch."),
+                F(`c = ${Math.round(c*c/2)} cm`, "Halbieren ist nicht dasselbe wie Wurzelziehen.")]}]};
+ },
+
+ /* Kathete gesucht */
+ () => {
+   const tripel = [[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[12,16,20],[7,24,25]];
+   const [a, b, c] = pick(tripel);
+   return {
+    typ:"formel", text:`Rechtwinkliges Dreieck mit Hypotenuse c = ${c} cm und Kathete a = ${a} cm — wie lang ist die Kathete b?`,
+    loesung:`b = ${b} cm`,
+    schluss:"Wird eine Kathete gesucht, wird abgezogen statt addiert. Die Hypotenuse ist immer die Große, von der man abzieht.",
+    schritte:[
+     {frage:"Gesucht ist diesmal eine <b>Kathete</b>, nicht die Hypotenuse. <b>Was ändert sich?</b>",
+      tipp:"Die Formel bleibt gleich — nur wird nach etwas anderem umgestellt.",
+      optionen:[R("Man stellt a² + b² = c² nach b² um, es wird also abgezogen", "Genau: b² = c² − a²."),
+                F("Man addiert wie immer", "Dann käme etwas Längeres heraus als die Hypotenuse — unmöglich."),
+                F("Man braucht eine ganz andere Formel", "Nein, es ist dieselbe Formel, nur umgestellt.")]},
+     {frage:"<b>Wie lautet die umgestellte Formel?</b>",
+      tipp:"Auf beiden Seiten a² abziehen.",
+      optionen:[R("b² = c² − a²", "Richtig."),
+                F("b² = a² − c²", `Dann käme etwas Negatives heraus, denn ${a} ist kleiner als ${c}.`),
+                F("b² = c² + a²", "Dann wäre b länger als die Hypotenuse.")]},
+     {frage:`Setz ein: <b>${c}² − ${a}²</b>`,
+      tipp:`${c}² = ${c*c} und ${a}² = ${a*a}.`,
+      optionen: zieheVerschiedene([
+        R(String(c*c - a*a), "Genau — das ist b²."),
+        F(String((c-a)*(c-a)), "Erst quadrieren, dann abziehen — nicht umgekehrt."),
+        F(String(c*c + a*a), "Bei der gesuchten Kathete wird abgezogen.")], 3)},
+     {frage:`<b>b² = ${b*b}</b> — wie lang ist b?`,
+      tippAntwort:String(b),
+      tipp:"Wurzel ziehen.",
+      optionen:[R(`b = ${b} cm`, `Richtig. Probe: ${a}² + ${b}² = ${a*a + b*b} = ${c}².`),
+                F(`b = ${b*b} cm`, "Das ist b², die Wurzel fehlt."),
+                F(`b = ${c - a} cm`, `Einfach ${c} − ${a} zu rechnen wäre zu schön — die Quadrate gehören dazu.`)]}]};
+ }
+],
+
+"Potenzen und Wurzeln":[
+
+ /* Potenzgesetze: mal und geteilt */
+ () => {
+   /* 2+2 = 2·2 — dieser Fall würde zwei Antworten gleich machen */
+   let m, n;
+   do { m = rnd(2, 7); n = rnd(2, 6); } while (m + n === m * n);
+   const malRechnen = rnd(0, 1) === 1;
+   const gross = Math.max(m, n) + 3, klein = Math.min(m, n);
+   const e1 = malRechnen ? m : gross, e2 = malRechnen ? n : klein;
+   const erg = malRechnen ? m + n : gross - klein;
+   return {
+    typ:"formel",
+    text: malRechnen ? `a<sup>${m}</sup> · a<sup>${n}</sup>` : `a<sup>${gross}</sup> : a<sup>${klein}</sup>`,
+    loesung:`a<sup>${erg}</sup>`,
+    schluss:"Gleiche Grundzahl mal genommen: Hochzahlen addieren. Geteilt: Hochzahlen abziehen. Die Grundzahl bleibt immer stehen.",
+    schritte:[
+     {frage:`Was bedeutet <b>a<sup>${e1}</sup></b> ausgeschrieben?`,
+      tipp:"Die Hochzahl sagt, wie oft die Grundzahl als Faktor auftritt.",
+      optionen:[R(`a mal a mal a … insgesamt ${e1}-mal`, "Genau. Mehr steckt hinter einer Potenz nicht."),
+                F(`a mal ${e1}`, "Die Hochzahl ist kein Faktor, sondern eine Anzahl."),
+                F(`${e1} mal ${e1}`, "Die Grundzahl ist a, nicht die Hochzahl.")]},
+     {frage: malRechnen
+        ? `Wenn du <b>${m} Stück a</b> und <b>${n} Stück a</b> aneinanderhängst — wie viele sind es dann?`
+        : `Wenn du von <b>${gross} Stück a</b> jeweils <b>${klein} Stück a</b> wegkürzt — wie viele bleiben?`,
+      tipp: malRechnen ? "Einfach zusammenzählen." : "Einfach abziehen.",
+      optionen: zieheVerschiedene([
+        R(String(erg), "Richtig."),
+        F(String(malRechnen ? m * n : gross * klein), malRechnen ? "Die Hochzahlen werden addiert, nicht malgenommen." : "Die Hochzahlen werden abgezogen, nicht malgenommen."),
+        F(String(malRechnen ? Math.abs(m - n) : gross + klein), malRechnen ? "Beim Malnehmen kommen sie dazu." : "Beim Teilen gehen sie weg.")], 3)},
+     {frage:"<b>Was passiert mit der Grundzahl a?</b>",
+      tipp:"Sie ist bei beiden Potenzen dieselbe.",
+      optionen:[R("Sie bleibt einfach a", "Genau — nur die Hochzahl ändert sich."),
+                F(malRechnen ? "Sie wird zu a²" : "Sie fällt weg", "Die Grundzahl bleibt immer unverändert stehen."),
+                F("Sie wird auch malgenommen", "Nur die Hochzahlen werden verrechnet.")]},
+     {frage:"<b>Wie lautet das Ergebnis?</b>",
+      tippAntwort:`a hoch ${erg}`,
+      tipp:"Grundzahl a, dazu die neue Hochzahl.",
+      optionen:[R(`a<sup>${erg}</sup>`, "Fertig."),
+                F(`a<sup>${malRechnen ? m*n : gross+klein}</sup>`, malRechnen ? "Beim Malnehmen werden die Hochzahlen addiert." : "Beim Teilen werden sie abgezogen."),
+                F(`${erg}a`, "Die Hochzahl darf nicht nach vorne rutschen — das wäre etwas ganz anderes.")]}]};
+ },
+
+ /* Wurzel als Umkehrung */
+ () => {
+   const w = rnd(4, 20), q = w*w;
+   const stoerer = q + rnd(1, 6);
+   return {
+    typ:"formel", text:`√${q}`, loesung:String(w),
+    schluss:"Die Wurzel fragt: welche Zahl mit sich selbst malgenommen ergibt das? Deshalb macht sie das Quadrieren rückgängig.",
+    schritte:[
+     {frage:`<b>Was fragt die Wurzel eigentlich?</b>`,
+      tipp:"Denk daran, was sie rückgängig macht.",
+      optionen:[R("Welche Zahl mit sich selbst malgenommen ergibt " + q + "?", "Genau — die Wurzel ist die Umkehrung des Quadrierens."),
+                F("Welche Zahl mal 2 ergibt " + q + "?", "Das wäre die Hälfte, nicht die Wurzel."),
+                F("Welche Zahl geteilt durch 2 ergibt " + q + "?", "Das wäre das Doppelte.")]},
+     {frage:`Probier es ein: Ist <b>${w - 1} · ${w - 1}</b> schon ${q}?`,
+      tipp:`${w-1} mal ${w-1} ausrechnen.`,
+      optionen:[R(`Nein, das ergibt ${(w-1)*(w-1)} — zu klein`, "Richtig, also muss die Zahl größer sein."),
+                F(`Ja, genau ${q}`, `Nein, ${w-1} · ${w-1} ist ${(w-1)*(w-1)}.`),
+                F(`Nein, das ist zu groß`, `${(w-1)*(w-1)} ist kleiner als ${q}, nicht größer.`)]},
+     {frage:`Und <b>${w} · ${w}</b>?`,
+      tipp:"Jetzt sollte es passen.",
+      optionen: zieheVerschiedene([
+        R(`Das ergibt genau ${q}`, "Damit ist die Wurzel gefunden."),
+        F(`Das ergibt ${stoerer}`, `Nein, ${w} · ${w} ist ${q}.`),
+        F(`Das ergibt ${w*2}`, "Das wäre das Doppelte, nicht das Quadrat.")], 3)},
+     {frage:`<b>Wie groß ist √${q}?</b>`,
+      tippAntwort:String(w),
+      tipp:"Die Zahl, die eben aufgegangen ist.",
+      optionen:[R(String(w), `Richtig, denn ${w}² = ${q}.`),
+                F(String(q / 2), "Halbieren ist nicht Wurzelziehen."),
+                F(String(q), "Das ist die Zahl unter der Wurzel selbst — die Wurzel macht sie ja gerade kleiner.")]}]};
+ }
+],
+
+/* ===================== MATHE · KLASSE 10 ===================== */
+
+"Quadratische Funktionen":[
+
+ /* Scheitelpunkt aus der Scheitelform ablesen */
+ () => {
+   /* d und e verschieden und nicht null, damit x- und y-Wert unterscheidbar bleiben */
+   let d, e;
+   do { d = rnd(-7, 7); e = rnd(-8, 8); } while (d === 0 || e === 0 || d === e);
+   const innen = d < 0 ? `x + ${Math.abs(d)}` : `x − ${d}`;
+   const hinten = e < 0 ? `− ${Math.abs(e)}` : `+ ${e}`;
+   return {
+    typ:"formel", text:`f(x) = (${innen})² ${hinten}`, loesung:`S(${d} | ${e})`,
+    schluss:"In der Scheitelform steht der Scheitelpunkt direkt da — man muss nur beim x-Wert das Vorzeichen umdrehen.",
+    schritte:[
+     {frage:"<b>Was ist der Scheitelpunkt einer Parabel?</b>",
+      tipp:"Denk an die Form einer Parabel.",
+      optionen:[R("Der höchste oder tiefste Punkt der Parabel", "Genau — hier kehrt sie ihre Richtung um."),
+                F("Der Punkt, an dem sie die x-Achse schneidet", "Das sind die Nullstellen, die können auch fehlen."),
+                F("Der Punkt, an dem sie die y-Achse schneidet", "Das ist der y-Achsenabschnitt.")]},
+     {frage:`In der Klammer steht <b>${innen}</b>. <b>Welchen x-Wert hat der Scheitelpunkt?</b>`,
+      tipp:"Frag dich: für welches x wird die Klammer null?",
+      optionen: zieheVerschiedene([
+        R(String(d), "Richtig — das Vorzeichen dreht sich gegenüber der Klammer um."),
+        F(String(-d), "Genau anders herum: die Klammer wird null, wenn x gleich " + d + " ist."),
+        F(String(e), "Das ist die Zahl hinter der Klammer, die gehört zum y-Wert.")], 3)},
+     {frage:`Hinter der Klammer steht <b>${hinten}</b>. <b>Welchen y-Wert hat der Scheitelpunkt?</b>`,
+      tipp:"Setz den eben gefundenen x-Wert ein — dann wird die Klammer null.",
+      optionen: zieheVerschiedene([
+        R(String(e), "Genau — hier bleibt das Vorzeichen, wie es ist."),
+        F(String(-e), "Anders als beim x-Wert dreht sich hier nichts um."),
+        F(String(d), "Das war der x-Wert.")], 3)},
+     {frage:"<b>Wie lautet der Scheitelpunkt?</b>",
+      tippAntwort:`(${d} | ${e})`,
+      tipp:"Erst der x-Wert, dann der y-Wert.",
+      optionen:[R(`S(${d} | ${e})`, `Richtig. Merke: in der Klammer Vorzeichen drehen, hinten nicht.`),
+                F(`S(${-d} | ${e})`, "Beim x-Wert dreht sich das Vorzeichen gegenüber der Klammer um."),
+                F(`S(${e} | ${d})`, "x und y sind vertauscht.")]}]};
+ },
+
+ /* Öffnung und Verschiebung deuten */
+ () => {
+   const a = pick([-3, -2, -0.5, 0.5, 2, 3]);
+   const e = pick([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]);   /* nicht null: sonst ist die Verschiebung kein Thema */
+   const hinten = e < 0 ? `− ${Math.abs(e)}` : `+ ${e}`;
+   const offen = a > 0;
+   const schmal = Math.abs(a) > 1;
+   return {
+    typ:"formel", text:`f(x) = ${a === 1 ? "" : z(a)}x² ${hinten}`,
+    loesung: `${offen ? "nach oben" : "nach unten"} geöffnet, ${schmal ? "schmaler" : "breiter"} als die Normalparabel`,
+    schluss:"Das Vorzeichen vor dem x² entscheidet über die Richtung, sein Betrag über die Breite. Die Zahl dahinter verschiebt nur nach oben oder unten.",
+    schritte:[
+     {frage:`Vor dem x² steht <b>${z(a)}</b>. <b>Wohin ist die Parabel geöffnet?</b>`,
+      tipp:"Das Vorzeichen entscheidet.",
+      optionen: offen
+        ? [R("Nach oben", "Richtig — bei einem positiven Faktor öffnet sie nach oben."),
+           F("Nach unten", `Dafür müsste vor dem x² ein Minus stehen.`)]
+        : [R("Nach unten", "Richtig — das Minus dreht die Parabel um."),
+           F("Nach oben", "Das Minus vor dem x² dreht sie nach unten.")]},
+     {frage:`<b>Was sagt der Betrag ${z(Math.abs(a))} über die Form?</b>`,
+      tipp:"Vergleiche mit der Normalparabel, bei der einfach x² steht.",
+      optionen: schmal
+        ? [R("Sie ist schmaler als die Normalparabel", "Genau — ein Betrag größer als 1 zieht sie in die Länge."),
+           F("Sie ist breiter", "Breiter wird sie nur bei einem Betrag kleiner als 1."),
+           F("Sie ist genauso breit", "Genauso breit wäre sie nur bei Betrag 1.")]
+        : [R("Sie ist breiter als die Normalparabel", "Genau — ein Betrag kleiner als 1 drückt sie flach."),
+           F("Sie ist schmaler", "Schmaler wird sie erst bei einem Betrag größer als 1."),
+           F("Sie ist genauso breit", "Genauso breit wäre sie nur bei Betrag 1.")]},
+     {frage:`Hinten steht <b>${hinten}</b>. <b>Was bewirkt das?</b>`,
+      tipp:"Es wird zu jedem Funktionswert dazugerechnet.",
+      optionen: zieheVerschiedene([
+        R(`Die Parabel wird um ${Math.abs(e)} nach ${e < 0 ? "unten" : "oben"} verschoben`, "Richtig — es verändert nur die Höhe."),
+        F(`Die Parabel wird um ${Math.abs(e)} nach ${e < 0 ? "links" : "rechts"} verschoben`, "Seitlich verschiebt nur eine Zahl innerhalb der Klammer beim x."),
+        F("Die Parabel wird breiter", "Die Breite hängt allein vom Faktor vor dem x² ab.")], 3)},
+     {frage:"<b>Wo liegt der Scheitelpunkt?</b>",
+      tippAntwort:`(0 | ${e})`,
+      tipp:"Beim x steht keine Verschiebung, also bleibt er auf der y-Achse.",
+      optionen:[R(`S(0 | ${e})`, "Richtig — ohne Klammer beim x bleibt er auf der y-Achse."),
+                F(`S(${e} | 0)`, "x und y sind vertauscht."),
+                F("S(0 | 0)", `Die ${hinten} hebt oder senkt die Parabel ja gerade.`)]}]};
+ }
+],
+
+"Trigonometrie":[
+
+ /* welche Winkelfunktion passt */
+ () => {
+   const faelle = [
+     {geg:"Gegenkathete", anpassend:"Hypotenuse", fkt:"Sinus", kurz:"sin", regel:"Gegenkathete geteilt durch Hypotenuse"},
+     {geg:"Ankathete", anpassend:"Hypotenuse", fkt:"Kosinus", kurz:"cos", regel:"Ankathete geteilt durch Hypotenuse"},
+     {geg:"Gegenkathete", anpassend:"Ankathete", fkt:"Tangens", kurz:"tan", regel:"Gegenkathete geteilt durch Ankathete"}
+   ];
+   const f = pick(faelle);
+   const winkel = rnd(20, 70);
+   const andere = faelle.filter(x => x.fkt !== f.fkt);
+   return {
+    typ:"formel",
+    text:`Rechtwinkliges Dreieck, Winkel α = ${winkel}°. Bekannt sind ${f.geg} und ${f.anpassend} — welche Winkelfunktion brauchst du?`,
+    loesung: f.fkt,
+    schluss:"Erst schauen, welche zwei Seiten im Spiel sind — daraus ergibt sich die Funktion von selbst.",
+    schritte:[
+     {frage:"<b>Woran erkennt man die Gegenkathete?</b>",
+      tipp:"Der Name verrät es: sie liegt dem Winkel gegenüber.",
+      optionen:[R("Sie liegt dem betrachteten Winkel gegenüber", "Genau — und die Ankathete liegt am Winkel an."),
+                F("Sie ist immer die längste Seite", "Das ist die Hypotenuse."),
+                F("Sie liegt immer unten", "Das hängt nur davon ab, wie das Dreieck gedreht ist.")]},
+     {frage:`Hier sind <b>${f.geg}</b> und <b>${f.anpassend}</b> im Spiel. <b>Welche Funktion verbindet genau diese beiden?</b>`,
+      tipp:"Sinus: Gegen zu Hypotenuse. Kosinus: An zu Hypotenuse. Tangens: Gegen zu An.",
+      optionen: zieheVerschiedene([
+        R(f.fkt, `Richtig: ${f.kurz}(α) = ${f.regel}.`),
+        F(andere[0].fkt, `${andere[0].fkt} verbindet ${andere[0].geg} und ${andere[0].anpassend}.`),
+        F(andere[1].fkt, `${andere[1].fkt} verbindet ${andere[1].geg} und ${andere[1].anpassend}.`)], 3)},
+     {frage:`<b>Wie lautet die Formel für den ${f.fkt}?</b>`,
+      tipp:"Die zuerst genannte Seite steht oben im Bruch.",
+      optionen: zieheVerschiedene([
+        R(`${f.kurz}(α) = ${f.regel}`, "Genau."),
+        F(`${f.kurz}(α) = ${f.anpassend} geteilt durch ${f.geg}`, "Der Bruch steht auf dem Kopf."),
+        F(`${f.kurz}(α) = ${f.geg} mal ${f.anpassend}`, "Es ist ein Verhältnis, also geteilt.")], 3)},
+     {frage:"<b>Wozu ist das gut?</b>",
+      tipp:"Was kann man damit ausrechnen, was vorher nicht ging?",
+      optionen:[R("Aus einem Winkel und einer Seite lässt sich eine andere Seite berechnen", "Genau das ist der Sinn — Winkel und Seiten hängen zusammen."),
+                F("Man kann damit den Umfang bestimmen", "Dafür braucht man keine Winkelfunktionen."),
+                F("Man kann damit die Fläche berechnen", "Dafür reichen Grundseite und Höhe.")]}]};
+ },
+
+ /* Seite mit Sinus berechnen */
+ () => {
+   const paare = [[30, 0.5], [45, 0.707], [60, 0.866]];
+   const [winkel, wert] = pick(paare);
+   const hyp = rnd(4, 20) * 2;
+   const geg = Math.round(hyp * wert * 10) / 10;
+   return {
+    typ:"formel",
+    text:`Rechtwinkliges Dreieck: Hypotenuse c = ${hyp} cm, Winkel α = ${winkel}°. Wie lang ist die Gegenkathete a?`,
+    loesung:`a ≈ ${z(geg)} cm`,
+    schluss:"Wenn Hypotenuse und Winkel bekannt sind und die Gegenkathete gesucht ist, führt immer der Sinus zum Ziel.",
+    schritte:[
+     {frage:"Bekannt: Hypotenuse und Winkel. Gesucht: Gegenkathete. <b>Welche Funktion passt?</b>",
+      tipp:"Welche Funktion verbindet Gegenkathete und Hypotenuse?",
+      optionen:[R("Sinus", "Genau: sin(α) = Gegenkathete geteilt durch Hypotenuse."),
+                F("Kosinus", "Der Kosinus verbindet Ankathete und Hypotenuse."),
+                F("Tangens", "Der Tangens verbindet die beiden Katheten, die Hypotenuse kommt darin nicht vor.")]},
+     {frage:`<b>Wie sieht die Gleichung mit den Zahlen aus?</b>`,
+      tipp:"Gegenkathete geteilt durch Hypotenuse.",
+      optionen:[R(`sin(${winkel}°) = a : ${hyp}`, "Richtig."),
+                F(`sin(${winkel}°) = ${hyp} : a`, "Der Bruch steht auf dem Kopf — die Hypotenuse gehört nach unten."),
+                F(`sin(${winkel}°) = a · ${hyp}`, "Es ist ein Verhältnis, also geteilt.")]},
+     {frage:`Nach <b>a</b> umgestellt — was steht dann da?`,
+      tipp:"Beide Seiten mit " + hyp + " malnehmen.",
+      optionen:[R(`a = ${hyp} · sin(${winkel}°)`, "Genau."),
+                F(`a = ${hyp} : sin(${winkel}°)`, "Es wird malgenommen, nicht geteilt."),
+                F(`a = sin(${winkel}°) − ${hyp}`, "Aus einem Mal wird beim Umstellen kein Minus.")]},
+     {frage:`<b>Wie lang ist a?</b> (sin(${winkel}°) ≈ ${z(wert)})`,
+      tippAntwort:z(geg),
+      tipp:`${hyp} mal ${z(wert)} ausrechnen.`,
+      optionen: zieheVerschiedene([
+        R(`a ≈ ${z(geg)} cm`, "Richtig — und sie ist kürzer als die Hypotenuse, wie es sein muss."),
+        F(`a ≈ ${z(Math.round(hyp / wert * 10) / 10)} cm`, "Hier wurde geteilt statt malgenommen — das Ergebnis wäre länger als die Hypotenuse, das geht nicht."),
+        F(`a ≈ ${z(hyp)} cm`, "Das ist die Hypotenuse selbst.")], 3)}]};
+ }
+],
+
+"Exponentielles Wachstum":[
+
+ /* Zunahme mit festem Prozentsatz */
+ () => {
+   const start = pick([200, 500, 800, 1000, 1500, 2000]);
+   const p = pick([5, 8, 10, 20, 25]);
+   const faktor = 1 + p/100;
+   const jahre = rnd(2, 4);
+   const ende = Math.round(start * Math.pow(faktor, jahre));
+   const linear = start + start * p/100 * jahre;
+   return {
+    typ:"formel",
+    text:`Ein Betrag von ${z(start)} € wächst jedes Jahr um ${p} %. Wie viel sind es nach ${jahre} Jahren?`,
+    loesung:`etwa ${z(ende)} €`,
+    schluss:"Beim exponentiellen Wachstum wird jedes Jahr mit demselben Faktor malgenommen — nicht immer derselbe Betrag addiert.",
+    schritte:[
+     {frage:`Nach einem Jahr sind ${p} % dazugekommen. <b>Mit welcher Zahl nimmt man dafür mal?</b>`,
+      tipp:"Das Ganze bleibt erhalten (100 %) und " + p + " % kommen dazu.",
+      optionen: zieheVerschiedene([
+        R(z(faktor), `Richtig: 100 % + ${p} % = ${100+p} %, also mal ${z(faktor)}.`),
+        F(z(p/100), `Das wären nur die ${p} % Zuwachs — der ursprüngliche Betrag fehlt.`),
+        F(String(p), "Das ist die Prozentzahl selbst, kein Faktor.")], 3)},
+     {frage:`Und im <b>zweiten</b> Jahr — wovon werden die ${p} % berechnet?`,
+      tipp:"Der Betrag ist ja inzwischen größer geworden.",
+      optionen:[R("Vom neuen, bereits gewachsenen Betrag", "Genau das macht den Unterschied zum gleichmäßigen Wachstum."),
+                F("Immer vom ursprünglichen Betrag", `Dann wäre es lineares Wachstum und es käme ${z(linear)} € heraus.`),
+                F("Von der Differenz des ersten Jahres", "Nein, immer vom aktuellen Gesamtbetrag.")]},
+     {frage:`<b>Wie rechnet man ${jahre} Jahre auf einmal?</b>`,
+      tipp:"Jedes Jahr derselbe Faktor.",
+      optionen:[R(`${z(start)} · ${z(faktor)}<sup>${jahre}</sup>`, "Richtig — der Faktor kommt in die Hochzahl."),
+                F(`${z(start)} · ${z(faktor)} · ${jahre}`, "Hier würde der Faktor nur einmal wirken und dann verdoppelt — das ist lineares Denken."),
+                F(`${z(start)} + ${z(faktor)}<sup>${jahre}</sup>`, "Der Startwert wird malgenommen, nicht addiert.")]},
+     {frage:"<b>Wie viel ist es am Ende ungefähr?</b>",
+      tippAntwort:z(ende),
+      tipp:`${z(start)} mal ${z(faktor)}, und das ${jahre}-mal hintereinander.`,
+      optionen: zieheVerschiedene([
+        R(`etwa ${z(ende)} €`, "Richtig — und mehr als bei gleichmäßigem Wachstum, weil der Zuwachs mitwächst."),
+        F(`${z(linear)} €`, "Das wäre gleichmäßiges Wachstum, bei dem jedes Jahr derselbe Betrag dazukommt."),
+        F(`${z(start)} €`, "Das ist der Startwert, da ist noch nichts gewachsen.")], 3)}]};
+ },
+
+ /* Abnahme / Halbierung */
+ () => {
+   const start = pick([400, 600, 800, 1200, 1600]);
+   const p = pick([10, 20, 25, 40]);   /* nicht 50: dann wären „bleibt" und „geht weg" beide 50 % */
+   const faktor = 1 - p/100;
+   const schritte = rnd(2, 3);
+   const ende = Math.round(start * Math.pow(faktor, schritte));
+   return {
+    typ:"formel",
+    text:`Ein Bestand von ${z(start)} nimmt pro Jahr um ${p} % ab. Wie groß ist er nach ${schritte} Jahren?`,
+    loesung:`etwa ${z(ende)}`,
+    schluss:"Auch beim Abnehmen wird malgenommen — nur mit einem Faktor kleiner als 1. Deshalb wird nie ganz null erreicht.",
+    schritte:[
+     {frage:`Der Bestand nimmt um ${p} % <b>ab</b>. <b>Wie viel Prozent bleiben übrig?</b>`,
+      tipp:`Von 100 % gehen ${p} % weg.`,
+      optionen: zieheVerschiedene([
+        R(`${100 - p} %`, "Richtig — und genau damit wird gerechnet."),
+        F(`${p} %`, `Das ist der Teil, der verschwindet, nicht der, der bleibt.`),
+        F(`${100 + p} %`, "Bei einer Abnahme wird es weniger, nicht mehr.")], 3)},
+     {frage:"<b>Welcher Faktor gehört dazu?</b>",
+      tipp:`${100 - p} % als Kommazahl.`,
+      optionen: zieheVerschiedene([
+        R(z(faktor), "Genau — kleiner als 1, deshalb wird es weniger."),
+        F(z(1 + p/100), "Das wäre ein Wachstum."),
+        F(z(p/100), `Das sind die ${p} %, die wegfallen.`)], 3)},
+     {frage:`<b>Wie rechnet man ${schritte} Jahre?</b>`,
+      tipp:"Denselben Faktor mehrfach anwenden.",
+      optionen:[R(`${z(start)} · ${z(faktor)}<sup>${schritte}</sup>`, "Richtig."),
+                F(`${z(start)} − ${p} · ${schritte}`, "Es wird malgenommen, nicht abgezogen."),
+                F(`${z(start)} : ${schritte}`, "Teilen durch die Jahre hat damit nichts zu tun.")]},
+     {frage:"<b>Wie groß ist der Bestand ungefähr?</b>",
+      tippAntwort:z(ende),
+      tipp:`${z(start)} mal ${z(faktor)}, ${schritte}-mal hintereinander.`,
+      optionen: zieheVerschiedene([
+        R(`etwa ${z(ende)}`, "Richtig."),
+        F(`${z(Math.round(start - start * p/100 * schritte))}`, "Das wäre gleichmäßige Abnahme mit immer demselben Betrag."),
+        F("0", "Bei prozentualer Abnahme wird es zwar immer weniger, aber nie ganz null.")], 3)}]};
+ }
+],
+
 /* ===================== DEUTSCH ===================== */
 
 "das oder dass":[
@@ -1899,6 +2589,460 @@ const AUFGABEN = {
       optionen:[R(`${f.vor} ${f.nomen} ${f.rest}`, "Richtig."),
                 F(`${f.vor} ${f.verb} ${f.rest}`, `Der Artikel in „${f.vor}“ macht daraus ein Nomen.`)]}]};
  }
+],
+/* ===================== DEUTSCH · KLASSE 8 ===================== */
+
+"Konjunktiv":[
+ () => {
+   const faelle = [
+     {wer:"Tom", direkt:"Ich habe keine Zeit.", norm:"hat", konj:"habe", rest:"keine Zeit", grund:"haben"},
+     {wer:"Lea", direkt:"Ich komme später.", norm:"kommt", konj:"komme", rest:"später", grund:"kommen"},
+     {wer:"Der Lehrer", direkt:"Ich gebe euch morgen Bescheid.", norm:"gibt", konj:"gebe", rest:"morgen Bescheid", grund:"geben"},
+     {wer:"Meine Schwester", direkt:"Ich fahre am Freitag weg.", norm:"fährt", konj:"fahre", rest:"am Freitag weg", grund:"fahren"},
+     {wer:"Der Nachbar", direkt:"Ich weiß davon nichts.", norm:"weiß", konj:"wisse", rest:"davon nichts", grund:"wissen"},
+     {wer:"Paul", direkt:"Ich bleibe zu Hause.", norm:"bleibt", konj:"bleibe", rest:"zu Hause", grund:"bleiben"},
+     {wer:"Die Trainerin", direkt:"Ich sehe da kein Problem.", norm:"sieht", konj:"sehe", rest:"da kein Problem", grund:"sehen"},
+     {wer:"Mein Vater", direkt:"Ich lese das später.", norm:"liest", konj:"lese", rest:"das später", grund:"lesen"},
+     {wer:"Die Ärztin", direkt:"Ich rufe morgen an.", norm:"ruft", konj:"rufe", rest:"morgen an", grund:"rufen"},
+     {wer:"Jonas", direkt:"Ich nehme den Bus.", norm:"nimmt", konj:"nehme", rest:"den Bus", grund:"nehmen"}
+   ];
+   const f = pick(faelle);
+   return {
+    typ:"text",
+    text:`${f.wer} sagt: „${f.direkt}“ <br>In indirekter Rede: ${f.wer} sagt, er oder sie <span class='luecke'>___</span> ${f.rest}.`,
+    loesung: f.konj,
+    schluss:"Der Konjunktiv I zeigt: Das sind nicht meine Worte, ich gebe nur wieder, was jemand gesagt hat. Deshalb steht er in Berichten und Zeitungen.",
+    schritte:[
+     {frage:"<b>Wozu gibt es die indirekte Rede überhaupt?</b>",
+      tipp:"Überleg, was der Unterschied ist, wenn eine Zeitung schreibt, was jemand gesagt hat.",
+      optionen:[R("Um weiterzugeben, was jemand gesagt hat, ohne es als eigene Aussage auszugeben", "Genau — man macht damit sichtbar, dass man nur berichtet."),
+                F("Um den Satz kürzer zu machen", "Kürzer wird er dadurch meist nicht."),
+                F("Um höflicher zu klingen", "Höflichkeit ist eine andere Sache — hier geht es um die Quelle der Aussage.")]},
+     {frage:"<b>Welche Verbform benutzt man dafür?</b>",
+      tipp:"Sie heißt nach der Möglichkeitsform.",
+      optionen:[R("Den Konjunktiv I", "Richtig — er ist genau dafür da."),
+                F("Das Präteritum", "Das ist eine Zeitform, keine Möglichkeitsform."),
+                F("Das Partizip", "Das braucht man für Perfekt und Passiv.")]},
+     {frage:`Der Konjunktiv I wird vom Stamm des Verbs <b>„${f.grund}“</b> gebildet. <b>Wie lautet er in der dritten Person?</b>`,
+      tipp:"Stamm plus -e. Der Umlaut aus der normalen Form fällt dabei weg.",
+      optionen: zieheVerschiedene([
+        R(f.konj, "Genau — und man hört sofort, dass es nicht die normale Form ist."),
+        F(f.norm, "Das ist die normale Form (Indikativ) — damit klingt es, als wäre es deine eigene Aussage."),
+        F(f.grund, "Das ist die Grundform, die passt nicht zu „er“ oder „sie“.")], 3)},
+     {frage:"<b>Wie lautet der Satz in indirekter Rede?</b>",
+      tippAntwort: f.konj,
+      tipp:"Die Konjunktiv-Form einsetzen.",
+      optionen:[R(`${f.wer} sagt, er oder sie ${f.konj} ${f.rest}.`, "Richtig — daran erkennt man sofort, dass es eine Wiedergabe ist."),
+                F(`${f.wer} sagt, er oder sie ${f.norm} ${f.rest}.`, "So klingt es, als würdest du selbst behaupten, dass es stimmt.")]}]};
+ }
+],
+
+"Satzreihe und Satzgefüge":[
+ () => {
+   const faelle = [
+     {t1:"Ich räume auf", wort:"und", t2:"meine Schwester kocht", verb2:"kocht", pos:"an zweiter Stelle", art:"Satzreihe"},
+     {t1:"Wir wollten losfahren", wort:"aber", t2:"das Auto sprang nicht an", verb2:"sprang", pos:"an zweiter Stelle", art:"Satzreihe"},
+     {t1:"Er blieb zu Hause", wort:"denn", t2:"er war erkältet", verb2:"war", pos:"an zweiter Stelle", art:"Satzreihe"},
+     {t1:"Du kannst mitkommen", wort:"oder", t2:"du bleibst hier", verb2:"bleibst", pos:"an zweiter Stelle", art:"Satzreihe"},
+     {t1:"Ich bleibe zu Hause", wort:"weil", t2:"ich krank bin", verb2:"bin", pos:"ganz am Ende", art:"Satzgefüge"},
+     {t1:"Sie freut sich", wort:"obwohl", t2:"sie verloren hat", verb2:"hat", pos:"ganz am Ende", art:"Satzgefüge"},
+     {t1:"Ich rufe dich an", wort:"wenn", t2:"ich angekommen bin", verb2:"bin", pos:"ganz am Ende", art:"Satzgefüge"},
+     {t1:"Er hofft", wort:"dass", t2:"der Zug pünktlich kommt", verb2:"kommt", pos:"ganz am Ende", art:"Satzgefüge"},
+     {t1:"Wir warten hier", wort:"bis", t2:"der Regen aufhört", verb2:"aufhört", pos:"ganz am Ende", art:"Satzgefüge"},
+     {t1:"Sie lacht", wort:"während", t2:"er noch überlegt", verb2:"überlegt", pos:"ganz am Ende", art:"Satzgefüge"}
+   ];
+   const f = pick(faelle);
+   const gefuege = f.art === "Satzgefüge";
+   return {
+    typ:"text",
+    text:`${f.t1}, ${f.wort} ${f.t2}.`,
+    loesung: f.art,
+    schluss:"Nicht das Bindewort auswendig lernen — sondern schauen, wohin es das Verb schiebt. Das Verb verrät die Satzart immer.",
+    schritte:[
+     {frage:"<b>Woran erkennt man einen Nebensatz sicher?</b>",
+      tipp:"Es geht nicht um die Länge, sondern um eine bestimmte Stelle im Satz.",
+      optionen:[R("Am Platz des Verbs: im Nebensatz rutscht es ans Ende", "Genau — das ist das zuverlässigste Erkennungszeichen."),
+                F("Daran, dass er kürzer ist als der Hauptsatz", "Ein Nebensatz kann auch länger sein."),
+                F("Daran, dass ein Komma davorsteht", "Ein Komma steht auch bei zwei Hauptsätzen mit „aber“.")]},
+     {frage:`Schau auf den zweiten Teil: <b>${f.wort} ${f.t2}</b>. <b>Wo steht dort das Verb „${f.verb2}“?</b>`,
+      tipp:"Zähl die Wörter nach dem Bindewort durch.",
+      optionen: gefuege
+        ? [R("Ganz am Ende", "Richtig — typisch für einen Nebensatz."),
+           F("An zweiter Stelle", `Nein, „${f.verb2}“ steht ganz hinten.`)]
+        : [R("An zweiter Stelle", "Richtig — wie in einem ganz normalen Hauptsatz."),
+           F("Ganz am Ende", `Nein, „${f.verb2}“ steht gleich vorne mit.`)]},
+     {frage:"<b>Was ist der zweite Teil damit?</b>",
+      tipp:"Verb am Ende heißt Nebensatz, Verb an zweiter Stelle heißt Hauptsatz.",
+      optionen: gefuege
+        ? [R("Ein Nebensatz", "Genau — er kann allein nicht stehen."),
+           F("Ein Hauptsatz", "Dann müsste das Verb an zweiter Stelle stehen.")]
+        : [R("Ein zweiter Hauptsatz", "Genau — er könnte auch allein stehen."),
+           F("Ein Nebensatz", "Dann müsste das Verb ganz nach hinten rutschen.")]},
+     {frage:"<b>Wie heißt diese Satzart?</b>",
+      tippAntwort: f.art,
+      tipp: gefuege ? "Ein Hauptsatz mit einem Nebensatz darin." : "Zwei gleichwertige Hauptsätze nebeneinander.",
+      optionen:[R(f.art, gefuege
+                  ? "Richtig — Hauptsatz plus Nebensatz nennt man Satzgefüge."
+                  : "Richtig — zwei gleichrangige Hauptsätze nennt man Satzreihe."),
+                F(gefuege ? "Satzreihe" : "Satzgefüge", gefuege
+                  ? "Eine Satzreihe hätte zwei gleichrangige Hauptsätze — hier hängt der zweite Teil aber am ersten."
+                  : "Ein Satzgefüge bräuchte einen Nebensatz — hier stehen zwei Hauptsätze gleichberechtigt nebeneinander.")]}]};
+ }
+],
+
+"Kommas bei Infinitivgruppen":[
+ () => {
+   const faelle = [
+     {haupt:"Sie ging früher los", wort:"um", rest:"den Zug zu erreichen"},
+     {haupt:"Er verließ den Raum", wort:"ohne", rest:"etwas zu sagen"},
+     {haupt:"Wir sind spazieren gegangen", wort:"statt", rest:"zu Hause zu sitzen"},
+     {haupt:"Ich stand früh auf", wort:"um", rest:"pünktlich zu sein"},
+     {haupt:"Sie unterschrieb", wort:"ohne", rest:"den Vertrag zu lesen"},
+     {haupt:"Er hat den ganzen Abend gespielt", wort:"anstatt", rest:"für die Arbeit zu lernen"},
+     {haupt:"Wir blieben stehen", wort:"um", rest:"uns den Weg erklären zu lassen"},
+     {haupt:"Sie ging weiter", wort:"ohne", rest:"sich umzudrehen"},
+     {haupt:"Er rief an", wort:"statt", rest:"eine Nachricht zu schreiben"},
+     {haupt:"Ich habe mich beeilt", wort:"um", rest:"den Anfang nicht zu verpassen"}
+   ];
+   const f = pick(faelle);
+   return {
+    typ:"text",
+    text:`${f.haupt} <span class='luecke'>___</span> ${f.wort} ${f.rest}.`,
+    loesung:"Komma",
+    schluss:`Bei „um zu“, „ohne zu“, „statt zu“, „anstatt zu“, „außer zu“ und „als zu“ steht immer ein Komma — das sind die sicheren Fälle, die man sich merken kann.`,
+    schritte:[
+     {frage:`<b>Was ist eine Infinitivgruppe?</b>`,
+      tipp:"Schau dir den zweiten Teil des Satzes an: welche Wörter stecken darin?",
+      optionen:[R("Eine Wortgruppe mit „zu“ und der Grundform eines Verbs", `Genau — hier: „zu ${f.rest.split(" zu ")[1] || f.rest}“.`),
+                F("Ein Satz mit eigenem Subjekt und eigenem Verb", "Genau das hat eine Infinitivgruppe nicht — sie hat kein eigenes Subjekt."),
+                F("Eine Aufzählung von Verben", "Es geht nicht um eine Aufzählung.")]},
+     {frage:`Die Gruppe wird mit <b>„${f.wort}“</b> eingeleitet. <b>Was bedeutet das für das Komma?</b>`,
+      tipp:"Es gibt eine kleine Gruppe von Wörtern, bei denen das Komma immer gesetzt wird.",
+      optionen:[R("Bei diesem Wort muss ein Komma stehen", `Richtig — „${f.wort} … zu“ gehört zu den Fällen mit Komma-Pflicht.`),
+                F("Das Komma ist freigestellt", `Freigestellt ist es bei manchen Infinitivgruppen — aber nicht bei „${f.wort}“.`),
+                F("Ein Komma wäre hier falsch", "Nein, hier ist es sogar vorgeschrieben.")]},
+     {frage:"<b>Welche Wörter gehören noch zu dieser Gruppe mit Komma-Pflicht?</b>",
+      tipp:"Es sind sechs Stück, du kannst sie dir als Reihe merken.",
+      optionen:[R("um, ohne, statt, anstatt, außer, als", "Genau diese sechs — mehr musst du dir nicht merken."),
+                F("und, oder, aber, denn", "Das sind Bindewörter zwischen Hauptsätzen, keine Einleiter von Infinitivgruppen."),
+                F("weil, dass, wenn, obwohl", "Die leiten Nebensätze mit eigenem Verb ein, keine Infinitivgruppen.")]},
+     {frage:"<b>Wie steht der Satz richtig?</b>",
+      tippAntwort:"mit Komma",
+      tipp:"Das Komma kommt direkt vor das Einleitewort.",
+      optionen:[R(`${f.haupt}, ${f.wort} ${f.rest}.`, "Richtig."),
+                F(`${f.haupt} ${f.wort} ${f.rest}.`, `Hier fehlt das Komma vor „${f.wort}“.`)]}]};
+ }
+],
+
+/* ===================== DEUTSCH · KLASSE 9 ===================== */
+
+"Stilmittel erkennen":[
+ () => {
+   const faelle = [
+     {satz:"Ihre Augen waren zwei Sterne.", mittel:"Metapher", warum:"Etwas wird bildlich gleichgesetzt, ohne „wie“.", wirkung:"Es entsteht sofort ein Bild im Kopf."},
+     {satz:"Er war stark wie ein Bär.", mittel:"Vergleich", warum:"Zwei Dinge werden mit „wie“ nebeneinandergestellt.", wirkung:"Die Eigenschaft wird anschaulich."},
+     {satz:"Der Wind flüsterte durch die Bäume.", mittel:"Personifikation", warum:"Etwas Unbelebtes tut etwas, das nur Menschen können.", wirkung:"Die Natur wirkt lebendig."},
+     {satz:"Milch macht müde Männer munter.", mittel:"Alliteration", warum:"Mehrere Wörter beginnen mit demselben Laut.", wirkung:"Der Satz bleibt im Ohr."},
+     {satz:"Ich habe dir das schon tausendmal gesagt.", mittel:"Hyperbel", warum:"Es wird maßlos übertrieben.", wirkung:"Der Ärger wird spürbar."},
+     {satz:"Das Herz der Stadt schlägt am Marktplatz.", mittel:"Metapher", warum:"Die Stadt bekommt bildlich ein Herz, ohne „wie“.", wirkung:"Die Stadt wirkt lebendig."},
+     {satz:"Sie schwieg wie ein Grab.", mittel:"Vergleich", warum:"Das Wort „wie“ verbindet zwei Dinge.", wirkung:"Das Schweigen wirkt endgültig."},
+     {satz:"Die Sonne lachte vom Himmel.", mittel:"Personifikation", warum:"Die Sonne tut etwas, das nur Menschen können.", wirkung:"Die Stimmung wirkt heiter."},
+     {satz:"Bange machen gilt nicht.", mittel:"Alliteration", warum:"Gleicher Anfangslaut in mehreren Wörtern.", wirkung:"Der Satz klingt einprägsam."},
+     {satz:"Ich sterbe vor Hunger.", mittel:"Hyperbel", warum:"Eine starke Übertreibung.", wirkung:"Das Gefühl wird verstärkt."}
+   ];
+   const f = pick(faelle);
+   const alle = ["Metapher", "Vergleich", "Personifikation", "Alliteration", "Hyperbel"];
+   const andere = alle.filter(m => m !== f.mittel);
+   const hatWie = f.mittel === "Vergleich";
+   return {
+    typ:"text", text:`„${f.satz}“`, loesung: f.mittel,
+    schluss:"Ein Stilmittel zu benennen reicht nicht — in der Deutung zählt immer, welche Wirkung es erzeugt.",
+    schritte:[
+     {frage:"<b>Steht in dem Satz das Wörtchen „wie“?</b>",
+      tipp:"Das ist die schnellste Weiche: Vergleich oder nicht.",
+      optionen: hatWie
+        ? [R("Ja", "Richtig — und damit ist die Sache schon fast entschieden."),
+           F("Nein", `Doch, schau noch mal: „${f.satz}“`)]
+        : [R("Nein", "Richtig — also ist es kein Vergleich."),
+           F("Ja", `Nein, in „${f.satz}“ kommt kein „wie“ vor.`)]},
+     {frage:"<b>Was passiert in dem Satz?</b>",
+      tipp:"Beschreib zuerst, was da sprachlich gemacht wird — der Fachbegriff kommt danach.",
+      optionen: zieheVerschiedene([
+        R(f.warum, "Genau das ist der Kern."),
+        F("Eine Frage wird gestellt, auf die keine Antwort erwartet wird", "Das wäre eine rhetorische Frage — hier steht aber keine Frage."),
+        F("Ein Wort wird am Anfang mehrerer Sätze wiederholt", "Das wäre eine Anapher — dafür bräuchte es mehrere Sätze.")], 3)},
+     {frage:"<b>Wie heißt dieses Stilmittel?</b>",
+      tipp: hatWie ? "Mit „wie“ heißt es immer so." : "Denk an das, was du gerade beschrieben hast.",
+      optionen: zieheVerschiedene([
+        R(f.mittel, "Richtig."),
+        F(andere[0], `Nein — ${andere[0] === "Vergleich" ? "dafür bräuchte es ein „wie“" : "das passt hier nicht"}.`),
+        F(andere[1], "Das trifft auf diesen Satz nicht zu.")], 3)},
+     {frage:"<b>Und welche Wirkung hat das?</b>",
+      tippAntwort: f.mittel,
+      tipp:"Frag dich: Was macht der Satz mit dir beim Lesen?",
+      optionen: zieheVerschiedene([
+        R(f.wirkung, "Genau — und das gehört in jede Deutung mit hinein."),
+        F("Der Satz wird dadurch sachlicher und nüchterner", "Stilmittel machen Sprache meist bildhafter, nicht nüchterner."),
+        F("Der Satz wird dadurch grammatisch korrekter", "Mit Grammatik hat ein Stilmittel nichts zu tun.")], 3)}]};
+ }
+],
+
+"Gedichte deuten":[
+ () => {
+   const faelle = [
+     {v:["Der Mond ist aufgegangen","die goldnen Sternlein prangen","am Himmel hell und klar","der Wald steht schwarz und schweiget"],
+      endungen:["-gangen","-prangen","-klar","-schweiget"], schema:"aabb", name:"Paarreim",
+      erklaerung:"Die erste Zeile reimt sich auf die zweite, die dritte auf die vierte."},
+     {v:["Ich ging im Walde so für mich hin","und nichts zu suchen, das war mein Sinn","im Schatten sah ich ein Blümchen stehn","wie Sterne leuchtend, wie Äuglein schön"],
+      endungen:["-hin","-Sinn","-stehn","-schön"], schema:"aabb", name:"Paarreim",
+      erklaerung:"Immer zwei Zeilen hintereinander reimen sich."},
+     {v:["Es schlug mein Herz, geschwind zu Pferde","es war getan fast eh gedacht","der Abend wiegte schon die Erde","und an den Bergen hing die Nacht"],
+      endungen:["-Pferde","-gedacht","-Erde","-Nacht"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Die erste Zeile reimt sich auf die dritte, die zweite auf die vierte."},
+     {v:["Wer reitet so spät durch Nacht und Wind","es ist der Vater mit seinem Kind","er hat den Knaben wohl in dem Arm","er fasst ihn sicher, er hält ihn warm"],
+      endungen:["-Wind","-Kind","-Arm","-warm"], schema:"aabb", name:"Paarreim",
+      erklaerung:"Zwei benachbarte Zeilen reimen sich jeweils."},
+     {v:["Füllest wieder Busch und Tal","still mit Nebelglanz","lösest endlich auch einmal","meine Seele ganz"],
+      endungen:["-Tal","-glanz","-mal","-ganz"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Erste und dritte, zweite und vierte Zeile reimen sich."},
+     {v:["Ich weiß nicht, was soll es bedeuten","dass ich so traurig bin","ein Märchen aus uralten Zeiten","das kommt mir nicht aus dem Sinn"],
+      endungen:["-deuten","-bin","-Zeiten","-Sinn"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Die Reime greifen über eine Zeile hinweg ineinander."}
+   ];
+   const f = pick(faelle);
+   const kreuz = f.schema === "abab";
+   return {
+    typ:"text",
+    text: f.v.map((zeile, i) => `${i+1}. ${zeile}`).join("<br>"),
+    loesung: `${f.name} (${f.schema})`,
+    schluss:"Das Reimschema ist nur der Anfang — es sagt etwas über den Klang und darüber, ob ein Gedicht ruhig fließt oder gebunden wirkt.",
+    schritte:[
+     {frage:"<b>Worauf schaut man, um das Reimschema zu bestimmen?</b>",
+      tipp:"Nicht auf den Inhalt.",
+      optionen:[R("Auf das letzte Wort jeder Zeile", "Genau — nur die Zeilenenden zählen."),
+                F("Auf das erste Wort jeder Zeile", "Am Anfang stehende Gleichklänge wären eine Anapher, kein Reim."),
+                F("Auf die Anzahl der Silben", "Das gehört zum Versmaß, nicht zum Reimschema.")]},
+     {frage:`Die Zeilen enden auf: <b>${f.endungen.join(" · ")}</b>. <b>Welche Zeilen reimen sich?</b>`,
+      tipp:"Sprich die Endungen laut hintereinander.",
+      optionen: kreuz
+        ? [R("Zeile 1 mit 3 und Zeile 2 mit 4", "Richtig — die Reime überkreuzen sich."),
+           F("Zeile 1 mit 2 und Zeile 3 mit 4", "Lies noch mal: Zeile 1 und 2 klingen hier nicht gleich.")]
+        : [R("Zeile 1 mit 2 und Zeile 3 mit 4", "Richtig — jeweils zwei benachbarte Zeilen."),
+           F("Zeile 1 mit 3 und Zeile 2 mit 4", "Lies noch mal: hier reimen sich direkt benachbarte Zeilen.")]},
+     {frage:"<b>Wie schreibt man dieses Schema mit Buchstaben?</b>",
+      tipp:"Gleicher Buchstabe bedeutet gleicher Reim.",
+      optionen: zieheVerschiedene([
+        R(f.schema, "Genau."),
+        F(kreuz ? "aabb" : "abab", kreuz ? "Das wäre der Paarreim — hier greifen die Reime aber über eine Zeile."
+                                         : "Das wäre der Kreuzreim — hier reimen sich aber die Nachbarzeilen."),
+        F("abba", "Das wäre der umarmende Reim: außen ein Reim, innen ein anderer.")], 3)},
+     {frage:"<b>Wie heißt dieses Reimschema?</b>",
+      tippAntwort: f.name,
+      tipp: f.erklaerung,
+      optionen: zieheVerschiedene([
+        R(f.name, "Richtig."),
+        F(kreuz ? "Paarreim" : "Kreuzreim", kreuz ? "Beim Paarreim reimen sich benachbarte Zeilen." : "Beim Kreuzreim reimen sich Zeile 1 mit 3."),
+        F("Umarmender Reim", "Der hätte das Schema abba.")], 3)}]};
+ }
+],
+
+"Fremdwörter":[
+ () => {
+   const faelle = [
+     {wort:"Demokratie", sprache:"Griechisch", teile:"demos = Volk, kratein = herrschen", bedeutung:"Herrschaft des Volkes", deutsch:"Volksherrschaft"},
+     {wort:"Telefon", sprache:"Griechisch", teile:"tele = fern, phone = Stimme", bedeutung:"Fernsprecher", deutsch:"Fernsprecher"},
+     {wort:"Biologie", sprache:"Griechisch", teile:"bios = Leben, logos = Lehre", bedeutung:"Lehre vom Leben", deutsch:"Lebenskunde"},
+     {wort:"Transport", sprache:"Latein", teile:"trans = hinüber, portare = tragen", bedeutung:"das Hinübertragen", deutsch:"Beförderung"},
+     {wort:"Konferenz", sprache:"Latein", teile:"con = zusammen, ferre = tragen", bedeutung:"Zusammentragen von Meinungen", deutsch:"Besprechung"},
+     {wort:"Autonomie", sprache:"Griechisch", teile:"autos = selbst, nomos = Gesetz", bedeutung:"sich selbst Gesetze geben", deutsch:"Selbstbestimmung"},
+     {wort:"Import", sprache:"Latein", teile:"in = hinein, portare = tragen", bedeutung:"das Hineintragen", deutsch:"Einfuhr"},
+     {wort:"Geografie", sprache:"Griechisch", teile:"geo = Erde, graphein = schreiben", bedeutung:"Beschreibung der Erde", deutsch:"Erdkunde"},
+     {wort:"Konflikt", sprache:"Latein", teile:"con = zusammen, fligere = schlagen", bedeutung:"das Zusammenstoßen", deutsch:"Streit"},
+     {wort:"Perspektive", sprache:"Latein", teile:"per = hindurch, spicere = schauen", bedeutung:"das Hindurchschauen", deutsch:"Blickwinkel"}
+   ];
+   const f = pick(faelle);
+   const andereSprache = f.sprache === "Latein" ? "Griechisch" : "Latein";
+   return {
+    typ:"text", text:`Das Fremdwort <b>${f.wort}</b>`, loesung: f.bedeutung,
+    schluss:"Wer die Bausteine kennt, kann die Bedeutung vieler Fremdwörter selbst erschließen — auch bei Wörtern, die er noch nie gehört hat.",
+    schritte:[
+     {frage:"<b>Was ist überhaupt ein Fremdwort?</b>",
+      tipp:"Es geht um die Herkunft, nicht um die Länge.",
+      optionen:[R("Ein Wort, das aus einer anderen Sprache übernommen wurde und fremd klingt", "Genau — man hört ihm die Herkunft noch an."),
+                F("Ein besonders langes Wort", "Länge hat damit nichts zu tun."),
+                F("Ein Wort, das nur Fachleute benutzen", "Das wäre ein Fachbegriff — der kann auch deutsch sein.")]},
+     {frage:`Aus welcher Sprache kommt <b>${f.wort}</b>?`,
+      tipp:"Die meisten Fremdwörter im Deutschen kommen aus zwei alten Sprachen.",
+      optionen:[R(f.sprache, `Richtig — ${f.teile}.`),
+                F(andereSprache, `Nein, dieses Wort stammt aus dem ${f.sprache}en.`),
+                F("Japanisch", "Aus dem Japanischen stammen im Deutschen nur sehr wenige Wörter.")]},
+     {frage:`Das Wort besteht aus zwei Bausteinen: <b>${f.teile}</b>. <b>Was heißt es wörtlich?</b>`,
+      tipp:"Setz die beiden Bedeutungen einfach zusammen.",
+      optionen: zieheVerschiedene([
+        R(f.bedeutung, "Genau — das steckt wörtlich darin."),
+        F("Etwas ganz Neues, das nichts mit den Bausteinen zu tun hat", "Doch, die Bausteine ergeben zusammen die Bedeutung."),
+        F("Es hat keine wörtliche Bedeutung", "Fast jedes Fremdwort lässt sich aus seinen Bausteinen erklären.")], 3)},
+     {frage:`<b>Welches deutsche Wort sagt dasselbe?</b>`,
+      tippAntwort: f.deutsch,
+      tipp:"Ein Wort, das du im Alltag benutzen würdest.",
+      optionen: zieheVerschiedene([
+        R(f.deutsch, "Richtig — oft gibt es ein gutes deutsches Wort daneben."),
+        F(f.wort, "Das ist das Fremdwort selbst, kein deutsches Wort."),
+        F("Dafür gibt es kein deutsches Wort", `Doch: „${f.deutsch}“ trifft es genau.`)], 3)}]};
+ }
+],
+
+/* ===================== DEUTSCH · KLASSE 10 ===================== */
+
+"Rede und Rhetorik":[
+ () => {
+   const faelle = [
+     {satz:"Wollen wir das wirklich zulassen?", mittel:"Rhetorische Frage", warum:"Eine Frage, auf die keine Antwort erwartet wird.", wirkung:"Die Zuhörer sollen selbst zu der gewünschten Antwort kommen."},
+     {satz:"Wir haben gekämpft, wir haben verloren, wir haben weitergemacht.", mittel:"Anapher", warum:"Mehrere Satzteile beginnen mit denselben Wörtern.", wirkung:"Der Gedanke wird eingehämmert und bleibt hängen."},
+     {satz:"Freiheit, Gleichheit, Brüderlichkeit.", mittel:"Dreierfigur", warum:"Drei gleichrangige Begriffe stehen nebeneinander.", wirkung:"Der Satz klingt vollständig und geschlossen."},
+     {satz:"Steht auf und tut endlich etwas!", mittel:"Appell", warum:"Die Zuhörer werden direkt zum Handeln aufgefordert.", wirkung:"Aus Zuhören soll Handeln werden."},
+     {satz:"Ist es nicht an der Zeit, dass wir handeln?", mittel:"Rhetorische Frage", warum:"Die Antwort steckt schon in der Frage.", wirkung:"Widerspruch wird schwerer gemacht."},
+     {satz:"Nie wieder Krieg, nie wieder Hunger, nie wieder Angst.", mittel:"Anapher", warum:"Derselbe Anfang kehrt mehrfach wieder.", wirkung:"Die Forderung wirkt eindringlich."},
+     {satz:"Kommt, hört zu und entscheidet selbst!", mittel:"Appell", warum:"Direkte Aufforderung an die Zuhörer.", wirkung:"Die Zuhörer werden einbezogen."},
+     {satz:"Mut, Ausdauer und Vertrauen.", mittel:"Dreierfigur", warum:"Drei Begriffe in einer Reihe.", wirkung:"Der Dreiklang wirkt rund und einprägsam."}
+   ];
+   const f = pick(faelle);
+   const alle = ["Rhetorische Frage", "Anapher", "Dreierfigur", "Appell"];
+   const andere = alle.filter(m => m !== f.mittel);
+   return {
+    typ:"text", text:`Aus einer Rede: „${f.satz}“`, loesung: f.mittel,
+    schluss:"Rhetorische Mittel sind Werkzeuge. Wer sie erkennt, merkt auch, wann jemand versucht, ihn zu überzeugen — und kann selbst entscheiden.",
+    schritte:[
+     {frage:"<b>Was will eine Rede vor allem erreichen?</b>",
+      tipp:"Anders als ein Sachtext richtet sie sich direkt an Zuhörer.",
+      optionen:[R("Sie will überzeugen und zum Handeln bewegen", "Genau — deshalb wird sie so sorgfältig gebaut."),
+                F("Sie will nur sachlich informieren", "Reine Information wäre ein Sachtext oder ein Bericht."),
+                F("Sie will unterhalten", "Unterhaltung kann dabei sein, ist aber nicht das Ziel.")]},
+     {frage:"<b>Was fällt an diesem Satz auf?</b>",
+      tipp:"Beschreib erst, was gemacht wird — der Fachbegriff kommt danach.",
+      optionen: zieheVerschiedene([
+        R(f.warum, "Genau das ist der Kniff."),
+        F("Zwei Dinge werden mit „wie“ verglichen", "Das wäre ein Vergleich — hier steht kein „wie“."),
+        F("Etwas Unbelebtes handelt wie ein Mensch", "Das wäre eine Personifikation.")], 3)},
+     {frage:"<b>Wie heißt dieses rhetorische Mittel?</b>",
+      tipp:"Denk an das, was du gerade beschrieben hast.",
+      optionen: zieheVerschiedene([
+        R(f.mittel, "Richtig."),
+        F(andere[0], "Das trifft auf diesen Satz nicht zu."),
+        F(andere[1], "Das passt hier nicht.")], 3)},
+     {frage:"<b>Welche Wirkung soll das haben?</b>",
+      tippAntwort: f.mittel,
+      tipp:"Frag dich: Was soll bei den Zuhörern passieren?",
+      optionen: zieheVerschiedene([
+        R(f.wirkung, "Genau — und darauf kommt es bei der Analyse an."),
+        F("Der Text soll dadurch schwerer verständlich werden", "Reden wollen verstanden werden, nicht verwirren."),
+        F("Es dient nur der Grammatik", "Rhetorische Mittel haben mit Wirkung zu tun, nicht mit Grammatik.")], 3)}]};
+ }
+],
+
+"Sprachwandel":[
+ () => {
+   const faelle = [
+     {wort:"Weib", frueher:"ganz normales Wort für „Frau“", heute:"abwertend", art:"Bedeutungsverschlechterung",
+      erklaerung:"Ein Wort, das neutral war, bekommt mit der Zeit einen schlechten Beiklang."},
+     {wort:"Marschall", frueher:"Pferdeknecht", heute:"hoher militärischer Rang", art:"Bedeutungsverbesserung",
+      erklaerung:"Ein Wort steigt im Ansehen und meint etwas Höheres als früher."},
+     {wort:"Hochzeit", frueher:"jedes hohe Fest", heute:"nur noch die Vermählung", art:"Bedeutungsverengung",
+      erklaerung:"Ein Wort meint mit der Zeit weniger als vorher."},
+     {wort:"Sache", frueher:"Rechtsstreit vor Gericht", heute:"jeder beliebige Gegenstand", art:"Bedeutungserweiterung",
+      erklaerung:"Ein Wort meint mit der Zeit mehr als vorher."},
+     {wort:"Dirne", frueher:"junges Mädchen", heute:"abwertend", art:"Bedeutungsverschlechterung",
+      erklaerung:"Der Beiklang eines Wortes verschlechtert sich über die Zeit."},
+     {wort:"Fahren", frueher:"sich fortbewegen, auch zu Fuß", heute:"nur mit einem Fahrzeug", art:"Bedeutungsverengung",
+      erklaerung:"Der Anwendungsbereich eines Wortes schrumpft."},
+     {wort:"Geil", frueher:"fruchtbar, üppig gewachsen", heute:"umgangssprachlich für „toll“", art:"Bedeutungserweiterung",
+      erklaerung:"Ein Wort wird auf immer mehr Zusammenhänge angewendet."},
+     {wort:"Ritter", frueher:"einfach ein Reiter", heute:"Angehöriger des Adels", art:"Bedeutungsverbesserung",
+      erklaerung:"Ein Wort gewinnt an Ansehen."}
+   ];
+   const f = pick(faelle);
+   const alle = ["Bedeutungsverschlechterung", "Bedeutungsverbesserung", "Bedeutungsverengung", "Bedeutungserweiterung"];
+   const andere = alle.filter(a => a !== f.art);
+   return {
+    typ:"text",
+    text:`Das Wort <b>„${f.wort}“</b><br>früher: ${f.frueher}<br>heute: ${f.heute}`,
+    loesung: f.art,
+    schluss:"Sprache verändert sich ständig — das ist kein Verfall, sondern ein Zeichen dafür, dass sie lebendig ist und benutzt wird.",
+    schritte:[
+     {frage:"<b>Warum verändert sich Sprache überhaupt?</b>",
+      tipp:"Denk daran, wer Sprache benutzt und wofür.",
+      optionen:[R("Weil Menschen sie benutzen und sich die Welt um sie herum ändert", "Genau — neue Dinge brauchen neue Wörter, alte verschwinden."),
+                F("Weil immer weniger Menschen die Regeln beherrschen", "Sprachwandel ist kein Fehler, sondern ein normaler Vorgang."),
+                F("Weil der Duden das so festlegt", "Der Duden hält fest, wie gesprochen wird — er bestimmt es nicht.")]},
+     {frage:`Vergleiche: früher <b>${f.frueher}</b>, heute <b>${f.heute}</b>. <b>Was ist passiert?</b>`,
+      tipp:"Ist die Bedeutung enger geworden, weiter, besser oder schlechter?",
+      optionen: zieheVerschiedene([
+        R(f.erklaerung, "Genau."),
+        F("Das Wort wird heute genauso verwendet wie früher", `Nein — früher hieß es „${f.frueher}“, heute „${f.heute}“.`),
+        F("Das Wort wurde nur anders geschrieben", "Es geht hier um die Bedeutung, nicht um die Schreibweise.")], 3)},
+     {frage:"<b>Wie nennt man diese Art von Sprachwandel?</b>",
+      tipp: f.erklaerung,
+      optionen: zieheVerschiedene([
+        R(f.art, "Richtig."),
+        F(andere[0], "Das beschreibt eine andere Art von Wandel."),
+        F(andere[1], "Das trifft hier nicht zu.")], 3)},
+     {frage:"<b>Was folgt daraus für alte Texte?</b>",
+      tippAntwort: f.art,
+      tipp:"Denk daran, was passiert, wenn du ein Wort von heute in einen alten Text hineinliest.",
+      optionen:[R("Man muss aufpassen, weil Wörter darin etwas anderes bedeuten können als heute", "Genau — deshalb braucht man bei alten Texten oft Erklärungen."),
+                F("Alte Texte kann man genauso lesen wie heutige", `Gerade nicht — „${f.wort}“ ist ein gutes Beispiel dafür.`),
+                F("Alte Texte sind einfach falsch geschrieben", "Sie sind nicht falsch, sondern in der Sprache ihrer Zeit geschrieben.")]}]};
+ }
+],
+
+"Literaturepochen":[
+ () => {
+   const faelle = [
+     {epoche:"Aufklärung", zeit:"etwa 1720–1785", merkmal:"Der Verstand soll über allem stehen; der Mensch soll selbst denken statt zu gehorchen.",
+      leitwort:"Habe Mut, dich deines eigenen Verstandes zu bedienen.", autor:"Lessing"},
+     {epoche:"Sturm und Drang", zeit:"etwa 1765–1785", merkmal:"Gefühl, Leidenschaft und Auflehnung gegen Regeln und Obrigkeit.",
+      leitwort:"Das Genie bricht aus allen Regeln aus.", autor:"der junge Goethe"},
+     {epoche:"Klassik", zeit:"etwa 1786–1832", merkmal:"Maß, Harmonie und Vernunft im Gleichgewicht mit dem Gefühl.",
+      leitwort:"Das Schöne, Wahre und Gute in einem.", autor:"Goethe und Schiller"},
+     {epoche:"Romantik", zeit:"etwa 1795–1848", merkmal:"Sehnsucht, Nacht, Traum und Natur; Flucht aus der nüchternen Wirklichkeit.",
+      leitwort:"Die blaue Blume als Zeichen der Sehnsucht.", autor:"Eichendorff"},
+     {epoche:"Expressionismus", zeit:"etwa 1910–1925", merkmal:"Großstadt, Angst und Weltuntergang; das Innere wird nach außen geschrien.",
+      leitwort:"Der Schrei statt der schönen Form.", autor:"Georg Heym"}
+   ];
+   const f = pick(faelle);
+   const andere = faelle.filter(x => x.epoche !== f.epoche);
+   const zwei = zieheVerschiedene(andere, 2);
+   return {
+    typ:"text",
+    text:`Eine Epoche mit diesen Merkmalen: <b>${f.merkmal}</b>`,
+    loesung: f.epoche,
+    schluss:"Epochen sind keine Schubladen mit festen Wänden — sie überschneiden sich. Wichtig ist, woran man sie erkennt, nicht die genaue Jahreszahl.",
+    schritte:[
+     {frage:"<b>Wozu teilt man Literatur überhaupt in Epochen ein?</b>",
+      tipp:"Denk daran, was Texte aus derselben Zeit gemeinsam haben.",
+      optionen:[R("Weil Texte einer Zeit ähnliche Themen und Haltungen zeigen", "Genau — sie antworten auf dieselbe Welt."),
+                F("Weil man Bücher sonst nicht sortieren könnte", "Sortieren könnte man auch nach Autor oder Titel."),
+                F("Weil jede Epoche eigene Rechtschreibregeln hatte", "Die Rechtschreibung ist nicht der Grund für die Einteilung.")]},
+     {frage:`<b>Welche Haltung steckt hinter diesem Merkmal?</b>`,
+      tipp:"Lies das Merkmal noch einmal und frag dich, wogegen oder wofür es sich richtet.",
+      optionen: zieheVerschiedene([
+        R(f.leitwort, "Genau — das ist der Kerngedanke dieser Epoche."),
+        F(zwei[0].leitwort, `Das gehört zur Epoche ${zwei[0].epoche}.`),
+        F(zwei[1].leitwort, `Das gehört zur Epoche ${zwei[1].epoche}.`)], 3)},
+     {frage:"<b>Wie heißt diese Epoche?</b>",
+      tipp: `Sie liegt ${f.zeit}.`,
+      optionen: zieheVerschiedene([
+        R(f.epoche, "Richtig."),
+        F(zwei[0].epoche, `Dort ging es um etwas anderes: ${zwei[0].merkmal}`),
+        F(zwei[1].epoche, `Dort ging es um etwas anderes: ${zwei[1].merkmal}`)], 3)},
+     {frage:"<b>Wer schrieb in dieser Zeit?</b>",
+      tippAntwort: f.epoche,
+      tipp:`Ein bekannter Name aus der Zeit ${f.zeit}.`,
+      optionen: zieheVerschiedene([
+        R(f.autor, `Richtig — ${f.autor} steht für die ${f.epoche}.`),
+        F(zwei[0].autor, `${zwei[0].autor} gehört zur Epoche ${zwei[0].epoche}.`),
+        F(zwei[1].autor, `${zwei[1].autor} gehört zur Epoche ${zwei[1].epoche}.`)], 3)}]};
+ }
 ]
 
 };
@@ -2045,7 +3189,23 @@ Object.assign(AUFGABEN, {
      {satz:"Wir kaufen eine <b>Jacke</b>.", wort:"Jacke", art:"Nomen",
       rolle:"Es bezeichnet einen Gegenstand", merkmal:"Es hat einen Artikel vor sich und wird großgeschrieben"},
      {satz:"Der Kuchen schmeckt <b>süß</b>.", wort:"süß", art:"Adjektiv",
-      rolle:"Es beschreibt, wie etwas ist", merkmal:"Man kann es steigern: süß, süßer, am süßesten"}
+      rolle:"Es beschreibt, wie etwas ist", merkmal:"Man kann es steigern: süß, süßer, am süßesten"},
+     {satz:"Am Wochenende besuchen wir meine <b>Oma</b>.", wort:"Oma", art:"Nomen",
+      rolle:"Es bezeichnet einen Menschen", merkmal:"Man kann einen Artikel davorsetzen: die Oma"},
+     {satz:"Der Zug <b>fährt</b> in fünf Minuten ab.", wort:"fährt", art:"Verb",
+      rolle:"Es sagt, was geschieht", merkmal:"Man kann es beugen: ich fahre, du fährst"},
+     {satz:"Das Wasser ist heute besonders <b>kalt</b>.", wort:"kalt", art:"Adjektiv",
+      rolle:"Es beschreibt, wie etwas ist", merkmal:"Man kann es steigern: kalt, kälter, am kältesten"},
+     {satz:"<b>Wir</b> treffen uns nachher am Bahnhof.", wort:"Wir", art:"Pronomen",
+      rolle:"Es steht stellvertretend für mehrere Personen", merkmal:"Man könnte stattdessen Namen einsetzen"},
+     {satz:"Gib mir bitte <b>das</b> Buch.", wort:"das", art:"Artikel",
+      rolle:"Es begleitet ein Nomen", merkmal:"Es steht direkt vor dem Nomen „Buch“"},
+     {satz:"Auf dem Dach sitzt eine <b>Taube</b>.", wort:"Taube", art:"Nomen",
+      rolle:"Es bezeichnet ein Lebewesen", merkmal:"Es hat einen Artikel vor sich und wird großgeschrieben"},
+     {satz:"<b>Sie</b> hat den Bus verpasst.", wort:"Sie", art:"Pronomen",
+      rolle:"Es steht stellvertretend für ein Nomen", merkmal:"Man könnte stattdessen einen Namen einsetzen"},
+     {satz:"Mein Bruder <b>schreibt</b> eine Karte.", wort:"schreibt", art:"Verb",
+      rolle:"Es sagt, was geschieht", merkmal:"Man kann es beugen: ich schreibe, du schreibst"}
    ];
    const f = pick(faelle);
    const rollen = {
@@ -2092,7 +3252,18 @@ Object.assign(AUFGABEN, {
      {satz:"Meine Schwester schenkt mir ein Buch.", teil:"ein Buch", glied:"Akkusativobjekt", frage:"Wen oder was?"},
      {satz:"Der Hund bringt dem Kind den Ball.", teil:"dem Kind", glied:"Dativobjekt", frage:"Wem?"},
      {satz:"Der Hund bringt dem Kind den Ball.", teil:"Der Hund", glied:"Subjekt", frage:"Wer oder was?"},
-     {satz:"Die Nachbarin gießt jeden Tag die Blumen.", teil:"die Blumen", glied:"Akkusativobjekt", frage:"Wen oder was?"}
+     {satz:"Die Nachbarin gießt jeden Tag die Blumen.", teil:"die Blumen", glied:"Akkusativobjekt", frage:"Wen oder was?"},
+     {satz:"Die Nachbarin gießt jeden Tag die Blumen.", teil:"Die Nachbarin", glied:"Subjekt", frage:"Wer oder was?"},
+     {satz:"Der Postbote gibt der Frau das Paket.", teil:"Der Postbote", glied:"Subjekt", frage:"Wer oder was?"},
+     {satz:"Der Postbote gibt der Frau das Paket.", teil:"der Frau", glied:"Dativobjekt", frage:"Wem?"},
+     {satz:"Der Postbote gibt der Frau das Paket.", teil:"das Paket", glied:"Akkusativobjekt", frage:"Wen oder was?"},
+     {satz:"Mein Onkel repariert das Fahrrad.", teil:"Mein Onkel", glied:"Subjekt", frage:"Wer oder was?"},
+     {satz:"Mein Onkel repariert das Fahrrad.", teil:"das Fahrrad", glied:"Akkusativobjekt", frage:"Wen oder was?"},
+     {satz:"Die Trainerin zeigt den Kindern die Übung.", teil:"den Kindern", glied:"Dativobjekt", frage:"Wem?"},
+     {satz:"Die Trainerin zeigt den Kindern die Übung.", teil:"Die Trainerin", glied:"Subjekt", frage:"Wer oder was?"},
+     {satz:"Der Kellner bringt dem Gast die Rechnung.", teil:"dem Gast", glied:"Dativobjekt", frage:"Wem?"},
+     {satz:"Der Kellner bringt dem Gast die Rechnung.", teil:"die Rechnung", glied:"Akkusativobjekt", frage:"Wen oder was?"},
+     {satz:"Das Kind malt ein Bild.", teil:"ein Bild", glied:"Akkusativobjekt", frage:"Wen oder was?"}
    ];
    const f = pick(faelle);
    const alle = {
@@ -2136,7 +3307,17 @@ Object.assign(AUFGABEN, {
      {vorn:"Er läuft sehr", wort:"schnell", gross:"schnell", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Adjektiv."},
      {vorn:"Beim", wort:"kochen", gross:"Kochen", nach:" hört sie Radio.", istGross:true, grund:"„Beim“ enthält den Artikel „dem“."},
      {vorn:"Der kleine", wort:"hund", gross:"Hund", nach:" bellt.", istGross:true, grund:"Es steht ein Artikel davor: der Hund."},
-     {vorn:"Wir wollen morgen früh", wort:"aufstehen", gross:"aufstehen", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Verb."}
+     {vorn:"Wir wollen morgen früh", wort:"aufstehen", gross:"aufstehen", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Verb."},
+     {vorn:"Auf dem Tisch steht eine", wort:"lampe", gross:"Lampe", nach:".", istGross:true, grund:"Es steht ein Artikel davor: eine Lampe."},
+     {vorn:"Das viele", wort:"warten", gross:"Warten", nach:" macht mich nervös.", istGross:true, grund:"„Das“ ist ein Artikel — daraus wird ein Nomen."},
+     {vorn:"Sie kann gut", wort:"zuhören", gross:"zuhören", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Verb."},
+     {vorn:"Zum", wort:"lernen", gross:"Lernen", nach:" brauche ich Ruhe.", istGross:true, grund:"„Zum“ enthält den Artikel „dem“."},
+     {vorn:"Der Weg war ziemlich", wort:"weit", gross:"weit", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Adjektiv."},
+     {vorn:"Im Garten wächst ein alter", wort:"baum", gross:"Baum", nach:".", istGross:true, grund:"Es steht ein Artikel davor: ein Baum."},
+     {vorn:"Er hat das Fenster wieder", wort:"geöffnet", gross:"geöffnet", nach:".", istGross:false, grund:"Kein Artikel davor — es gehört zum Verb."},
+     {vorn:"Beim", wort:"laufen", gross:"Laufen", nach:" höre ich Musik.", istGross:true, grund:"„Beim“ enthält den Artikel „dem“."},
+     {vorn:"Meine Tante hat einen neuen", wort:"beruf", gross:"Beruf", nach:".", istGross:true, grund:"Es steht ein Artikel davor: einen Beruf."},
+     {vorn:"Das Wasser im See ist sehr", wort:"tief", gross:"tief", nach:".", istGross:false, grund:"Kein Artikel davor — es bleibt ein Adjektiv."}
    ];
    const f = pick(faelle);
    return {
@@ -2180,7 +3361,17 @@ Object.assign(AUFGABEN, {
      {begleit:"Mein Vater fragt", rede:"Wo warst du so lange?", vorn:true},
      {begleit:"sagt Tom", rede:"Das war nicht meine Schuld", vorn:false},
      {begleit:"fragt die Nachbarin", rede:"Hast du meinen Schlüssel gesehen", vorn:false},
-     {begleit:"antwortet sie leise", rede:"Ich weiß es nicht", vorn:false}
+     {begleit:"antwortet sie leise", rede:"Ich weiß es nicht", vorn:false},
+     {begleit:"Meine Mutter sagt", rede:"Räum bitte dein Zimmer auf!", vorn:true},
+     {begleit:"Der Busfahrer ruft", rede:"Bitte alle einsteigen!", vorn:true},
+     {begleit:"Lena fragt", rede:"Kommst du mit ins Schwimmbad?", vorn:true},
+     {begleit:"Der Trainer erklärt", rede:"Wir fangen mit dem Aufwärmen an.", vorn:true},
+     {begleit:"Mein Bruder behauptet", rede:"Ich war das nicht.", vorn:true},
+     {begleit:"ruft der Schaffner", rede:"Die Fahrkarten bitte", vorn:false},
+     {begleit:"flüstert Jonas", rede:"Schau mal nach links", vorn:false},
+     {begleit:"fragt der Verkäufer", rede:"Darf es sonst noch etwas sein", vorn:false},
+     {begleit:"erklärt die Ärztin", rede:"Das heilt von allein", vorn:false},
+     {begleit:"antwortet mein Vater", rede:"Darüber reden wir später", vorn:false}
    ];
    const f = pick(faelle);
    const loesung = f.vorn
@@ -2281,7 +3472,15 @@ Object.assign(AUFGABEN, {
      {vorn:"Wir besuchen", teile:["Berlin","Hamburg","München"], schluss:"und"},
      {vorn:"Du kannst", teile:["lesen","malen","spielen"], schluss:"oder"},
      {vorn:"Sie ist", teile:["freundlich","ehrlich","hilfsbereit"], schluss:"und"},
-     {vorn:"Zum Frühstück gibt es", teile:["Brot","Käse","Marmelade"], schluss:"und"}
+     {vorn:"Zum Frühstück gibt es", teile:["Brot","Käse","Marmelade"], schluss:"und"},
+     {vorn:"Auf dem Tisch liegen", teile:["Teller","Gläser","Servietten"], schluss:"und"},
+     {vorn:"Im Zoo sahen wir", teile:["Löwen","Affen","Pinguine"], schluss:"und"},
+     {vorn:"Du brauchst dafür", teile:["Geduld","Übung","Ruhe"], schluss:"und"},
+     {vorn:"Wir können heute", teile:["schwimmen","radfahren","klettern"], schluss:"oder"},
+     {vorn:"Der Film war", teile:["spannend","lustig","viel zu kurz"], schluss:"und"},
+     {vorn:"In meiner Tasche sind", teile:["Schlüssel","Geldbeutel","Kopfhörer"], schluss:"und"},
+     {vorn:"Sie spricht", teile:["Deutsch","Türkisch","Englisch"], schluss:"und"},
+     {vorn:"Zum Nachtisch nehme ich", teile:["Eis","Kuchen","Obst"], schluss:"oder"}
    ];
    const f = pick(faelle);
    const richtig = `${f.vorn} ${f.teile[0]}, ${f.teile[1]} ${f.schluss} ${f.teile[2]}.`;
@@ -2999,6 +4198,454 @@ const ERKLAERUNGEN = {
   beispiel:{aufgabe:"gut → ? → ?",
     schritte:["„guter“ gibt es nicht — das Wort ist unregelmäßig.","Die Formen muss man kennen."],
     ergebnis:"gut – besser – am besten"}
+},
+"Terme umformen": {
+  worum:"Ein Term ist eine Rechnung mit Buchstaben. Umformen heißt: kürzer schreiben, ohne den Wert zu verändern.",
+  einfach:[
+    "Ein x ist einfach eine Zahl, die man noch nicht kennt. Rechnen darf man damit trotzdem.",
+    "3x heißt „drei Stück x“. Genauso wie drei Äpfel. Und drei Äpfel plus zwei Äpfel sind fünf Äpfel — also 3x + 2x = 5x.",
+    "Aber: Äpfel und Birnen kann man nicht zusammenzählen. Genauso wenig x und reine Zahlen. 3x + 5 bleibt 3x + 5.",
+    "Steht eine Zahl vor einer Klammer, betrifft sie alles in der Klammer — nicht nur den ersten Teil."
+  ],
+  begriffe:[
+    ["Term","Eine Rechnung mit Zahlen und Buchstaben, ohne Gleichheitszeichen."],
+    ["Gleichartig","Teile mit demselben Buchstaben und derselben Hochzahl — nur die darf man zusammenfassen."],
+    ["Ausmultiplizieren","Die Klammer auflösen, indem man die Zahl davor mit jedem Teil darin malnimmt."]
+  ],
+  regeln:[
+    "Nur Gleichartiges zusammenfassen: x zu x, Zahl zu Zahl.",
+    "Beim Zusammenfassen ändert sich nur die Anzahl vor dem x, nie das x selbst.",
+    "Vor einer Klammer gilt: die Zahl trifft jeden einzelnen Teil in der Klammer.",
+    "Zur Probe eine beliebige Zahl für x einsetzen — vorher und nachher muss dasselbe herauskommen."
+  ],
+  beispiel:{aufgabe:"4 · (x + 3) + 2",
+    schritte:["Klammer auflösen: 4 · x = 4x und 4 · 3 = 12.","Jetzt steht da: 4x + 12 + 2.","12 und 2 sind beides reine Zahlen, die gehen zusammen."],
+    ergebnis:"4x + 14"}
+},
+
+"Binomische Formeln": {
+  worum:"Drei Formeln, die einem das Ausmultiplizieren zweier gleicher Klammern abnehmen.",
+  einfach:[
+    "(a + b)² sieht so aus, als wäre es a² + b². Das ist der häufigste Fehler in der ganzen Mittelstufe.",
+    "Denn (a + b)² heißt: (a + b) · (a + b). Und beim Ausmultiplizieren trifft jeder Teil der ersten Klammer jeden Teil der zweiten — das sind vier Produkte, nicht zwei.",
+    "Zwei dieser vier Produkte sind gleich (a·b und b·a). Zusammen ergeben sie den mittleren Teil: 2ab.",
+    "Bei (a + b)(a − b) sind diese beiden mittleren Teile einmal plus und einmal minus — sie löschen sich aus. Deshalb bleibt nur a² − b² übrig."
+  ],
+  begriffe:[
+    ["Binom","Ein Term aus zwei Gliedern, zum Beispiel a + b."],
+    ["Doppeltes Produkt","Der mittlere Teil 2ab — er entsteht, weil a·b zweimal vorkommt."]
+  ],
+  regeln:[
+    "1. binomische Formel: (a + b)² = a² + 2ab + b²",
+    "2. binomische Formel: (a − b)² = a² − 2ab + b²",
+    "3. binomische Formel: (a + b)(a − b) = a² − b²",
+    "Merkhilfe: erstes Quadrat, doppeltes Produkt, zweites Quadrat.",
+    "Zur Probe eine Zahl einsetzen — zum Beispiel a = 1."
+  ],
+  beispiel:{aufgabe:"(x + 5)²",
+    schritte:["Erstes Quadrat: x².","Doppeltes Produkt: 2 · x · 5 = 10x.","Zweites Quadrat: 5² = 25."],
+    ergebnis:"x² + 10x + 25"}
+},
+
+"Lineare Funktionen": {
+  worum:"Eine lineare Funktion ist eine Gerade. Zwei Zahlen beschreiben sie vollständig: wie steil sie ist und wo sie startet.",
+  einfach:[
+    "y = mx + b. Mehr steckt nicht dahinter. Das m ist die Steigung, das b der Startwert auf der y-Achse.",
+    "Die Steigung sagt: gehe ich einen Schritt nach rechts, wie viel geht es dann nach oben? Bei m = 3 geht es drei nach oben.",
+    "Ist m negativ, fällt die Gerade. Ist m null, verläuft sie waagerecht.",
+    "Das b ist der Punkt, an dem die Gerade die senkrechte Achse schneidet — dort, wo x = 0 ist."
+  ],
+  begriffe:[
+    ["Steigung m","Höhenunterschied geteilt durch Schritt nach rechts."],
+    ["y-Achsenabschnitt b","Der y-Wert an der Stelle x = 0."],
+    ["Punktprobe","Einen Punkt einsetzen und schauen, ob die Gleichung aufgeht."]
+  ],
+  regeln:[
+    "Steigung aus zwei Punkten: m = (y₂ − y₁) : (x₂ − x₁)",
+    "Nach oben geteilt durch nach rechts — immer in dieser Reihenfolge.",
+    "Ein Punkt liegt auf der Geraden, wenn seine Werte die Gleichung erfüllen.",
+    "Positives m steigt, negatives m fällt."
+  ],
+  beispiel:{aufgabe:"Steigung durch P(1 | 3) und Q(4 | 12)",
+    schritte:["Nach rechts: 4 − 1 = 3.","Nach oben: 12 − 3 = 9.","Steigung: 9 geteilt durch 3."],
+    ergebnis:"m = 3"}
+},
+
+"Quadratische Gleichungen": {
+  worum:"Gleichungen, in denen ein x² vorkommt. Sie haben meist zwei Lösungen statt einer.",
+  einfach:[
+    "Bei 2x = 6 gibt es genau eine Lösung. Bei x² = 9 gibt es zwei: 3 und −3, denn beide ergeben quadriert 9.",
+    "Deshalb liefert die p-q-Formel auch immer zwei Werte — einmal mit Plus, einmal mit Minus vor der Wurzel.",
+    "Wichtig: Die Formel funktioniert nur, wenn vor dem x² nichts steht. Steht dort eine Zahl, teilt man zuerst die ganze Gleichung durch sie.",
+    "Steht ein Produkt auf null, geht es viel schneller: Dann muss einer der Faktoren null sein — jede Klammer einzeln betrachten."
+  ],
+  begriffe:[
+    ["p","Die Zahl vor dem x — mit ihrem Vorzeichen."],
+    ["q","Die Zahl ganz hinten — mit ihrem Vorzeichen."],
+    ["Diskriminante","Das, was unter der Wurzel steht. Ist sie negativ, gibt es keine Lösung."]
+  ],
+  regeln:[
+    "Normalform herstellen: x² + px + q = 0 (vor dem x² darf keine Zahl stehen).",
+    "p-q-Formel: x = −p/2 ± √((p/2)² − q)",
+    "p und q immer mit Vorzeichen ablesen — dort passieren die meisten Fehler.",
+    "Satz vom Nullprodukt: Steht ein Produkt auf null, ist mindestens ein Faktor null.",
+    "Probe: Die beiden Lösungen malgenommen ergeben q, addiert ergeben sie −p."
+  ],
+  beispiel:{aufgabe:"x² − 5x + 6 = 0",
+    schritte:["p = −5 und q = 6 ablesen.","−p/2 = 2,5","Unter der Wurzel: 2,5² − 6 = 0,25 → √0,25 = 0,5","2,5 + 0,5 = 3 und 2,5 − 0,5 = 2"],
+    ergebnis:"x₁ = 2, x₂ = 3"}
+},
+
+"Satz des Pythagoras": {
+  worum:"In jedem rechtwinkligen Dreieck hängen die drei Seitenlängen fest zusammen. Kennt man zwei, kann man die dritte ausrechnen.",
+  einfach:[
+    "Die Formel a² + b² = c² gilt nur, wenn im Dreieck ein rechter Winkel steckt. Sonst stimmt sie nicht.",
+    "Die beiden Seiten, die den rechten Winkel bilden, heißen Katheten. Die Seite gegenüber heißt Hypotenuse — sie ist immer die längste.",
+    "In der Formel steht c immer für die Hypotenuse. Wer hier vertauscht, bekommt Unsinn heraus.",
+    "Suchst du die Hypotenuse, wird addiert. Suchst du eine Kathete, wird abgezogen."
+  ],
+  begriffe:[
+    ["Kathete","Eine der beiden Seiten, die den rechten Winkel bilden."],
+    ["Hypotenuse","Die Seite gegenüber dem rechten Winkel — immer die längste."]
+  ],
+  regeln:[
+    "a² + b² = c² — nur im rechtwinkligen Dreieck.",
+    "c ist immer die Hypotenuse.",
+    "Hypotenuse gesucht: c = √(a² + b²)",
+    "Kathete gesucht: b = √(c² − a²)",
+    "Prüfen: Die Hypotenuse muss länger sein als jede Kathete."
+  ],
+  beispiel:{aufgabe:"a = 3 cm, b = 4 cm, c = ?",
+    schritte:["3² = 9 und 4² = 16.","9 + 16 = 25, also c² = 25.","Wurzel ziehen: √25 = 5."],
+    ergebnis:"c = 5 cm"}
+},
+
+"Potenzen und Wurzeln": {
+  worum:"Eine Potenz ist eine Kurzschreibweise für wiederholtes Malnehmen. Die Wurzel macht das rückgängig.",
+  einfach:[
+    "a⁵ heißt: a mal a mal a mal a mal a. Die Hochzahl sagt nur, wie oft.",
+    "Deshalb ist a³ · a² = a⁵ — man hängt drei Stück und zwei Stück aneinander, macht fünf. Die Hochzahlen werden addiert.",
+    "Beim Teilen kürzt sich entsprechend etwas weg, also werden die Hochzahlen abgezogen.",
+    "Die Wurzel fragt umgekehrt: welche Zahl mit sich selbst malgenommen ergibt das? √49 = 7, weil 7 · 7 = 49."
+  ],
+  begriffe:[
+    ["Basis","Die Zahl, die malgenommen wird — bei a⁵ ist das a."],
+    ["Exponent","Die Hochzahl — sie sagt, wie oft."],
+    ["Quadratwurzel","Die Umkehrung des Quadrierens."]
+  ],
+  regeln:[
+    "aᵐ · aⁿ = aᵐ⁺ⁿ (gleiche Basis: Hochzahlen addieren)",
+    "aᵐ : aⁿ = aᵐ⁻ⁿ (gleiche Basis: Hochzahlen abziehen)",
+    "(aᵐ)ⁿ = aᵐ·ⁿ (Potenz einer Potenz: Hochzahlen malnehmen)",
+    "a⁰ = 1 für jedes a außer null.",
+    "Die Basis bleibt immer stehen — nur die Hochzahlen werden verrechnet."
+  ],
+  beispiel:{aufgabe:"a⁴ · a³",
+    schritte:["a⁴ sind vier Stück a, a³ sind drei Stück a.","Zusammen sind das sieben Stück a."],
+    ergebnis:"a⁷"}
+},
+
+"Quadratische Funktionen": {
+  worum:"Der Graph einer quadratischen Funktion ist eine Parabel. Ihre Gleichung verrät, wo sie liegt und wie sie aussieht.",
+  einfach:[
+    "Die einfachste Parabel ist y = x². Sie ist nach oben geöffnet und hat ihren tiefsten Punkt im Ursprung.",
+    "Steht vor dem x² ein Minus, kippt die Parabel und ist nach unten geöffnet.",
+    "Ist die Zahl vor dem x² größer als 1, wird die Parabel schmaler. Ist sie kleiner als 1, wird sie breiter.",
+    "In der Scheitelform y = (x − d)² + e kann man den Scheitelpunkt direkt ablesen: S(d | e). Achtung: beim x dreht sich das Vorzeichen um."
+  ],
+  begriffe:[
+    ["Parabel","Die typische Bogenform, die beim Quadrieren entsteht."],
+    ["Scheitelpunkt","Der höchste oder tiefste Punkt der Parabel."],
+    ["Scheitelform","y = a(x − d)² + e — hier steht der Scheitelpunkt direkt drin."],
+    ["Normalform","y = ax² + bx + c — hier muss man den Scheitel erst ausrechnen."]
+  ],
+  regeln:[
+    "Vorzeichen vor dem x²: plus = nach oben, minus = nach unten geöffnet.",
+    "Betrag größer als 1: schmaler. Betrag kleiner als 1: breiter.",
+    "Scheitelform y = (x − d)² + e → Scheitelpunkt S(d | e).",
+    "Beim x-Wert des Scheitels dreht sich das Vorzeichen gegenüber der Klammer um, beim y-Wert nicht."
+  ],
+  beispiel:{aufgabe:"f(x) = (x − 3)² + 2",
+    schritte:["In der Klammer steht x − 3, also wird die Klammer bei x = 3 null.","Der x-Wert des Scheitels ist 3.","Hinten steht + 2, das ist der y-Wert."],
+    ergebnis:"S(3 | 2)"}
+},
+
+"Trigonometrie": {
+  worum:"Sinus, Kosinus und Tangens verbinden Winkel mit Seitenlängen. Damit kann man Seiten berechnen, die man nicht messen kann.",
+  einfach:[
+    "Im rechtwinkligen Dreieck hat jede Seite einen Namen — aber der hängt davon ab, welchen Winkel du gerade anschaust.",
+    "Die Seite gegenüber dem Winkel heißt Gegenkathete. Die Seite, die am Winkel anliegt, heißt Ankathete. Die längste bleibt immer die Hypotenuse.",
+    "Sinus, Kosinus und Tangens sind einfach Verhältnisse von je zwei dieser Seiten.",
+    "Der Trick beim Lösen: erst schauen, welche zwei Seiten im Spiel sind — daraus ergibt sich die Funktion von selbst."
+  ],
+  begriffe:[
+    ["Gegenkathete","Die Seite gegenüber dem betrachteten Winkel."],
+    ["Ankathete","Die Seite, die am betrachteten Winkel anliegt."],
+    ["Hypotenuse","Die Seite gegenüber dem rechten Winkel — immer die längste."]
+  ],
+  regeln:[
+    "sin(α) = Gegenkathete : Hypotenuse",
+    "cos(α) = Ankathete : Hypotenuse",
+    "tan(α) = Gegenkathete : Ankathete",
+    "Merkhilfe GAGA HHAG: Gegen-Anliegend-Gegen-Anliegend über Hypotenuse-Hypotenuse-Anliegend-Gegen.",
+    "Sinus und Kosinus sind immer kleiner als 1 — sonst wäre eine Kathete länger als die Hypotenuse."
+  ],
+  beispiel:{aufgabe:"c = 10 cm, α = 30°, Gegenkathete a = ?",
+    schritte:["Gegenkathete und Hypotenuse → Sinus.","sin(30°) = a : 10","Umstellen: a = 10 · sin(30°) = 10 · 0,5"],
+    ergebnis:"a = 5 cm"}
+},
+
+"Exponentielles Wachstum": {
+  worum:"Wachstum, bei dem immer derselbe Prozentsatz dazukommt — nicht derselbe Betrag. Deshalb wird es immer schneller.",
+  einfach:[
+    "Bei gleichmäßigem Wachstum kommt jedes Jahr derselbe Betrag dazu: 100, 200, 300, 400.",
+    "Bei exponentiellem Wachstum kommt jedes Jahr derselbe Anteil dazu. Und weil der Betrag schon gewachsen ist, wird der Zuwachs jedes Jahr größer.",
+    "Deshalb rechnet man nicht plus, sondern mal. 5 % Zuwachs heißt: mal 1,05 — die 1 steht für das, was schon da ist.",
+    "Bei Abnahme ist es dasselbe, nur mit einem Faktor kleiner als 1. 20 % weniger heißt: mal 0,8."
+  ],
+  begriffe:[
+    ["Wachstumsfaktor","Die Zahl, mit der jedes Mal malgenommen wird — bei 5 % ist das 1,05."],
+    ["Startwert","Der Wert am Anfang, bevor etwas gewachsen ist."],
+    ["Zerfall","Exponentielle Abnahme, Faktor kleiner als 1."]
+  ],
+  regeln:[
+    "Endwert = Startwert · Faktorᶻᵉⁱᵗ",
+    "Zunahme um p Prozent: Faktor = 1 + p/100",
+    "Abnahme um p Prozent: Faktor = 1 − p/100",
+    "Die Zeit steht in der Hochzahl — daher der Name exponentiell.",
+    "Bei prozentualer Abnahme wird der Wert nie ganz null."
+  ],
+  beispiel:{aufgabe:"1000 € wachsen 3 Jahre lang um 10 % pro Jahr",
+    schritte:["Faktor: 1 + 10/100 = 1,1","Drei Jahre: 1000 · 1,1³","1,1³ = 1,331"],
+    ergebnis:"1331 €"}
+},
+
+"Konjunktiv": {
+  worum:"Eine Verbform, mit der man zeigt: Das sind nicht meine Worte, ich gebe nur wieder, was jemand gesagt hat.",
+  einfach:[
+    "Wenn eine Zeitung schreibt „Der Minister sagt, er hat nichts gewusst“, klingt es, als würde die Zeitung das bestätigen.",
+    "Schreibt sie „Der Minister sagt, er habe nichts gewusst“, ist klar: Das behauptet er, nicht die Zeitung.",
+    "Diese Form heißt Konjunktiv I. Sie wird vom Wortstamm gebildet, meist mit einem angehängten -e.",
+    "Klingt der Konjunktiv I genauso wie die normale Form, weicht man auf den Konjunktiv II aus (würde … oder hätte …), damit der Unterschied hörbar bleibt."
+  ],
+  begriffe:[
+    ["Indikativ","Die normale Form — sie behauptet, dass etwas so ist."],
+    ["Konjunktiv I","Die Form für die indirekte Rede: er habe, sie komme."],
+    ["Konjunktiv II","Die Form für Wünsche und Unwirkliches: er hätte, sie käme, er würde kommen."],
+    ["Indirekte Rede","Wiedergabe einer Aussage, ohne sie wörtlich zu zitieren."]
+  ],
+  regeln:[
+    "Indirekte Rede → Konjunktiv I: er sagt, er habe keine Zeit.",
+    "Konjunktiv I bildet man aus dem Verbstamm plus -e; der Umlaut fällt weg (er fährt → er fahre).",
+    "Klingt Konjunktiv I wie der Indikativ, nimmt man Konjunktiv II.",
+    "Konjunktiv II für Unwirkliches und Wünsche: Wenn ich Zeit hätte, käme ich."
+  ],
+  beispiel:{aufgabe:"Tom sagt: „Ich komme später.“ → indirekt",
+    schritte:["Grundform: kommen.","Stamm komm- plus -e ergibt komme.","Der Konjunktiv unterscheidet sich hörbar von „kommt“."],
+    ergebnis:"Tom sagt, er komme später."}
+},
+
+"Satzreihe und Satzgefüge": {
+  worum:"Zwei Arten, Sätze zu verbinden — je nachdem, ob die Teile gleichrangig sind oder einer vom anderen abhängt.",
+  einfach:[
+    "Eine Satzreihe verbindet zwei Hauptsätze. Beide könnten auch allein stehen: „Ich räume auf, und meine Schwester kocht.“",
+    "Ein Satzgefüge hat einen Hauptsatz und einen Nebensatz. Der Nebensatz kann nicht allein stehen: „weil ich krank bin“ ergibt für sich keinen Sinn.",
+    "Das sicherste Erkennungszeichen ist das Verb. Im Hauptsatz steht es an zweiter Stelle, im Nebensatz rutscht es ganz ans Ende.",
+    "Man muss sich also keine Listen von Bindewörtern merken — es reicht, auf das Verb zu schauen."
+  ],
+  begriffe:[
+    ["Hauptsatz","Kann allein stehen, Verb an zweiter Stelle."],
+    ["Nebensatz","Kann nicht allein stehen, Verb ganz am Ende."],
+    ["Satzreihe","Zwei oder mehr gleichrangige Hauptsätze."],
+    ["Satzgefüge","Hauptsatz mit mindestens einem Nebensatz."]
+  ],
+  regeln:[
+    "Verb an zweiter Stelle → Hauptsatz.",
+    "Verb ganz am Ende → Nebensatz.",
+    "und, aber, denn, oder, sondern verbinden Hauptsätze → Satzreihe.",
+    "weil, dass, wenn, obwohl, damit, bis, während leiten Nebensätze ein → Satzgefüge.",
+    "Vor einem Nebensatz steht immer ein Komma."
+  ],
+  beispiel:{aufgabe:"Ich bleibe zu Hause, weil ich krank bin.",
+    schritte:["Zweiter Teil: „weil ich krank bin“.","Das Verb „bin“ steht ganz am Ende.","Also ist es ein Nebensatz."],
+    ergebnis:"Satzgefüge"}
+},
+
+"Kommas bei Infinitivgruppen": {
+  worum:"Wann vor einer Wortgruppe mit „zu“ ein Komma stehen muss — und wann man es sich aussuchen darf.",
+  einfach:[
+    "Eine Infinitivgruppe ist eine Wortgruppe mit „zu“ und der Grundform eines Verbs: „um pünktlich zu sein“.",
+    "Anders als ein Nebensatz hat sie kein eigenes Subjekt — es steht kein „ich“, „er“ oder „sie“ darin.",
+    "Seit der Rechtschreibreform ist das Komma in vielen Fällen freigestellt. Es gibt aber sechs Einleitewörter, bei denen es immer stehen muss.",
+    "Diese sechs kann man sich als Reihe merken: um, ohne, statt, anstatt, außer, als. Wer die kennt, ist bei den Pflichtfällen auf der sicheren Seite."
+  ],
+  begriffe:[
+    ["Infinitiv","Die Grundform des Verbs: gehen, lesen, sein."],
+    ["Infinitivgruppe","Wortgruppe mit zu + Infinitiv, ohne eigenes Subjekt."]
+  ],
+  regeln:[
+    "Komma-Pflicht bei: um, ohne, statt, anstatt, außer, als.",
+    "Komma-Pflicht auch, wenn ein hinweisendes Wort im Satz steht (es, daran, darauf).",
+    "Komma-Pflicht, wenn die Infinitivgruppe von einem Nomen abhängt.",
+    "In allen anderen Fällen ist das Komma freigestellt — es hilft aber der Lesbarkeit.",
+    "Eine Infinitivgruppe hat nie ein eigenes Subjekt — daran erkennt man sie."
+  ],
+  beispiel:{aufgabe:"Sie ging früher los um den Zug zu erreichen.",
+    schritte:["Die Gruppe wird mit „um“ eingeleitet.","„um“ gehört zu den sechs Wörtern mit Komma-Pflicht.","Das Komma kommt direkt vor „um“."],
+    ergebnis:"Sie ging früher los, um den Zug zu erreichen."}
+},
+
+"Stilmittel erkennen": {
+  worum:"Sprachliche Kniffe, mit denen Texte Bilder erzeugen oder Wirkung verstärken.",
+  einfach:[
+    "Ein Stilmittel zu benennen ist nur die halbe Arbeit. In der Deutung zählt immer: Welche Wirkung hat es?",
+    "Die schnellste Weiche ist das Wörtchen „wie“. Steht es da, ist es ein Vergleich: „stark wie ein Bär“.",
+    "Fehlt das „wie“ und wird trotzdem etwas gleichgesetzt, ist es eine Metapher: „Ihre Augen waren zwei Sterne.“",
+    "Tut etwas Unbelebtes etwas Menschliches („der Wind flüstert“), ist es eine Personifikation."
+  ],
+  begriffe:[
+    ["Metapher","Bildliche Gleichsetzung ohne „wie“."],
+    ["Vergleich","Zwei Dinge mit „wie“ nebeneinandergestellt."],
+    ["Personifikation","Unbelebtes handelt wie ein Mensch."],
+    ["Alliteration","Mehrere Wörter mit gleichem Anfangslaut."],
+    ["Hyperbel","Starke Übertreibung."]
+  ],
+  regeln:[
+    "Mit „wie“ → Vergleich. Ohne „wie“, aber bildlich → Metapher.",
+    "Unbelebtes handelt menschlich → Personifikation.",
+    "Gleicher Anfangslaut in Folge → Alliteration.",
+    "Maßlose Übertreibung → Hyperbel.",
+    "Immer die Wirkung mit angeben — die Benennung allein reicht in keiner Deutung."
+  ],
+  beispiel:{aufgabe:"„Der Wind flüsterte durch die Bäume.“",
+    schritte:["Kein „wie“ vorhanden, also kein Vergleich.","Der Wind tut etwas, das nur Menschen können: flüstern.","Also Personifikation."],
+    ergebnis:"Personifikation — die Natur wirkt lebendig"}
+},
+
+"Gedichte deuten": {
+  worum:"Wie ein Gedicht gebaut ist — Reim und Form sagen etwas über seine Wirkung.",
+  einfach:[
+    "Für das Reimschema schaut man nur auf das letzte Wort jeder Zeile. Der Inhalt spielt dabei keine Rolle.",
+    "Reimen sich benachbarte Zeilen (1 mit 2, 3 mit 4), ist es ein Paarreim: aabb.",
+    "Reimt sich Zeile 1 mit 3 und Zeile 2 mit 4, überkreuzen sich die Reime — Kreuzreim: abab.",
+    "Umschließt der erste Reim den zweiten (1 mit 4, 2 mit 3), heißt er umarmender Reim: abba."
+  ],
+  begriffe:[
+    ["Vers","Eine Zeile im Gedicht."],
+    ["Strophe","Ein Abschnitt aus mehreren Versen."],
+    ["Reimschema","Das Muster, in dem sich die Zeilenenden reimen."],
+    ["Metrum","Das Betonungsmuster einer Zeile."]
+  ],
+  regeln:[
+    "Paarreim: aabb — benachbarte Zeilen reimen sich.",
+    "Kreuzreim: abab — die Reime greifen über eine Zeile.",
+    "Umarmender Reim: abba — außen ein Reim, innen ein anderer.",
+    "Gleicher Buchstabe bedeutet gleicher Reim.",
+    "Die Form ist nie Selbstzweck: Sie unterstützt die Stimmung des Gedichts."
+  ],
+  beispiel:{aufgabe:"Zeilenenden: -Wind · -Kind · -Arm · -warm",
+    schritte:["Wind und Kind reimen sich: Zeile 1 und 2.","Arm und warm reimen sich: Zeile 3 und 4.","Benachbarte Zeilen reimen sich."],
+    ergebnis:"Paarreim (aabb)"}
+},
+
+"Fremdwörter": {
+  worum:"Wörter aus anderen Sprachen. Wer ihre Bausteine kennt, kann ihre Bedeutung selbst erschließen.",
+  einfach:[
+    "Die meisten Fremdwörter im Deutschen stammen aus dem Lateinischen oder Griechischen.",
+    "Sie sind oft aus zwei Bausteinen zusammengesetzt. Kennt man die, versteht man das Wort — auch wenn man es nie gehört hat.",
+    "Beispiel: „tele“ heißt fern, „phon“ heißt Stimme. Telefon ist also wörtlich ein Fernsprecher.",
+    "Dieselben Bausteine tauchen immer wieder auf: Wer „tele“ kennt, versteht auch Teleskop und Television."
+  ],
+  begriffe:[
+    ["Fremdwort","Ein übernommenes Wort, dem man die fremde Herkunft anhört."],
+    ["Lehnwort","Ein übernommenes Wort, das sich völlig eingedeutscht hat, zum Beispiel Fenster."]
+  ],
+  regeln:[
+    "Häufige griechische Bausteine: tele = fern, bio = Leben, geo = Erde, logos = Lehre, auto = selbst.",
+    "Häufige lateinische Bausteine: trans = hinüber, portare = tragen, con = zusammen, per = hindurch.",
+    "Bausteine zerlegen, Bedeutungen zusammensetzen — so erschließt man unbekannte Wörter.",
+    "Zu vielen Fremdwörtern gibt es ein gutes deutsches Wort."
+  ],
+  beispiel:{aufgabe:"Was bedeutet „Biologie“?",
+    schritte:["bios heißt Leben.","logos heißt Lehre.","Zusammengesetzt: Lehre vom Leben."],
+    ergebnis:"Lebenskunde"}
+},
+
+"Rede und Rhetorik": {
+  worum:"Wie Reden gebaut sind, um zu überzeugen — und woran man das erkennt.",
+  einfach:[
+    "Eine Rede will nicht nur informieren, sondern überzeugen und zum Handeln bewegen. Deshalb ist sie sorgfältig gebaut.",
+    "Eine rhetorische Frage ist eine Frage, auf die keine Antwort erwartet wird. Die Zuhörer sollen selbst auf die gewünschte Antwort kommen.",
+    "Bei einer Anapher beginnen mehrere Sätze mit denselben Wörtern. Das hämmert den Gedanken ein.",
+    "Wer diese Mittel erkennt, merkt auch, wann jemand versucht, ihn zu überzeugen — und kann selbst entscheiden, ob er mitgeht."
+  ],
+  begriffe:[
+    ["Rhetorische Frage","Eine Frage ohne erwartete Antwort."],
+    ["Anapher","Wiederholung derselben Wörter am Satzanfang."],
+    ["Dreierfigur","Drei gleichrangige Begriffe in einer Reihe."],
+    ["Appell","Direkte Aufforderung an die Zuhörer."]
+  ],
+  regeln:[
+    "Rhetorische Frage: lenkt zur gewünschten Antwort, ohne sie auszusprechen.",
+    "Anapher: macht eindringlich und einprägsam.",
+    "Dreierfigur: klingt rund und vollständig.",
+    "Appell: soll aus Zuhören Handeln machen.",
+    "Bei der Analyse immer fragen: Was soll bei den Zuhörern passieren?"
+  ],
+  beispiel:{aufgabe:"„Wir haben gekämpft, wir haben verloren, wir haben weitergemacht.“",
+    schritte:["Drei Satzteile beginnen mit denselben Worten „wir haben“.","Das ist eine Anapher.","Wirkung: Der Gedanke bleibt hängen."],
+    ergebnis:"Anapher"}
+},
+
+"Sprachwandel": {
+  worum:"Sprache verändert sich ständig. Das ist kein Verfall, sondern ein Zeichen, dass sie lebendig ist.",
+  einfach:[
+    "Wörter bekommen mit der Zeit andere Bedeutungen. „Weib“ war früher ein ganz normales Wort für Frau — heute klingt es abwertend.",
+    "Manche Wörter meinen weniger als früher: „Hochzeit“ hieß einmal jedes hohe Fest, heute nur noch die Vermählung.",
+    "Andere meinen mehr: „Sache“ war ein Rechtsstreit vor Gericht, heute ist es jeder beliebige Gegenstand.",
+    "Deshalb muss man bei alten Texten aufpassen: Ein Wort von damals bedeutet nicht dasselbe wie heute."
+  ],
+  begriffe:[
+    ["Bedeutungsverengung","Das Wort meint weniger als früher."],
+    ["Bedeutungserweiterung","Das Wort meint mehr als früher."],
+    ["Bedeutungsverschlechterung","Das Wort bekommt einen schlechteren Beiklang."],
+    ["Bedeutungsverbesserung","Das Wort gewinnt an Ansehen."],
+    ["Anglizismus","Ein aus dem Englischen übernommenes Wort."]
+  ],
+  regeln:[
+    "Sprache wandelt sich, weil Menschen sie benutzen und sich die Welt verändert.",
+    "Vier Richtungen: Verengung, Erweiterung, Verschlechterung, Verbesserung.",
+    "Der Duden hält fest, wie gesprochen wird — er bestimmt es nicht.",
+    "Bei alten Texten immer prüfen, was ein Wort damals bedeutete."
+  ],
+  beispiel:{aufgabe:"„Hochzeit“ — früher und heute",
+    schritte:["Früher: jedes hohe Fest.","Heute: nur noch die Vermählung.","Der Bereich ist kleiner geworden."],
+    ergebnis:"Bedeutungsverengung"}
+},
+
+"Literaturepochen": {
+  worum:"Texte aus derselben Zeit ähneln sich, weil sie auf dieselbe Welt antworten. Diese Zeitabschnitte nennt man Epochen.",
+  einfach:[
+    "Epochen sind keine Schubladen mit festen Wänden — sie überschneiden sich und gehen ineinander über.",
+    "Wichtiger als Jahreszahlen ist, woran man eine Epoche erkennt: an ihren Themen und ihrer Haltung.",
+    "Die Aufklärung setzt auf den Verstand, der Sturm und Drang dagegen auf Gefühl und Auflehnung.",
+    "Die Romantik flieht in Sehnsucht, Nacht und Natur; der Expressionismus schreit Angst und Großstadt heraus."
+  ],
+  begriffe:[
+    ["Epoche","Ein Zeitabschnitt mit gemeinsamen Merkmalen in der Literatur."],
+    ["Motiv","Ein wiederkehrendes Bild oder Thema, etwa die blaue Blume der Romantik."]
+  ],
+  regeln:[
+    "Aufklärung (ca. 1720–1785): Verstand, Vernunft, Selbstdenken.",
+    "Sturm und Drang (ca. 1765–1785): Gefühl, Leidenschaft, Auflehnung.",
+    "Klassik (ca. 1786–1832): Maß, Harmonie, Gleichgewicht.",
+    "Romantik (ca. 1795–1848): Sehnsucht, Nacht, Traum, Natur.",
+    "Expressionismus (ca. 1910–1925): Großstadt, Angst, Weltuntergang.",
+    "Nicht die Jahreszahl zählt, sondern die Haltung im Text."
+  ],
+  beispiel:{aufgabe:"Ein Text über Sehnsucht, Nacht und Natur",
+    schritte:["Flucht aus der nüchternen Wirklichkeit.","Sehnsucht als Grundgefühl.","Typische Motive: blaue Blume, Mondnacht."],
+    ergebnis:"Romantik"}
 }
 
 };
