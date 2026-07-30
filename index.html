@@ -4636,7 +4636,16 @@ let letzteEingabe = "";
 
 /* ---------- Einstellungen ---------- */
 const SCHRIFT_MIN = 0.85, SCHRIFT_MAX = 1.45;
-const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true, eingabe:"gemischt"};
+const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true, eingabe:"gemischt", bundesland:""};
+const BUNDESLAENDER = ["Baden-Württemberg","Bayern","Berlin","Brandenburg","Bremen","Hamburg",
+  "Hessen","Mecklenburg-Vorpommern","Niedersachsen","Nordrhein-Westfalen","Rheinland-Pfalz",
+  "Saarland","Sachsen","Sachsen-Anhalt","Schleswig-Holstein","Thüringen"];
+function bundeslandOptionen(){
+  return `<option value="">Bundesland wählen …</option>` +
+    BUNDESLAENDER.map(b => `<option value="${b}" ${einstellungen.bundesland === b ? "selected" : ""}>${b}</option>`).join("");
+}
+/* Bundesland speichern — ohne render(), damit z. B. Eingabefelder nicht zurückgesetzt werden */
+function setBundesland(v){ einstellungen.bundesland = v; speichereEinstellungen(); }
 function ladeEinstellungen(){
   try {
     const roh = window.localStorage.getItem("ek-einstellungen");
@@ -5407,6 +5416,12 @@ function render(gewaehlt){
       </div>
 
       <div class="card">
+        <p class="ueberschrift">Bundesland</p>
+        <p class="small soft" style="margin:0 0 12px">Damit wir die Themen später an deinen Lehrplan anpassen können.</p>
+        <select class="feld" onchange="setBundesland(this.value)">${bundeslandOptionen()}</select>
+      </div>
+
+      <div class="card">
         <p class="ueberschrift">Antworten</p>
         <div class="optionen3">
           ${wahl("eingabe","gemischt","Gemischt","Zwischenschritte auswählen, Ergebnis selbst eintippen")}
@@ -5683,6 +5698,7 @@ function registrierenHtml(){
       <input class="feld" id="pw" type="password" placeholder="Passwort (mindestens 6 Zeichen)"
              autocomplete="new-password"
              onkeydown="if(event.key==='Enter')registriere()">
+      <select class="feld" onchange="setBundesland(this.value)" aria-label="Bundesland">${bundeslandOptionen()}</select>
       ${hinweis ? `<div class="feedback ${hinweis.startsWith("Fast") ? "ok" : "nope"}" style="margin-top:4px">${hinweis}</div>` : ""}
       <button class="btn full" style="margin-top:14px" onclick="registriere()">Konto anlegen</button>
     </div>
