@@ -515,10 +515,15 @@
   .marke .markewortmark{display:none;font-size:24px;font-weight:900;letter-spacing:-.02em;
     color:var(--ink);white-space:nowrap}
   .marke .markewortmark .kap{color:var(--ac-dark)}
-  /* Kleiner Zusatz „Schritt für Schritt" rechts neben dem Logo */
-  .marke .markeslogan{display:inline-flex;align-items:center;font-size:clamp(12px,2.6vw,14px);
-    font-weight:600;letter-spacing:.01em;color:var(--soft);white-space:nowrap;
-    padding-left:12px;margin-left:1px;border-left:1.5px solid var(--line)}
+  /* Kleiner Zusatz „Schritt für Schritt" rechts neben dem Logo — in den
+     Marken­farben (grün→türkis) mit demselben Schimmer wie „kapiert" im Hero */
+  .marke .markeslogan{display:inline-block;font-size:clamp(12px,2.6vw,14px);
+    font-weight:800;letter-spacing:.01em;white-space:nowrap;
+    padding-left:12px;margin-left:1px;border-left:1.5px solid var(--ac-soft);
+    background:linear-gradient(100deg,var(--heroglanz1) 0%,var(--heroglanz2) 50%,var(--heroglanz1) 100%);
+    background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:glanzschimmer 5s ease-in-out infinite}
+  @media(prefers-reduced-motion:reduce){.marke .markeslogan{animation:none}}
   /* Menü-Links in der Mitte (nur Desktop) */
   .kopfnav{display:none;align-items:center;gap:4px}
   .kopflink{background:none;border:none;font:inherit;font-size:18px;font-weight:600;
