@@ -515,11 +515,12 @@
   .marke .markewortmark{display:none;font-size:24px;font-weight:900;letter-spacing:-.02em;
     color:var(--ink);white-space:nowrap}
   .marke .markewortmark .kap{color:var(--ac-dark)}
-  /* Kleiner Zusatz „Schritt für Schritt" rechts neben dem Logo — in den
-     Marken­farben (grün→türkis) mit demselben Schimmer wie „kapiert" im Hero */
-  .marke .markeslogan{display:inline-block;font-size:clamp(12px,2.6vw,14px);
-    font-weight:800;letter-spacing:.01em;white-space:nowrap;
-    padding-left:12px;margin-left:1px;border-left:1.5px solid var(--ac-soft);
+  /* Kleiner Zusatz „Schritt für Schritt" neben der Glühbirne — NUR auf dem
+     Handy, in den Markenfarben (grün→türkis) mit demselben Schimmer wie
+     „kapiert" im Hero. Auf dem Desktop ausgeblendet (siehe 820px-Query). */
+  .marke .markeslogan{display:inline-block;font-size:clamp(11px,2.9vw,13px);
+    font-weight:800;line-height:1.15;letter-spacing:.005em;white-space:nowrap;
+    padding-left:9px;margin-left:1px;border-left:1.5px solid var(--ac-soft);
     background:linear-gradient(100deg,var(--heroglanz1) 0%,var(--heroglanz2) 50%,var(--heroglanz1) 100%);
     background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
     animation:glanzschimmer 5s ease-in-out infinite}
@@ -531,6 +532,7 @@
   .kopflink:hover{color:var(--ac-dark);background:var(--ac-soft)}
   @media(min-width:820px){
     .marke .markewortmark{display:inline}
+    .marke .markeslogan{display:none}   /* Desktop: Zusatz aus, nur Wortmarke */
     .kopfnav{display:flex}
     .startkopf{display:none}
   }
@@ -556,8 +558,8 @@
     .marke .ahabirne{width:48px;height:48px}
     .marke .ekkuerzel{font-size:22px}
   }
-  /* auf sehr schmalen Handys ausblenden, damit die Leiste nicht zu eng wird */
-  @media(max-width:430px){ .marke .markeslogan{display:none} }
+  /* nur auf extrem schmalen Geräten ausblenden, damit die Leiste nicht überläuft */
+  @media(max-width:359px){ .marke .markeslogan{display:none} }
   .marke .glanz::after{display:none}
   .marke .dot{width:clamp(42px,11vw,48px);height:clamp(42px,11vw,48px);border-radius:14px;
     background:linear-gradient(135deg,var(--heroglanz1),var(--heroglanz2));flex:none;
