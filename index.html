@@ -4693,7 +4693,9 @@ function aktuellerPfad(){
     case "fachwahl":     return "/faecher";
     case "klassenwahl":  return fach ? "/" + fach : "/faecher";
     case "start":
-    case "loesen":       return (fach && klasse) ? "/" + fach + "/" + klasse : "/start";
+    case "loesen":
+    case "erklaerung":
+    case "fertig":       return (fach && klasse) ? "/" + fach + "/" + klasse : "/start";
     case "plan":         return "/plan";
     case "einstellungen":return "/einstellungen";
     case "melden":       return "/hilfe";
