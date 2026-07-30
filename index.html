@@ -694,6 +694,10 @@
     cursor:pointer;text-decoration:underline;padding:6px;width:100%;text-align:center}
 
   .kachelpaar{display:grid;grid-template-columns:1fr;gap:0}
+  /* Dünner Ladebalken oben — Feedback beim Seitenwechsel (wie bei anderen Seiten) */
+  #ladebalken{position:fixed;top:0;left:0;height:3px;width:0;z-index:100;opacity:0;
+    background:linear-gradient(90deg,var(--heroglanz1),var(--heroglanz2));
+    box-shadow:0 0 8px var(--heroglanz1);pointer-events:none}
   .kachel{display:flex;flex-direction:column}
   .kachel .small{flex:1}
   .fachknoepfe{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
@@ -745,6 +749,7 @@
 </style>
 </head>
 <body>
+<div id="ladebalken"></div>
 <div id="kopf"></div>
 <div class="shell" id="shell">
   <aside class="side">
@@ -4679,6 +4684,20 @@ let anmeldeModus = "anmelden";
 let navPop = false;    // true, während wir einen Zurück-Klick verarbeiten
 let navInit = false;   // erster History-Eintrag noch nicht gesetzt
 let letzterPfad = null;// zuletzt gesetzte Adresse, um Änderungen zu erkennen
+let ladeT1, ladeT2, ladeT3;
+function ladebalkenStart(){
+  const b = document.getElementById("ladebalken");
+  if (!b) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  clearTimeout(ladeT1); clearTimeout(ladeT2); clearTimeout(ladeT3);
+  b.style.transition = "none"; b.style.opacity = "1"; b.style.width = "0%";
+  void b.offsetWidth;   // Neustart der Animation erzwingen
+  b.style.transition = "width .35s ease, opacity .3s ease";
+  b.style.width = "75%";
+  ladeT1 = setTimeout(() => { b.style.width = "100%"; }, 220);
+  ladeT2 = setTimeout(() => { b.style.opacity = "0"; }, 480);
+  ladeT3 = setTimeout(() => { b.style.transition = "none"; b.style.width = "0%"; }, 820);
+}
 
 function navSnapshot(){
   return {v: ansicht, fach: fach, klasse: klasse, aktuellName: aktuellName,
@@ -5165,8 +5184,8 @@ function render(gewaehlt){
      auch wenn die Ansicht gleich bleibt (z. B. Klassenwechsel über das Menü). */
   if (ansicht !== "laden"){
     const pfad = aktuellerPfad();
-    if (navPop){ letzterPfad = pfad; }
-    else if (ansichtWechsel || pfad !== letzterPfad){ navSpeichern(); letzterPfad = pfad; }
+    if (navPop){ letzterPfad = pfad; ladebalkenStart(); }
+    else if (ansichtWechsel || pfad !== letzterPfad){ navSpeichern(); letzterPfad = pfad; ladebalkenStart(); }
   }
   renderSeite();
   const shell = document.getElementById("shell");
