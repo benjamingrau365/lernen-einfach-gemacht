@@ -4683,10 +4683,60 @@ function navSnapshot(){
   return {v: ansicht, fach: fach, klasse: klasse, aktuellName: aktuellName,
           variante: variante, anmeldeModus: anmeldeModus};
 }
+/* Adresse (URL) für die aktuelle Ansicht */
+function aktuellerPfad(){
+  switch (ansicht){
+    case "willkommen":   return "/";
+    case "anmelden":     return "/anmelden";
+    case "registrieren": return "/registrieren";
+    case "uebersicht":   return "/start";
+    case "fachwahl":     return "/faecher";
+    case "klassenwahl":  return fach ? "/" + fach : "/faecher";
+    case "start":
+    case "loesen":       return (fach && klasse) ? "/" + fach + "/" + klasse : "/start";
+    case "plan":         return "/plan";
+    case "einstellungen":return "/einstellungen";
+    case "melden":       return "/hilfe";
+    case "faq":          return "/faq";
+    case "ueber":        return "/ueber";
+    case "impressum":    return "/impressum";
+    case "datenschutz":  return "/datenschutz";
+    case "agb":          return "/agb";
+    case "konto":        return "/konto";
+    case "anfragen":     return "/anfragen";
+    case "serie":        return "/serie";
+    case "dashboard":    return "/dashboard";
+    case "baustelle":    return "/baustelle";
+    case "passwortNeu":  return "/passwort-neu";
+    default:             return "/";
+  }
+}
+/* Ansicht aus der aufgerufenen Adresse bestimmen (direkter Link / Neuladen) */
+function ansichtAusPfad(){
+  const teile = location.pathname.split("/").filter(Boolean);
+  if (!teile.length) return;   // "/" -> Standard behalten
+  const p = decodeURIComponent(teile[0]);
+  if (KATALOG[p]){
+    fach = p;
+    if (teile[1] && KATALOG[p].themen[teile[1]]){ klasse = Number(teile[1]); ansicht = "start"; }
+    else { ansicht = "klassenwahl"; }
+    return;
+  }
+  const direkt = {anmelden:"anmelden", registrieren:"registrieren", start:"uebersicht",
+    faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden",
+    faq:"faq", ueber:"ueber", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
+    konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle"};
+  const ziel = direkt[p];
+  if (!ziel) return;
+  if (ziel === "dashboard" && !istAdmin) return;
+  if (["konto","anfragen","serie"].includes(ziel) && !benutzer) return;
+  ansicht = ziel;
+}
 function navSpeichern(){
   const s = navSnapshot();
-  if (!navInit){ history.replaceState(s, ""); navInit = true; }
-  else { history.pushState(s, ""); }
+  const pfad = aktuellerPfad();
+  if (!navInit){ history.replaceState(s, "", pfad); navInit = true; }
+  else { history.pushState(s, "", pfad); }
 }
 window.addEventListener("popstate", function(e){
   navPop = true;
@@ -4707,36 +4757,6 @@ window.addEventListener("popstate", function(e){
   letzteAnsicht = ansicht;
   navPop = false;
 });
-
-/* Nach dem Neuladen die zuletzt geöffnete Seite wiederherstellen.
-   history.state überlebt einen Reload, deshalb wissen wir, wo der Nutzer war. */
-/* Aktuelle Seite merken, damit sie einen Neuladen übersteht (localStorage). */
-function seiteMerken(){
-  if (ansicht === "laden" || ansicht === "passwortNeu") return;
-  try {
-    window.localStorage.setItem("ek_seite", JSON.stringify(
-      {v: ansicht, fach: fach, klasse: klasse, aktuellName: aktuellName, variante: variante}));
-  } catch(e){}
-}
-/* Nach dem Neuladen die zuletzt geöffnete Seite wiederherstellen. */
-function startWiederherstellen(){
-  if (ansicht === "passwortNeu") return;   // Reset-Link nicht überschreiben
-  let s = null;
-  try { s = JSON.parse(window.localStorage.getItem("ek_seite") || "null"); } catch(e){}
-  if (!s || !s.v) return;
-  if (s.v === "laden" || s.v === "passwortNeu") return;
-  if (s.v === "dashboard" && !istAdmin) return;
-  if (["konto","anfragen","serie"].includes(s.v) && !benutzer) return;
-  fach = s.fach; klasse = s.klasse; aktuellName = s.aktuellName; variante = s.variante || 0;
-  if (s.v === "klassenwahl" && !fach) return;
-  if (s.v === "start" && (!fach || !klasse)) return;
-  if (s.v === "loesen"){
-    if (fach && klasse && aktuellName){ navPop = true; starte(aktuellName, variante); navPop = false; }
-    else ansicht = klasse ? "start" : "uebersicht";
-    return;
-  }
-  ansicht = s.v;
-}
 let hinweis = "";
 const gastZaehler = {};   // merkt sich pro Thema, welche Aufgabe zuletzt dran war
 
@@ -4783,7 +4803,7 @@ async function pruefeAnmeldung(){
   benutzer = data.session ? data.session.user : null;
   if (benutzer){ await ladeFortschritt(); await pruefeAdmin(); await ladeAktivitaet(); ansicht = "uebersicht"; }
   else { istAdmin = false; aktivitaet = {serie:0, heute:0, geladen:true}; ansicht = "willkommen"; }
-  startWiederherstellen();
+  ansichtAusPfad();
   render();
 }
 
@@ -5138,7 +5158,6 @@ function render(gewaehlt){
     letzteAnsicht = ansicht;
     try { window.scrollTo(0, 0); } catch(e){}
   }
-  seiteMerken();
   renderSeite();
   const shell = document.getElementById("shell");
   shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
