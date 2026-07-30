@@ -4678,6 +4678,7 @@ let anmeldeModus = "anmelden";
 /* ---------- Zurück-Button des Handys/Browsers ---------- */
 let navPop = false;    // true, während wir einen Zurück-Klick verarbeiten
 let navInit = false;   // erster History-Eintrag noch nicht gesetzt
+let letzterPfad = null;// zuletzt gesetzte Adresse, um Änderungen zu erkennen
 
 function navSnapshot(){
   return {v: ansicht, fach: fach, klasse: klasse, aktuellName: aktuellName,
@@ -5155,10 +5156,17 @@ function render(gewaehlt){
 
   /* Wer unten in der Fußleiste etwas anklickt, soll die neue Seite auch sehen
      und nicht erst nach oben wischen müssen. */
-  if (ansicht !== letzteAnsicht){
-    if (!navPop && ansicht !== "laden") navSpeichern();
+  const ansichtWechsel = ansicht !== letzteAnsicht;
+  if (ansichtWechsel){
     letzteAnsicht = ansicht;
     try { window.scrollTo(0, 0); } catch(e){}
+  }
+  /* Adresse aktualisieren: bei Ansichtswechsel UND bei Pfadänderung —
+     auch wenn die Ansicht gleich bleibt (z. B. Klassenwechsel über das Menü). */
+  if (ansicht !== "laden"){
+    const pfad = aktuellerPfad();
+    if (navPop){ letzterPfad = pfad; }
+    else if (ansichtWechsel || pfad !== letzterPfad){ navSpeichern(); letzterPfad = pfad; }
   }
   renderSeite();
   const shell = document.getElementById("shell");
