@@ -5038,7 +5038,7 @@ async function passwortVergessen(){
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
-  const ohne = ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"];
+  const ohne = ["laden","willkommen","anmelden","registrieren","passwortNeu","serie","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"];
   if (ohne.includes(ansicht)){ seiteEl.innerHTML = ""; return; }
 
   const kopfBox = benutzer
