@@ -673,6 +673,20 @@
   .serieflamme svg{width:52px;height:52px}
   .seriezahl{font-size:64px;font-weight:900;line-height:1;color:var(--ac-dark);letter-spacing:-.03em;margin-top:4px}
   .serietage{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);font-weight:700;margin-top:6px}
+  /* Meilenstein-Feier + Badges */
+  .feierkarte{text-align:center;position:relative;border:1.5px solid var(--ac);
+    background:linear-gradient(160deg,var(--ac-soft),var(--card))}
+  .feierkarte h2{margin:6px 0 6px}
+  .feierkarte p{color:var(--soft);margin:0 0 14px}
+  .feieremoji{font-size:44px;line-height:1}
+  .feierzu{position:absolute;top:8px;right:12px;background:none;border:none;font-size:26px;
+    color:var(--soft);cursor:pointer;line-height:1}
+  .msreihe{display:flex;flex-wrap:wrap;gap:8px}
+  .msbadge{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px;
+    font-weight:700;color:var(--soft)}
+  .msbadge.erreicht{background:var(--ac-soft);border-color:var(--ac);color:var(--ac-dark)}
+  .textlink{background:none;border:none;font:inherit;color:var(--ac-dark);font-weight:600;
+    cursor:pointer;text-decoration:underline;padding:6px;width:100%;text-align:center}
 
   .kachelpaar{display:grid;grid-template-columns:1fr;gap:0}
   .kachel{display:flex;flex-direction:column}
@@ -4106,6 +4120,19 @@ const SYM = {
 /* ---------- Aktivität: Serie und Tagesziel ---------- */
 let aktivitaet = {serie: 0, heute: 0, geladen: false};
 const TAGESZIEL = 5;
+const MEILENSTEINE = [3, 7, 14, 30, 50, 100, 200, 365];
+let neuerMeilenstein = 0;   // frisch erreichter Meilenstein für die Feier-Anzeige
+function meilensteinPruefen(){
+  const erreicht = MEILENSTEINE.filter(m => (aktivitaet.serie || 0) >= m);
+  const hoechste = erreicht.length ? erreicht[erreicht.length - 1] : 0;
+  let gefeiert = 0;
+  try { gefeiert = parseInt(window.localStorage.getItem("ek_meilenstein") || "0", 10) || 0; } catch(e){}
+  if (hoechste > gefeiert){
+    neuerMeilenstein = hoechste;
+    try { window.localStorage.setItem("ek_meilenstein", String(hoechste)); } catch(e){}
+  }
+}
+function meilensteinWeg(){ neuerMeilenstein = 0; render(); }
 
 async function ladeAktivitaet(){
   aktivitaet = {serie: 0, heute: 0, geladen: false};
@@ -4119,16 +4146,22 @@ async function ladeAktivitaet(){
     aktivitaet.heute = zeilen.filter(z => tagText(z.erstellt) === heuteText).length;
 
     const tage = [...new Set(zeilen.map(z => tagText(z.erstellt)))];
-    let serie = 0;
+    let serie = 0, joker = 1, jokerGenutzt = false;
     const pruef = new Date();
     /* Wer heute noch nicht geübt hat, verliert die Serie nicht — wir fangen bei gestern an. */
     if (!tage.includes(pruef.toLocaleDateString("de-DE"))) pruef.setDate(pruef.getDate() - 1);
-    while (tage.includes(pruef.toLocaleDateString("de-DE"))){
-      serie++; pruef.setDate(pruef.getDate() - 1);
+    /* Streak-Schutz: ein ausgelassener Tag mitten in der Serie darf sie nicht sofort beenden. */
+    while (true){
+      const t = pruef.toLocaleDateString("de-DE");
+      if (tage.includes(t)){ serie++; pruef.setDate(pruef.getDate() - 1); }
+      else if (joker > 0 && serie > 0){ joker--; jokerGenutzt = true; pruef.setDate(pruef.getDate() - 1); }
+      else break;
     }
     aktivitaet.serie = serie;
+    aktivitaet.jokerGenutzt = jokerGenutzt;
   } catch(e){ /* dann eben ohne */ }
   aktivitaet.geladen = true;
+  meilensteinPruefen();
 }
 
 /* ---------- Merksatz des Tages ---------- */
@@ -4201,6 +4234,14 @@ function uebersichtHtml(){
       <h1 class="grosstitel">Endlich <span class="glanz">kapiert</span></h1>
       <p class="startkopfsub">Du kommst selbst drauf</p>
     </div>
+    ${neuerMeilenstein ? `
+    <div class="card feierkarte">
+      <button class="feierzu" onclick="meilensteinWeg()" aria-label="Schließen">×</button>
+      <div class="feieremoji">🎉</div>
+      <h2>${neuerMeilenstein} Tage in Folge!</h2>
+      <p>Stark durchgehalten — deine Serie steht bei ${neuerMeilenstein} Tagen. Weiter so!</p>
+      <button class="btn" onclick="meilensteinWeg()">Weiter üben</button>
+    </div>` : ""}
     <div class="card kopfkarte">
       <div class="kopfzeile">
         <div>
@@ -4812,6 +4853,9 @@ function serieHtml(){
     : `${s} Tage in Folge — stark!`;
   const geschafft = heute >= TAGESZIEL;
   const punkte = Array.from({length: TAGESZIEL}, (_, i) => `<i class="${i < heute ? "voll" : ""}"></i>`).join("");
+  const naechster = MEILENSTEINE.find(m => m > s);
+  const badges = MEILENSTEINE.map(m =>
+    `<span class="msbadge ${s >= m ? "erreicht" : ""}">${s >= m ? "✓ " : ""}${m}</span>`).join("");
   return `
     <div class="card">
       <button class="zurueck" onclick="zurUebersicht()">← Zurück</button>
@@ -4832,7 +4876,14 @@ function serieHtml(){
         : `Noch ${TAGESZIEL - heute}, dann ist heute im Kasten und die Serie wächst.`}</p>
     </div>
     <div class="card">
-      <p class="small soft" style="margin:0">Jeden Tag, an dem du übst, wächst deine Serie um eins. Lässt du einen Tag aus, beginnt sie wieder bei null — also dranbleiben lohnt sich.</p>
+      <p class="ueberschrift">Meilensteine</p>
+      <div class="msreihe">${badges}</div>
+      ${naechster ? `<p class="small soft" style="margin:12px 0 0">Noch <b>${naechster - s}</b> ${naechster - s === 1 ? "Tag" : "Tage"} bis zum nächsten Meilenstein (${naechster}).</p>`
+        : `<p class="small soft" style="margin:12px 0 0">Wahnsinn — du hast alle Meilensteine erreicht! 🏆</p>`}
+    </div>
+    <div class="card">
+      <p class="small soft" style="margin:0">Jeden Tag, an dem du übst, wächst deine Serie um eins.
+        <b>Streak-Schutz:</b> Ein einzelner ausgelassener Tag beendet deine Serie nicht — erst wenn du zwei Tage hintereinander pausierst, fängt sie wieder bei null an.${aktivitaet.jokerGenutzt ? " (Dein Schutz-Tag ist gerade aktiv.)" : ""}</p>
     </div>`;
 }
 function zurKlassenwahl(){ ansicht = "klassenwahl"; render(); }
@@ -4967,6 +5018,15 @@ function wechsleModus(){
 /* Direkt anmelden bzw. registrieren — beide Buttons sind gleichzeitig sichtbar */
 function meldeAn(){ anmeldeModus = "anmelden"; anmelden(); }
 function registriere(){ anmeldeModus = "registrieren"; anmelden(); }
+async function passwortVergessen(){
+  const mail = document.getElementById("mail").value.trim();
+  if (!mail){ hinweis = "Trag oben deine E-Mail-Adresse ein, dann schicken wir dir einen Link zum Zurücksetzen."; return render(); }
+  const {error} = await db.auth.resetPasswordForEmail(mail, {redirectTo: location.origin});
+  hinweis = error
+    ? "Das hat nicht geklappt: " + error.message
+    : "Fast geschafft! Wir haben dir eine E-Mail geschickt — über den Link darin kannst du ein neues Passwort setzen.";
+  render();
+}
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
@@ -5494,6 +5554,7 @@ function anmeldenHtml(){
       <p class="small soft" style="margin:14px 0 8px">2. Dann wählen:</p>
       <button class="btn full" onclick="meldeAn()">Anmelden <span style="opacity:.8;font-weight:500">· ich habe schon ein Konto</span></button>
       <button class="btn ghost full" style="margin-top:10px" onclick="registriere()">Neues Konto anlegen <span style="opacity:.7;font-weight:500">· ich bin neu hier</span></button>
+      <button class="textlink" style="margin-top:14px" onclick="passwortVergessen()">Passwort vergessen?</button>
     </div>
     <div class="card">
       <h4 style="margin:0 0 8px">Erst mal nur anschauen?</h4>
