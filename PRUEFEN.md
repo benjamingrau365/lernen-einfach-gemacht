@@ -1,16 +1,35 @@
 # Die Aufgaben prüfen
 
 Die Übungen in `index.html` gehen an Kinder. Ein falsch markiertes Beispiel
-lernen sie falsch. Deshalb gibt es drei Prüfer, die vor jeder Änderung laufen
+lernen sie falsch. Deshalb gibt es vier Prüfer, die vor jeder Änderung laufen
 sollten:
 
 ```bash
 npm run pruefen
 ```
 
-Das ruft nacheinander alle drei auf. Sie brauchen nur Node, keine Installation.
+Das ruft nacheinander alle vier auf. Sie brauchen nur Node, keine Installation.
 
 ---
+
+## 0. `pruefe-seite.js` — hängt die Seite zusammen?
+
+Die anderen drei schauen auf die Inhalte, dieser auf das Gerüst — ganz ohne
+Browser und Zusatzpakete:
+
+* **Adressen:** Jede verlinkte Adresse muss die App beim Neuladen auch wieder
+  erkennen. Sonst landet man auf der Startseite statt beim Thema.
+* **Knöpfe:** Jede Funktion, die ein `onclick` aufruft, muss es auch geben.
+* **Doppelte Themen:** Steht ein Themenname zweimal in `AUFGABEN`, überschreibt
+  der zweite den ersten *stillschweigend*. Genau danach wird gesucht.
+* **Tippfehler:** Jedes Thema in `AUFGABEN` muss im Klassenplan (`KATALOG`)
+  stehen — sonst ist die Aufgabe für niemanden erreichbar.
+* **Symbole, Dateien, JSON:** Wird ein Symbol benutzt, das es nicht gibt? Fehlt
+  `icon.svg`, `manifest.webmanifest` oder `sw.js`? Ist die Vercel-Umschreibung
+  noch da (ohne sie liefern Direktlinks wie `/mathe/8` einen 404)?
+* **Grundgerüst:** Titel, Viewport, `lang="de"`, Theme-Farbe, `#screen`.
+
+Am Ende steht ein Hinweis, welche geplanten Themen noch keine Aufgaben haben.
 
 ## 1. `pruefe-aufbau.js` — ist die Aufgabe überhaupt lösbar?
 
@@ -60,9 +79,16 @@ Aufgabe dazu passt:
 * Satzglieder: der gefragte Teil muss wörtlich im Satz vorkommen, und die
   Frage muss zum Fall passen (Dativobjekt ⟺ „Wem?“).
 
-Themen, für die es keine prüfbare Regel gibt, **nennt das Skript beim Namen**
-und sagt dazu, warum es sie nicht prüfen kann. Es tut also nicht so, als wäre
-alles abgedeckt.
+Inzwischen werden **alle 40 Themen** inhaltlich nachgerechnet — auch die
+Klassen 5 bis 7: Runden und Stellenwerte, Punkt-vor-Strich, Einheiten, Umfang
+und Fläche, Symmetrieachsen, Bruch- und Dezimalrechnung, Teilbarkeit,
+Dreisatz, Winkelarten, Gleichungen und Prozentrechnung. Bei Deutsch kamen
+Nebensatz-Kommas, Nominalisierung, Wortarten, Reimschemata und rhetorische
+Mittel dazu.
+
+Der Reimvergleich rechnet dabei mit dem **Klang**, nicht mit der Schreibweise:
+„stehn“ reimt auf „schön“, „hin“ auf „Sinn“. Dafür werden Umlaute, Dehnungs-h
+und Doppelbuchstaben vorher vereinheitlicht.
 
 ## 3. `pruefe-quellen.js` — ist die Faktenbehauptung belegt?
 
@@ -92,4 +118,11 @@ sonst schlägt die Prüfung fehl.
 1. Aufgabe in `index.html` schreiben (Muster: die bestehenden Themen).
 2. Erklärung in `ERKLAERUNGEN` ergänzen — der Aufbau-Prüfer besteht darauf.
 3. Wenn es um Fakten geht: Eintrag in `quellen.json` mit Quelle.
-4. `npm run pruefen` — muss dreimal sauber durchlaufen.
+4. `npm run pruefen` — muss viermal sauber durchlaufen.
+
+## Warum die Prüfer selbst getestet sind
+
+Ein Prüfer, der nie anschlägt, ist wertlos. Jede Prüfung wurde deshalb
+gegengetestet, indem absichtlich ein Fehler eingebaut und geschaut wurde, ob er
+gefunden wird — ein verfälschter Fakt, ein falsch benanntes Stilmittel, eine
+erfundene Adresse, ein doppelt vergebener Themenname. Alle wurden gefunden.
