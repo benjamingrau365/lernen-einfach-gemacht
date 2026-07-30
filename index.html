@@ -149,6 +149,13 @@
   .zeile{display:flex;justify-content:space-between;align-items:center;gap:14px;
     padding:14px 0;border-bottom:1px solid var(--line)}
   .zeile:last-child{border-bottom:none}
+  .nutzeraktionen{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;flex:none}
+  .miniaktion{background:var(--card);border:1px solid var(--line);border-radius:9px;
+    padding:6px 11px;font:inherit;font-size:13px;font-weight:600;color:var(--soft);
+    cursor:pointer;text-decoration:none;white-space:nowrap}
+  .miniaktion:hover{border-color:var(--ac);color:var(--ac-dark)}
+  .miniaktion.gefahr{color:var(--red);border-color:var(--red-soft)}
+  .miniaktion.gefahr:hover{border-color:var(--red);background:var(--red-soft)}
   .zeile b{display:block;font-size:16.5px}
   .zeile span{font-size:13.5px;color:var(--soft)}
   .wann{font-size:12.5px;font-weight:700;white-space:nowrap;background:var(--amber-soft);
@@ -3112,6 +3119,30 @@ async function ladeNutzerliste(){
 }
 function nutzerVerbergen(){ nutzerSichtbar = false; nutzer = null; render(); }
 
+/* ---------- Admin: fremde Konten verwalten ---------- */
+let nutzerHinweis = "";
+async function passwortResetAdmin(email){
+  if (!email) return;
+  nutzerHinweis = "Sende Reset-Mail …"; render();
+  const {error} = await db.auth.resetPasswordForEmail(email, {redirectTo: location.origin});
+  nutzerHinweis = error
+    ? `Reset für ${email} fehlgeschlagen: ${error.message}`
+    : `✓ Passwort-Reset-Mail an ${email} gesendet. Die Person kann sich darüber ein neues Passwort setzen.`;
+  render();
+}
+async function nutzerLoeschenAdmin(email){
+  if (!email) return;
+  if (!confirm(`Konto von ${email} wirklich endgültig löschen? Das kann nicht rückgängig gemacht werden.`)) return;
+  nutzerHinweis = "Lösche Konto …"; render();
+  const {error} = await db.rpc("konto_loeschen_admin", {p_email: email});
+  if (error){
+    nutzerHinweis = `Löschen von ${email} fehlgeschlagen: ${error.message} — ist die SQL-Funktion „konto_loeschen_admin" in Supabase angelegt?`;
+    return render();
+  }
+  nutzerHinweis = `✓ Konto ${email} wurde gelöscht.`;
+  await ladeNutzerliste();
+}
+
 /* Inhaltsübersicht — rein aus dem Katalog, ohne Server */
 function inhaltsUebersicht(){
   const raus = [];
@@ -3447,6 +3478,7 @@ function nutzerHtml(){
   return `
     <div class="card">
       <p class="ueberschrift">Angemeldete Konten · ${nutzer.length}</p>
+      ${nutzerHinweis ? `<div class="feedback ${nutzerHinweis.startsWith("✓") ? "ok" : nutzerHinweis.endsWith("…") ? "tipp" : "nope"}" style="margin-bottom:12px">${nutzerHinweis}</div>` : ""}
       ${nutzer.length ? `
         <div class="tickettabs">
           ${sortReiter.map(([k,label]) => `
@@ -3454,12 +3486,19 @@ function nutzerHtml(){
         </div>
         <input class="feld" id="nutzersuche" type="search" placeholder="Nach E-Mail suchen …" oninput="nutzerFiltern()" style="margin-bottom:12px">
         <button class="btn ghost full" style="margin-bottom:12px" onclick="nutzerCsvExport()">Als CSV herunterladen</button>
-        ${sortiert.map(n => `
+        ${sortiert.map(n => {
+          const em = (n.email || "").replace(/'/g, "\\'").replace(/"/g, "&quot;");
+          return `
           <div class="zeile nutzerzeile" data-text="${(n.email || "").toLowerCase().replace(/"/g,"&quot;")}">
             <div><b>${(n.email || "—").replace(/</g,"&lt;")}</b>
                  <span>angemeldet ${datum(n.angemeldet)} · ${n.uebungen} Übungen · zuletzt geübt ${datum(n.letzte_uebung)}</span></div>
-            ${n.email ? `<a class="wann spaeter" style="text-decoration:none" href="mailto:${n.email}">schreiben</a>` : ""}
-          </div>`).join("")}
+            ${n.email ? `<div class="nutzeraktionen">
+              <a class="miniaktion" href="mailto:${n.email}">schreiben</a>
+              <button class="miniaktion" onclick="passwortResetAdmin('${em}')">Passwort-Reset</button>
+              <button class="miniaktion gefahr" onclick="nutzerLoeschenAdmin('${em}')">Löschen</button>
+            </div>` : ""}
+          </div>`;
+        }).join("")}
         <p class="small soft" id="nutzerleer" style="margin:0;display:none">Keine Treffer.</p>`
         : `<p class="small soft" style="margin:0">Die Liste konnte nicht geladen werden. Ist die SQL-Erweiterung schon ausgeführt?</p>`}
       <button class="btn ghost full" style="margin-top:14px" onclick="nutzerVerbergen()">Liste wieder schließen</button>
@@ -4826,6 +4865,31 @@ function zeigeEinstellungen(){
   if (ansicht !== "einstellungen") vorEinstellungen = ansicht;
   ansicht = "einstellungen"; render();
 }
+
+/* ---------- Passwort neu setzen (nach Reset-Mail) ---------- */
+let resetHinweis = "";
+function passwortNeuHtml(){
+  return `
+    <div class="card">
+      <span class="tag">Passwort zurücksetzen</span>
+      <h1>Neues Passwort festlegen</h1>
+      <p class="soft">Du hast den Link aus der E-Mail geöffnet. Gib jetzt dein neues Passwort ein.</p>
+    </div>
+    <div class="card">
+      <input class="feld" id="reset_pw" type="password" placeholder="Neues Passwort (mindestens 6 Zeichen)"
+             autocomplete="new-password" onkeydown="if(event.key==='Enter')neuesPasswortSetzen()">
+      ${resetHinweis ? `<div class="feedback ${resetHinweis.startsWith("✓") ? "ok" : "nope"}" style="margin-top:4px">${resetHinweis}</div>` : ""}
+      <button class="btn full" style="margin-top:14px" onclick="neuesPasswortSetzen()">Passwort speichern</button>
+    </div>`;
+}
+async function neuesPasswortSetzen(){
+  const neu = document.getElementById("reset_pw").value;
+  if (!neu || neu.length < 6){ resetHinweis = "Das Passwort muss mindestens 6 Zeichen haben."; return render(); }
+  const {error} = await db.auth.updateUser({password: neu});
+  if (error){ resetHinweis = "Das hat nicht geklappt: " + error.message; return render(); }
+  resetHinweis = "";
+  await pruefeAnmeldung();
+}
 function zurueckVonEinstellungen(){ ansicht = vorEinstellungen; render(); }
 function nochmalGleichesThema(){ starte(aktuellName, variante); }
 
@@ -4975,7 +5039,7 @@ function render(gewaehlt){
   }
   renderSeite();
   const shell = document.getElementById("shell");
-  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie"].includes(ansicht));
+  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu"].includes(ansicht));
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -5133,6 +5197,7 @@ function render(gewaehlt){
 
   /* ---- Einstellungen ---- */
   if (ansicht === "serie"){ el.innerHTML = serieHtml(); return; }
+  if (ansicht === "passwortNeu"){ el.innerHTML = passwortNeuHtml(); return; }
 
   if (ansicht === "einstellungen"){
     const wahl = (feld, wert, titel, unter) => `
@@ -5437,6 +5502,11 @@ function anmeldenHtml(){
 
 ladeEinstellungen();
 wendeEinstellungenAn();
+/* Wenn jemand den Link aus einer Passwort-Reset-Mail öffnet: Formular zum
+   Setzen eines neuen Passworts zeigen. */
+db.auth.onAuthStateChange((event) => {
+  if (event === "PASSWORD_RECOVERY"){ resetHinweis = ""; ansicht = "passwortNeu"; render(); }
+});
 render();
 pruefeAnmeldung();
 </script>
