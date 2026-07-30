@@ -68,7 +68,7 @@
   /* Auf dem Handy steht die Seitenleiste UNTER dem Inhalt — sonst muss man
      erst an „Mein Plan / Einstellungen / Hilfe" vorbeiscrollen. Am Computer
      bleibt sie links (siehe @media weiter unten). */
-  .side{align-self:start;order:2}
+  .side{display:none}   /* Seitenleiste entfernt — alles steckt im ☰-Menü */
   main{order:1}
   .sidebox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
   .sidelabel{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
@@ -750,8 +750,7 @@
 
   /* ---------- breiter Bildschirm ---------- */
   @media(min-width:900px){
-    .shell{grid-template-columns:262px 1fr;gap:32px;align-items:start}
-    .side{position:sticky;top:20px;order:0}
+    .shell{grid-template-columns:1fr;max-width:880px}
     main{order:0}
     .logo{padding-top:24px}
     .fachliste{flex-direction:column}
