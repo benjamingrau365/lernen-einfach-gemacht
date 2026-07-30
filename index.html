@@ -4707,6 +4707,27 @@ window.addEventListener("popstate", function(e){
   letzteAnsicht = ansicht;
   navPop = false;
 });
+
+/* Nach dem Neuladen die zuletzt geöffnete Seite wiederherstellen.
+   history.state überlebt einen Reload, deshalb wissen wir, wo der Nutzer war. */
+function startWiederherstellen(){
+  if (ansicht === "passwortNeu") return;   // Reset-Link nicht überschreiben
+  const s = history.state;
+  if (!s || !s.v) return;
+  const nie = ["willkommen","anmelden","registrieren","passwortNeu","laden"];
+  if (nie.includes(s.v)) return;
+  if (s.v === "dashboard" && !istAdmin) return;
+  if (["konto","anfragen","serie"].includes(s.v) && !benutzer) return;
+  fach = s.fach; klasse = s.klasse; aktuellName = s.aktuellName; variante = s.variante || 0;
+  if (s.v === "klassenwahl" && !fach) return;
+  if (s.v === "start" && (!fach || !klasse)) return;
+  if (s.v === "loesen"){
+    if (fach && klasse && aktuellName){ navPop = true; starte(aktuellName, variante); navPop = false; }
+    else ansicht = klasse ? "start" : "uebersicht";
+    return;
+  }
+  ansicht = s.v;
+}
 let hinweis = "";
 const gastZaehler = {};   // merkt sich pro Thema, welche Aufgabe zuletzt dran war
 
@@ -4753,6 +4774,7 @@ async function pruefeAnmeldung(){
   benutzer = data.session ? data.session.user : null;
   if (benutzer){ await ladeFortschritt(); await pruefeAdmin(); await ladeAktivitaet(); ansicht = "uebersicht"; }
   else { istAdmin = false; aktivitaet = {serie:0, heute:0, geladen:true}; ansicht = "willkommen"; }
+  startWiederherstellen();
   render();
 }
 
