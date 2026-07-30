@@ -3213,14 +3213,19 @@ async function meldungSenden(){
   const email = document.getElementById("mMail").value.trim();
   if (nachricht.length < 5){ ladeFehler = "Bitte schreib kurz, worum es geht."; return render(); }
   ladeFehler = "";
-  const {data, error} = await db.from("meldungen").insert({
+  /* Nur einfügen — kein Zurücklesen nötig, damit auch Gäste ohne Leserechte
+     eine Meldung abschicken können. */
+  const {error} = await db.from("meldungen").insert({
     bereich: bereich,
     nachricht: nachricht,
     email: email || (benutzer ? benutzer.email : null),
     kontext: meldeKontext()
-  }).select("code").maybeSingle();
-  if (error){ ladeFehler = "Das Absenden hat nicht geklappt. Versuch es später noch einmal."; return render(); }
-  meldungCode = data && data.code ? data.code : "";
+  });
+  if (error){
+    ladeFehler = "Das Absenden hat nicht geklappt: " + (error.message || "unbekannter Fehler") + ".";
+    return render();
+  }
+  meldungCode = "";
   meldungGesendet = true;
   render();
 }
