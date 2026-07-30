@@ -617,6 +617,17 @@
   .faq:last-child{border-bottom:none}
   .faq b{display:block;font-size:17px;margin-bottom:6px}
   .faq p{margin:0;color:var(--soft);font-size:16px;line-height:1.6}
+  /* Einklappbare Frage/Antwort (Akkordeon) */
+  .klapp{border-bottom:1px solid var(--line)}
+  .klapp:last-child{border-bottom:none}
+  .klapp > summary{list-style:none;cursor:pointer;font-weight:700;font-size:17px;
+    padding:15px 30px 15px 0;position:relative}
+  .klapp > summary::-webkit-details-marker{display:none}
+  .klapp > summary::after{content:"▾";position:absolute;right:4px;top:15px;
+    color:var(--soft);font-size:16px;transition:transform .2s}
+  .klapp[open] > summary::after{transform:rotate(180deg)}
+  .klapp > summary:hover{color:var(--ac-dark)}
+  .klapp > p{margin:0 0 16px;color:var(--soft);font-size:16px;line-height:1.6}
   .platzhalter{background:var(--amber-soft);color:var(--amber);border-radius:5px;
     padding:1px 7px;font-weight:700;font-size:14px}
 
@@ -3436,18 +3447,19 @@ function meldenHtml(){
     </div>
     <div class="card">
       <p class="ueberschrift">Bei Problemen — was tun?</p>
-      <div class="faq"><b>Ich komme bei einer Aufgabe nicht weiter</b>
-        <p>Tippe auf „Ich weiß nicht weiter" — du bekommst einen Hinweis, nicht die Lösung. Nach mehreren Versuchen wird dir die Erklärung zum Thema angeboten.</p></div>
-      <div class="faq"><b>Ich verstehe die Erklärung nicht</b>
-        <p>Öffne beim Thema das „?" für die Erklärung von vorn. Hilft das nicht, schreib uns unten — wir erklären es dir.</p></div>
-      <div class="faq"><b>Eine Aufgabe ist falsch oder unklar</b>
-        <p>Bitte melde sie über <b>Feedback</b> — am besten mit Fach, Klasse und Thema. So können wir sie schnell korrigieren.</p></div>
-      <div class="faq"><b>Etwas lädt nicht oder funktioniert nicht</b>
-        <p>Lade die Seite einmal neu (am besten mit geleertem Zwischenspeicher) oder probier einen anderen Browser. Bleibt es, schreib uns unten mit einer kurzen Beschreibung.</p></div>
-      <div class="faq"><b>Mein Fortschritt wird nicht gespeichert</b>
-        <p>Gespeichert wird nur mit Konto. Ohne Anmeldung (als Gast) geht der Fortschritt verloren — leg dir ein kostenloses Konto an.</p></div>
-      <div class="faq"><b>Ich habe mein Passwort vergessen</b>
-        <p>Auf der Anmelde-Seite auf „Passwort vergessen?" tippen — du bekommst eine E-Mail, über die du ein neues Passwort setzen kannst.</p></div>
+      <p class="small soft" style="margin:0 0 8px">Tipp auf eine Frage, dann klappt die Antwort auf.</p>
+      <details class="klapp"><summary>Ich komme bei einer Aufgabe nicht weiter</summary>
+        <p>Tippe auf „Ich weiß nicht weiter" — du bekommst einen Hinweis, nicht die Lösung. Nach mehreren Versuchen wird dir die Erklärung zum Thema angeboten.</p></details>
+      <details class="klapp"><summary>Ich verstehe die Erklärung nicht</summary>
+        <p>Öffne beim Thema das „?" für die Erklärung von vorn. Hilft das nicht, schreib uns unten — wir erklären es dir.</p></details>
+      <details class="klapp"><summary>Eine Aufgabe ist falsch oder unklar</summary>
+        <p>Bitte melde sie über <b>Feedback</b> — am besten mit Fach, Klasse und Thema. So können wir sie schnell korrigieren.</p></details>
+      <details class="klapp"><summary>Etwas lädt nicht oder funktioniert nicht</summary>
+        <p>Lade die Seite einmal neu (am besten mit geleertem Zwischenspeicher) oder probier einen anderen Browser. Bleibt es, schreib uns unten mit einer kurzen Beschreibung.</p></details>
+      <details class="klapp"><summary>Mein Fortschritt wird nicht gespeichert</summary>
+        <p>Gespeichert wird nur mit Konto. Ohne Anmeldung (als Gast) geht der Fortschritt verloren — leg dir ein kostenloses Konto an.</p></details>
+      <details class="klapp"><summary>Ich habe mein Passwort vergessen</summary>
+        <p>Auf der Anmelde-Seite auf „Passwort vergessen?" tippen — du bekommst eine E-Mail, über die du ein neues Passwort setzen kannst.</p></details>
     </div>
     <div class="card">
       <p class="ueberschrift">Support anschreiben</p>
