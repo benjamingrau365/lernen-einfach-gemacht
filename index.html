@@ -378,7 +378,10 @@
   .meldungkopf span{color:var(--soft)}
   .meldungtext{margin:8px 0;font-size:16px;white-space:pre-wrap}
   .meldungmail{display:block;font-size:14px;color:var(--ac-dark);margin-bottom:8px}
-  textarea.feld{resize:vertical;font-family:inherit;line-height:1.5}
+  textarea.feld{width:100%;padding:13px 15px;border:1.5px solid var(--line);border-radius:12px;
+    font:inherit;font-size:16.5px;margin-bottom:10px;background:var(--card);color:var(--ink);
+    resize:vertical;line-height:1.5}
+  textarea.feld:focus{outline:none;border-color:var(--ac)}
   select.feld{-webkit-appearance:none;appearance:none;width:100%;
     padding:13px 42px 13px 15px;border:1.5px solid var(--line);border-radius:12px;
     font:inherit;font-size:16.5px;margin-bottom:10px;background-color:var(--card);color:var(--ink);
