@@ -386,6 +386,11 @@
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238c9a95' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
     background-repeat:no-repeat;background-position:right 14px center;background-size:16px}
   select.feld:focus{outline:none;border-color:var(--ac)}
+  .sterne{display:flex;gap:4px}
+  .stern{background:none;border:none;font-size:38px;line-height:1;color:var(--line);
+    cursor:pointer;padding:0 3px}
+  .stern.an{color:#f6b73c}
+  .stern:hover{color:#f6b73c}
   .fusslink{background:none;border:none;font:inherit;font-size:14px;color:var(--soft);
     text-decoration:underline;cursor:pointer;padding:6px 0}
   .fusslink:hover{color:var(--ac-dark)}
@@ -3206,34 +3211,56 @@ async function meldungAbhaken(id, erledigt){
   render();
 }
 
+let feedbackSterne = 0;
+let vorFeedback = "willkommen";
 function zeigeMelden(){
   if (ansicht !== "melden") vorMelden = ansicht;
-  meldungGesendet = false;
+  meldungGesendet = false; ladeFehler = "";
   ansicht = "melden"; render();
 }
 function zurueckVonMelden(){ ansicht = vorMelden === "melden" ? "willkommen" : vorMelden; render(); }
+function zeigeFeedback(){
+  if (ansicht !== "feedback") vorFeedback = ansicht;
+  meldungGesendet = false; ladeFehler = ""; feedbackSterne = 0;
+  ansicht = "feedback"; render();
+}
+function zurueckVonFeedback(){ ansicht = vorFeedback === "feedback" ? "willkommen" : vorFeedback; render(); }
+/* Sterne setzen — ohne render(), damit ein bereits getippter Text erhalten bleibt */
+function setSterne(n){
+  feedbackSterne = n;
+  document.querySelectorAll(".stern").forEach((el, i) => el.classList.toggle("an", i < n));
+}
 
-async function meldungSenden(){
-  const bereich = document.getElementById("mBereich").value;
-  const nachricht = document.getElementById("mText").value.trim();
-  const email = document.getElementById("mMail").value.trim();
-  if (nachricht.length < 5){ ladeFehler = "Bitte schreib kurz, worum es geht."; return render(); }
-  ladeFehler = "";
-  /* Nur einfügen — kein Zurücklesen nötig, damit auch Gäste ohne Leserechte
-     eine Meldung abschicken können. */
-  const {error} = await db.from("meldungen").insert({
+/* Gemeinsames Einfügen in die Tabelle „meldungen" (nur einfügen, kein Zurücklesen) */
+async function meldungInsert(bereich, nachricht, email){
+  return await db.from("meldungen").insert({
     bereich: bereich,
     nachricht: nachricht,
     email: email || (benutzer ? benutzer.email : null),
     kontext: meldeKontext()
   });
-  if (error){
-    ladeFehler = "Das Absenden hat nicht geklappt: " + (error.message || "unbekannter Fehler") + ".";
-    return render();
-  }
-  meldungCode = "";
-  meldungGesendet = true;
-  render();
+}
+/* Support-Anfrage von der Hilfe-Seite */
+async function meldungSenden(){
+  const nachricht = document.getElementById("mText").value.trim();
+  const email = document.getElementById("mMail").value.trim();
+  if (nachricht.length < 5){ ladeFehler = "Bitte schreib kurz, worum es geht."; return render(); }
+  ladeFehler = "";
+  const {error} = await meldungInsert("Support", nachricht, email);
+  if (error){ ladeFehler = "Das Absenden hat nicht geklappt: " + (error.message || "unbekannter Fehler") + "."; return render(); }
+  meldungCode = ""; meldungGesendet = true; render();
+}
+/* Bewertung von der Feedback-Seite */
+async function feedbackSenden(){
+  const nachricht = document.getElementById("fText").value.trim();
+  const email = document.getElementById("fMail").value.trim();
+  if (!feedbackSterne && nachricht.length < 3){ ladeFehler = "Gib eine Bewertung ab oder schreib uns kurz etwas."; return render(); }
+  ladeFehler = "";
+  const bereich = "Feedback" + (feedbackSterne ? " · " + feedbackSterne + "★" : "");
+  const text = (feedbackSterne ? `Bewertung: ${feedbackSterne}/5 Sterne\n` : "") + nachricht;
+  const {error} = await meldungInsert(bereich, text, email);
+  if (error){ ladeFehler = "Das Absenden hat nicht geklappt: " + (error.message || "unbekannter Fehler") + "."; return render(); }
+  meldungCode = ""; meldungGesendet = true; feedbackSterne = 0; render();
 }
 
 /* ---------- Ansichten ---------- */
@@ -3376,14 +3403,13 @@ function dashboardHtml(){
     </div>`;
 }
 
+/* ---------- Hilfe: Erklärung + Support anschreiben ---------- */
 function meldenHtml(){
   if (meldungGesendet){
     return `<div class="card">
       <span class="tag">Danke</span>
       <h1>Deine Nachricht ist angekommen</h1>
-      ${meldungCode ? `<div class="code">Deine Nummer: <b>${meldungCode}</b></div>
-        <p class="soft">Schreib dir die Nummer auf. Wenn du dich noch einmal meldest, brauchst du nur sie zu nennen — dann müssen wir in keinem Konto nachschauen.</p>`
-       : `<p class="soft">Wir schauen sie uns an.</p>`}
+      <p class="soft">Wir schauen sie uns an.</p>
       ${benutzer ? `<button class="btn full" style="margin-top:16px" onclick="zeigeAnfragen()">Meine Anfragen ansehen</button>
                     <button class="btn ghost full" style="margin-top:10px" onclick="zurueckVonMelden()">Zurück</button>`
                  : `<button class="btn full" style="margin-top:16px" onclick="zurueckVonMelden()">Zurück</button>`}
@@ -3393,25 +3419,57 @@ function meldenHtml(){
     <div class="card">
       <button class="zurueck" onclick="zurueckVonMelden()">← Zurück</button>
       <span class="tag">Hilfe</span>
-      <h1>Was ist das Problem?</h1>
-      <p class="soft">Ob eine Aufgabe falsch ist, etwas nicht funktioniert oder du einen Wunsch hast — schreib es einfach hin.</p>
+      <h1>Hilfe</h1>
+      <p class="soft">So funktioniert die Seite — und wenn du nicht weiterkommst, schreib uns einfach.</p>
     </div>
     <div class="card">
-      <p class="ueberschrift">Worum geht es?</p>
-      <select class="feld" id="mBereich">
-        <option>Eine Aufgabe ist falsch</option>
-        <option>Ich verstehe eine Erklärung nicht</option>
-        <option>Etwas funktioniert nicht</option>
-        <option>Ich habe einen Wunsch</option>
-        <option>Sonstiges</option>
-      </select>
-      <textarea class="feld" id="mText" rows="5" placeholder="Beschreib es in deinen Worten. Wenn es um eine Aufgabe geht: welches Fach, welche Klasse, welches Thema?"></textarea>
+      <p class="ueberschrift">So funktioniert es</p>
+      <ol class="schritte">
+        <li><b>Thema wählen</b><span>Fach antippen, Klasse wählen, Thema aussuchen.</span></li>
+        <li><b>Du wirst hingeführt, nicht bedient</b><span>Du bekommst nie die fertige Lösung — nur kleine Fragen. Auch bei „Ich weiß nicht weiter" kommt zuerst nur ein Hinweis.</span></li>
+        <li><b>Es kommt von allein wieder</b><span>Was du nicht konntest, legt dir die App später erneut vor — bis es wirklich sitzt.</span></li>
+      </ol>
+      <button class="btn ghost full" style="margin-top:14px" onclick="zeigeSeite('faq')">Häufige Fragen ansehen</button>
+    </div>
+    <div class="card">
+      <p class="ueberschrift">Support anschreiben</p>
+      <p class="small soft" style="margin:0 0 12px">Du kommst nicht weiter oder hast eine Frage? Schreib uns — mit oder ohne E-Mail.</p>
+      <textarea class="feld" id="mText" rows="5" placeholder="Beschreib in deinen Worten, worum es geht. Wenn es um eine Aufgabe geht: welches Fach, welche Klasse, welches Thema?"></textarea>
       <input class="feld" id="mMail" type="email" placeholder="Deine E-Mail für eine Antwort (freiwillig)"
              value="${benutzer ? benutzer.email : ""}">
       ${ladeFehler ? `<div class="feedback nope">${ladeFehler}</div>` : ""}
       <button class="btn full" style="margin-top:14px" onclick="meldungSenden()">Absenden</button>
-      <p class="small soft" style="margin-top:14px">Wir hängen automatisch an, wo du gerade warst — Fach, Klasse, Thema und Gerät. Sonst nichts. Damit finden wir den Fehler, ohne in dein Konto zu schauen.</p>
-      <p class="small soft">Du kannst auch direkt schreiben an <a href="mailto:hilfe@endlichkapiert.com">hilfe@endlichkapiert.com</a>.</p>
+      <p class="small soft" style="margin-top:14px">Du kannst auch direkt schreiben an <a href="mailto:hilfe@endlichkapiert.com">hilfe@endlichkapiert.com</a>.</p>
+    </div>`;
+}
+
+/* ---------- Feedback: Bewertung + Wünsche ---------- */
+function feedbackHtml(){
+  if (meldungGesendet){
+    return `<div class="card">
+      <span class="tag">Danke</span>
+      <h1>Danke für dein Feedback! 💚</h1>
+      <p class="soft">Für uns zählt jede Meinung — wir schauen sie uns an und versuchen, deine Wünsche umzusetzen.</p>
+      <button class="btn full" style="margin-top:16px" onclick="zurueckVonFeedback()">Zurück</button>
+    </div>`;
+  }
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurueckVonFeedback()">← Zurück</button>
+      <span class="tag">Feedback</span>
+      <h1>Dein Feedback</h1>
+      <p class="soft">Für uns zählt <b>jede Meinung</b> — und wir versuchen, eure Wünsche wirklich umzusetzen. Sag uns, wie dir die Seite gefällt und was noch fehlt oder fehlerhaft ist.</p>
+    </div>
+    <div class="card">
+      <p class="ueberschrift">Wie gefällt dir die Seite?</p>
+      <div class="sterne">
+        ${[1,2,3,4,5].map(n => `<button class="stern ${feedbackSterne >= n ? "an" : ""}" onclick="setSterne(${n})" aria-label="${n} von 5 Sternen">★</button>`).join("")}
+      </div>
+      <textarea class="feld" id="fText" rows="5" style="margin-top:14px" placeholder="Was gefällt dir? Was fehlt noch oder ist fehlerhaft? Was wünschst du dir?"></textarea>
+      <input class="feld" id="fMail" type="email" placeholder="Deine E-Mail für eine Antwort (freiwillig)"
+             value="${benutzer ? benutzer.email : ""}">
+      ${ladeFehler ? `<div class="feedback nope">${ladeFehler}</div>` : ""}
+      <button class="btn full" style="margin-top:14px" onclick="feedbackSenden()">Feedback absenden</button>
     </div>`;
 }
 
@@ -3741,7 +3799,8 @@ function menueHtml(){
       ${benutzer ? `<button class="mpunkt" onclick="zeigeAnfragen();menueSchliessen()">Meine Anfragen</button>` : ""}
 
       <p class="mtitel">Hilfe</p>
-      <button class="mpunkt" onclick="zeigeMelden();menueSchliessen()">Hilfe und Feedback</button>
+      <button class="mpunkt" onclick="zeigeMelden();menueSchliessen()">Hilfe</button>
+      <button class="mpunkt" onclick="zeigeFeedback();menueSchliessen()">Feedback</button>
       <button class="mpunkt" onclick="zeigeSeite('faq')">Häufige Fragen</button>
       <button class="mpunkt" onclick="zeigeSeite('ueber')">Über das Projekt</button>
       ${WARTUNG ? `<button class="mpunkt" onclick="zeigeSeite('baustelle')">Woran gerade gebaut wird</button>` : ""}
@@ -4101,7 +4160,8 @@ function fussleisteHtml(){
         </div>
         <div class="fussspalte">
           <p class="fusstitel">Hilfe</p>
-          <button class="fusslink" onclick="zeigeMelden()">Hilfe und Feedback</button>
+          <button class="fusslink" onclick="zeigeMelden()">Hilfe</button>
+          <button class="fusslink" onclick="zeigeFeedback()">Feedback</button>
           <button class="fusslink" onclick="zeigeSeite('faq')">Häufige Fragen</button>
           <button class="fusslink" onclick="zeigeSeite('ueber')">Über das Projekt</button>
           ${WARTUNG ? `<button class="fusslink" onclick="zeigeSeite('baustelle')">Woran gerade gebaut wird</button>` : ""}
@@ -4570,7 +4630,7 @@ function baustelleSeiteHtml(){
       <h2 style="margin-bottom:8px">Etwas gefunden, das nicht stimmt?</h2>
       <p class="soft" style="margin:0 auto 18px;max-width:44ch">Genau dafür ist der Testbetrieb da.
         Jede Rückmeldung hilft — auch eine kurze.</p>
-      <button class="btn" onclick="zeigeMelden()">Fehler melden</button>
+      <button class="btn" onclick="zeigeFeedback()">Fehler melden</button>
     </div>`;
 }
 
@@ -4753,6 +4813,7 @@ function aktuellerPfad(){
     case "plan":         return "/plan";
     case "einstellungen":return "/einstellungen";
     case "melden":       return "/hilfe";
+    case "feedback":     return "/feedback";
     case "faq":          return "/faq";
     case "ueber":        return "/ueber";
     case "impressum":    return "/impressum";
@@ -4779,7 +4840,7 @@ function ansichtAusPfad(){
     return;
   }
   const direkt = {anmelden:"anmelden", registrieren:"registrieren", start:"uebersicht",
-    faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden",
+    faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden", feedback:"feedback",
     faq:"faq", ueber:"ueber", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
     konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle"};
   const ziel = direkt[p];
@@ -5145,7 +5206,7 @@ async function passwortVergessen(){
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
-  const ohne = ["laden","willkommen","anmelden","registrieren","passwortNeu","serie","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"];
+  const ohne = ["laden","willkommen","anmelden","registrieren","passwortNeu","serie","uebersicht","fachwahl","klassenwahl","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"];
   if (ohne.includes(ansicht)){ seiteEl.innerHTML = ""; return; }
 
   const kopfBox = benutzer
@@ -5173,7 +5234,8 @@ function renderSeite(){
       <small>${ansicht === "plan" ? "Themenübersicht öffnen" : planText}</small>
     </button>
     <button class="planbtn" style="margin-top:10px" onclick="zeigeEinstellungen()">Einstellungen<small>Aussehen, Schrift, Hilfe</small></button>
-    <button class="planbtn" style="margin-top:10px" onclick="zeigeMelden()">Hilfe und Feedback<small>Problem melden</small></button>
+    <button class="planbtn" style="margin-top:10px" onclick="zeigeMelden()">Hilfe<small>So funktioniert es · Support</small></button>
+    <button class="planbtn" style="margin-top:10px" onclick="zeigeFeedback()">Feedback<small>Bewerten · Wünsche</small></button>
     ${istAdmin ? `<button class="planbtn admin" style="margin-top:10px" onclick="zeigeDashboard()">Dashboard<small>Zahlen und Meldungen</small></button>` : ""}`;
 }
 
@@ -5223,7 +5285,7 @@ function render(gewaehlt){
   }
   renderSeite();
   const shell = document.getElementById("shell");
-  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
+  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -5266,7 +5328,8 @@ function render(gewaehlt){
       <div class="card">
         <p class="small soft" style="margin:0 0 12px">Englisch, Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu.</p>
         <button class="btn ghost full" onclick="zeigeEinstellungen()">Einstellungen</button>
-        <button class="btn ghost full" style="margin-top:10px" onclick="zeigeMelden()">Hilfe und Feedback</button>
+        <button class="btn ghost full" style="margin-top:10px" onclick="zeigeMelden()">Hilfe</button>
+        <button class="btn ghost full" style="margin-top:10px" onclick="zeigeFeedback()">Feedback</button>
         ${istAdmin ? `<button class="btn full admin planbtn" style="margin-top:10px;text-align:center" onclick="zeigeDashboard()">Dashboard öffnen</button>` : ""}
       </div>`;
     return;
@@ -5379,6 +5442,7 @@ function render(gewaehlt){
   if (ansicht === "datenschutz"){ el.innerHTML = datenschutzHtml(); return; }
   if (ansicht === "agb"){ el.innerHTML = agbHtml(); return; }
   if (ansicht === "melden"){ el.innerHTML = meldenHtml(); return; }
+  if (ansicht === "feedback"){ el.innerHTML = feedbackHtml(); return; }
 
   /* ---- Einstellungen ---- */
   if (ansicht === "serie"){ el.innerHTML = serieHtml(); return; }
