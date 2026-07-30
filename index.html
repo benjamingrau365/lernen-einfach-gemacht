@@ -300,9 +300,9 @@
   .grosswahl b{display:block;font-size:21px;letter-spacing:-.01em;margin-bottom:3px}
   .grosswahl span{font-size:14.5px;color:var(--soft)}
   .pfad{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-  .pfad button{background:var(--ac-soft);border:none;border-radius:999px;padding:5px 13px;
-    font:inherit;font-size:13.5px;font-weight:700;color:var(--ac-dark);cursor:pointer}
-  .pfad button:hover{background:var(--ac);color:#fff}
+  .pfad button,.pfad a{background:var(--ac-soft);border:none;border-radius:999px;padding:5px 13px;
+    font:inherit;font-size:13.5px;font-weight:700;color:var(--ac-dark);cursor:pointer;text-decoration:none}
+  .pfad button:hover,.pfad a:hover{background:var(--ac);color:#fff}
   .pfad span{color:var(--soft);font-size:15px}
   .wechseln{background:none;border:none;padding:0;font:inherit;font-size:14px;
     color:var(--soft);text-decoration:underline;cursor:pointer}
@@ -422,7 +422,7 @@
   .bknopf{position:relative;flex:none;background:rgba(255,255,255,.75);
     border:1.5px solid rgba(0,0,0,.18);color:var(--bauink);
     border-radius:999px;font:inherit;font-size:13.5px;font-weight:700;
-    padding:4px 13px;cursor:pointer}
+    padding:4px 13px;cursor:pointer;text-decoration:none}
   .bknopf:hover{background:#fff}
   /* auf dem Handy soll das Band nicht den halben Bildschirm einnehmen */
   @media(max-width:560px){
@@ -497,6 +497,8 @@
     padding:18px 20px;max-width:1140px;margin:0 auto}
   .kopfspacer{width:46px;flex:none}
   .kopfleiste a{text-decoration:none}
+  .fussleiste a,.menue a{text-decoration:none}
+  a.btn,a.grosswahl,a.planbtn,a.fachzeile,a.thema,a.wechseln,a.zurueck{text-decoration:none}
   .marke{flex:none;display:flex;align-items:center;justify-content:flex-start;gap:12px;
     background:none;border:none;font:inherit;color:var(--ink);cursor:pointer;padding:4px;text-align:left}
   .marke .ekkuerzel{font-size:clamp(23px,6.2vw,34px);font-weight:900;letter-spacing:.03em;
@@ -3282,7 +3284,7 @@ async function feedbackSenden(){
 function dashboardHtml(){
   if (ladeFehler && !statistik){
     return `<div class="card">
-      <button class="zurueck" onclick="zurUebersicht()">← Zurück</button>
+      ${navLink("/start", "zurUebersicht()", "← Zurück", "zurueck")}
       <h1>Dashboard</h1>
       <div class="feedback nope">${ladeFehler}</div>
     </div>`;
@@ -3299,7 +3301,7 @@ function dashboardHtml(){
 
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurUebersicht()">← Zurück zum Üben</button>
+      ${navLink("/start", "zurUebersicht()", "← Zurück zum Üben", "zurueck")}
       <span class="tag">Nur für dich sichtbar</span>
       <h1>Dashboard</h1>
       <p class="soft">Zahlen, Inhalt und offene Punkte. Die Liste der Konten liegt weiter unten und ist bewusst zugeklappt.</p>
@@ -3424,14 +3426,14 @@ function meldenHtml(){
       <span class="tag">Danke</span>
       <h1>Deine Nachricht ist angekommen</h1>
       <p class="soft">Wir schauen sie uns an.</p>
-      ${benutzer ? `<button class="btn full" style="margin-top:16px" onclick="zeigeAnfragen()">Meine Anfragen ansehen</button>
-                    <button class="btn ghost full" style="margin-top:10px" onclick="zurueckVonMelden()">Zurück</button>`
-                 : `<button class="btn full" style="margin-top:16px" onclick="zurueckVonMelden()">Zurück</button>`}
+      ${benutzer ? `${navLink("/anfragen", "zeigeAnfragen()", "Meine Anfragen ansehen", "btn full", "margin-top:16px")}
+                    ${navLink(pfadFuer(vorMelden === "melden" ? "willkommen" : vorMelden, fach, klasse), "zurueckVonMelden()", "Zurück", "btn ghost full", "margin-top:10px")}`
+                 : navLink(pfadFuer(vorMelden === "melden" ? "willkommen" : vorMelden, fach, klasse), "zurueckVonMelden()", "Zurück", "btn full", "margin-top:16px")}
     </div>`;
   }
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonMelden()">← Zurück</button>
+      ${navLink(pfadFuer(vorMelden === "melden" ? "willkommen" : vorMelden, fach, klasse), "zurueckVonMelden()", "← Zurück", "zurueck")}
       <span class="tag">Hilfe</span>
       <h1>Hilfe</h1>
       <p class="soft">So funktioniert die Seite — und wenn du nicht weiterkommst, schreib uns einfach.</p>
@@ -3443,7 +3445,7 @@ function meldenHtml(){
         <li><b>Du wirst hingeführt, nicht bedient</b><span>Du bekommst nie die fertige Lösung — nur kleine Fragen. Auch bei „Ich weiß nicht weiter" kommt zuerst nur ein Hinweis.</span></li>
         <li><b>Es kommt von allein wieder</b><span>Was du nicht konntest, legt dir die App später erneut vor — bis es wirklich sitzt.</span></li>
       </ol>
-      <button class="btn ghost full" style="margin-top:14px" onclick="zeigeSeite('faq')">Häufige Fragen ansehen</button>
+      ${navLink("/faq", "zeigeSeite('faq')", "Häufige Fragen ansehen", "btn ghost full", "margin-top:14px")}
     </div>
     <div class="card">
       <p class="ueberschrift">Bei Problemen — was tun?</p>
@@ -3480,12 +3482,12 @@ function feedbackHtml(){
       <span class="tag">Danke</span>
       <h1>Danke für dein Feedback! 💚</h1>
       <p class="soft">Für uns zählt jede Meinung — wir schauen sie uns an und versuchen, deine Wünsche umzusetzen.</p>
-      <button class="btn full" style="margin-top:16px" onclick="zurueckVonFeedback()">Zurück</button>
+      ${navLink(pfadFuer(vorFeedback === "feedback" ? "willkommen" : vorFeedback, fach, klasse), "zurueckVonFeedback()", "Zurück", "btn full", "margin-top:16px")}
     </div>`;
   }
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonFeedback()">← Zurück</button>
+      ${navLink(pfadFuer(vorFeedback === "feedback" ? "willkommen" : vorFeedback, fach, klasse), "zurueckVonFeedback()", "← Zurück", "zurueck")}
       <span class="tag">Feedback</span>
       <h1>Dein Feedback</h1>
       <p class="soft">Für uns zählt <b>jede Meinung</b> — und wir versuchen, eure Wünsche wirklich umzusetzen. Sag uns, wie dir die Seite gefällt und was noch fehlt oder fehlerhaft ist.</p>
@@ -3643,7 +3645,7 @@ async function zeigeAnfragen(){
 function anfragenHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonMelden()">← Zurück</button>
+      ${navLink(pfadFuer(vorMelden === "melden" ? "willkommen" : vorMelden, fach, klasse), "zurueckVonMelden()", "← Zurück", "zurueck")}
       <span class="tag">Meine Anfragen</span>
       <h1>Was du gemeldet hast</h1>
       <p class="soft">Hier siehst du deine Meldungen und die Antworten darauf.</p>
@@ -3659,7 +3661,7 @@ function anfragenHtml(){
         ${m.antwort ? `<div class="antwort"><b>Antwort</b><p>${m.antwort.replace(/</g,"&lt;")}</p></div>` : ""}
       </div>`).join("")
       : `<div class="card"><p class="small soft" style="margin:0">Du hast noch nichts gemeldet.</p>
-         <button class="btn full" style="margin-top:12px" onclick="zeigeMelden()">Etwas melden</button></div>`}`;
+         ${navLink("/hilfe", "zeigeMelden()", "Etwas melden", "btn full", "margin-top:12px")}</div>`}`;
 }
 
 /* ---------- Tickets beantworten (Admin) ---------- */
@@ -3791,6 +3793,10 @@ function navKlick(e, fn){
   fn();
   return false;
 }
+/* baut einen echten Navigations-Link (mit Adresse) */
+function navLink(pfad, jsCode, inhalt, klassen, stil){
+  return `<a class="${klassen || ""}" href="${pfad}"${stil ? ` style="${stil}"` : ""} onclick="return navKlick(event, () => { ${jsCode} })">${inhalt}</a>`;
+}
 
 /* ---------- Kopfzeile mit den drei Strichen ---------- */
 function kopfleisteHtml(){
@@ -3820,9 +3826,8 @@ function menueHtml(){
   if (!menueOffen) return "";
   const klassen = f => [5,6,7,8,9,10].map(k => {
     const fertig = KATALOG[f].themen[k].filter(t => AUFGABEN[t]).length;
-    return `<button class="mpunkt unter" onclick="menueLernen('${f}', ${k})">
-              Klasse ${k}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>
-            </button>`;
+    const label = `Klasse ${k}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>`;
+    return navLink(`/${f}/${k}`, `menueLernen('${f}', ${k})`, label, "mpunkt unter");
   }).join("");
 
   return `
@@ -3835,29 +3840,29 @@ function menueHtml(){
       <button class="mpunkt ${menueAuf === "deutsch" ? "an" : ""}" onclick="menueKlappen('deutsch')">
         Deutsch<span>${menueAuf === "deutsch" ? "▾" : "▸"}</span></button>
       ${menueAuf === "deutsch" ? klassen("deutsch") : ""}
-      ${benutzer ? `<button class="mpunkt" onclick="zeigePlan();menueSchliessen()">Mein Wiederholungsplan</button>` : ""}
-      ${benutzer ? `<button class="mpunkt" onclick="zeigeAnfragen();menueSchliessen()">Meine Anfragen</button>` : ""}
+      ${benutzer ? navLink("/plan", "zeigePlan();menueSchliessen()", "Mein Wiederholungsplan", "mpunkt") : ""}
+      ${benutzer ? navLink("/anfragen", "zeigeAnfragen();menueSchliessen()", "Meine Anfragen", "mpunkt") : ""}
 
       <p class="mtitel">Hilfe</p>
-      <button class="mpunkt" onclick="zeigeMelden();menueSchliessen()">Hilfe</button>
-      <button class="mpunkt" onclick="zeigeFeedback();menueSchliessen()">Feedback</button>
-      <button class="mpunkt" onclick="zeigeSeite('faq')">Häufige Fragen</button>
-      <button class="mpunkt" onclick="zeigeSeite('ueber')">Über das Projekt</button>
-      ${WARTUNG ? `<button class="mpunkt" onclick="zeigeSeite('baustelle')">Woran gerade gebaut wird</button>` : ""}
+      ${navLink("/hilfe", "zeigeMelden();menueSchliessen()", "Hilfe", "mpunkt")}
+      ${navLink("/feedback", "zeigeFeedback();menueSchliessen()", "Feedback", "mpunkt")}
+      ${navLink("/faq", "zeigeSeite('faq')", "Häufige Fragen", "mpunkt")}
+      ${navLink("/ueber", "zeigeSeite('ueber')", "Über das Projekt", "mpunkt")}
+      ${WARTUNG ? navLink("/baustelle", "zeigeSeite('baustelle')", "Woran gerade gebaut wird", "mpunkt") : ""}
 
       <p class="mtitel">Mein Bereich</p>
       ${benutzer
-        ? `<button class="mpunkt" onclick="zeigeSeite('konto')">Mein Konto</button>`
-        : `<button class="mpunkt" onclick="zeigeAnmeldung();menueSchliessen()">Anmelden</button>
-           <button class="mpunkt" onclick="zeigeRegistrierung();menueSchliessen()">Konto anlegen</button>`}
-      <button class="mpunkt" onclick="zeigeEinstellungen();menueSchliessen()">Einstellungen</button>
-      ${istAdmin ? `<button class="mpunkt admin" onclick="zeigeDashboard();menueSchliessen()">Dashboard</button>` : ""}
+        ? navLink("/konto", "zeigeSeite('konto')", "Mein Konto", "mpunkt")
+        : `${navLink("/anmelden", "zeigeAnmeldung();menueSchliessen()", "Anmelden", "mpunkt")}
+           ${navLink("/registrieren", "zeigeRegistrierung();menueSchliessen()", "Konto anlegen", "mpunkt")}`}
+      ${navLink("/einstellungen", "zeigeEinstellungen();menueSchliessen()", "Einstellungen", "mpunkt")}
+      ${istAdmin ? navLink("/dashboard", "zeigeDashboard();menueSchliessen()", "Dashboard", "mpunkt admin") : ""}
       ${benutzer ? `<button class="mpunkt" onclick="abmelden();menueSchliessen()">Abmelden</button>` : ""}
 
       <p class="mtitel">Rechtliches</p>
-      <button class="mpunkt" onclick="zeigeSeite('impressum')">Impressum</button>
-      <button class="mpunkt" onclick="zeigeSeite('datenschutz')">Datenschutzerklärung</button>
-      <button class="mpunkt" onclick="zeigeSeite('agb')">Nutzungsbedingungen</button>
+      ${navLink("/impressum", "zeigeSeite('impressum')", "Impressum", "mpunkt")}
+      ${navLink("/datenschutz", "zeigeSeite('datenschutz')", "Datenschutzerklärung", "mpunkt")}
+      ${navLink("/agb", "zeigeSeite('agb')", "Nutzungsbedingungen", "mpunkt")}
     </nav>`;
 }
 
@@ -3889,7 +3894,7 @@ async function kontoLoeschen(){
 function kontoHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Mein Konto</span>
       <h1>Dein Konto</h1>
       <p class="soft">Angemeldet als <b>${benutzer ? benutzer.email : "—"}</b></p>
@@ -3925,7 +3930,7 @@ function kontoHtml(){
     <div class="card">
       <p class="ueberschrift">Meine Anfragen</p>
       <p class="small soft">Alles, was du gemeldet hast, mit Nummer und Antwort.</p>
-      <button class="btn ghost full" style="margin-top:12px" onclick="zeigeAnfragen()">Anfragen ansehen</button>
+      ${navLink("/anfragen", "zeigeAnfragen()", "Anfragen ansehen", "btn ghost full", "margin-top:12px")}
     </div>
 
     <div class="card">
@@ -3966,7 +3971,7 @@ const FAQ = [
 function faqHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Häufige Fragen</span>
       <h1>Kurz beantwortet</h1>
     </div>
@@ -3979,14 +3984,14 @@ function faqHtml(){
     </div>
     <div class="card" style="text-align:center">
       <p class="soft" style="margin:0 auto 16px;max-width:44ch">Deine Frage war nicht dabei?</p>
-      <button class="btn" onclick="zeigeMelden()">Schreib uns</button>
+      ${navLink("/hilfe", "zeigeMelden()", "Schreib uns", "btn")}
     </div>`;
 }
 
 function ueberHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Über das Projekt</span>
       <h1>Warum es das hier gibt</h1>
     </div>
@@ -4013,7 +4018,7 @@ const PLATZ = `<span class="platzhalter">[BITTE AUSFÜLLEN]</span>`;
 function impressumHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Impressum</span>
       <h1>Impressum</h1>
       <div class="feedback tipp">Entwurf — bitte alle markierten Stellen ausfüllen und vor der Veröffentlichung prüfen lassen.</div>
@@ -4044,7 +4049,7 @@ function impressumHtml(){
 function datenschutzHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Datenschutz</span>
       <h1>Datenschutzerklärung</h1>
       <div class="feedback tipp">Entwurf — beschreibt, was die Seite tatsächlich tut. Bitte die markierten Stellen ausfüllen und vor der Veröffentlichung prüfen lassen.</div>
@@ -4150,7 +4155,7 @@ function datenschutzHtml(){
 function agbHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Nutzungsbedingungen</span>
       <h1>Nutzungsbedingungen</h1>
       <div class="feedback tipp">Entwurf — bitte vor der Veröffentlichung prüfen lassen.</div>
@@ -4193,35 +4198,35 @@ function fussleisteHtml(){
       <div class="fussinhalt">
         <div class="fussspalte">
           <p class="fusstitel">Lernen</p>
-          <button class="fusslink" onclick="zurUebersicht()">Übersicht</button>
-          <button class="fusslink" onclick="waehleFach('mathe')">Mathe</button>
-          <button class="fusslink" onclick="waehleFach('deutsch')">Deutsch</button>
-          ${benutzer ? `<button class="fusslink" onclick="zeigePlan()">Mein Wiederholungsplan</button>` : ""}
+          ${navLink("/start", "zurUebersicht()", "Übersicht", "fusslink")}
+          ${navLink("/mathe", "waehleFach('mathe')", "Mathe", "fusslink")}
+          ${navLink("/deutsch", "waehleFach('deutsch')", "Deutsch", "fusslink")}
+          ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
         <div class="fussspalte">
           <p class="fusstitel">Hilfe</p>
-          <button class="fusslink" onclick="zeigeMelden()">Hilfe</button>
-          <button class="fusslink" onclick="zeigeFeedback()">Feedback</button>
-          <button class="fusslink" onclick="zeigeSeite('faq')">Häufige Fragen</button>
-          <button class="fusslink" onclick="zeigeSeite('ueber')">Über das Projekt</button>
-          ${WARTUNG ? `<button class="fusslink" onclick="zeigeSeite('baustelle')">Woran gerade gebaut wird</button>` : ""}
-          ${benutzer ? `<button class="fusslink" onclick="zeigeAnfragen()">Meine Anfragen</button>` : ""}
+          ${navLink("/hilfe", "zeigeMelden()", "Hilfe", "fusslink")}
+          ${navLink("/feedback", "zeigeFeedback()", "Feedback", "fusslink")}
+          ${navLink("/faq", "zeigeSeite('faq')", "Häufige Fragen", "fusslink")}
+          ${navLink("/ueber", "zeigeSeite('ueber')", "Über das Projekt", "fusslink")}
+          ${WARTUNG ? navLink("/baustelle", "zeigeSeite('baustelle')", "Woran gerade gebaut wird", "fusslink") : ""}
+          ${benutzer ? navLink("/anfragen", "zeigeAnfragen()", "Meine Anfragen", "fusslink") : ""}
         </div>
         <div class="fussspalte">
           <p class="fusstitel">Mein Bereich</p>
           ${benutzer
-            ? `<button class="fusslink" onclick="zeigeSeite('konto')">Mein Konto</button>
+            ? `${navLink("/konto", "zeigeSeite('konto')", "Mein Konto", "fusslink")}
                <button class="fusslink" onclick="abmelden()">Abmelden</button>`
-            : `<button class="fusslink" onclick="zeigeAnmeldung()">Anmelden</button>
-               <button class="fusslink" onclick="zeigeRegistrierung()">Konto anlegen</button>`}
-          <button class="fusslink" onclick="zeigeEinstellungen()">Einstellungen</button>
-          ${istAdmin ? `<button class="fusslink" onclick="zeigeDashboard()">Dashboard</button>` : ""}
+            : `${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "fusslink")}
+               ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "fusslink")}`}
+          ${navLink("/einstellungen", "zeigeEinstellungen()", "Einstellungen", "fusslink")}
+          ${istAdmin ? navLink("/dashboard", "zeigeDashboard()", "Dashboard", "fusslink") : ""}
         </div>
         <div class="fussspalte">
           <p class="fusstitel">Rechtliches</p>
-          <button class="fusslink" onclick="zeigeSeite('impressum')">Impressum</button>
-          <button class="fusslink" onclick="zeigeSeite('datenschutz')">Datenschutzerklärung</button>
-          <button class="fusslink" onclick="zeigeSeite('agb')">Nutzungsbedingungen</button>
+          ${navLink("/impressum", "zeigeSeite('impressum')", "Impressum", "fusslink")}
+          ${navLink("/datenschutz", "zeigeSeite('datenschutz')", "Datenschutzerklärung", "fusslink")}
+          ${navLink("/agb", "zeigeSeite('agb')", "Nutzungsbedingungen", "fusslink")}
         </div>
       </div>
       <p class="fussschluss">Endlich kapiert · Ein Lernprojekt aus Deutschland</p>
@@ -4425,7 +4430,7 @@ function uebersichtHtml(){
         <p class="small soft">Such dir aus, worin du üben willst.</p>
         <div class="fachknoepfe">
           ${Object.entries(KATALOG).map(([k,v]) =>
-            `<button class="btn ghost" onclick="waehleFach('${k}')">${v.name}</button>`).join("")}
+            navLink(`/${k}`, `waehleFach('${k}')`, v.name, "btn ghost")).join("")}
         </div>
       </div>`}
     </div>
@@ -4454,16 +4459,15 @@ function uebersichtHtml(){
 
     <div class="card">
       <p class="ueberschrift">${SYM.balken} ${benutzer ? "Dein Fortschritt" : "Was drin ist"}</p>
-      ${faecher.map(f => `
-        <div class="fachzeile" onclick="waehleFach('${f.schluessel}')">
+      ${faecher.map(f => navLink(`/${f.schluessel}`, `waehleFach('${f.schluessel}')`, `
           <span class="fachname">${f.name}</span>
           <span class="fachzahl">${benutzer ? `${f.sicher} von ${f.moeglich} sicher` : `${f.moeglich} Themen`}</span>
           ${benutzer ? `<span class="fachbalken"><i style="width:${f.moeglich ? Math.round(f.sicher / f.moeglich * 100) : 0}%"></i></span>` : ""}
-        </div>`).join("")}
+        `, "fachzeile")).join("")}
       <p class="small soft" style="margin-top:12px">${benutzer
         ? "„Sicher“ heißt: mehrfach fehlerfrei gelöst, mit Abstand dazwischen. Genau das ist der Unterschied zwischen können und geraten."
         : "Mit einem Konto siehst du hier, wie viel du schon sicher kannst."}</p>
-      <button class="btn ghost full" style="margin-top:14px" onclick="zurFachwahl()">Alle Fächer und Klassen ansehen</button>
+      ${navLink("/faecher", "zurFachwahl()", "Alle Fächer und Klassen ansehen", "btn ghost full", "margin-top:14px")}
     </div>
 
     ${benutzer ? `
@@ -4474,16 +4478,16 @@ function uebersichtHtml(){
         <div><b>${fortschritt.filter(z => z.stufe >= 4).length}</b><span>sitzen sicher</span></div>
         <div><b>${offen.length}</b><span>heute fällig</span></div>
       </div>
-      <button class="btn ghost full" style="margin-top:14px" onclick="zeigePlan()">Meinen ganzen Plan ansehen</button>
+      ${navLink("/plan", "zeigePlan()", "Meinen ganzen Plan ansehen", "btn ghost full", "margin-top:14px")}
     </div>`
     : `
     <div class="card">
       <p class="ueberschrift">${SYM.stern} Ohne Konto</p>
       <p class="small soft">Du kannst alles üben — aber nichts wird gespeichert. Der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, funktioniert nur mit Konto.</p>
-      <button class="btn full" style="margin-top:12px" onclick="zeigeRegistrierung()">Konto anlegen</button>
+      ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "btn full", "margin-top:12px")}
     </div>`}
 
-    ${istAdmin ? `<div class="card"><button class="btn full admin" onclick="zeigeDashboard()">Dashboard öffnen</button></div>` : ""}`;
+    ${istAdmin ? `<div class="card">${navLink("/dashboard", "zeigeDashboard()", "Dashboard öffnen", "btn full admin")}</div>` : ""}`;
 }
 /* ================================================================
    BAUSTELLEN-/WARTUNGSMODUS
@@ -4569,7 +4573,7 @@ function wartungBandHtml(){
       <span class="bzeichen">${BAU_SYM}</span>
       <span class="btext"><b>Baustelle.</b> An dieser Seite wird gerade gebaut —
         ${s.fertig} von ${s.gesamt} Themen sind fertig.</span>
-      <button class="bknopf" onclick="zeigeSeite('baustelle')">Was ist schon fertig?</button>
+      ${navLink("/baustelle", "zeigeSeite('baustelle')", "Was ist schon fertig?", "bknopf")}
       <button class="bknopf" onclick="wartungZeigen()">Was heißt das?</button>
     </div>`;
 }
@@ -4609,8 +4613,7 @@ function baustelleBoxHtml(){
         <span><i></i> noch geplant</span>
       </div>
 
-      <button class="btn ghost full" style="margin-top:14px"
-        onclick="zeigeSeite('baustelle')">Ganzen Bauplan ansehen</button>
+      ${navLink("/baustelle", "zeigeSeite('baustelle')", "Ganzen Bauplan ansehen", "btn ghost full", "margin-top:14px")}
     </div>`;
 }
 
@@ -4619,7 +4622,7 @@ function baustelleSeiteHtml(){
   const s = baustelleStand();
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurueckVonSeite()">← Zurück</button>
+      ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Baustelle</span>
       <h1>Woran gerade gebaut wird</h1>
       <p class="soft">„Endlich kapiert“ entsteht Stück für Stück. Damit du nicht raten musst,
@@ -4670,7 +4673,7 @@ function baustelleSeiteHtml(){
       <h2 style="margin-bottom:8px">Etwas gefunden, das nicht stimmt?</h2>
       <p class="soft" style="margin:0 auto 18px;max-width:44ch">Genau dafür ist der Testbetrieb da.
         Jede Rückmeldung hilft — auch eine kurze.</p>
-      <button class="btn" onclick="zeigeFeedback()">Fehler melden</button>
+      ${navLink("/feedback", "zeigeFeedback()", "Fehler melden", "btn")}
     </div>`;
 }
 
@@ -4838,18 +4841,19 @@ function navSnapshot(){
           variante: variante, anmeldeModus: anmeldeModus};
 }
 /* Adresse (URL) für die aktuelle Ansicht */
-function aktuellerPfad(){
-  switch (ansicht){
+/* Adresse zu einer Ansicht (rein, ohne Nebenwirkung) — auch für „Zurück"-Links genutzt */
+function pfadFuer(a, f, k){
+  switch (a){
     case "willkommen":   return "/";
     case "anmelden":     return "/anmelden";
     case "registrieren": return "/registrieren";
     case "uebersicht":   return "/start";
     case "fachwahl":     return "/faecher";
-    case "klassenwahl":  return fach ? "/" + fach : "/faecher";
+    case "klassenwahl":  return f ? "/" + f : "/faecher";
     case "start":
     case "loesen":
     case "erklaerung":
-    case "fertig":       return (fach && klasse) ? "/" + fach + "/" + klasse : "/start";
+    case "fertig":       return (f && k) ? "/" + f + "/" + k : "/start";
     case "plan":         return "/plan";
     case "einstellungen":return "/einstellungen";
     case "melden":       return "/hilfe";
@@ -4868,6 +4872,7 @@ function aktuellerPfad(){
     default:             return "/";
   }
 }
+function aktuellerPfad(){ return pfadFuer(ansicht, fach, klasse); }
 /* Ansicht aus der aufgerufenen Adresse bestimmen (direkter Link / Neuladen) */
 function ansichtAusPfad(){
   const teile = location.pathname.split("/").filter(Boolean);
@@ -5074,7 +5079,7 @@ function serieHtml(){
     `<span class="msbadge ${s >= m ? "erreicht" : ""}">${s >= m ? "✓ " : ""}${m}</span>`).join("");
   return `
     <div class="card">
-      <button class="zurueck" onclick="zurUebersicht()">← Zurück</button>
+      ${navLink("/start", "zurUebersicht()", "← Zurück", "zurueck")}
       <span class="tag">Deine Serie</span>
       <h1>Dein Streak</h1>
     </div>
@@ -5252,7 +5257,7 @@ function renderSeite(){
   const kopfBox = benutzer
     ? `<div class="userbox"><b>${benutzer.email}</b><button onclick="abmelden()">Abmelden</button></div>`
     : `<div class="userbox gast"><b>Du übst ohne Konto</b>
-         <button onclick="zeigeRegistrierung()">Konto anlegen und Fortschritt speichern</button></div>`;
+         ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen und Fortschritt speichern")}</div>`;
 
   const offen = benutzer ? faellig() : 0;
   const planText = benutzer
@@ -5263,7 +5268,7 @@ function renderSeite(){
     ? `<div class="sidebox" style="padding:14px 15px">
          <p class="sidelabel" style="margin-bottom:6px">Du übst gerade</p>
          <b style="display:block;font-size:16.5px;margin-bottom:8px">${KATALOG[fach].name} · Klasse ${klasse}</b>
-         <button class="wechseln" onclick="zurFachwahl()">Fach oder Klasse wechseln</button>
+         ${navLink("/faecher", "zurFachwahl()", "Fach oder Klasse wechseln", "wechseln")}
        </div>` : "";
 
   seiteEl.innerHTML = `
@@ -5347,7 +5352,7 @@ function render(gewaehlt){
   if (ansicht === "fachwahl"){
     el.innerHTML = `
       <div class="card">
-        <button class="zurueck" onclick="zurUebersicht()">← Zur Übersicht</button>
+        ${navLink("/start", "zurUebersicht()", "← Zur Übersicht", "zurueck")}
         <span class="tag">Schritt 1 von 3</span>
         <h1>Welches Fach?</h1>
         <p class="soft">Such dir aus, worin du gerade Hilfe brauchst.</p>
@@ -5359,18 +5364,18 @@ function render(gewaehlt){
             gesamt += liste.length;
             fertig += liste.filter(t => AUFGABEN[t]).length;
           }
-          return `<button class="grosswahl" onclick="waehleFach('${k}')">
+          return navLink(`/${k}`, `waehleFach('${k}')`, `
             <b>${v.name}</b>
             <span>${fertig} von ${gesamt} Themen fertig</span>
-          </button>`;
+          `, "grosswahl");
         }).join("")}
       </div>
       <div class="card">
         <p class="small soft" style="margin:0 0 12px">Englisch, Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu.</p>
-        <button class="btn ghost full" onclick="zeigeEinstellungen()">Einstellungen</button>
-        <button class="btn ghost full" style="margin-top:10px" onclick="zeigeMelden()">Hilfe</button>
-        <button class="btn ghost full" style="margin-top:10px" onclick="zeigeFeedback()">Feedback</button>
-        ${istAdmin ? `<button class="btn full admin planbtn" style="margin-top:10px;text-align:center" onclick="zeigeDashboard()">Dashboard öffnen</button>` : ""}
+        ${navLink("/einstellungen", "zeigeEinstellungen()", "Einstellungen", "btn ghost full")}
+        ${navLink("/hilfe", "zeigeMelden()", "Hilfe", "btn ghost full", "margin-top:10px")}
+        ${navLink("/feedback", "zeigeFeedback()", "Feedback", "btn ghost full", "margin-top:10px")}
+        ${istAdmin ? navLink("/dashboard", "zeigeDashboard()", "Dashboard öffnen", "btn full admin planbtn", "margin-top:10px;text-align:center") : ""}
       </div>`;
     return;
   }
@@ -5380,7 +5385,7 @@ function render(gewaehlt){
     const themen = KATALOG[fach].themen;
     el.innerHTML = `
       <div class="card">
-        <button class="zurueck" onclick="zurFachwahl()">← Anderes Fach</button>
+        ${navLink("/faecher", "zurFachwahl()", "← Anderes Fach", "zurueck")}
         <span class="tag">Schritt 2 von 3 · ${KATALOG[fach].name}</span>
         <h1>Welche Klasse?</h1>
         <p class="soft">Nimm die Klassenstufe, in der du gerade bist — oder die, in der du hängengeblieben bist.</p>
@@ -5388,10 +5393,10 @@ function render(gewaehlt){
       <div class="wahlgitter drei">
         ${[5,6,7,8,9,10].map(k=>{
           const fertig = themen[k].filter(t => AUFGABEN[t]).length;
-          return `<button class="grosswahl" onclick="waehleKlasse(${k})">
+          return navLink(`/${fach}/${k}`, `waehleKlasse(${k})`, `
             <b>Klasse ${k}</b>
             <span>${fertig > 0 ? fertig + " von " + themen[k].length + " fertig" : "in Arbeit"}</span>
-          </button>`;
+          `, "grosswahl");
         }).join("")}
       </div>`;
     return;
@@ -5403,9 +5408,9 @@ function render(gewaehlt){
     el.innerHTML = `
       <div class="card">
         <div class="pfad">
-          <button onclick="zurFachwahl()">${KATALOG[fach].name}</button>
+          ${navLink("/faecher", "zurFachwahl()", KATALOG[fach].name)}
           <span>›</span>
-          <button onclick="zurKlassenwahl()">Klasse ${klasse}</button>
+          ${navLink(`/${fach}`, "zurKlassenwahl()", `Klasse ${klasse}`)}
         </div>
         <h1>Such dir dein Thema</h1>
         <p class="soft">Du bekommst nie die Lösung — nur Fragen, die dich hinführen.</p>
@@ -5442,13 +5447,13 @@ function render(gewaehlt){
       inhalt = `<div class="card">
         <h4 style="margin:0 0 8px">Dafür brauchst du ein Konto</h4>
         <p class="small soft">Ohne Anmeldung kann sich die App nicht merken, was du geübt hast.</p>
-        <button class="btn full" style="margin-top:12px" onclick="zeigeRegistrierung()">Konto anlegen</button>
+        ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "btn full", "margin-top:12px")}
       </div>`;
     } else if (!fortschritt.length){
       inhalt = `<div class="card">
         <h4 style="margin:0 0 8px">Noch nichts drin</h4>
         <p class="small soft">Sobald du dein erstes Thema durchgearbeitet hast, taucht es hier auf — mit dem Datum, an dem es wieder dran ist.</p>
-        <button class="btn full" style="margin-top:12px" onclick="zurUebersicht()">Erstes Thema üben</button>
+        ${navLink("/start", "zurUebersicht()", "Erstes Thema üben", "btn full", "margin-top:12px")}
       </div>`;
     } else {
       inhalt = `<div class="card">
@@ -5495,7 +5500,7 @@ function render(gewaehlt){
       </button>`;
     el.innerHTML = `
       <div class="card">
-        <button class="zurueck" onclick="zurueckVonEinstellungen()">← Zurück</button>
+        ${navLink(pfadFuer(vorEinstellungen, fach, klasse), "zurueckVonEinstellungen()", "← Zurück", "zurueck")}
         <span class="tag">Einstellungen</span>
         <h1>Wie hättest du es gern?</h1>
         <p class="soft">Alles hier lässt sich jederzeit wieder ändern.</p>
@@ -5556,12 +5561,12 @@ function render(gewaehlt){
     const e = ERKLAERUNGEN[aktuellName];
     if (!e){
       el.innerHTML = `<div class="card"><h2>Für dieses Thema gibt es noch keine Erklärung</h2>
-        <button class="btn full" style="margin-top:12px" onclick="zurueckVonErklaerung()">Zurück</button></div>`;
+        ${navLink(pfadFuer(vorErklaerung === "erklaerung" ? "start" : vorErklaerung, fach, klasse), "zurueckVonErklaerung()", "Zurück", "btn full", "margin-top:12px")}</div>`;
       return;
     }
     el.innerHTML = `
       <div class="card">
-        <button class="zurueck" onclick="zurueckVonErklaerung()">← Zurück</button>
+        ${navLink(pfadFuer(vorErklaerung === "erklaerung" ? "start" : vorErklaerung, fach, klasse), "zurueckVonErklaerung()", "← Zurück", "zurueck")}
         <span class="tag">Erklärung</span>
         <h1>${aktuellName}</h1>
         <p class="soft">${e.worum}</p>
@@ -5613,9 +5618,9 @@ function render(gewaehlt){
         </ul>
         ${gespeichert}
         ${n > 1 ? `<button class="btn full" onclick="naechsteVariante()">Noch eine Aufgabe zu diesem Thema</button>
-                   <button class="btn ghost full" style="margin-top:10px" onclick="zeigePlan()">Meinen Plan ansehen</button>`
-                : `<button class="btn full" onclick="zeigePlan()">Meinen Plan ansehen</button>`}
-        <button class="btn ghost full" style="margin-top:10px" onclick="ansicht='start';render()">Anderes Thema</button>
+                   ${navLink("/plan", "zeigePlan()", "Meinen Plan ansehen", "btn ghost full", "margin-top:10px")}`
+                : navLink("/plan", "zeigePlan()", "Meinen Plan ansehen", "btn full")}
+        ${navLink(`/${fach}/${klasse}`, "ansicht='start';render()", "Anderes Thema", "btn ghost full", "margin-top:10px")}
       </div>`;
     return;
   }
@@ -5666,7 +5671,7 @@ function render(gewaehlt){
   const anz = anzahlAufgaben(aktuellName);
   el.innerHTML = `
     <div class="card">
-      <button class="zurueck" onclick="ansicht='start';render()">← Zurück zur Übersicht</button>
+      ${navLink(pfadFuer("start", fach, klasse), "ansicht='start';render()", "← Zurück zur Übersicht", "zurueck")}
       <div class="fortschritt">${balken}</div>
       <div class="kopf">
         <span class="tag" style="margin-bottom:0">${aktuellName}${anz > 1 ? ` · Aufgabe ${variante + 1} von ${anz}` : ""}</span>
@@ -5698,7 +5703,7 @@ function willkommenHtml(){
           Du bekommst <b>nie die Lösung</b>, nur Fragen, die dich Schritt für Schritt selbst hinführen.</p>
         <div class="knopfreihe">
           <button class="btn" onclick="alsGast()">Kostenlos ausprobieren</button>
-          <button class="btn ghost" onclick="zeigeAnmeldung()">Anmelden</button>
+          ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost")}
         </div>
         <div class="heromerkmale">
           <span><i>✓</i> Jede Aufgabe neu gewürfelt</span>
@@ -5773,7 +5778,7 @@ function willkommenHtml(){
 function anmeldenHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zeigeWillkommen()">← Zur Startseite</button>
+      ${navLink("/", "zeigeWillkommen()", "← Zur Startseite", "zurueck")}
       <span class="tag">Anmelden</span>
       <h1>Willkommen zurück</h1>
       <p class="soft">Melde dich mit deinem Konto an, damit dein Wiederholungsplan wieder da ist.</p>
@@ -5789,7 +5794,7 @@ function anmeldenHtml(){
     </div>
     <div class="card" style="text-align:center">
       <p class="small soft" style="margin:0 0 12px">Noch kein Konto?</p>
-      <button class="btn ghost full" onclick="zeigeRegistrierung()">Neues Konto anlegen</button>
+      ${navLink("/registrieren", "zeigeRegistrierung()", "Neues Konto anlegen", "btn ghost full")}
       <button class="btn ghost full" style="margin-top:10px" onclick="alsGast()">Ohne Konto ausprobieren</button>
     </div>`;
 }
@@ -5798,7 +5803,7 @@ function anmeldenHtml(){
 function registrierenHtml(){
   return `
     <div class="card">
-      <button class="zurueck" onclick="zeigeWillkommen()">← Zur Startseite</button>
+      ${navLink("/", "zeigeWillkommen()", "← Zur Startseite", "zurueck")}
       <span class="tag">Registrieren</span>
       <h1>Neues Konto anlegen</h1>
       <p class="soft">Mit einem Konto merkt sich die App, was du nicht konntest, und legt es dir später wieder vor.</p>
@@ -5815,7 +5820,7 @@ function registrierenHtml(){
     </div>
     <div class="card" style="text-align:center">
       <p class="small soft" style="margin:0 0 12px">Schon ein Konto?</p>
-      <button class="btn ghost full" onclick="zeigeAnmeldung()">Zum Anmelden</button>
+      ${navLink("/anmelden", "zeigeAnmeldung()", "Zum Anmelden", "btn ghost full")}
       <button class="btn ghost full" style="margin-top:10px" onclick="alsGast()">Ohne Konto ausprobieren</button>
     </div>`;
 }
