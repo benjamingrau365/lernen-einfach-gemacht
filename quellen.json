@@ -1,0 +1,166 @@
+{
+  "_hinweis": "Belegte Fakten der Wissens-Aufgaben. Jede Behauptung, die eine Aufgabe über Etymologie, Sprachgeschichte oder Literaturgeschichte aufstellt, steht hier mit ihrer Quelle. pruefe-quellen.js vergleicht die Aufgaben damit — eine Faktenaufgabe ohne Eintrag hier gilt als unbelegt und schlaegt fehl.",
+  "_stand": "2026-07-30",
+  "_pflege": "Wer ein Wissens-Thema erweitert, traegt den Fakt hier mit Quelle ein. Ohne Eintrag schlaegt die Pruefung fehl.",
+
+  "quellen": {
+    "dwds": {
+      "name": "DWDS — Digitales Woerterbuch der deutschen Sprache, Berlin-Brandenburgische Akademie der Wissenschaften",
+      "url": "https://www.dwds.de/",
+      "art": "wissenschaftliches Referenzwoerterbuch"
+    },
+    "dwds-etymwb": {
+      "name": "Etymologisches Woerterbuch des Deutschen (Wolfgang Pfeifer) im DWDS",
+      "url": "https://www.dwds.de/wb/etymwb/",
+      "art": "wissenschaftliches Etymologie-Woerterbuch"
+    },
+    "unijena": {
+      "name": "Universitaet Jena, Institut fuer Germanistische Sprachwissenschaft — Unterrichtsentwurf 'Semantischer Wandel'",
+      "url": "https://www.gw.uni-jena.de/phifakmedia/37070/semantischer-wandel-sprachgeschichte-und-schule.pdf",
+      "art": "universitaeres Lehrmaterial"
+    },
+    "fuberlin": {
+      "name": "Freie Universitaet Berlin, Online-Studienfachwahl — Bedeutungswandel",
+      "url": "https://www.osa.fu-berlin.de/dflitkult/beispielaufgaben/bedeutungswandel/index.html",
+      "art": "universitaeres Lehrmaterial"
+    },
+    "lehmann": {
+      "name": "Christian Lehmann (Universitaet Erfurt) — Melioration und Pejoration",
+      "url": "https://www.christianlehmann.eu/ling/wandel/Sem_Melioration&Peioration.html",
+      "art": "Fachtext Sprachwissenschaft"
+    },
+    "wikipedia-bw": {
+      "name": "Wikipedia — Bedeutungswandel",
+      "url": "https://de.wikipedia.org/wiki/Bedeutungswandel",
+      "art": "Enzyklopaedie"
+    },
+    "wissen-de": {
+      "name": "wissen.de — Wortherkunft",
+      "url": "https://www.wissen.de/wortherkunft/",
+      "art": "Nachschlagewerk"
+    },
+    "wiktionary": {
+      "name": "Wiktionary (deutschsprachig)",
+      "url": "https://de.wiktionary.org/",
+      "art": "Gemeinschaftswoerterbuch, nur ergaenzend verwendet"
+    }
+  },
+
+  "fakten": {
+    "Sprachwandel": [
+      { "wort": "Weib", "frueher": "ganz normales Wort fuer „Frau“", "heute": "abwertend",
+        "art": "Bedeutungsverschlechterung",
+        "beleg": "Bis ins 19. Jahrhundert Bezeichnung fuer jede (verheiratete) Frau, heute fast nur noch abwertend.",
+        "quelle": ["wikipedia-bw", "unijena"] },
+
+      { "wort": "Marschall", "frueher": "Pferdeknecht", "heute": "hoher militaerischer Rang",
+        "art": "Bedeutungsverbesserung",
+        "beleg": "ahd. marahscalc = Pferdeknecht (marah 'Pferd' + scalc 'Knecht'), mhd. marschalc 'Stallmeister', spaeter hoher militaerischer Rang.",
+        "quelle": ["dwds-etymwb", "lehmann"] },
+
+      { "wort": "Hochzeit", "frueher": "jedes hohe Fest", "heute": "nur noch die Vermaehlung",
+        "art": "Bedeutungsverengung",
+        "beleg": "mhd. hochgezite war Oberbegriff fuer Feste allgemein; heute nur noch die Eheschliessung.",
+        "quelle": ["fuberlin", "wikipedia-bw"] },
+
+      { "wort": "Sache", "frueher": "Rechtsstreit vor Gericht", "heute": "jeder beliebige Gegenstand",
+        "art": "Bedeutungserweiterung",
+        "beleg": "Aus der germanischen Rechtssprache: 'Rechtssache, Rechtsstreit vor Gericht'; heute allgemein 'Gegenstand, Ding'.",
+        "quelle": ["unijena", "wikipedia-bw"] },
+
+      { "wort": "Dirne", "frueher": "junges Maedchen", "heute": "abwertend",
+        "art": "Bedeutungsverschlechterung",
+        "beleg": "mhd. dierne = unverheiratete junge Frau; heute abwertend fuer Prostituierte.",
+        "quelle": ["wikipedia-bw", "unijena"] },
+
+      { "wort": "Fahren", "frueher": "sich fortbewegen, auch zu Fuss", "heute": "nur mit einem Fahrzeug",
+        "art": "Bedeutungsverengung",
+        "beleg": "ahd. faran / mhd. varn war die allgemeinste Bezeichnung fuer jede Fortbewegung (gehen, reiten, schwimmen, fliegen); erst allmaehlich auf Fahrzeuge eingeschraenkt. Reste: 'fahrendes Volk', 'fahr wohl'.",
+        "quelle": ["dwds-etymwb", "wikipedia-bw"] },
+
+      { "wort": "Fertig", "frueher": "bereit zur Fahrt, reisefertig", "heute": "abgeschlossen, vollendet",
+        "art": "Bedeutungserweiterung",
+        "beleg": "mhd. vertec / vertic = 'zum Aufbruch bzw. zur Fahrt bereit'; heute allgemein 'einen Abschluss erreicht habend'.",
+        "quelle": ["wiktionary", "wikipedia-bw"] },
+
+      { "wort": "Ritter", "frueher": "einfach ein Reiter", "heute": "Angehoeriger des Adels",
+        "art": "Bedeutungsverbesserung",
+        "beleg": "mhd. ritter/ritaere bezeichnete zunaechst einen berittenen Kaempfer; entwickelte sich zum Ehrentitel und Sinnbild fuer Hoeflichkeit und Tapferkeit — Standardbeispiel fuer Melioration.",
+        "quelle": ["lehmann", "wikipedia-bw"] }
+    ],
+
+    "Fremdwoerter": [
+      { "wort": "Demokratie", "sprache": "Griechisch", "teile": "demos = Volk, kratein = herrschen",
+        "bedeutung": "Herrschaft des Volkes", "deutsch": "Volksherrschaft",
+        "beleg": "griech. demos 'Volk' + kratein 'herrschen'; Ende 16. Jh. aus mlat. democratia entlehnt.",
+        "quelle": ["dwds", "wissen-de"] },
+
+      { "wort": "Telefon", "sprache": "Griechisch", "teile": "tele = fern, phone = Stimme",
+        "bedeutung": "Fernsprecher", "deutsch": "Fernsprecher",
+        "beleg": "griech. tele 'fern, weit' + phone 'Klang, Ton, Stimme'.",
+        "quelle": ["dwds", "wissen-de"] },
+
+      { "wort": "Biologie", "sprache": "Griechisch", "teile": "bios = Leben, logos = Lehre",
+        "bedeutung": "Lehre vom Leben", "deutsch": "Lebenskunde",
+        "beleg": "griech. bios 'Leben' + logos 'Lehre, Wort'.",
+        "quelle": ["dwds"] },
+
+      { "wort": "Geografie", "sprache": "Griechisch", "teile": "geo = Erde, graphein = schreiben",
+        "bedeutung": "Beschreibung der Erde", "deutsch": "Erdkunde",
+        "beleg": "griech. ge 'Erde' + graphein 'schreiben, beschreiben'.",
+        "quelle": ["dwds"] },
+
+      { "wort": "Autonomie", "sprache": "Griechisch", "teile": "autos = selbst, nomos = Gesetz",
+        "bedeutung": "sich selbst Gesetze geben", "deutsch": "Selbstbestimmung",
+        "beleg": "griech. autos 'selbst' + nomos 'Gesetz'.",
+        "quelle": ["dwds"] },
+
+      { "wort": "Transport", "sprache": "Latein", "teile": "trans = hinueber, portare = tragen",
+        "bedeutung": "das Hinuebertragen", "deutsch": "Befoerderung",
+        "beleg": "lat. transportare 'hinuebertragen', aus trans- 'hinueber' + portare 'tragen'.",
+        "quelle": ["wiktionary", "dwds"] },
+
+      { "wort": "Import", "sprache": "Latein", "teile": "in = hinein, portare = tragen",
+        "bedeutung": "das Hineintragen", "deutsch": "Einfuhr",
+        "beleg": "lat. importare 'hineintragen, einfuehren', aus in- 'hinein' + portare 'tragen'.",
+        "quelle": ["wiktionary", "dwds"] },
+
+      { "wort": "Konferenz", "sprache": "Latein", "teile": "con = zusammen, ferre = tragen",
+        "bedeutung": "Zusammentragen von Meinungen", "deutsch": "Besprechung",
+        "beleg": "lat. conferre 'zusammentragen, zusammenbringen', aus con- 'zusammen' + ferre 'tragen'.",
+        "quelle": ["wiktionary", "dwds"] },
+
+      { "wort": "Konflikt", "sprache": "Latein", "teile": "con = zusammen, fligere = schlagen",
+        "bedeutung": "das Zusammenstossen", "deutsch": "Streit",
+        "beleg": "lat. conflictus 'Zusammenstoss', Partizip zu confligere 'aneinandergeraten, kaempfen', aus con- 'zusammen' + fligere 'schlagen'; im 18. Jh. entlehnt.",
+        "quelle": ["wiktionary", "dwds"] },
+
+      { "wort": "Perspektive", "sprache": "Latein", "teile": "per = hindurch, spicere = schauen",
+        "bedeutung": "das Hindurchschauen", "deutsch": "Blickwinkel",
+        "beleg": "lat. perspicere 'hindurchsehen, deutlich sehen', aus per- 'hindurch' + specere/spicere 'schauen'.",
+        "quelle": ["wiktionary", "dwds"] }
+    ],
+
+    "Literaturepochen": [
+      { "epoche": "Aufklaerung", "zeit": "etwa 1720–1785", "autor": "Lessing",
+        "beleg": "Vernunft und Selbstdenken als Leitgedanken; Lessing gilt als zentraler Autor. Die Datierung schwankt je nach Darstellung zwischen 1720–1785 und 1720–1800 — deshalb steht in der Aufgabe 'etwa'.",
+        "quelle": ["wikipedia-bw"] },
+
+      { "epoche": "Sturm und Drang", "zeit": "etwa 1765–1785", "autor": "der junge Goethe",
+        "beleg": "Auflehnung gegen Autoritaet und Regeln, Gefuehl und Genie; der junge Goethe ist Hauptvertreter. Gaengige Datierung 1765–1785 (auch 1765–1790).",
+        "quelle": ["wikipedia-bw"] },
+
+      { "epoche": "Klassik", "zeit": "etwa 1786–1832", "autor": "Goethe und Schiller",
+        "beleg": "Weimarer Klassik, Beginn mit Goethes Italienreise 1786. Das Ende wird teils mit Schillers Tod (1805), teils mit Goethes Tod (1832) angesetzt — deshalb 'etwa'.",
+        "quelle": ["wikipedia-bw"] },
+
+      { "epoche": "Romantik", "zeit": "etwa 1795–1848", "autor": "Eichendorff",
+        "beleg": "Sehnsucht, Nacht, Traum und Natur; die blaue Blume (Novalis) als Leitmotiv; Eichendorff als typischer Vertreter. Datierung je nach Darstellung bis 1840 oder 1848.",
+        "quelle": ["wikipedia-bw"] },
+
+      { "epoche": "Expressionismus", "zeit": "etwa 1910–1925", "autor": "Georg Heym",
+        "beleg": "Grossstadt, Angst, Weltuntergang; Datierung 1910–1925 wird uebereinstimmend angegeben. Georg Heym als zentraler Lyriker.",
+        "quelle": ["wikipedia-bw"] }
+    ]
+  }
+}
