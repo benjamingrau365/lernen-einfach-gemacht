@@ -3730,7 +3730,8 @@ function menueHtml(){
       <p class="mtitel">Mein Bereich</p>
       ${benutzer
         ? `<button class="mpunkt" onclick="zeigeSeite('konto')">Mein Konto</button>`
-        : `<button class="mpunkt" onclick="zeigeAnmeldung();menueSchliessen()">Anmelden oder Konto anlegen</button>`}
+        : `<button class="mpunkt" onclick="zeigeAnmeldung();menueSchliessen()">Anmelden</button>
+           <button class="mpunkt" onclick="zeigeRegistrierung();menueSchliessen()">Konto anlegen</button>`}
       <button class="mpunkt" onclick="zeigeEinstellungen();menueSchliessen()">Einstellungen</button>
       ${istAdmin ? `<button class="mpunkt admin" onclick="zeigeDashboard();menueSchliessen()">Dashboard</button>` : ""}
       ${benutzer ? `<button class="mpunkt" onclick="abmelden();menueSchliessen()">Abmelden</button>` : ""}
@@ -4092,7 +4093,8 @@ function fussleisteHtml(){
           ${benutzer
             ? `<button class="fusslink" onclick="zeigeSeite('konto')">Mein Konto</button>
                <button class="fusslink" onclick="abmelden()">Abmelden</button>`
-            : `<button class="fusslink" onclick="zeigeAnmeldung()">Anmelden oder Konto anlegen</button>`}
+            : `<button class="fusslink" onclick="zeigeAnmeldung()">Anmelden</button>
+               <button class="fusslink" onclick="zeigeRegistrierung()">Konto anlegen</button>`}
           <button class="fusslink" onclick="zeigeEinstellungen()">Einstellungen</button>
           ${istAdmin ? `<button class="fusslink" onclick="zeigeDashboard()">Dashboard</button>` : ""}
         </div>
@@ -4359,7 +4361,7 @@ function uebersichtHtml(){
     <div class="card">
       <p class="ueberschrift">${SYM.stern} Ohne Konto</p>
       <p class="small soft">Du kannst alles üben — aber nichts wird gespeichert. Der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, funktioniert nur mit Konto.</p>
-      <button class="btn full" style="margin-top:12px" onclick="zeigeAnmeldung()">Konto anlegen</button>
+      <button class="btn full" style="margin-top:12px" onclick="zeigeRegistrierung()">Konto anlegen</button>
     </div>`}
 
     ${istAdmin ? `<div class="card"><button class="btn full admin" onclick="zeigeDashboard()">Dashboard öffnen</button></div>` : ""}`;
@@ -4792,6 +4794,7 @@ async function abmelden(){
 
 function alsGast(){ benutzer = null; fortschritt = []; aktivitaet = {serie:0, heute:0, geladen:true}; ansicht = "uebersicht"; render(); }
 function zeigeAnmeldung(){ ansicht = "anmelden"; hinweis = ""; render(); }
+function zeigeRegistrierung(){ ansicht = "registrieren"; hinweis = ""; render(); }
 function zeigeWillkommen(){ ansicht = "willkommen"; render(); }
 /* Klick aufs Logo: dieselbe Startseite wie beim Aufruf der URL
    (eingeloggt -> Dashboard, sonst -> Willkommensseite) */
@@ -5041,7 +5044,7 @@ function renderSeite(){
   const kopfBox = benutzer
     ? `<div class="userbox"><b>${benutzer.email}</b><button onclick="abmelden()">Abmelden</button></div>`
     : `<div class="userbox gast"><b>Du übst ohne Konto</b>
-         <button onclick="zeigeAnmeldung()">Konto anlegen und Fortschritt speichern</button></div>`;
+         <button onclick="zeigeRegistrierung()">Konto anlegen und Fortschritt speichern</button></div>`;
 
   const offen = benutzer ? faellig() : 0;
   const planText = benutzer
@@ -5106,7 +5109,7 @@ function render(gewaehlt){
   }
   renderSeite();
   const shell = document.getElementById("shell");
-  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu"].includes(ansicht));
+  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -5115,6 +5118,7 @@ function render(gewaehlt){
 
   if (ansicht === "willkommen"){ el.innerHTML = willkommenHtml(); return; }
   if (ansicht === "anmelden"){ el.innerHTML = anmeldenHtml(); return; }
+  if (ansicht === "registrieren"){ el.innerHTML = registrierenHtml(); return; }
 
   /* ---- Übersicht: die Startseite der App (siehe start.js) ---- */
   if (ansicht === "uebersicht"){
@@ -5221,7 +5225,7 @@ function render(gewaehlt){
       inhalt = `<div class="card">
         <h4 style="margin:0 0 8px">Dafür brauchst du ein Konto</h4>
         <p class="small soft">Ohne Anmeldung kann sich die App nicht merken, was du geübt hast.</p>
-        <button class="btn full" style="margin-top:12px" onclick="zeigeAnmeldung()">Konto anlegen</button>
+        <button class="btn full" style="margin-top:12px" onclick="zeigeRegistrierung()">Konto anlegen</button>
       </div>`;
     } else if (!fortschritt.length){
       inhalt = `<div class="card">
@@ -5541,30 +5545,52 @@ function willkommenHtml(){
     `;
 }
 
+/* Anmelden — nur für bestehende Konten */
 function anmeldenHtml(){
   return `
     <div class="card">
       <button class="zurueck" onclick="zeigeWillkommen()">← Zur Startseite</button>
-      <span class="tag">Endlich kapiert</span>
-      <h1>Anmelden oder Konto anlegen</h1>
-      <p class="soft">Schon ein Konto? Dann melde dich an. Noch keins? Leg in wenigen Sekunden ein neues an — dann merkt sich die App, was du nicht konntest, und legt es dir später wieder vor.</p>
+      <span class="tag">Anmelden</span>
+      <h1>Willkommen zurück</h1>
+      <p class="soft">Melde dich mit deinem Konto an, damit dein Wiederholungsplan wieder da ist.</p>
     </div>
     <div class="card">
-      <p class="ueberschrift">1. E-Mail und Passwort eingeben</p>
       <input class="feld" id="mail" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
-      <input class="feld" id="pw" type="password" placeholder="Passwort (mindestens 6 Zeichen)"
+      <input class="feld" id="pw" type="password" placeholder="Passwort"
              autocomplete="current-password"
              onkeydown="if(event.key==='Enter')meldeAn()">
       ${hinweis ? `<div class="feedback ${hinweis.startsWith("Fast") ? "ok" : "nope"}" style="margin-top:4px">${hinweis}</div>` : ""}
-      <p class="small soft" style="margin:14px 0 8px">2. Dann wählen:</p>
-      <button class="btn full" onclick="meldeAn()">Anmelden <span style="opacity:.8;font-weight:500">· ich habe schon ein Konto</span></button>
-      <button class="btn ghost full" style="margin-top:10px" onclick="registriere()">Neues Konto anlegen <span style="opacity:.7;font-weight:500">· ich bin neu hier</span></button>
-      <button class="textlink" style="margin-top:14px" onclick="passwortVergessen()">Passwort vergessen?</button>
+      <button class="btn full" style="margin-top:14px" onclick="meldeAn()">Anmelden</button>
+      <button class="textlink" style="margin-top:12px" onclick="passwortVergessen()">Passwort vergessen?</button>
+    </div>
+    <div class="card" style="text-align:center">
+      <p class="small soft" style="margin:0 0 12px">Noch kein Konto?</p>
+      <button class="btn ghost full" onclick="zeigeRegistrierung()">Neues Konto anlegen</button>
+      <button class="btn ghost full" style="margin-top:10px" onclick="alsGast()">Ohne Konto ausprobieren</button>
+    </div>`;
+}
+
+/* Registrieren — nur für neue Konten */
+function registrierenHtml(){
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zeigeWillkommen()">← Zur Startseite</button>
+      <span class="tag">Registrieren</span>
+      <h1>Neues Konto anlegen</h1>
+      <p class="soft">Mit einem Konto merkt sich die App, was du nicht konntest, und legt es dir später wieder vor.</p>
     </div>
     <div class="card">
-      <h4 style="margin:0 0 8px">Erst mal nur anschauen?</h4>
-      <p class="small soft">Du kannst alles ausprobieren, ohne dich anzumelden. Dann wird allerdings nichts gespeichert — und der Wiederholungsplan ist genau der Teil, der etwas bringt.</p>
-      <button class="btn ghost full" style="margin-top:12px" onclick="alsGast()">Ohne Konto ausprobieren</button>
+      <input class="feld" id="mail" type="email" placeholder="E-Mail-Adresse" autocomplete="email">
+      <input class="feld" id="pw" type="password" placeholder="Passwort (mindestens 6 Zeichen)"
+             autocomplete="new-password"
+             onkeydown="if(event.key==='Enter')registriere()">
+      ${hinweis ? `<div class="feedback ${hinweis.startsWith("Fast") ? "ok" : "nope"}" style="margin-top:4px">${hinweis}</div>` : ""}
+      <button class="btn full" style="margin-top:14px" onclick="registriere()">Konto anlegen</button>
+    </div>
+    <div class="card" style="text-align:center">
+      <p class="small soft" style="margin:0 0 12px">Schon ein Konto?</p>
+      <button class="btn ghost full" onclick="zeigeAnmeldung()">Zum Anmelden</button>
+      <button class="btn ghost full" style="margin-top:10px" onclick="alsGast()">Ohne Konto ausprobieren</button>
     </div>`;
 }
 
