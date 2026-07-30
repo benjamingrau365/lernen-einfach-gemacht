@@ -486,8 +486,8 @@
   .marke .markewortmark .kap{color:var(--ac-dark)}
   /* Menü-Links in der Mitte (nur Desktop) */
   .kopfnav{display:none;align-items:center;gap:4px}
-  .kopflink{background:none;border:none;font:inherit;font-size:16px;font-weight:600;
-    color:var(--soft);cursor:pointer;padding:9px 15px;border-radius:11px}
+  .kopflink{background:none;border:none;font:inherit;font-size:18px;font-weight:600;
+    color:var(--soft);cursor:pointer;padding:10px 16px;border-radius:11px}
   .kopflink:hover{color:var(--ac-dark);background:var(--ac-soft)}
   @media(min-width:820px){
     .marke .markewortmark{display:inline}
@@ -496,7 +496,9 @@
   }
   /* rechte Gruppe: Serie + Aktions-Button + Menü */
   .kopfrechts{display:flex;align-items:center;gap:9px;flex:none}
-  .kopfrechts .serie--mini{flex-direction:row;gap:6px;min-width:0;padding:8px 13px;border-radius:999px}
+  .kopfrechts .serie--mini{flex-direction:row;gap:6px;min-width:0;padding:8px 13px;border-radius:999px;
+    font:inherit;cursor:pointer}
+  .kopfrechts .serie--mini:hover{background:var(--ac-soft)}
   .kopfrechts .serie--mini svg{width:19px;height:19px}
   .kopfrechts .serie--mini b{font-size:16px}
   .kopfrechts .kopfcta{padding:11px 19px;font-size:clamp(14px,3.6vw,15.5px);white-space:nowrap}
@@ -656,6 +658,12 @@
   .zielpunkte{display:flex;gap:7px}
   .zielpunkte i{width:15px;height:15px;border-radius:50%;border:2px solid var(--line);display:block}
   .zielpunkte i.voll{background:var(--ac);border-color:var(--ac)}
+  /* Streak-Ansicht */
+  .seriekarte{text-align:center}
+  .serieflamme{display:inline-flex;color:var(--ac)}
+  .serieflamme svg{width:52px;height:52px}
+  .seriezahl{font-size:64px;font-weight:900;line-height:1;color:var(--ac-dark);letter-spacing:-.03em;margin-top:4px}
+  .serietage{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);font-weight:700;margin-top:6px}
 
   .kachelpaar{display:grid;grid-template-columns:1fr;gap:0}
   .kachel{display:flex;flex-direction:column}
@@ -3622,7 +3630,7 @@ function kopfleisteHtml(){
         <button class="kopflink" onclick="zeigeSeite('ueber')">Über</button>
       </nav>
       <div class="kopfrechts">
-        ${benutzer && aktivitaet.geladen ? `<div class="serie serie--mini" title="Deine Serie">${SYM.flamme}<b>${aktivitaet.serie}</b></div>` : ""}
+        ${benutzer && aktivitaet.geladen ? `<button class="serie serie--mini" onclick="zeigeSerie()" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></button>` : ""}
         <button class="btn kopfcta" onclick="${benutzer ? "zurFachwahl()" : "zeigeAnmeldung()"}">${benutzer ? "Üben" : "Anmelden / Registrieren"}</button>
         <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
           <i></i><i></i><i></i>
@@ -4753,6 +4761,39 @@ function waehleFach(f){ fach = f; klasse = null; ansicht = "klassenwahl"; render
 function waehleKlasse(k){ klasse = k; ansicht = "start"; render(); }
 function zurFachwahl(){ ansicht = "fachwahl"; render(); }
 function zurUebersicht(){ ansicht = "uebersicht"; render(); }
+let vorSerie = "uebersicht";
+function zeigeSerie(){ if (ansicht !== "serie") vorSerie = ansicht; menueOffen = false; ansicht = "serie"; render(); }
+function serieHtml(){
+  const s = aktivitaet.serie || 0;
+  const heute = aktivitaet.heute || 0;
+  const serieText = s === 0 ? "Heute ist ein guter Tag zum Anfangen."
+    : s === 1 ? "Tag 1 — der Anfang ist gemacht."
+    : `${s} Tage in Folge — stark!`;
+  const geschafft = heute >= TAGESZIEL;
+  const punkte = Array.from({length: TAGESZIEL}, (_, i) => `<i class="${i < heute ? "voll" : ""}"></i>`).join("");
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zurUebersicht()">← Zurück</button>
+      <span class="tag">Deine Serie</span>
+      <h1>Dein Streak</h1>
+    </div>
+    <div class="card seriekarte">
+      <div class="serieflamme">${SYM.flamme}</div>
+      <div class="seriezahl">${s}</div>
+      <div class="serietage">${s === 1 ? "Tag" : "Tage"} in Folge</div>
+      <p class="soft" style="margin:12px 0 0">${serieText}</p>
+    </div>
+    <div class="card">
+      <span class="zielkopf">${SYM.ziel} Heute: ${heute} von ${TAGESZIEL} Aufgaben</span>
+      <div class="zielpunkte" style="margin-top:12px">${punkte}</div>
+      <p class="small soft" style="margin-top:14px">${geschafft
+        ? "Heute geschafft — die Serie läuft weiter! 🔥"
+        : `Noch ${TAGESZIEL - heute}, dann ist heute im Kasten und die Serie wächst.`}</p>
+    </div>
+    <div class="card">
+      <p class="small soft" style="margin:0">Jeden Tag, an dem du übst, wächst deine Serie um eins. Lässt du einen Tag aus, beginnt sie wieder bei null — also dranbleiben lohnt sich.</p>
+    </div>`;
+}
 function zurKlassenwahl(){ ansicht = "klassenwahl"; render(); }
 function zeigePlan(){ ansicht = ansicht === "plan" ? (klasse ? "start" : "uebersicht") : "plan"; render(); }
 
@@ -4934,7 +4975,7 @@ function render(gewaehlt){
   }
   renderSeite();
   const shell = document.getElementById("shell");
-  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"].includes(ansicht));
+  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie"].includes(ansicht));
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -5091,6 +5132,8 @@ function render(gewaehlt){
   if (ansicht === "melden"){ el.innerHTML = meldenHtml(); return; }
 
   /* ---- Einstellungen ---- */
+  if (ansicht === "serie"){ el.innerHTML = serieHtml(); return; }
+
   if (ansicht === "einstellungen"){
     const wahl = (feld, wert, titel, unter) => `
       <button class="option ${einstellungen[feld] === wert ? "an" : ""}" onclick="setzeEinstellung('${feld}', ${typeof wert === "string" ? `'${wert}'` : wert})">
