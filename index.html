@@ -109,7 +109,22 @@
 
   /* Aufgabe: ganz ohne Kasten */
   .aufg{padding:14px 0 22px;border-bottom:1px solid var(--line);margin-bottom:24px}
+  /* Beim Scrollen durch die Antworten bleibt die Aufgabe oben stehen — sonst
+     vergisst man auf halber Strecke, worum es überhaupt ging. Sie hängt sich
+     unter die Kopfleiste, deren Höhe nach jedem Zeichnen gemessen wird.
+     Die negativen Ränder ziehen den Hintergrund über das Kartenpolster,
+     damit beim Scrollen nichts seitlich durchscheint. */
+  /* top:0 — die Kopfleiste bleibt beim Scrollen nicht stehen (ihr Elternelement
+     ist genauso hoch wie sie), es ist also kein Platz dafür freizuhalten. */
+  .aufg.klebt{position:sticky;top:0;z-index:20;
+    background:var(--card);margin:0 -26px 20px;padding:12px 26px 14px;
+    max-height:38vh;overflow:auto}   /* Notbremse: nie mehr als gut ein Drittel des Bildes */
   .aufg .zeile1{font-size:38px;font-weight:600;text-align:center;letter-spacing:-.01em;line-height:1.25}
+  /* Die große Schrift ist für Gleichungen gedacht („3x + 4 = 19“). Ganze Sätze
+     wurden darin 400 px hoch und haben den halben Bildschirm gefüllt — deshalb
+     wird sie nach Textlänge abgestuft. */
+  .aufg.mittel .zeile1{font-size:26px;line-height:1.35}
+  .aufg.lang .zeile1{font-size:21px;font-weight:500;text-align:left;line-height:1.5;letter-spacing:0}
   .aufg.text .zeile1{font-size:22px;font-weight:500;text-align:left;line-height:1.5;letter-spacing:0}
   .aufg .luecke{color:var(--ac);font-weight:700}
 
@@ -791,8 +806,11 @@
     .optionen.breit{grid-template-columns:repeat(auto-fit,minmax(215px,1fr));align-items:stretch}
     .optionen.breit button.pick{height:100%}
     .card{padding:30px 32px}
+    .aufg.klebt{margin-left:-32px;margin-right:-32px;padding-left:32px;padding-right:32px}
     h1{font-size:32px}
     .aufg .zeile1{font-size:44px}
+    .aufg.mittel .zeile1{font-size:30px}
+    .aufg.lang .zeile1{font-size:23px}
     .aufg.text .zeile1{font-size:24px;text-align:center}
     .themen{grid-template-columns:1fr 1fr}
     .themen{align-items:start}
@@ -5549,6 +5567,17 @@ function navLink(pfad, jsCode, inhalt, klassen, stil){
    Auf dem Handy begann die Aufgabe dadurch erst weit unten im Bild. */
 function amLoesen(){ return ansicht === "loesen" || ansicht === "fertig"; }
 
+/* Wie groß darf der Aufgabentext gesetzt werden? Eine Gleichung soll groß und
+   ruhig dastehen, ein ganzer Satz nicht — sonst füllt er den halben Bildschirm
+   und man sieht die Antwortmöglichkeiten nicht mehr. */
+function aufgabenGroesse(a){
+  if (a.typ === "text") return "text";
+  const zeichen = String(a.text).replace(/<[^>]+>/g, "").trim().length;
+  if (zeichen <= 24) return "";          /* „3x + 4 = 19“ */
+  if (zeichen <= 60) return "mittel";
+  return "lang";                          /* ganze Sätze */
+}
+
 function kopfleisteHtml(){
   return `
     <div class="kopfleiste${amLoesen() ? " schlank" : ""}">
@@ -7654,7 +7683,7 @@ function render(gewaehlt){
         <span class="tag" style="margin-bottom:0">${aktuellName}${anz > 1 ? ` · Aufgabe ${variante + 1} von ${anz}` : ""}</span>
         <span class="small soft">Schritt ${schrittNr + 1} von ${aktuell.schritte.length}</span>
       </div>
-      <div class="aufg ${aktuell.typ === "text" ? "text" : ""}"><div class="zeile1">${aktuell.text}</div></div>
+      <div class="aufg klebt ${aufgabenGroesse(aktuell)}"><div class="zeile1">${aktuell.text}</div></div>
       <p class="frage">${s.frage}</p>
       <div class="optionen ${tippen ? "" : "breit"}">${optionenHtml}</div>
       ${fb}
