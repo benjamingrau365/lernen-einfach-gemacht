@@ -24,6 +24,24 @@
     --hero1:#ffffff; --hero2:#eaf8f2; --hero3:#d3eee4;
     --heroink:#0b5c48; --heroglanz1:#10a37f; --heroglanz2:#43c79c;
     --bau1:#f6c453; --bau2:#eda92c; --bauink:#3d2c05;
+
+    /* ---------- Farbsystem ----------
+       Jedes Fach hat seine eigene Farbe. Sie zieht sich durch Pfad, Kacheln
+       und Fortschritt, damit man auf einen Blick weiß, wo man ist.
+       Richtig bleibt überall grün, falsch rot, Hinweis bernstein — Bedeutung
+       hat Vorrang vor Fachfarbe. */
+    --mathe:#0f9c7a;        --mathe-soft:#e1f5ee;        --mathe-dark:#0a7358;
+    --deutsch:#6b4fd8;      --deutsch-soft:#eeeaff;      --deutsch-dark:#5238b8;
+    --englisch:#2478c9;     --englisch-soft:#e6f1fb;     --englisch-dark:#1c5e9e;
+    --franzoesisch:#c0416a; --franzoesisch-soft:#fce9ef; --franzoesisch-dark:#9c3355;
+    --geschichte:#a8681a;   --geschichte-soft:#fbf0e1;   --geschichte-dark:#855314;
+    --erdkunde:#12857f;     --erdkunde-soft:#e0f4f3;     --erdkunde-dark:#0d6763;
+    /* Abschnittsfarben der Willkommensseite */
+    --rose:#ad3149;   --rose-soft:#fdeaee;
+    --indigo:#5546c4; --indigo-soft:#ecebff;
+    --himmel:#1f6fb8; --himmel-soft:#e6f1fa;
+    /* Standard, solange kein Fach gewählt ist */
+    --fach:var(--ac); --fach-soft:var(--ac-soft); --fach-dark:var(--ac-dark);
   }
   html.dunkel{
     --bg:#131a18; --card:#1b2422; --ink:#e9f1ee; --soft:#9cb0a9; --line:#2c3a36;
@@ -33,7 +51,22 @@
     --hero1:#1e2b28; --hero2:#17322a; --hero3:#123a2d;
     --heroink:#eafaf4; --heroglanz1:#3fd3a7; --heroglanz2:#7ff0cb;
     --bau1:#d9a63c; --bau2:#b8862a; --bauink:#241a03;
+
+    --mathe:#33c79f;        --mathe-soft:#123329;        --mathe-dark:#6fdcbb;
+    --deutsch:#a695f7;      --deutsch-soft:#241f42;      --deutsch-dark:#c5b9ff;
+    --englisch:#79b6ee;     --englisch-soft:#152a3d;     --englisch-dark:#a5d0f6;
+    --franzoesisch:#f0879f; --franzoesisch-soft:#3a1f26; --franzoesisch-dark:#f7b0c1;
+    --geschichte:#e0ab63;   --geschichte-soft:#332612;   --geschichte-dark:#eec894;
+    --erdkunde:#4fc9c2;     --erdkunde-soft:#12312f;     --erdkunde-dark:#88e0da;
+    --rose:#f28ea0;   --rose-soft:#3a1f26;
+    --indigo:#a89cf7; --indigo-soft:#221f3f;
+    --himmel:#7db9ee; --himmel-soft:#152a3d;
+    --fach:var(--ac); --fach-soft:var(--ac-soft); --fach-dark:var(--ac-dark);
   }
+
+  /* Das gewählte Fach färbt alles darunter — gesetzt in render() */
+  [data-fach="mathe"]{--fach:var(--mathe);--fach-soft:var(--mathe-soft);--fach-dark:var(--mathe-dark)}
+  [data-fach="deutsch"]{--fach:var(--deutsch);--fach-soft:var(--deutsch-soft);--fach-dark:var(--deutsch-dark)}
   /* Schriftgröße-Regler: skaliert den gesamten Inhalt über die Variable --fs */
   .reglerreihe{display:flex;align-items:center;gap:14px}
   .reglerreihe .reglerklein{font-size:15px;color:var(--soft);font-weight:800;flex:none}
@@ -101,7 +134,7 @@
   p{margin:0 0 14px} p:last-child{margin-bottom:0}
   .soft{color:var(--soft)} .small{font-size:14.5px}
 
-  .tag{display:inline-block;background:var(--ac-soft);color:var(--ac-dark);font-size:12.5px;
+  .tag{display:inline-block;background:var(--fach-soft);color:var(--fach-dark);font-size:12.5px;
     font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 11px;
     border-radius:999px;margin-bottom:12px}
 
@@ -178,7 +211,7 @@
 
   .fortschritt{display:flex;gap:5px;margin-bottom:18px}
   .fortschritt i{flex:1;height:5px;border-radius:3px;background:var(--line)}
-  .fortschritt i.an{background:var(--ac)}
+  .fortschritt i.an{background:var(--fach)}
 
   .feedback{border-radius:12px;padding:15px 17px;margin:16px 0 0;font-size:16px}
   .feedback.ok{background:var(--ac-soft);color:var(--ac-dark)}
@@ -209,11 +242,13 @@
   /* der Themenname darf umbrechen, die Anzahl daneben nicht — sonst wird die
      Zeile auf schmalen Geräten breiter als der Bildschirm */
   .thema > span:first-child{min-width:0;overflow-wrap:anywhere}
-  .thema:hover{border-color:var(--ac);background:var(--ac-soft)}
+  .thema:hover{border-color:var(--fach);background:var(--fach-soft)}
+  /* fertige Themen tragen die Farbe ihres Fachs an der linken Kante */
+  .thema:not(.aus){border-left:5px solid var(--fach)}
   .thema.aus{cursor:default;color:var(--soft);background:var(--bg);border-style:dashed}
   .thema.aus:hover{border-color:var(--line);background:var(--bg)}
   .pill{font-size:12px;font-weight:700;white-space:nowrap;padding:5px 11px;border-radius:999px;
-    background:var(--ac-soft);color:var(--ac-dark)}
+    background:var(--fach-soft);color:var(--fach-dark)}
   .pill.bald{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
 
   .zeile{display:flex;justify-content:space-between;align-items:center;gap:14px;
@@ -331,6 +366,20 @@
   .abschnitt{margin-bottom:16px}
   .ueberschrift{font-size:12.5px;letter-spacing:.13em;text-transform:uppercase;
     color:var(--ac-dark);font-weight:700;margin:0 0 10px}
+  /* ---------- farbige Abschnitte der Willkommensseite ----------
+     Jeder Abschnitt hat seine eigene Farbe: der Wiedererkennungsteil warm,
+     die Methode grün wie die Marke, der Vergleich indigo, die Zahlen blau.
+     So wird das Scrollen zu einem Weg durch Farben statt durch weiße Kästen. */
+  .abschnitt{background:var(--akz-soft);border-color:transparent;position:relative;
+    padding-left:30px}
+  .abschnitt::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:5px;
+    border-radius:0 5px 5px 0;background:var(--akz)}
+  .abschnitt .ueberschrift{color:var(--akz)}
+  .abschnitt.rose{--akz:var(--rose);--akz-soft:var(--rose-soft)}
+  .abschnitt.gruen{--akz:var(--ac-dark);--akz-soft:var(--ac-soft)}
+  .abschnitt.indigo{--akz:var(--indigo);--akz-soft:var(--indigo-soft)}
+  .abschnitt.himmel{--akz:var(--himmel);--akz-soft:var(--himmel-soft)}
+  @media(max-width:560px){ .abschnitt{padding-left:22px} }
   .liste{list-style:none;padding:0;margin:0}
   .liste li{padding:12px 0 12px 30px;position:relative;border-bottom:1px solid var(--line);
     font-size:16.5px}
@@ -391,13 +440,25 @@
   .grosswahl{display:block;width:100%;text-align:left;background:var(--card);
     border:1.5px solid var(--line);border-radius:16px;padding:20px 22px;font:inherit;
     color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
-  .grosswahl:hover{border-color:var(--ac);background:var(--ac-soft)}
+  .grosswahl:hover{border-color:var(--fach);background:var(--fach-soft)}
   .grosswahl b{display:block;font-size:21px;letter-spacing:-.01em;margin-bottom:3px}
   .grosswahl span{font-size:14.5px;color:var(--soft)}
+  /* Farbige Kacheln für Fach und Klasse — jede mit ihrem eigenen Zeichen */
+  .grosswahl.mitfarbe{--akz:var(--fach);--akz-soft:var(--fach-soft);--akz-dark:var(--fach-dark);
+    display:flex;align-items:center;gap:15px;padding:16px 18px;
+    background:var(--akz-soft);border-color:transparent}
+  .grosswahl.mitfarbe:hover{border-color:var(--akz);background:var(--akz-soft)}
+  .grosswahl.mitfarbe .wahlzeichen{flex:none;width:46px;height:46px;border-radius:14px;
+    background:var(--akz);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:21px;font-weight:900;letter-spacing:.01em;
+    box-shadow:0 8px 18px -10px var(--akz)}
+  .grosswahl.mitfarbe .wahltext{min-width:0;font-size:inherit}
+  .grosswahl.mitfarbe b{color:var(--akz-dark);margin-bottom:1px}
+  .grosswahl.mitfarbe .wahltext span{display:block}
   .pfad{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-  .pfad button,.pfad a{background:var(--ac-soft);border:none;border-radius:999px;padding:5px 13px;
-    font:inherit;font-size:13.5px;font-weight:700;color:var(--ac-dark);cursor:pointer;text-decoration:none}
-  .pfad button:hover,.pfad a:hover{background:var(--ac);color:#fff}
+  .pfad button,.pfad a{background:var(--fach-soft);border:none;border-radius:999px;padding:5px 13px;
+    font:inherit;font-size:13.5px;font-weight:700;color:var(--fach-dark);cursor:pointer;text-decoration:none}
+  .pfad button:hover,.pfad a:hover{background:var(--fach);color:#fff}
   .pfad span{color:var(--soft);font-size:15px}
   .wechseln{background:none;border:none;padding:0;font:inherit;font-size:14px;
     color:var(--soft);text-decoration:underline;cursor:pointer}
@@ -409,7 +470,7 @@
   .themazeile .thema{flex:1;margin:0;min-width:0}   /* darf schrumpfen, sonst läuft die Zeile über */
   .erklknopf{flex:none;width:46px;border:1.5px solid var(--line);background:var(--card);
     border-radius:13px;font:inherit;font-size:19px;font-weight:800;color:var(--soft);cursor:pointer}
-  .erklknopf:hover{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
+  .erklknopf:hover{border-color:var(--fach);background:var(--fach-soft);color:var(--fach-dark)}
   ol.beispielschritte{margin:0 0 16px;padding-left:22px}
   ol.beispielschritte li{padding:5px 0;font-size:16px;color:var(--soft)}
   .ergebnis{background:var(--ac-soft);color:var(--ac-dark);border-radius:11px;
@@ -748,8 +809,17 @@
   .mpunkt{display:flex;justify-content:space-between;align-items:center;gap:10px;
     width:100%;text-align:left;background:none;border:none;border-radius:11px;
     padding:calc(12px * var(--fs,1)) 12px;font:inherit;font-size:calc(16.5px * var(--fs,1));color:var(--ink);cursor:pointer}
-  .mpunkt:hover{background:var(--ac-soft);color:var(--ac-dark)}
-  .mpunkt.an{background:var(--ac-soft);color:var(--ac-dark);font-weight:600}
+  .mpunkt{--akz:var(--ac);--akz-soft:var(--ac-soft);--akz-dark:var(--ac-dark)}
+  .mpunkt:hover{background:var(--akz-soft);color:var(--akz-dark)}
+  .mpunkt.an{background:var(--akz-soft);color:var(--akz-dark);font-weight:600}
+  /* Fächer im Menü tragen ihr Zeichen in ihrer eigenen Farbe */
+  .fachpunkt{justify-content:flex-start;gap:11px}
+  .fachpunkt .mzeichen{flex:none;width:30px;height:30px;border-radius:9px;background:var(--akz);
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:15px;font-weight:900;line-height:1}
+  .fachpunkt .mname{flex:1;font-weight:600}
+  .mpunkt.unter{border-left:3px solid var(--akz-soft);margin-left:14px;border-radius:0 11px 11px 0}
+  .mpunkt.unter:hover{border-left-color:var(--akz)}
   .mpunkt.unter{padding-left:26px;font-size:calc(15.5px * var(--fs,1));color:var(--soft)}
   .mpunkt.unter span{font-size:calc(13px * var(--fs,1));color:var(--soft)}
   .mpunkt.admin{color:var(--ac-dark);font-weight:600}
@@ -6469,19 +6539,22 @@ function menueHtml(){
   const klassen = f => [5,6,7,8,9,10].map(k => {
     const fertig = KATALOG[f].themen[k].filter(t => AUFGABEN[t]).length;
     const label = `Klasse ${k}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>`;
-    return navLink(`/${f}/${k}`, `menueLernen('${f}', ${k})`, label, "mpunkt unter");
+    return navLink(`/${f}/${k}`, `menueLernen('${f}', ${k})`, label, "mpunkt unter",
+      `--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)`);
   }).join("");
 
   return `
     <div class="menuegrund" onclick="menueSchliessen()"></div>
     <nav class="menue">
       <p class="mtitel">Lernen</p>
-      <button class="mpunkt ${menueAuf === "mathe" ? "an" : ""}" onclick="menueKlappen('mathe')">
-        Mathe<span>${menueAuf === "mathe" ? "▾" : "▸"}</span></button>
-      ${menueAuf === "mathe" ? klassen("mathe") : ""}
-      <button class="mpunkt ${menueAuf === "deutsch" ? "an" : ""}" onclick="menueKlappen('deutsch')">
-        Deutsch<span>${menueAuf === "deutsch" ? "▾" : "▸"}</span></button>
-      ${menueAuf === "deutsch" ? klassen("deutsch") : ""}
+      ${["mathe","deutsch"].map(f => `
+        <button class="mpunkt fachpunkt ${menueAuf === f ? "an" : ""}"
+                style="--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)"
+                onclick="menueKlappen('${f}')">
+          <span class="mzeichen">${KATALOG[f].name[0]}</span>
+          <span class="mname">${KATALOG[f].name}</span>
+          <span>${menueAuf === f ? "▾" : "▸"}</span></button>
+        ${menueAuf === f ? klassen(f) : ""}`).join("")}
       ${benutzer ? navLink("/plan", "zeigePlan();menueSchliessen()", "Mein Wiederholungsplan", "mpunkt") : ""}
       ${benutzer ? navLink("/anfragen", "zeigeAnfragen();menueSchliessen()", "Meine Anfragen", "mpunkt") : ""}
 
@@ -8209,6 +8282,10 @@ function render(gewaehlt){
   renderSeite();
   const shell = document.getElementById("shell");
   shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
+  /* Fachfarbe setzen: sobald ein Fach gewählt ist, färbt sie Pfad, Kacheln
+     und Fortschritt. Auf Seiten ohne Fach bleibt es beim Markengrün. */
+  const mitFach = ["start","loesen","fertig","erklaerung","klassenwahl"].includes(ansicht);
+  document.documentElement.dataset.fach = (mitFach && fach) ? fach : "";
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -8243,9 +8320,10 @@ function render(gewaehlt){
             fertig += liste.filter(t => AUFGABEN[t]).length;
           }
           return navLink(`/${k}`, `waehleFach('${k}')`, `
-            <b>${v.name}</b>
-            <span>${fertig} von ${gesamt} Themen fertig</span>
-          `, "grosswahl");
+            <span class="wahlzeichen">${v.name[0]}</span>
+            <span class="wahltext"><b>${v.name}</b>
+              <span>${fertig} von ${gesamt} Themen fertig</span></span>
+          `, "grosswahl mitfarbe", `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
         }).join("")}
       </div>
       <div class="card">
@@ -8272,9 +8350,10 @@ function render(gewaehlt){
         ${[5,6,7,8,9,10].map(k=>{
           const fertig = themen[k].filter(t => AUFGABEN[t]).length;
           return navLink(`/${fach}/${k}`, `waehleKlasse(${k})`, `
-            <b>Klasse ${k}</b>
-            <span>${fertig > 0 ? fertig + " von " + themen[k].length + " fertig" : "in Arbeit"}</span>
-          `, "grosswahl");
+            <span class="wahlzeichen">${k}</span>
+            <span class="wahltext"><b>Klasse ${k}</b>
+              <span>${fertig > 0 ? fertig + " von " + themen[k].length + " fertig" : "in Arbeit"}</span></span>
+          `, "grosswahl mitfarbe");
         }).join("")}
       </div>`;
     return;
@@ -8739,7 +8818,7 @@ function willkommenHtml(){
 
     ${installHinweisHtml()}
 
-    <div class="card">
+    <div class="card abschnitt rose">
       <p class="ueberschrift">Kennst du das?</p>
       <ul class="liste">
         <li>Die Lösung steht da — aber du verstehst nicht, wie man darauf kommt.</li>
@@ -8749,7 +8828,7 @@ function willkommenHtml(){
       </ul>
     </div>
 
-    <div class="card">
+    <div class="card abschnitt gruen">
       <p class="ueberschrift">So funktioniert es</p>
       <ol class="schritte">
         <li><b>Du suchst dir dein Thema</b><span>Fach wählen, Klasse wählen, Thema antippen.</span></li>
@@ -8758,7 +8837,7 @@ function willkommenHtml(){
       </ol>
     </div>
 
-    <div class="card">
+    <div class="card abschnitt indigo">
       <p class="ueberschrift">Warum nicht einfach eine Lösungs-App?</p>
       <div class="gegen">
         <div class="andere"><b>Andere Apps</b>Du fotografierst die Aufgabe, bekommst das Ergebnis und schreibst es ab. Bei der nächsten Aufgabe stehst du genauso da wie vorher.</div>
@@ -8770,7 +8849,7 @@ function willkommenHtml(){
           stört sie den Einstieg nicht mehr, bleibt aber vor den Zahlen. */
         baustelleBoxHtml()}
 
-    <div class="card">
+    <div class="card abschnitt himmel">
       <p class="ueberschrift">Was drin ist</p>
       <div class="zahlen">
         <div><b>2</b><span>Fächer</span></div>
