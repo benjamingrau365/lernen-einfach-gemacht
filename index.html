@@ -270,7 +270,7 @@
      einfach links in der Ecke. */
   .hero{position:relative;overflow:hidden;text-align:center;border-radius:24px;
     border:1px solid var(--line);margin:0 0 14px;
-    padding:clamp(48px,8vw,88px) clamp(18px,4vw,40px) clamp(40px,6vw,64px);
+    padding:clamp(26px,8vw,88px) clamp(18px,4vw,40px) clamp(40px,6vw,64px);
     background:radial-gradient(900px 460px at 50% -12%,
       var(--hero1) 0%, var(--hero2) 46%, var(--hero3) 100%)}
   /* zwei weiche Farbkleckse im Hintergrund */
@@ -283,7 +283,9 @@
   .hero .tag{background:var(--card);border:1px solid var(--line);
     box-shadow:0 6px 18px -14px rgba(0,0,0,.5);margin-bottom:18px}
 
-  .hero h1{font-size:clamp(48px,11vw,92px);line-height:1.0;letter-spacing:-.04em;
+  /* Auf dem Handy etwas kleiner, damit die Mitmach-Probe darunter noch
+     auf den ersten Bildschirm passt — sie ist das eigentliche Argument. */
+  .hero h1{font-size:clamp(40px,9.4vw,92px);line-height:1.0;letter-spacing:-.04em;
     font-weight:900;margin:0 auto;color:var(--heroink);max-width:14ch;
     text-wrap:balance;text-shadow:0 2px 22px rgba(16,163,127,.12)}
   .glanz{display:inline-block;position:relative;
@@ -350,7 +352,32 @@
   .gegen b{display:block;font-size:15px;margin-bottom:6px}
   .gegen .andere b{color:var(--soft)}
   .gegen .wir b{color:var(--ac-dark)}
-  .probe{border:1px dashed var(--line);border-radius:14px;padding:20px;background:var(--bg)}
+  /* ---------- Mitmach-Probe auf der Startseite ---------- */
+  .probe{background:var(--card);border:2px solid var(--ac);border-radius:18px;
+    padding:18px 18px 20px;text-align:left;margin:0 auto 20px;max-width:560px;
+    box-shadow:0 18px 40px -26px rgba(0,0,0,.45)}
+  .probeaufgabe{font-size:clamp(24px,7vw,30px);font-weight:800;letter-spacing:-.01em;
+    text-align:center;color:var(--ink);padding:4px 0 12px;line-height:1.3}
+  .probeleiste{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+  .probepunkte{display:flex;gap:6px}
+  .probepunkte i{width:22px;height:5px;border-radius:99px;background:var(--line);display:block}
+  .probepunkte i.fertig{background:var(--ac)}
+  .probepunkte i.an{background:var(--ac);opacity:.55}
+  .probezaehler{font-size:13px;font-weight:600;color:var(--soft);white-space:nowrap}
+  .probefrage{font-size:17px;line-height:1.45;margin:0 0 14px;color:var(--ink)}
+  .probetipp{margin:14px 0 0;padding:12px 14px;border-radius:12px;font-size:15px;line-height:1.5;
+    background:var(--amber-soft);color:var(--amber)}
+  .probefertig{text-align:center;padding:26px 18px 24px}
+  .probehaken{width:58px;height:58px;border-radius:50%;background:var(--ac);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:31px;font-weight:900;
+    margin:0 auto 12px;box-shadow:0 12px 28px -12px var(--ac);
+    animation:hakenrein .5s cubic-bezier(.2,1.5,.4,1) 1}
+  .probeloesung{font-size:30px;font-weight:800;letter-spacing:-.01em;color:var(--ink)}
+  .probesatz{margin:10px auto 16px;max-width:34ch;font-size:15.5px;line-height:1.5;color:var(--soft)}
+  .probeneu{width:auto}
+  @media(max-width:400px){ .probe{padding:15px 14px 17px} }
+
   .probe .auf{font-size:26px;font-weight:600;text-align:center;padding:6px 0 16px;
     border-bottom:1px solid var(--line);margin-bottom:16px}
   .probe .fr{font-size:17px;margin:0 0 12px}
@@ -8625,28 +8652,92 @@ function render(gewaehlt){
 }
 
 /* ---------- Startseite und Anmeldung ---------- */
+/* ---------- Mitmach-Probe ganz oben ----------
+   Kein Bild vom Produkt, sondern das Produkt selbst: eine echte Aufgabe aus
+   demselben Erzeuger wie im Übungsteil, mit echten Fragen, echten Antworten
+   und echten Rückmeldungen. Wer hier vier Mal tippt, hat eine Gleichung
+   gelöst — ohne Anmeldung und ohne dass ihm jemand die Lösung gezeigt hat. */
+const PROBE_THEMA = "Gleichungen umstellen";
+let probeAufgabe = null, probeSchritt = 0, probeFalsch = [], probeFertig = false, probeOrdnung = [];
+
+function probeNeu(neuZeichnen){
+  const erzeuger = AUFGABEN[PROBE_THEMA];
+  if (!erzeuger || !erzeuger.length){ probeAufgabe = null; return; }
+  try { probeAufgabe = erzeuger[0](); }
+  catch(e){ probeAufgabe = null; return; }
+  probeSchritt = 0; probeFalsch = []; probeFertig = false;
+  probeOrdnung = probeAufgabe.schritte.map(s => mischeReihenfolge(s.optionen.length));
+  if (neuZeichnen) render();
+}
+function probeAntwort(i){
+  if (!probeAufgabe || probeFertig) return;
+  const s = probeAufgabe.schritte[probeSchritt];
+  if (s.optionen[i].ok){
+    if (probeSchritt + 1 >= probeAufgabe.schritte.length) probeFertig = true;
+    else { probeSchritt++; probeFalsch = []; }
+  } else if (!probeFalsch.includes(i)) probeFalsch.push(i);
+  render();
+}
+function probeHtml(){
+  if (!probeAufgabe) probeNeu();
+  if (!probeAufgabe) return "";
+  const a = probeAufgabe;
+  if (probeFertig)
+    return `<div class="probe probefertig">
+      <div class="probehaken">✓</div>
+      <div class="probeloesung">${a.loesung}</div>
+      <p class="probesatz">Das hast du gerade selbst gelöst. Niemand hat dir die Lösung gezeigt.</p>
+      <button class="btn ghost probeneu" onclick="probeNeu(true)">Noch eine — mit neuen Zahlen</button>
+    </div>`;
+  const s = a.schritte[probeSchritt];
+  return `<div class="probe">
+      <div class="probeaufgabe">${a.text}</div>
+      <div class="probeleiste">
+        <span class="probepunkte">${a.schritte.map((_, i) =>
+          `<i class="${i < probeSchritt ? "fertig" : i === probeSchritt ? "an" : ""}"></i>`).join("")}</span>
+        <span class="probezaehler">Frage ${probeSchritt + 1} von ${a.schritte.length}</span>
+      </div>
+      <p class="probefrage">${s.frage}</p>
+      <div class="optionen">
+        ${probeOrdnung[probeSchritt].map((idx, platz) => {
+          const o = s.optionen[idx];
+          const falsch = probeFalsch.includes(idx);
+          return `<div class="pickblock${falsch ? " mitgrund" : ""}">
+                    <button class="pick ${falsch ? "falsch" : ""}" ${falsch ? "disabled" : ""} onclick="probeAntwort(${idx})">
+                      <span class="pickbuchstabe">${"ABCDEFGH"[platz] || "•"}</span>
+                      <span class="picktext">${o.t}</span>
+                    </button>
+                    ${falsch ? `<div class="pickgrund falsch">${o.fb}</div>` : ""}
+                  </div>`;
+        }).join("")}
+      </div>
+      ${probeFalsch.length ? `<p class="probetipp"><b>Tipp:</b> ${s.tipp}</p>` : ""}
+    </div>`;
+}
+
 function willkommenHtml(){
+  const fertig = baustelleStand();
   return `
     <div class="hero">
       <div class="heroinhalt">
-        <span class="tag">Mathe und Deutsch · Klasse 5 bis 10</span>
         <h1>Endlich <span class="glanz">kapiert</span></h1>
-        <p class="lede">„Ich hab’s im Unterricht einfach nicht kapiert.“ — dann bist du hier richtig.
-          Du bekommst <b>nie die Lösung</b>, nur Fragen, die dich Schritt für Schritt selbst hinführen.</p>
+        <p class="lede"><b>Nie die Lösung</b> — nur Fragen, die dich selbst daraufbringen.
+          Fang gleich hier an:</p>
+        ${probeHtml()}
         <div class="knopfreihe">
-          <button class="btn" onclick="alsGast()">Kostenlos ausprobieren</button>
+          <button class="btn" onclick="alsGast()">Weiter üben — kostenlos</button>
           ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost")}
         </div>
         <div class="heromerkmale">
+          <span><i>✓</i> Mathe und Deutsch, Klasse 5 bis 10</span>
+          <span><i>✓</i> ${fertig.fertig} Themen fertig, ${fertig.gesamt - fertig.fertig} kommen</span>
           <span><i>✓</i> Jede Aufgabe neu gewürfelt</span>
-          <span><i>✓</i> Fehler kommen von allein zurück</span>
-          <span><i>✓</i> Erklärung von null an</span>
+          <span><i>✓</i> Ohne Anmeldung, ohne Kosten</span>
         </div>
       </div>
     </div>
 
     ${installHinweisHtml()}
-    ${baustelleBoxHtml()}
 
     <div class="card">
       <p class="ueberschrift">Kennst du das?</p>
@@ -8668,24 +8759,16 @@ function willkommenHtml(){
     </div>
 
     <div class="card">
-      <p class="ueberschrift">So sieht das aus</p>
-      <div class="probe">
-        <div class="auf">3x + 5 = 20</div>
-        <p class="fr">Am Ende soll nur noch <b>x</b> alleine dastehen. Was steht ihm auf der linken Seite gerade im Weg?</p>
-        <div class="opt gut">Die + 5</div>
-        <div class="opt">Die 3 vor dem x</div>
-        <div class="opt">Die 20 auf der rechten Seite</div>
-      </div>
-      <p class="small soft" style="margin-top:14px">Vier solcher Fragen — und du hast die Gleichung selbst gelöst.</p>
-    </div>
-
-    <div class="card">
       <p class="ueberschrift">Warum nicht einfach eine Lösungs-App?</p>
       <div class="gegen">
         <div class="andere"><b>Andere Apps</b>Du fotografierst die Aufgabe, bekommst das Ergebnis und schreibst es ab. Bei der nächsten Aufgabe stehst du genauso da wie vorher.</div>
         <div class="wir"><b>Endlich kapiert</b>Du kommst selbst darauf — und wirst daran erinnert, bevor du es vergessen hast. Beim nächsten Mal weißt du, wie es geht.</div>
       </div>
     </div>
+
+    ${/* Die Baustelle steht ohnehin als Band über jeder Seite. Hier unten
+          stört sie den Einstieg nicht mehr, bleibt aber vor den Zahlen. */
+        baustelleBoxHtml()}
 
     <div class="card">
       <p class="ueberschrift">Was drin ist</p>
