@@ -71,6 +71,15 @@ for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
 
         if (s.tippAntwort !== undefined && !nackt(s.tippAntwort))
           melde(thema, nr, `Schritt ${si + 1}: leerer tippAntwort`);
+
+        /* Die Hilfe läuft in Stufen: erst tipp, dann tipp2. Fehlt der zweite,
+           bringt der zweite Druck auf „Ich weiß nicht weiter“ nichts Neues. */
+        if (!s.tipp || !nackt(s.tipp))
+          melde(thema, nr, `Schritt ${si + 1}: erster Tipp fehlt`);
+        if (!s.tipp2 || !nackt(s.tipp2))
+          melde(thema, nr, `Schritt ${si + 1}: zweiter Tipp fehlt`);
+        else if (nackt(s.tipp2) === nackt(s.tipp))
+          melde(thema, nr, `Schritt ${si + 1}: zweiter Tipp ist wortgleich mit dem ersten`);
       });
     }
   });
