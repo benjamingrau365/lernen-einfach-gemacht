@@ -670,11 +670,7 @@
   .mpunkt.admin{color:var(--ac-dark);font-weight:600}
   .mpunkt span{font-size:calc(14px * var(--fs,1));color:var(--soft)}
 
-  .faq{padding:16px 0;border-bottom:1px solid var(--line)}
-  .faq:last-child{border-bottom:none}
-  .faq b{display:block;font-size:17px;margin-bottom:6px}
-  .faq p{margin:0;color:var(--soft);font-size:16px;line-height:1.6}
-  /* Einklappbare Frage/Antwort (Akkordeon) */
+  /* Einklappbare Frage/Antwort (Akkordeon) — Hilfe-Seite und Häufige Fragen */
   .klapp{border-bottom:1px solid var(--line)}
   .klapp:last-child{border-bottom:none}
   .klapp > summary{list-style:none;cursor:pointer;font-weight:700;font-size:17px;
@@ -6284,10 +6280,10 @@ function faqHtml(){
     </div>
     <div class="card">
       ${FAQ.map(([f,a]) => `
-        <div class="faq">
-          <b>${f}</b>
+        <details class="klapp">
+          <summary>${f}</summary>
           <p>${a}</p>
-        </div>`).join("")}
+        </details>`).join("")}
     </div>
     <div class="card" style="text-align:center">
       <p class="soft" style="margin:0 auto 16px;max-width:44ch">Deine Frage war nicht dabei?</p>
