@@ -154,6 +154,14 @@
   .feedback.ok{background:var(--ac-soft);color:var(--ac-dark)}
   .feedback.nope{background:var(--red-soft);color:var(--red)}
   .feedback.tipp{background:var(--amber-soft);color:var(--amber)}
+  /* kurzes Aufleuchten, wenn jemand den schon offenen Tipp noch einmal sucht */
+  .feedback.blinkt{animation:tippblink 1s ease-out 1}
+  @keyframes tippblink{
+    0%{box-shadow:0 0 0 0 var(--amber)}
+    35%{box-shadow:0 0 0 4px var(--amber)}
+    100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}
+  }
+  @media (prefers-reduced-motion:reduce){ .feedback.blinkt{animation:none} }
 
   .themen{display:grid;gap:9px}
   .thema{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
@@ -3629,7 +3637,27 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Runde 3.847 auf Hunderter",
     schritte:["Hunderterstelle suchen: die 8.","Rechts daneben steht die 4.","4 ist kleiner als 5 → abrunden.","Alles rechts davon wird Null."],
-    ergebnis:"3.800"}
+    ergebnis:"3.800"},
+  bild:`<svg viewBox="0 0 400 185" ${SVG_STIL} role="img" aria-label="Stellenwerttafel der Zahl 3847 mit der Rundungsstelle">
+    <g fill="none" stroke="#10a37f" stroke-width="2">
+      <rect x="80" y="50" width="60" height="50"/>
+      <rect x="140" y="50" width="60" height="50"/>
+      <rect x="200" y="50" width="60" height="50"/>
+      <rect x="260" y="50" width="60" height="50"/>
+    </g>
+    <rect x="140" y="50" width="60" height="50" fill="#10a37f" fill-opacity=".16"/>
+    <text x="110" y="42" text-anchor="middle" font-size="11" fill="currentColor">Tausender</text>
+    <text x="170" y="42" text-anchor="middle" font-size="11" fill="currentColor">Hunderter</text>
+    <text x="230" y="42" text-anchor="middle" font-size="11" fill="currentColor">Zehner</text>
+    <text x="290" y="42" text-anchor="middle" font-size="11" fill="currentColor">Einer</text>
+    <text x="110" y="87" text-anchor="middle" font-size="24" font-weight="700" fill="currentColor">3</text>
+    <text x="170" y="87" text-anchor="middle" font-size="24" font-weight="700" fill="currentColor">8</text>
+    <text x="230" y="87" text-anchor="middle" font-size="24" font-weight="700" fill="currentColor">4</text>
+    <text x="290" y="87" text-anchor="middle" font-size="24" font-weight="700" fill="currentColor">7</text>
+    <text x="170" y="120" text-anchor="middle" font-size="11" font-weight="700" fill="#10a37f">hier wird gerundet</text>
+    <text x="200" y="145" text-anchor="middle" font-size="13" fill="currentColor">Rechts daneben steht die 4 — also abrunden</text>
+    <text x="200" y="172" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">3.847 wird zu 3.800</text>
+  </svg>`
 },
 
 "Grundrechenarten": {
@@ -3649,7 +3677,18 @@ const ERKLAERUNGEN = {
   regeln:["1. Klammern zuerst.","2. Dann Punkt: mal und geteilt.","3. Zuletzt Strich: plus und minus.","Merksatz: Klammer vor Punkt vor Strich."],
   beispiel:{aufgabe:"12 + 4 · 5",
     schritte:["Keine Klammer da → zuerst der Punkt: 4 · 5 = 20.","Dann bleibt 12 + 20."],
-    ergebnis:"32   (nicht 80 — das käme heraus, wenn man von links rechnet)"}
+    ergebnis:"32   (nicht 80 — das käme heraus, wenn man von links rechnet)"},
+  bild:`<svg viewBox="0 0 400 185" ${SVG_STIL} role="img" aria-label="Reihenfolge beim Rechnen: Klammer vor Punkt vor Strich">
+    <rect x="18" y="26" width="118" height="40" rx="10" fill="#10a37f" fill-opacity=".26" stroke="#10a37f" stroke-width="2"/>
+    <text x="77" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">1. Klammer ( )</text>
+    <rect x="146" y="26" width="104" height="40" rx="10" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="2"/>
+    <text x="198" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">2. Punkt · :</text>
+    <rect x="260" y="26" width="122" height="40" rx="10" fill="#10a37f" fill-opacity=".1" stroke="#10a37f" stroke-width="2"/>
+    <text x="321" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">3. Strich + −</text>
+    <text x="200" y="107" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">12 + <tspan fill="#10a37f">4 · 5</tspan></text>
+    <text x="200" y="135" text-anchor="middle" font-size="13" fill="currentColor">zuerst 4 · 5 = 20, danach 12 + 20</text>
+    <text x="200" y="168" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">= 32   (nicht 80)</text>
+  </svg>`
 },
 
 "Größen und Einheiten": {
@@ -3674,7 +3713,26 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"3 kg 250 g = ___ g",
     schritte:["Kilogramm umrechnen: 3 · 1.000 = 3.000 g.","Die 250 g stehen schon in Gramm.","Zusammenzählen."],
-    ergebnis:"3.250 g"}
+    ergebnis:"3.250 g"},
+  bild:`<svg viewBox="0 0 400 215" ${SVG_STIL} role="img" aria-label="Treppe von Kilometer über Meter und Zentimeter bis Millimeter">
+    <g stroke="#10a37f" stroke-width="2" fill="#10a37f" fill-opacity=".14">
+      <rect x="30" y="34" width="58" height="30" rx="7"/>
+      <rect x="120" y="74" width="58" height="30" rx="7"/>
+      <rect x="210" y="114" width="58" height="30" rx="7"/>
+      <rect x="300" y="154" width="58" height="30" rx="7"/>
+    </g>
+    <g font-size="16" font-weight="700" fill="currentColor" text-anchor="middle">
+      <text x="59" y="55">km</text><text x="149" y="95">m</text>
+      <text x="239" y="135">cm</text><text x="329" y="175">mm</text>
+    </g>
+    <g stroke="#10a37f" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M90 60l26 20"/><path d="M180 100l26 20"/><path d="M270 140l26 20"/>
+    </g>
+    <g font-size="12" font-weight="700" fill="#10a37f">
+      <text x="98" y="56">· 1000</text><text x="188" y="96">· 100</text><text x="278" y="136">· 10</text>
+    </g>
+    <text x="200" y="200" text-anchor="middle" font-size="13" fill="currentColor">runter: mal rechnen · rauf: geteilt rechnen</text>
+  </svg>`
 },
 
 "Flächen und Umfang": {
@@ -3702,7 +3760,7 @@ const ERKLAERUNGEN = {
   bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="Rechteck: Umfang und Fläche">
     <rect x="14" y="30" width="150" height="86" fill="none" stroke="#10a37f" stroke-width="4"/>
     <text x="89" y="22" text-anchor="middle" font-size="13" fill="currentColor">7 cm</text>
-    <text x="8" y="78" text-anchor="middle" font-size="13" fill="currentColor" transform="rotate(-90 8 78)">4 cm</text>
+    <text x="11" y="78" text-anchor="middle" font-size="13" fill="currentColor" transform="rotate(-90 11 78)">4 cm</text>
     <text x="89" y="138" text-anchor="middle" font-size="13" fill="#10a37f">Umfang: außen herum</text>
     <rect x="230" y="30" width="150" height="86" fill="#10a37f" fill-opacity="0.18" stroke="#10a37f" stroke-width="1.5"/>
     <g stroke="#10a37f" stroke-opacity="0.45" stroke-width="1">
@@ -3818,7 +3876,20 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"0,7 + 0,25",
     schritte:["Gleich viele Nachkommastellen: 0,70 + 0,25","70 Hundertstel plus 25 Hundertstel"],
-    ergebnis:"0,95   (nicht 0,32 — das entsteht beim falschen Untereinanderschreiben)"}
+    ergebnis:"0,95   (nicht 0,32 — das entsteht beim falschen Untereinanderschreiben)"},
+  bild:`<svg viewBox="0 0 400 205" ${SVG_STIL} role="img" aria-label="Schriftliche Addition mit Komma unter Komma">
+    <path d="M223 38V132" stroke="#10a37f" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="223" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Komma unter Komma</text>
+    <g font-size="26" text-anchor="end" fill="currentColor">
+      <text x="250" y="68">0,70</text>
+      <text x="250" y="104">0,25</text>
+      <text x="250" y="146">0,95</text>
+    </g>
+    <text x="163" y="104" font-size="26" fill="currentColor">+</text>
+    <path d="M150 116h100" stroke="currentColor" stroke-width="2"/>
+    <text x="200" y="176" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">0,7 ist dasselbe wie 0,70</text>
+    <text x="200" y="196" text-anchor="middle" font-size="12" fill="currentColor">Die Null hilft nur beim Untereinanderschreiben</text>
+  </svg>`
 },
 
 "Teilbarkeit": {
@@ -3844,7 +3915,26 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Ist 738 durch 3 teilbar?",
     schritte:["Quersumme: 7 + 3 + 8 = 18","Ist 18 durch 3 teilbar? Ja, 3 · 6 = 18."],
-    ergebnis:"Ja — 738 : 3 = 246"}
+    ergebnis:"Ja — 738 : 3 = 246"},
+  bild:`<svg viewBox="0 0 400 195" ${SVG_STIL} role="img" aria-label="Zwölf Punkte gehen in drei Reihen auf, dreizehn lassen einen Rest">
+    <text x="105" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="#10a37f">12 auf 3 Reihen</text>
+    <g fill="#10a37f">
+      <circle cx="60" cy="60" r="9"/><circle cx="90" cy="60" r="9"/><circle cx="120" cy="60" r="9"/><circle cx="150" cy="60" r="9"/>
+      <circle cx="60" cy="90" r="9"/><circle cx="90" cy="90" r="9"/><circle cx="120" cy="90" r="9"/><circle cx="150" cy="90" r="9"/>
+      <circle cx="60" cy="120" r="9"/><circle cx="90" cy="120" r="9"/><circle cx="120" cy="120" r="9"/><circle cx="150" cy="120" r="9"/>
+    </g>
+    <text x="105" y="152" text-anchor="middle" font-size="13" fill="currentColor">geht auf — kein Rest</text>
+    <path d="M200 30V150" stroke="currentColor" stroke-opacity=".25" stroke-width="2"/>
+    <text x="295" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="#10a37f">13 auf 3 Reihen</text>
+    <g fill="#10a37f">
+      <circle cx="250" cy="60" r="9"/><circle cx="280" cy="60" r="9"/><circle cx="310" cy="60" r="9"/><circle cx="340" cy="60" r="9"/>
+      <circle cx="250" cy="90" r="9"/><circle cx="280" cy="90" r="9"/><circle cx="310" cy="90" r="9"/><circle cx="340" cy="90" r="9"/>
+      <circle cx="250" cy="120" r="9"/><circle cx="280" cy="120" r="9"/><circle cx="310" cy="120" r="9"/><circle cx="340" cy="120" r="9"/>
+    </g>
+    <circle cx="370" cy="90" r="9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="4 3"/>
+    <text x="295" y="152" text-anchor="middle" font-size="13" fill="currentColor">einer bleibt übrig — Rest 1</text>
+    <text x="200" y="182" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Ohne Rest heißt teilbar</text>
+  </svg>`
 },
 
 "Dreisatz": {
@@ -3867,7 +3957,25 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"3 Hefte kosten 4,50 €. Was kosten 7 Hefte?",
     schritte:["Ein Heft: 4,50 € : 3 = 1,50 €","Sieben Hefte: 1,50 € · 7"],
-    ergebnis:"10,50 €"}
+    ergebnis:"10,50 €"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Dreisatz über den Wert für ein einzelnes Stück">
+    <g font-size="16" fill="currentColor">
+      <text x="185" y="55" text-anchor="end">3 Hefte</text><text x="215" y="55">4,50 €</text>
+      <text x="185" y="105" text-anchor="end">1 Heft</text><text x="215" y="105">1,50 €</text>
+      <text x="185" y="155" text-anchor="end">7 Hefte</text><text x="215" y="155">10,50 €</text>
+    </g>
+    <g stroke="#10a37f" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M110 62v28"/><path d="M104 84l6 8 6-8"/>
+      <path d="M110 112v28"/><path d="M104 134l6 8 6-8"/>
+      <path d="M300 62v28"/><path d="M294 84l6 8 6-8"/>
+      <path d="M300 112v28"/><path d="M294 134l6 8 6-8"/>
+    </g>
+    <g font-size="13" font-weight="700" fill="#10a37f">
+      <text x="96" y="82" text-anchor="end">: 3</text><text x="96" y="132" text-anchor="end">· 7</text>
+      <text x="314" y="82">: 3</text><text x="314" y="132">· 7</text>
+    </g>
+    <text x="200" y="188" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Immer den Umweg über ein einzelnes Stück</text>
+  </svg>`
 },
 
 "Winkel messen": {
@@ -3932,7 +4040,18 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"3x + 5 = 20",
     schritte:["Auf beiden Seiten 5 abziehen → 3x = 15","Beide Seiten durch 3 teilen → x = 5","Probe: 3 · 5 + 5 = 20 ✓"],
-    ergebnis:"x = 5"}
+    ergebnis:"x = 5"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Waage: beide Seiten bleiben im Gleichgewicht">
+    <path d="M40 120H360" stroke="#10a37f" stroke-width="4" stroke-linecap="round"/>
+    <path d="M200 120v46" stroke="#10a37f" stroke-width="4"/>
+    <path d="M170 172h60" stroke="#10a37f" stroke-width="5" stroke-linecap="round"/>
+    <rect x="55" y="62" width="130" height="52" rx="9" fill="#10a37f" fill-opacity=".14" stroke="#10a37f" stroke-width="2"/>
+    <text x="120" y="95" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">3x + 5</text>
+    <rect x="215" y="62" width="130" height="52" rx="9" fill="#10a37f" fill-opacity=".14" stroke="#10a37f" stroke-width="2"/>
+    <text x="280" y="95" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">20</text>
+    <text x="200" y="40" text-anchor="middle" font-size="14" fill="currentColor">beide Seiten sind gleich schwer</text>
+    <text x="200" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="#10a37f">Was du links tust, musst du auch rechts tun</text>
+  </svg>`
 },
 
 "Prozent und Zinsen": {
@@ -3960,7 +4079,16 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Ein Handy kostet 480 €, im Angebot 15 % günstiger.",
     schritte:["100 % − 15 % = 85 % zahlst du noch.","85 % = 0,85","480 · 0,85"],
-    ergebnis:"408 €"}
+    ergebnis:"408 €"},
+  bild:`<svg viewBox="0 0 400 185" ${SVG_STIL} role="img" aria-label="Balken: 85 Prozent bleiben, 15 Prozent sind Rabatt">
+    <text x="200" y="34" text-anchor="middle" font-size="13" fill="currentColor">das Ganze = 100 % = 480 €</text>
+    <rect x="30" y="46" width="289" height="42" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+    <rect x="319" y="46" width="51" height="42" fill="none" stroke="#10a37f" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="174" y="73" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">85 % bleiben</text>
+    <text x="344" y="108" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">15 % ab</text>
+    <text x="200" y="140" text-anchor="middle" font-size="19" font-weight="700" fill="currentColor">480 € · 0,85 = 408 €</text>
+    <text x="200" y="170" text-anchor="middle" font-size="13" fill="currentColor">„15 % weniger“ heißt beim Rechnen: mal 0,85</text>
+  </svg>`
 },
 
 /* ===================== DEUTSCH ===================== */
@@ -3988,7 +4116,24 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Ich hoffe, ___ du morgen kommst.",
     schritte:["Test: „Ich hoffe, dieses du morgen kommst.“","Klingt falsch → Test klappt nicht."],
-    ergebnis:"dass"}
+    ergebnis:"dass"},
+  bild:`<svg viewBox="0 0 400 205" ${SVG_STIL} role="img" aria-label="Ersatzprobe: dieses einsetzen entscheidet zwischen das und dass">
+    <rect x="66" y="18" width="268" height="42" rx="10" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="2"/>
+    <text x="200" y="45" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Passt „dieses“ an der Stelle?</text>
+    <g stroke="#10a37f" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M160 62l-52 32"/><path d="M104 86l4 10 10-2"/>
+      <path d="M240 62l52 32"/><path d="M296 86l-4 10-10-2"/>
+    </g>
+    <text x="112" y="76" text-anchor="end" font-size="13" font-weight="700" fill="#10a37f">ja</text>
+    <text x="288" y="76" text-anchor="start" font-size="13" font-weight="700" fill="#10a37f">nein</text>
+    <rect x="20" y="100" width="166" height="62" rx="10" fill="none" stroke="#10a37f" stroke-width="2"/>
+    <text x="103" y="126" text-anchor="middle" font-size="20" font-weight="700" fill="#10a37f">das</text>
+    <text x="103" y="148" text-anchor="middle" font-size="11" fill="currentColor">Das Buch, das dort liegt</text>
+    <rect x="214" y="100" width="166" height="62" rx="10" fill="none" stroke="#10a37f" stroke-width="2"/>
+    <text x="297" y="126" text-anchor="middle" font-size="20" font-weight="700" fill="#10a37f">dass</text>
+    <text x="297" y="148" text-anchor="middle" font-size="11" fill="currentColor">Ich hoffe, dass du kommst</text>
+    <text x="200" y="188" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Ein Komma steht in beiden Fällen — es hilft nicht</text>
+  </svg>`
 },
 
 "Kommas bei Nebensätzen": {
@@ -4014,7 +4159,19 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Ich rufe dich an ___ wenn ich zu Hause bin.",
     schritte:["Verben: „rufe an“ und „bin“ → zwei Satzteile.","Nebensatz: „wenn ich zu Hause bin“."],
-    ergebnis:"Komma direkt vor „wenn“"}
+    ergebnis:"Komma direkt vor „wenn“"},
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Hauptsatz und Nebensatz, dazwischen das Komma">
+    <text x="102" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Hauptsatz</text>
+    <text x="296" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Nebensatz</text>
+    <rect x="14" y="52" width="176" height="42" rx="9" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="2"/>
+    <text x="102" y="79" text-anchor="middle" font-size="14" fill="currentColor">Ich rufe dich an</text>
+    <text x="198" y="84" text-anchor="middle" font-size="30" font-weight="700" fill="#10a37f">,</text>
+    <rect x="206" y="52" width="180" height="42" rx="9" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="2"/>
+    <text x="296" y="79" text-anchor="middle" font-size="14" fill="currentColor">wenn ich zu Hause bin</text>
+    <text x="102" y="114" text-anchor="middle" font-size="11" fill="currentColor">Verb an zweiter Stelle: rufe</text>
+    <text x="296" y="114" text-anchor="middle" font-size="11" fill="currentColor">Verb ganz hinten: bin</text>
+    <text x="200" y="152" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Zwei Verben — also zwei Sätze — also ein Komma</text>
+  </svg>`
 },
 
 "Nominalisierung": {
@@ -4039,7 +4196,20 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Beim ___ (laufen) höre ich Musik.",
     schritte:["„Beim“ enthält den Artikel „dem“.","Artikel + Verb → Nomen."],
-    ergebnis:"Beim Laufen höre ich Musik."}
+    ergebnis:"Beim Laufen höre ich Musik."},
+  bild:`<svg viewBox="0 0 400 180" ${SVG_STIL} role="img" aria-label="Aus dem Verb laufen wird das Nomen Laufen">
+    <rect x="20" y="45" width="155" height="48" rx="10" fill="none" stroke="#10a37f" stroke-width="2"/>
+    <text x="97" y="76" text-anchor="middle" font-size="19" fill="currentColor">laufen</text>
+    <text x="97" y="112" text-anchor="middle" font-size="12" fill="currentColor">Verb → klein</text>
+    <path d="M182 69h32" stroke="#10a37f" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M208 63l7 6-7 6" fill="none" stroke="#10a37f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="198" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Artikel davor</text>
+    <rect x="221" y="45" width="159" height="48" rx="10" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="2"/>
+    <text x="300" y="76" text-anchor="middle" font-size="19" font-weight="700" fill="currentColor">das Laufen</text>
+    <text x="300" y="112" text-anchor="middle" font-size="12" fill="currentColor">Nomen → groß</text>
+    <text x="200" y="146" text-anchor="middle" font-size="13" fill="currentColor">Versteckte Artikel: beim · zum · vom · im · am</text>
+    <text x="200" y="168" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Beim Laufen höre ich Musik.</text>
+  </svg>`
 },
 
 "Wortarten erkennen": {
@@ -4067,7 +4237,25 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Der schnelle Hund läuft.",
     schritte:["„Der“ begleitet ein Nomen → Artikel","„schnelle“ beschreibt → Adjektiv","„Hund“ ist ein Lebewesen mit Artikel → Nomen","„läuft“ sagt, was passiert → Verb"],
-    ergebnis:"Artikel · Adjektiv · Nomen · Verb"}
+    ergebnis:"Artikel · Adjektiv · Nomen · Verb"},
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Der Satz Der schnelle Hund laeuft mit den Wortarten darunter">
+    <g font-size="17" fill="currentColor" text-anchor="middle">
+      <text x="55" y="55">Der</text><text x="150" y="55">schnelle</text>
+      <text x="250" y="55">Hund</text><text x="335" y="55">läuft</text>
+    </g>
+    <g stroke="#10a37f" stroke-width="2.5" stroke-linecap="round">
+      <path d="M35 66h40"/><path d="M115 66h70"/><path d="M222 66h56"/><path d="M312 66h46"/>
+    </g>
+    <g font-size="12" font-weight="700" fill="#10a37f" text-anchor="middle">
+      <text x="55" y="88">Artikel</text><text x="150" y="88">Adjektiv</text>
+      <text x="250" y="88">Nomen</text><text x="335" y="88">Verb</text>
+    </g>
+    <g font-size="11" fill="currentColor" text-anchor="middle" opacity=".85">
+      <text x="55" y="110">Begleiter</text><text x="150" y="110">steigerbar</text>
+      <text x="250" y="110">Artikel davor</text><text x="335" y="110">beugbar</text>
+    </g>
+    <text x="200" y="145" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Nicht der Platz im Satz zählt, sondern die Aufgabe</text>
+  </svg>`
 },
 
 "Satzglieder bestimmen": {
@@ -4094,7 +4282,26 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Der Lehrer erklärt den Schülern die Aufgabe.",
     schritte:["Was geschieht? → erklärt (Prädikat)","Wer erklärt? → Der Lehrer (Subjekt)","Wem? → den Schülern (Dativobjekt)","Was? → die Aufgabe (Akkusativobjekt)"],
-    ergebnis:"Subjekt · Prädikat · Dativobjekt · Akkusativobjekt"}
+    ergebnis:"Subjekt · Prädikat · Dativobjekt · Akkusativobjekt"},
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Satz in seine Satzglieder zerlegt">
+    <rect x="16" y="60" width="88" height="44" rx="9" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2"/>
+    <text x="60" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">Der Lehrer</text>
+    <rect x="108" y="60" width="64" height="44" rx="9" fill="#10a37f" fill-opacity=".4" stroke="#10a37f" stroke-width="2"/>
+    <text x="140" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">erklärt</text>
+    <rect x="176" y="60" width="104" height="44" rx="9" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2"/>
+    <text x="228" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">den Schülern</text>
+    <rect x="284" y="60" width="100" height="44" rx="9" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2"/>
+    <text x="334" y="88" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">die Aufgabe</text>
+    <text x="60" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Wer?</text>
+    <text x="140" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Was tut er?</text>
+    <text x="228" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Wem?</text>
+    <text x="334" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Wen/Was?</text>
+    <text x="60" y="126" text-anchor="middle" font-size="12" fill="currentColor">Subjekt</text>
+    <text x="140" y="126" text-anchor="middle" font-size="12" fill="currentColor">Prädikat</text>
+    <text x="228" y="126" text-anchor="middle" font-size="12" fill="currentColor">Dativobjekt</text>
+    <text x="334" y="126" text-anchor="middle" font-size="12" fill="currentColor">Akkusativobjekt</text>
+    <text x="200" y="168" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Die Frage verrät das Satzglied</text>
+  </svg>`
 },
 
 "Groß- und Kleinschreibung": {
@@ -4119,7 +4326,13 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Wir haben viel ___ (gelacht) — das ___ (lachen) tat gut.",
     schritte:["„gelacht“ steht allein als Verb → klein","„das lachen“ hat einen Artikel davor → Nomen → groß"],
-    ergebnis:"gelacht · Lachen"}
+    ergebnis:"gelacht · Lachen"},
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Satz mit zwei nominalisierten Woertern, die grossgeschrieben werden">
+    <text x="200" y="32" text-anchor="middle" font-size="12" fill="currentColor">Aus Verben werden Nomen — und Nomen schreibt man groß</text>
+    <text x="200" y="72" text-anchor="middle" font-size="17" fill="currentColor">Beim <tspan fill="#10a37f" font-weight="700">Schwimmen</tspan> ist das <tspan fill="#10a37f" font-weight="700">Atmen</tspan> wichtig.</text>
+    <text x="200" y="102" text-anchor="middle" font-size="12" fill="currentColor">Nach „beim“ und nach „das“ steht hier ein Nomen</text>
+    <text x="200" y="140" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Test: Artikel davor möglich? Dann groß.</text>
+  </svg>`
 },
 
 "Wörtliche Rede": {
@@ -4144,7 +4357,15 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Anna sagt ___ „Ich habe keine Zeit.“",
     schritte:["Der Begleitsatz „Anna sagt“ steht vorne.","Vor der Rede steht dann ein Doppelpunkt."],
-    ergebnis:"Anna sagt: „Ich habe keine Zeit.“"}
+    ergebnis:"Anna sagt: „Ich habe keine Zeit.“"},
+  bild:`<svg viewBox="0 0 400 185" ${SVG_STIL} role="img" aria-label="Woertliche Rede mit Doppelpunkt vorne und Komma hinten">
+    <text x="200" y="34" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Begleitsatz vorne → Doppelpunkt</text>
+    <text x="200" y="62" text-anchor="middle" font-size="16" fill="currentColor">Er sagte<tspan fill="#10a37f" font-weight="700">:</tspan> „Ich komme später.“</text>
+    <path d="M40 84h320" stroke="currentColor" stroke-opacity=".2" stroke-width="1.5"/>
+    <text x="200" y="112" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Begleitsatz hinten → Komma nach der Rede</text>
+    <text x="200" y="140" text-anchor="middle" font-size="16" fill="currentColor">„Ich komme später“<tspan fill="#10a37f" font-weight="700">,</tspan> sagte er.</text>
+    <text x="200" y="172" text-anchor="middle" font-size="13" fill="currentColor">Frage- und Ausrufezeichen bleiben in den Anführungszeichen</text>
+  </svg>`
 },
 
 "Zeitformen": {
@@ -4176,7 +4397,28 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"„Ich habe das Buch gelesen.“ Welche Zeitform?",
     schritte:["Zwei Teile: „habe“ + „gelesen“.","„habe“ ist die Gegenwart von haben.","haben in der Gegenwart + Partizip → Perfekt."],
-    ergebnis:"Perfekt"}
+    ergebnis:"Perfekt"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Zeitstrahl mit Vergangenheit, Gegenwart und Zukunft">
+    <path d="M16 110H382" stroke="#10a37f" stroke-width="3"/>
+    <path d="M370 102l12 8-12 8" fill="none" stroke="#10a37f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="60" cy="110" r="6" fill="#10a37f"/>
+    <circle cx="150" cy="110" r="6" fill="#10a37f"/>
+    <circle cx="245" cy="110" r="8" fill="#10a37f"/>
+    <circle cx="335" cy="110" r="6" fill="#10a37f"/>
+    <text x="60" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Plusquamperfekt</text>
+    <text x="60" y="132" text-anchor="middle" font-size="12" fill="currentColor">ich war gegangen</text>
+    <text x="150" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Präteritum</text>
+    <text x="150" y="132" text-anchor="middle" font-size="12" fill="currentColor">ich ging</text>
+    <text x="245" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Präsens</text>
+    <text x="245" y="132" text-anchor="middle" font-size="12" fill="currentColor">ich gehe</text>
+    <text x="335" y="94" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">Futur I</text>
+    <text x="335" y="132" text-anchor="middle" font-size="12" fill="currentColor">ich werde gehen</text>
+    <text x="60" y="52" text-anchor="middle" font-size="12" fill="currentColor" opacity=".7">früher</text>
+    <text x="245" y="52" text-anchor="middle" font-size="12" fill="currentColor" opacity=".7">jetzt</text>
+    <text x="335" y="52" text-anchor="middle" font-size="12" fill="currentColor" opacity=".7">später</text>
+    <text x="200" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Das Perfekt („ich bin gegangen“)</text>
+    <text x="200" y="190" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">meint dasselbe wie das Präteritum</text>
+  </svg>`
 },
 
 "Kommas bei Aufzählungen": {
@@ -4199,7 +4441,13 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Ich kaufe Äpfel ___ Birnen ___ und Bananen.",
     schritte:["Zwischen Äpfel und Birnen: Komma.","Vor „und“: kein Komma."],
-    ergebnis:"Ich kaufe Äpfel, Birnen und Bananen."}
+    ergebnis:"Ich kaufe Äpfel, Birnen und Bananen."},
+  bild:`<svg viewBox="0 0 400 155" ${SVG_STIL} role="img" aria-label="Aufzaehlung mit Kommas und einem und ohne Komma">
+    <text x="200" y="62" text-anchor="middle" font-size="17" fill="currentColor">Ich kaufe Äpfel<tspan fill="#10a37f" font-weight="700">,</tspan> Birnen<tspan fill="#10a37f" font-weight="700">,</tspan> Nüsse <tspan fill="#10a37f" font-weight="700">und</tspan> Brot.</text>
+    <text x="120" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">zwischen den Gliedern: Komma</text>
+    <text x="300" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">vor „und“: kein Komma</text>
+    <text x="200" y="134" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Vor „oder“ steht genauso wenig ein Komma</text>
+  </svg>`
 },
 
 "Adjektive steigern": {
@@ -4227,7 +4475,19 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"gut → ? → ?",
     schritte:["„guter“ gibt es nicht — das Wort ist unregelmäßig.","Die Formen muss man kennen."],
-    ergebnis:"gut – besser – am besten"}
+    ergebnis:"gut – besser – am besten"},
+  bild:`<svg viewBox="0 0 400 185" ${SVG_STIL} role="img" aria-label="Treppe der drei Steigerungsformen">
+    <rect x="20" y="112" width="112" height="44" rx="9" fill="#10a37f" fill-opacity=".12" stroke="#10a37f" stroke-width="2"/>
+    <text x="76" y="140" text-anchor="middle" font-size="15" fill="currentColor">schnell</text>
+    <text x="76" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#10a37f">Grundform</text>
+    <rect x="142" y="80" width="112" height="44" rx="9" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2"/>
+    <text x="198" y="108" text-anchor="middle" font-size="15" fill="currentColor">schneller</text>
+    <text x="198" y="72" text-anchor="middle" font-size="11" font-weight="700" fill="#10a37f">Vergleichsform</text>
+    <rect x="264" y="48" width="120" height="44" rx="9" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+    <text x="324" y="76" text-anchor="middle" font-size="15" fill="currentColor">am schnellsten</text>
+    <text x="324" y="40" text-anchor="middle" font-size="11" font-weight="700" fill="#10a37f">Höchstform</text>
+    <text x="200" y="176" text-anchor="middle" font-size="13" fill="currentColor">Unregelmäßig: gut – besser – am besten</text>
+  </svg>`
 },
 "Terme umformen": {
   worum:"Ein Term ist eine Rechnung mit Buchstaben. Umformen heißt: kürzer schreiben, ohne den Wert zu verändern.",
@@ -4250,7 +4510,18 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"4 · (x + 3) + 2",
     schritte:["Klammer auflösen: 4 · x = 4x und 4 · 3 = 12.","Jetzt steht da: 4x + 12 + 2.","12 und 2 sind beides reine Zahlen, die gehen zusammen."],
-    ergebnis:"4x + 14"}
+    ergebnis:"4x + 14"},
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Gleichartige Terme werden zusammengefasst">
+    <text x="200" y="54" text-anchor="middle" font-size="22" fill="currentColor"><tspan fill="#10a37f" font-weight="700">3x</tspan> + 5 + <tspan fill="#10a37f" font-weight="700">2x</tspan> + 4</text>
+    <g stroke="#10a37f" stroke-width="2" fill="none">
+      <path d="M121 62v10h119v-10"/>
+      <path d="M167 30v-10h111v10" stroke-opacity=".45"/>
+    </g>
+    <text x="180" y="90" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">die x zusammen</text>
+    <text x="222" y="16" text-anchor="middle" font-size="12" fill="currentColor" opacity=".75">die Zahlen zusammen</text>
+    <text x="200" y="130" text-anchor="middle" font-size="24" font-weight="700" fill="currentColor">= 5x + 9</text>
+    <text x="200" y="162" text-anchor="middle" font-size="13" fill="currentColor">Nur Gleichartiges darf zusammen — x bleibt x</text>
+  </svg>`
 },
 
 "Binomische Formeln": {
@@ -4274,7 +4545,22 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"(x + 5)²",
     schritte:["Erstes Quadrat: x².","Doppeltes Produkt: 2 · x · 5 = 10x.","Zweites Quadrat: 5² = 25."],
-    ergebnis:"x² + 10x + 25"}
+    ergebnis:"x² + 10x + 25"},
+  bild:`<svg viewBox="0 0 400 250" ${SVG_STIL} role="img" aria-label="Quadrat aus vier Teilflaechen: a hoch 2, zweimal a mal b und b hoch 2">
+    <rect x="100" y="30" width="120" height="120" fill="#10a37f" fill-opacity=".22" stroke="#10a37f" stroke-width="2"/>
+    <text x="160" y="98" text-anchor="middle" font-size="20" font-weight="700" fill="#10a37f">a²</text>
+    <rect x="220" y="30" width="70" height="120" fill="#10a37f" fill-opacity=".1" stroke="#10a37f" stroke-width="2"/>
+    <text x="255" y="98" text-anchor="middle" font-size="18" font-weight="700" fill="#10a37f">a·b</text>
+    <rect x="100" y="150" width="120" height="70" fill="#10a37f" fill-opacity=".1" stroke="#10a37f" stroke-width="2"/>
+    <text x="160" y="192" text-anchor="middle" font-size="18" font-weight="700" fill="#10a37f">a·b</text>
+    <rect x="220" y="150" width="70" height="70" fill="#10a37f" fill-opacity=".22" stroke="#10a37f" stroke-width="2"/>
+    <text x="255" y="192" text-anchor="middle" font-size="18" font-weight="700" fill="#10a37f">b²</text>
+    <text x="160" y="22" text-anchor="middle" font-size="14" fill="currentColor">a</text>
+    <text x="255" y="22" text-anchor="middle" font-size="14" fill="currentColor">b</text>
+    <text x="92" y="96" text-anchor="end" font-size="14" fill="currentColor">a</text>
+    <text x="92" y="190" text-anchor="end" font-size="14" fill="currentColor">b</text>
+    <text x="200" y="242" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">Das ganze Quadrat: a² + 2ab + b²</text>
+  </svg>`
 },
 
 "Lineare Funktionen": {
@@ -4298,7 +4584,25 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Steigung durch P(1 | 3) und Q(4 | 12)",
     schritte:["Nach rechts: 4 − 1 = 3.","Nach oben: 12 − 3 = 9.","Steigung: 9 geteilt durch 3."],
-    ergebnis:"m = 3"}
+    ergebnis:"m = 3"},
+  bild:`<svg viewBox="0 0 400 240" ${SVG_STIL} role="img" aria-label="Gerade im Koordinatensystem mit Steigungsdreieck">
+    <g stroke="currentColor" stroke-opacity=".16" stroke-width="1">
+      <path d="M60 40V200M120 40V200M180 40V200M240 40V200M300 40V200M360 40V200"/>
+      <path d="M40 60H370M40 100H370M40 140H370M40 180H370"/>
+    </g>
+    <path d="M40 200H375" stroke="currentColor" stroke-width="2"/>
+    <path d="M60 215V35" stroke="currentColor" stroke-width="2"/>
+    <text x="378" y="205" font-size="13" fill="currentColor">x</text>
+    <text x="52" y="32" font-size="13" fill="currentColor">y</text>
+    <path d="M60 180L360 60" stroke="#10a37f" stroke-width="3.5"/>
+    <circle cx="60" cy="180" r="5" fill="#10a37f"/>
+    <text x="30" y="185" font-size="13" fill="currentColor">b</text>
+    <path d="M180 132H240" stroke="#10a37f" stroke-width="2.5" stroke-dasharray="5 4"/>
+    <path d="M240 132V108" stroke="#10a37f" stroke-width="2.5" stroke-dasharray="5 4"/>
+    <text x="210" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#10a37f">1 nach rechts</text>
+    <text x="248" y="122" font-size="13" font-weight="700" fill="#10a37f">m hoch</text>
+    <text x="200" y="232" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">y = m·x + b — m ist die Steigung, b der Start</text>
+  </svg>`
 },
 
 "Quadratische Gleichungen": {
@@ -4323,7 +4627,19 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"x² − 5x + 6 = 0",
     schritte:["p = −5 und q = 6 ablesen.","−p/2 = 2,5","Unter der Wurzel: 2,5² − 6 = 0,25 → √0,25 = 0,5","2,5 + 0,5 = 3 und 2,5 − 0,5 = 2"],
-    ergebnis:"x₁ = 2, x₂ = 3"}
+    ergebnis:"x₁ = 2, x₂ = 3"},
+  bild:`<svg viewBox="0 0 400 245" ${SVG_STIL} role="img" aria-label="Parabel schneidet die x-Achse an den beiden Loesungen">
+    <path d="M40 120H365" stroke="currentColor" stroke-width="2"/>
+    <path d="M200 190V45" stroke="currentColor" stroke-width="2"/>
+    <text x="368" y="115" font-size="13" fill="currentColor">x</text>
+    <polyline points="101.4,58.3 108.2,73.9 115.0,88.5 121.8,101.9 128.6,114.3 135.4,125.5 142.2,135.5 149.0,144.5 155.8,152.3 162.6,159.1 169.4,164.7 176.2,169.1 183.0,172.5 189.8,174.7 196.6,175.9 203.4,175.9 210.2,174.7 217.0,172.5 223.8,169.1 230.6,164.7 237.4,159.1 244.2,152.3 251.0,144.5 257.8,135.5 264.6,125.5 271.4,114.3 278.2,101.9 285.0,88.5 291.8,73.9 298.6,58.3" fill="none" stroke="#10a37f" stroke-width="3.5" stroke-linejoin="round"/>
+    <circle cx="132" cy="120" r="6" fill="#10a37f"/>
+    <circle cx="268" cy="120" r="6" fill="#10a37f"/>
+    <text x="120" y="146" text-anchor="middle" font-size="15" font-weight="700" fill="#10a37f">x₁</text>
+    <text x="280" y="146" text-anchor="middle" font-size="15" font-weight="700" fill="#10a37f">x₂</text>
+    <text x="200" y="218" text-anchor="middle" font-size="13" fill="currentColor">Wo die Parabel die Linie kreuzt, ist die Gleichung null</text>
+    <text x="200" y="238" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Deshalb gibt es meistens zwei Lösungen</text>
+  </svg>`
 },
 
 "Satz des Pythagoras": {
@@ -4347,7 +4663,19 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"a = 3 cm, b = 4 cm, c = ?",
     schritte:["3² = 9 und 4² = 16.","9 + 16 = 25, also c² = 25.","Wurzel ziehen: √25 = 5."],
-    ergebnis:"c = 5 cm"}
+    ergebnis:"c = 5 cm"},
+  bild:`<svg viewBox="0 0 400 235" ${SVG_STIL} role="img" aria-label="Rechtwinkliges Dreieck mit den Quadraten über den beiden Katheten">
+    <rect x="130" y="50" width="60" height="60" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="2"/>
+    <text x="160" y="86" text-anchor="middle" font-size="15" font-weight="700" fill="#10a37f">a² = 9</text>
+    <rect x="190" y="110" width="80" height="80" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="2"/>
+    <text x="230" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#10a37f">b² = 16</text>
+    <path d="M190 110V50L270 110Z" fill="none" stroke="#10a37f" stroke-width="3.5"/>
+    <path d="M190 96h14v14" fill="none" stroke="#10a37f" stroke-width="2"/>
+    <text x="197" y="86" text-anchor="start" font-size="13" fill="currentColor">a = 3</text>
+    <text x="232" y="104" text-anchor="middle" font-size="13" fill="currentColor">b = 4</text>
+    <text x="252" y="68" text-anchor="start" font-size="13" fill="currentColor">c = 5</text>
+    <text x="200" y="222" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">9 + 16 = 25 — und 25 ist 5²</text>
+  </svg>`
 },
 
 "Potenzen und Wurzeln": {
@@ -4372,7 +4700,15 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"a⁴ · a³",
     schritte:["a⁴ sind vier Stück a, a³ sind drei Stück a.","Zusammen sind das sieben Stück a."],
-    ergebnis:"a⁷"}
+    ergebnis:"a⁷"},
+  bild:`<svg viewBox="0 0 400 185" ${SVG_STIL} role="img" aria-label="Potenz als wiederholtes Malnehmen, Wurzel als Umkehrung">
+    <text x="200" y="48" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">2³ = 2 · 2 · 2 = 8</text>
+    <text x="200" y="70" text-anchor="middle" font-size="12" fill="#10a37f">die Hochzahl sagt, wie oft die 2 dasteht</text>
+    <path d="M60 88h280" stroke="currentColor" stroke-opacity=".2" stroke-width="1.5"/>
+    <text x="200" y="122" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">√9 = 3   (denn 3² = 9)</text>
+    <text x="200" y="144" text-anchor="middle" font-size="12" fill="#10a37f">die Wurzel fragt zurück</text>
+    <text x="200" y="174" text-anchor="middle" font-size="13" fill="currentColor">Gleiche Basis: Hochzahlen addieren — a⁴ · a³ = a⁷</text>
+  </svg>`
 },
 
 "Quadratische Funktionen": {
@@ -4397,7 +4733,20 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"f(x) = (x − 3)² + 2",
     schritte:["In der Klammer steht x − 3, also wird die Klammer bei x = 3 null.","Der x-Wert des Scheitels ist 3.","Hinten steht + 2, das ist der y-Wert."],
-    ergebnis:"S(3 | 2)"}
+    ergebnis:"S(3 | 2)"},
+  bild:`<svg viewBox="0 0 400 240" ${SVG_STIL} role="img" aria-label="Parabel mit Scheitelpunkt">
+    <g stroke="currentColor" stroke-opacity=".16" stroke-width="1">
+      <path d="M80 30V210M150 30V210M220 30V210M290 30V210"/>
+      <path d="M40 65H360M40 110H360M40 155H360"/>
+    </g>
+    <path d="M40 195H365" stroke="currentColor" stroke-width="2"/>
+    <path d="M80 220V25" stroke="currentColor" stroke-width="2"/>
+    <polyline points="102.4,46.3 109.2,66.5 116.0,85.0 122.8,101.7 129.6,116.7 136.4,129.9 143.2,141.3 150.0,151.0 156.8,158.9 163.6,165.1 170.4,169.5 177.2,172.1 184.0,173.0 190.8,172.1 197.6,169.5 204.4,165.1 211.2,158.9 218.0,151.0 224.8,141.3 231.6,129.9 238.4,116.7 245.2,101.7 252.0,85.0 258.8,66.5 265.6,46.3" fill="none" stroke="#10a37f" stroke-width="3.5" stroke-linejoin="round"/>
+    <circle cx="184" cy="173" r="6" fill="#10a37f"/>
+    <text x="196" y="166" font-size="14" font-weight="700" fill="#10a37f">Scheitelpunkt</text>
+    <text x="196" y="183" font-size="12" fill="currentColor" opacity=".8">der tiefste Punkt</text>
+    <text x="200" y="232" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">f(x) = (x − d)² + e → Scheitel S(d | e)</text>
+  </svg>`
 },
 
 "Trigonometrie": {
@@ -4422,7 +4771,18 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"c = 10 cm, α = 30°, Gegenkathete a = ?",
     schritte:["Gegenkathete und Hypotenuse → Sinus.","sin(30°) = a : 10","Umstellen: a = 10 · sin(30°) = 10 · 0,5"],
-    ergebnis:"a = 5 cm"}
+    ergebnis:"a = 5 cm"},
+  bild:`<svg viewBox="0 0 400 220" ${SVG_STIL} role="img" aria-label="Rechtwinkliges Dreieck mit Gegenkathete, Ankathete und Hypotenuse">
+    <path d="M70 170H290V60Z" fill="#10a37f" fill-opacity=".08" stroke="#10a37f" stroke-width="3.5"/>
+    <path d="M276 170v-14h14" fill="none" stroke="#10a37f" stroke-width="2"/>
+    <path d="M70 170a34 34 0 0 1 33-27" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <text x="112" y="163" font-size="17" font-weight="700" fill="#10a37f">α</text>
+    <text x="180" y="190" text-anchor="middle" font-size="14" fill="currentColor">Ankathete — liegt am Winkel an</text>
+    <text x="298" y="118" text-anchor="start" font-size="14" fill="currentColor">Gegenkathete</text>
+    <text x="298" y="136" text-anchor="start" font-size="12" fill="currentColor" opacity=".75">gegenüber</text>
+    <text x="150" y="100" text-anchor="middle" font-size="14" fill="currentColor" transform="rotate(-26 150 100)">Hypotenuse — die längste</text>
+    <text x="200" y="212" text-anchor="middle" font-size="13" fill="#10a37f">sin = Gegen : Hypo · cos = An : Hypo · tan = Gegen : An</text>
+  </svg>`
 },
 
 "Exponentielles Wachstum": {
@@ -4447,7 +4807,17 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"1000 € wachsen 3 Jahre lang um 10 % pro Jahr",
     schritte:["Faktor: 1 + 10/100 = 1,1","Drei Jahre: 1000 · 1,1³","1,1³ = 1,331"],
-    ergebnis:"1331 €"}
+    ergebnis:"1331 €"},
+  bild:`<svg viewBox="0 0 400 240" ${SVG_STIL} role="img" aria-label="Vergleich: gerade Linie gegen exponentiell steigende Kurve">
+    <path d="M45 200H370" stroke="currentColor" stroke-width="2"/>
+    <path d="M45 215V40" stroke="currentColor" stroke-width="2"/>
+    <text x="373" y="205" font-size="13" fill="currentColor">Zeit</text>
+    <polyline points="45.0,179.0 85.0,164.6 125.0,150.2 165.0,135.8 205.0,121.4 245.0,107.0 285.0,92.6 325.0,78.2 365.0,63.8" fill="none" stroke="currentColor" stroke-opacity=".45" stroke-width="3" stroke-dasharray="7 5"/>
+    <polyline points="45.0,179.0 55.0,177.8 65.0,176.4 75.0,175.0 85.0,173.4 95.0,171.7 105.0,169.9 115.0,167.9 125.0,165.8 135.0,163.6 145.0,161.1 155.0,158.5 165.0,155.6 175.0,152.6 185.0,149.3 195.0,145.7 205.0,141.9 215.0,137.7 225.0,133.3 235.0,128.4 245.0,123.3 255.0,117.7 265.0,111.6 275.0,105.1 285.0,98.1 295.0,90.6 305.0,82.5 315.0,73.7 325.0,64.2 335.0,54.1 345.0,43.1 355.0,31.2 365.0,18.5" fill="none" stroke="#10a37f" stroke-width="3.5" stroke-linejoin="round"/>
+    <text x="250" y="152" font-size="13" fill="currentColor" opacity=".7">immer derselbe Betrag</text>
+    <text x="255" y="88" text-anchor="end" font-size="13" font-weight="700" fill="#10a37f">immer derselbe Anteil</text>
+    <text x="200" y="228" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Weil der Zuwachs mitwächst, wird es immer steiler</text>
+  </svg>`
 },
 
 "Konjunktiv": {
@@ -4472,7 +4842,20 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Tom sagt: „Ich komme später.“ → indirekt",
     schritte:["Grundform: kommen.","Stamm komm- plus -e ergibt komme.","Der Konjunktiv unterscheidet sich hörbar von „kommt“."],
-    ergebnis:"Tom sagt, er komme später."}
+    ergebnis:"Tom sagt, er komme später."},
+  bild:`<svg viewBox="0 0 400 185" ${SVG_STIL} role="img" aria-label="Konjunktiv I fuer indirekte Rede, Konjunktiv II fuer Unwirkliches">
+    <text x="104" y="34" text-anchor="middle" font-size="12" fill="currentColor">indirekte Rede</text>
+    <text x="296" y="34" text-anchor="middle" font-size="12" fill="currentColor">Wunsch, Unwirkliches</text>
+    <rect x="14" y="44" width="180" height="86" rx="10" fill="#10a37f" fill-opacity=".14" stroke="#10a37f" stroke-width="2"/>
+    <text x="104" y="70" text-anchor="middle" font-size="15" font-weight="700" fill="#10a37f">Konjunktiv I</text>
+    <text x="104" y="96" text-anchor="middle" font-size="13" fill="currentColor">Er sagt, er habe</text>
+    <text x="104" y="115" text-anchor="middle" font-size="13" fill="currentColor">keine Zeit.</text>
+    <rect x="206" y="44" width="180" height="86" rx="10" fill="#10a37f" fill-opacity=".14" stroke="#10a37f" stroke-width="2"/>
+    <text x="296" y="70" text-anchor="middle" font-size="15" font-weight="700" fill="#10a37f">Konjunktiv II</text>
+    <text x="296" y="96" text-anchor="middle" font-size="13" fill="currentColor">Wenn ich Zeit hätte,</text>
+    <text x="296" y="115" text-anchor="middle" font-size="13" fill="currentColor">käme ich.</text>
+    <text x="200" y="166" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Klingt Konjunktiv I wie normal? Dann Konjunktiv II.</text>
+  </svg>`
 },
 
 "Satzreihe und Satzgefüge": {
@@ -4498,7 +4881,27 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Ich bleibe zu Hause, weil ich krank bin.",
     schritte:["Zweiter Teil: „weil ich krank bin“.","Das Verb „bin“ steht ganz am Ende.","Also ist es ein Nebensatz."],
-    ergebnis:"Satzgefüge"}
+    ergebnis:"Satzgefüge"},
+  bild:`<svg viewBox="0 0 400 205" ${SVG_STIL} role="img" aria-label="Satzreihe mit zwei gleichrangigen Hauptsaetzen, Satzgefuege mit untergeordnetem Nebensatz">
+    <path d="M200 26V176" stroke="currentColor" stroke-opacity=".2" stroke-width="1.5"/>
+    <text x="94" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#10a37f">Satzreihe</text>
+    <rect x="10" y="56" width="68" height="34" rx="8" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2"/>
+    <text x="44" y="79" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">HS</text>
+    <rect x="110" y="56" width="68" height="34" rx="8" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2"/>
+    <text x="144" y="79" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">HS</text>
+    <text x="94" y="79" text-anchor="middle" font-size="12" fill="currentColor">und</text>
+    <text x="94" y="112" text-anchor="middle" font-size="11" fill="currentColor">und, aber, denn, oder</text>
+    <text x="94" y="132" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">beide sind gleichrangig</text>
+    <text x="297" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#10a37f">Satzgefüge</text>
+    <rect x="222" y="56" width="68" height="34" rx="8" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2"/>
+    <text x="256" y="79" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">HS</text>
+    <path d="M256 92v22h6" fill="none" stroke="#10a37f" stroke-width="2"/>
+    <rect x="268" y="98" width="112" height="34" rx="8" fill="none" stroke="#10a37f" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="324" y="121" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">NS</text>
+    <text x="297" y="152" text-anchor="middle" font-size="11" fill="currentColor">weil, dass, wenn, obwohl</text>
+    <text x="297" y="172" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">der NS hängt vom HS ab</text>
+    <text x="200" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Vor einem Nebensatz steht immer ein Komma</text>
+  </svg>`
 },
 
 "Kommas bei Infinitivgruppen": {
@@ -4522,7 +4925,15 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Sie ging früher los um den Zug zu erreichen.",
     schritte:["Die Gruppe wird mit „um“ eingeleitet.","„um“ gehört zu den sechs Wörtern mit Komma-Pflicht.","Das Komma kommt direkt vor „um“."],
-    ergebnis:"Sie ging früher los, um den Zug zu erreichen."}
+    ergebnis:"Sie ging früher los, um den Zug zu erreichen."},
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Infinitivgruppe mit um zu und dem Pflichtkomma">
+    <text x="200" y="52" text-anchor="middle" font-size="17" fill="currentColor">Ich stehe früh auf<tspan fill="#10a37f" font-weight="700">,</tspan> <tspan fill="#10a37f" font-weight="700">um</tspan> früher da <tspan fill="#10a37f" font-weight="700">zu</tspan> sein.</text>
+    <text x="200" y="80" text-anchor="middle" font-size="12" fill="currentColor">Das Signalwort steht vorne, das „zu“ hinten</text>
+    <rect x="30" y="94" width="340" height="42" rx="10" fill="#10a37f" fill-opacity=".14" stroke="#10a37f" stroke-width="2"/>
+    <text x="200" y="112" text-anchor="middle" font-size="11" fill="currentColor">Komma-Pflicht bei</text>
+    <text x="200" y="130" text-anchor="middle" font-size="14" font-weight="700" fill="#10a37f">um · ohne · statt · anstatt · außer · als</text>
+    <text x="200" y="164" text-anchor="middle" font-size="13" fill="currentColor">Sonst darfst du selbst entscheiden</text>
+  </svg>`
 },
 
 "Stilmittel erkennen": {
@@ -4549,7 +4960,28 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"„Der Wind flüsterte durch die Bäume.“",
     schritte:["Kein „wie“ vorhanden, also kein Vergleich.","Der Wind tut etwas, das nur Menschen können: flüstern.","Also Personifikation."],
-    ergebnis:"Personifikation — die Natur wirkt lebendig"}
+    ergebnis:"Personifikation — die Natur wirkt lebendig"},
+  bild:`<svg viewBox="0 0 400 205" ${SVG_STIL} role="img" aria-label="Vier Stilmittel mit je einem Beispiel">
+    <g fill="#10a37f" fill-opacity=".12" stroke="#10a37f" stroke-width="2">
+      <rect x="14" y="20" width="180" height="72" rx="10"/>
+      <rect x="206" y="20" width="180" height="72" rx="10"/>
+      <rect x="14" y="102" width="180" height="72" rx="10"/>
+      <rect x="206" y="102" width="180" height="72" rx="10"/>
+    </g>
+    <g font-size="13" font-weight="700" fill="#10a37f" text-anchor="middle">
+      <text x="104" y="44">Vergleich</text><text x="296" y="44">Metapher</text>
+      <text x="104" y="126">Personifikation</text><text x="296" y="126">Alliteration</text>
+    </g>
+    <g font-size="13" fill="currentColor" text-anchor="middle">
+      <text x="104" y="72">stark wie ein Bär</text><text x="296" y="72">ein Meer aus Licht</text>
+      <text x="104" y="150">Der Wind singt.</text><text x="296" y="150">Milch macht müde Männer</text>
+    </g>
+    <g font-size="11" fill="currentColor" text-anchor="middle" opacity=".7">
+      <text x="104" y="88">mit „wie“</text><text x="296" y="88">ohne „wie“, bildlich</text>
+      <text x="104" y="168">Unbelebtes handelt</text><text x="296" y="168">gleicher Anfangslaut</text>
+    </g>
+    <text x="200" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Nie nur benennen — immer die Wirkung dazusagen</text>
+  </svg>`
 },
 
 "Gedichte deuten": {
@@ -4575,7 +5007,29 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Zeilenenden: -Wind · -Kind · -Arm · -warm",
     schritte:["Wind und Kind reimen sich: Zeile 1 und 2.","Arm und warm reimen sich: Zeile 3 und 4.","Benachbarte Zeilen reimen sich."],
-    ergebnis:"Paarreim (aabb)"}
+    ergebnis:"Paarreim (aabb)"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Paarreim, Kreuzreim und umarmender Reim als Zeilenschema">
+    <g font-size="13" font-weight="700" fill="#10a37f" text-anchor="middle">
+      <text x="62" y="42">Paarreim</text><text x="192" y="42">Kreuzreim</text><text x="322" y="42">umarmend</text>
+    </g>
+    <g stroke="currentColor" stroke-opacity=".55" stroke-width="4" stroke-linecap="round">
+      <path d="M20 68h80"/><path d="M20 90h80"/><path d="M20 112h80"/><path d="M20 134h80"/>
+      <path d="M150 68h80"/><path d="M150 90h80"/><path d="M150 112h80"/><path d="M150 134h80"/>
+      <path d="M280 68h80"/><path d="M280 90h80"/><path d="M280 112h80"/><path d="M280 134h80"/>
+    </g>
+    <g font-size="14" font-weight="700" text-anchor="middle">
+      <text x="112" y="73" fill="#10a37f">a</text><text x="112" y="95" fill="#10a37f">a</text>
+      <text x="112" y="117" fill="currentColor">b</text><text x="112" y="139" fill="currentColor">b</text>
+      <text x="242" y="73" fill="#10a37f">a</text><text x="242" y="95" fill="currentColor">b</text>
+      <text x="242" y="117" fill="#10a37f">a</text><text x="242" y="139" fill="currentColor">b</text>
+      <text x="372" y="73" fill="#10a37f">a</text><text x="372" y="95" fill="currentColor">b</text>
+      <text x="372" y="117" fill="currentColor">b</text><text x="372" y="139" fill="#10a37f">a</text>
+    </g>
+    <g font-size="13" fill="currentColor" text-anchor="middle" opacity=".8">
+      <text x="62" y="164">aabb</text><text x="192" y="164">abab</text><text x="322" y="164">abba</text>
+    </g>
+    <text x="200" y="192" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Gleicher Buchstabe heißt gleicher Reim</text>
+  </svg>`
 },
 
 "Fremdwörter": {
@@ -4598,7 +5052,19 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Was bedeutet „Biologie“?",
     schritte:["bios heißt Leben.","logos heißt Lehre.","Zusammengesetzt: Lehre vom Leben."],
-    ergebnis:"Lebenskunde"}
+    ergebnis:"Lebenskunde"},
+  bild:`<svg viewBox="0 0 400 195" ${SVG_STIL} role="img" aria-label="Das Wort Telefon in seine griechischen Bausteine zerlegt">
+    <rect x="95" y="26" width="105" height="46" rx="10" fill="#10a37f" fill-opacity=".22" stroke="#10a37f" stroke-width="2"/>
+    <text x="147" y="58" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">Tele</text>
+    <rect x="200" y="26" width="105" height="46" rx="10" fill="#10a37f" fill-opacity=".12" stroke="#10a37f" stroke-width="2"/>
+    <text x="252" y="58" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">fon</text>
+    <text x="147" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="#10a37f">fern</text>
+    <text x="252" y="92" text-anchor="middle" font-size="13" font-weight="700" fill="#10a37f">Laut</text>
+    <text x="200" y="118" text-anchor="middle" font-size="13" fill="currentColor">also: etwas, das von fern hörbar macht</text>
+    <path d="M50 132h300" stroke="currentColor" stroke-opacity=".2" stroke-width="1.5"/>
+    <text x="200" y="154" text-anchor="middle" font-size="12" fill="currentColor">bio = Leben · geo = Erde · auto = selbst · logos = Lehre</text>
+    <text x="200" y="182" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Bausteine zerlegen — Bedeutung zusammensetzen</text>
+  </svg>`
 },
 
 "Rede und Rhetorik": {
@@ -4624,7 +5090,23 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"„Wir haben gekämpft, wir haben verloren, wir haben weitergemacht.“",
     schritte:["Drei Satzteile beginnen mit denselben Worten „wir haben“.","Das ist eine Anapher.","Wirkung: Der Gedanke bleibt hängen."],
-    ergebnis:"Anapher"}
+    ergebnis:"Anapher"},
+  bild:`<svg viewBox="0 0 400 195" ${SVG_STIL} role="img" aria-label="Vier rhetorische Mittel mit Beispiel und Wirkung">
+    <g font-size="12" font-weight="700" fill="#10a37f" text-anchor="end">
+      <text x="128" y="42">Rhetorische Frage</text><text x="128" y="82">Anapher</text>
+      <text x="128" y="122">Dreierfigur</text><text x="128" y="162">Appell</text>
+    </g>
+    <g font-size="12" fill="currentColor">
+      <text x="140" y="42">„Wollen wir das wirklich?“</text>
+      <text x="140" y="82">„Wir können. Wir wollen. Wir werden.“</text>
+      <text x="140" y="122">„schnell, klar und ehrlich“</text>
+      <text x="140" y="162">„Steht auf und macht mit!“</text>
+    </g>
+    <g stroke="currentColor" stroke-opacity=".15" stroke-width="1.5">
+      <path d="M14 56h372"/><path d="M14 96h372"/><path d="M14 136h372"/>
+    </g>
+    <text x="200" y="188" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Immer fragen: Was soll bei den Zuhörern passieren?</text>
+  </svg>`
 },
 
 "Sprachwandel": {
@@ -4650,7 +5132,28 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"„Hochzeit“ — früher und heute",
     schritte:["Früher: jedes hohe Fest.","Heute: nur noch die Vermählung.","Der Bereich ist kleiner geworden."],
-    ergebnis:"Bedeutungsverengung"}
+    ergebnis:"Bedeutungsverengung"},
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Zeitstrahl der deutschen Sprachstufen">
+    <path d="M16 95H382" stroke="#10a37f" stroke-width="3"/>
+    <path d="M370 87l12 8-12 8" fill="none" stroke="#10a37f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#10a37f">
+      <circle cx="60" cy="95" r="6"/><circle cx="145" cy="95" r="6"/>
+      <circle cx="240" cy="95" r="6"/><circle cx="330" cy="95" r="6"/>
+    </g>
+    <g stroke="#10a37f" stroke-opacity=".45" stroke-width="1.5">
+      <path d="M60 66v23"/><path d="M240 66v23"/>
+    </g>
+    <g font-size="11" font-weight="700" fill="#10a37f" text-anchor="middle">
+      <text x="60" y="60">Althochdeutsch</text><text x="240" y="60">Frühneuhochdeutsch</text>
+      <text x="145" y="82">Mittelhochdeutsch</text><text x="330" y="82">Neuhochdeutsch</text>
+    </g>
+    <g font-size="11" fill="currentColor" text-anchor="middle">
+      <text x="60" y="118">ab 750</text><text x="145" y="118">ab 1050</text>
+      <text x="240" y="118">ab 1350</text><text x="330" y="118">ab 1650</text>
+    </g>
+    <text x="200" y="152" text-anchor="middle" font-size="12" fill="currentColor">„Hochzeit“ war einmal jedes hohe Fest — heute nur noch eines</text>
+    <text x="200" y="178" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Sprache ändert sich, weil Menschen sie benutzen</text>
+  </svg>`
 },
 
 "Literaturepochen": {
@@ -4675,7 +5178,31 @@ const ERKLAERUNGEN = {
   ],
   beispiel:{aufgabe:"Ein Text über Sehnsucht, Nacht und Natur",
     schritte:["Flucht aus der nüchternen Wirklichkeit.","Sehnsucht als Grundgefühl.","Typische Motive: blaue Blume, Mondnacht."],
-    ergebnis:"Romantik"}
+    ergebnis:"Romantik"},
+  bild:`<svg viewBox="0 0 400 225" ${SVG_STIL} role="img" aria-label="Zeitleiste der Literaturepochen von der Aufklaerung bis zum Expressionismus">
+    <g font-size="11" fill="currentColor" text-anchor="end">
+      <text x="130" y="55">Aufklärung · Vernunft</text>
+      <text x="130" y="83">Sturm und Drang · Gefühl</text>
+      <text x="130" y="111">Klassik · Maß</text>
+      <text x="130" y="139">Romantik · Sehnsucht</text>
+      <text x="130" y="167">Expressionismus · Angst</text>
+    </g>
+    <g fill="#10a37f" fill-opacity=".55" stroke="#10a37f" stroke-width="1.5">
+      <rect x="159" y="42" width="70" height="16" rx="5"/>
+      <rect x="207" y="70" width="22" height="16" rx="5"/>
+      <rect x="230" y="98" width="50" height="16" rx="5"/>
+      <rect x="239" y="126" width="58" height="16" rx="5"/>
+      <rect x="363" y="154" width="17" height="16" rx="5"/>
+    </g>
+    <path d="M137 184h248" stroke="currentColor" stroke-width="1.5"/>
+    <g stroke="currentColor" stroke-width="1.5">
+      <path d="M137 184v6"/><path d="M245 184v6"/><path d="M353 184v6"/>
+    </g>
+    <g font-size="10" fill="currentColor" text-anchor="middle" opacity=".8">
+      <text x="137" y="203">1700</text><text x="245" y="203">1800</text><text x="353" y="203">1900</text>
+    </g>
+    <text x="200" y="220" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Nicht die Jahreszahl zählt, sondern die Haltung im Text</text>
+  </svg>`
 }
 
 };
@@ -6524,7 +7051,7 @@ let aktuell = null, aktuellName = "", variante = 0;
 let schrittNr = 0, beantwortet = false, tippOffen = false, fehlversuche = 0;
 let reihenfolge = [];   // in welcher Reihenfolge die Antworten gerade angezeigt werden
 let falschGeklickt = [];   // welche Antworten in diesem Schritt schon danebenlagen
-let zeigeRueckmeldung = false;   // nach dem Zeichnen die Erklärung ins Bild holen
+let insBildHolen = "";   // was nach dem Zeichnen sichtbar sein muss (CSS-Auswahl, letzter Treffer)
 let fehlerImSchritt = 0;
 let aufgeloest = false;    // nach drei Fehlversuchen wird die Lösung gezeigt
 let erklaerungAngeboten = false;
@@ -7125,7 +7652,7 @@ function antwort(i){
   falschGeklickt.push(i);
   fehlerImSchritt++;
   fehlversuche++;
-  zeigeRueckmeldung = true;      /* die Erklärung darf nicht unter dem Bildrand liegen */
+  insBildHolen = "#screen .feedback";   /* die Erklärung darf nicht unter dem Bildrand liegen */
   /* Stufe 1: Tipp erscheint von allein */
   if (fehlerImSchritt === 1 && einstellungen.autoTipp) tippOffen = true;
   /* Stufe 2: Erklärung zum Thema wird angeboten */
@@ -7133,6 +7660,24 @@ function antwort(i){
   /* Stufe 3: Lösung wird gezeigt, damit niemand hängen bleibt */
   if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
   render(i);
+}
+/* „Ich weiß nicht weiter“: der Tipp steht unter den Antworten und liegt auf dem
+   Handy leicht unter dem Bildrand. Ohne das Nachführen sieht es so aus, als
+   würde der Knopf gar nichts tun. */
+function tippZeigen(){
+  tippOffen = true;
+  insBildHolen = "#screen .feedback.tipp";
+  render();
+}
+/* Der Tipp ist schon offen: dann nicht neu zeichnen, sondern nur hinscrollen
+   und kurz hervorheben, damit man sieht, wo er steht. */
+function zumTippSpringen(){
+  const el = document.querySelector("#screen .feedback.tipp");
+  if (!el) { tippZeigen(); return; }
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.remove("blinkt");
+  void el.offsetWidth;             // Neustart der Animation erzwingen
+  el.classList.add("blinkt");
 }
 function tippModus(){
   if (!aktuell) return false;
@@ -7159,6 +7704,7 @@ function eingabePruefen(){
   letzteEingabe = wert;
   fehlerImSchritt++;
   fehlversuche++;
+  insBildHolen = "#screen .feedback";   /* auch beim Eintippen darf die Erklärung nicht unten wegrutschen */
   if (fehlerImSchritt === 1 && einstellungen.autoTipp) tippOffen = true;
   if (fehlerImSchritt === 2) erklaerungAngeboten = true;
   if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
@@ -7272,10 +7818,12 @@ function render(gewaehlt){
   /* Nach einer falschen Antwort steht die Erklärung unter den Möglichkeiten und
      kann dadurch unter dem Bildrand liegen — dann tippt jemand daneben und sieht
      scheinbar nichts passieren. Deshalb holen wir sie sanft ins Bild. */
-  if (zeigeRueckmeldung){
-    zeigeRueckmeldung = false;
+  if (insBildHolen){
+    const auswahl = insBildHolen;
+    insBildHolen = "";
     requestAnimationFrame(() => {
-      const rm = document.querySelector("#screen .feedback");
+      const treffer = document.querySelectorAll(auswahl);
+      const rm = treffer[treffer.length - 1];   // der unterste Kasten ist der kritische
       if (!rm) return;
       const r = rm.getBoundingClientRect();
       const rand = 24;
@@ -7689,7 +8237,11 @@ function render(gewaehlt){
       ${fb}
       ${beantwortet
         ? `<button class="btn full" id="weiterBtn" style="margin-top:18px" onclick="weiter()">Weiter</button>`
-        : `<button class="btn ghost full" id="tippBtn" style="margin-top:12px" onclick="tippOffen=true;render()">Ich weiß nicht weiter</button>`}
+        : tippOffen
+          /* Der Tipp steht schon da — der Knopf hätte nichts mehr zu tun und würde
+             wie kaputt wirken. Stattdessen der Weg zur nächsten Hilfe. */
+          ? `<button class="btn ghost full" id="tippBtn" style="margin-top:12px" onclick="zumTippSpringen()">Tipp noch einmal zeigen</button>`
+          : `<button class="btn ghost full" id="tippBtn" style="margin-top:12px" onclick="tippZeigen()">Ich weiß nicht weiter</button>`}
       ${hatErklaerung(aktuellName) && !beantwortet
         ? `<button class="btn ghost full" id="erklBtn" style="margin-top:10px" onclick="zeigeErklaerung()">Ich verstehe das Thema gar nicht</button>` : ""}
     </div>
