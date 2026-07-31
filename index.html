@@ -154,6 +154,13 @@
   .feedback.ok{background:var(--ac-soft);color:var(--ac-dark)}
   .feedback.nope{background:var(--red-soft);color:var(--red)}
   .feedback.tipp{background:var(--amber-soft);color:var(--amber)}
+  /* zweite Hilfestufe: die Regeln zum Thema — bewusst anders als der Tipp,
+     damit man sieht, dass etwas Neues dazugekommen ist */
+  .feedback.regel{background:var(--amber-soft);color:var(--ink);border:1.5px solid var(--amber)}
+  .feedback.regel b{display:block;margin-bottom:9px;color:var(--amber)}
+  .feedback.regel ul{margin:0;padding-left:20px}
+  .feedback.regel li{margin:0 0 7px;line-height:1.55}
+  .feedback.regel li:last-child{margin-bottom:0}
   /* kurzes Aufleuchten, wenn jemand den schon offenen Tipp noch einmal sucht */
   .feedback.blinkt{animation:tippblink 1s ease-out 1}
   @keyframes tippblink{
@@ -7044,7 +7051,7 @@ let benutzer = null;
 let fortschritt = [];
 let fach = null, klasse = null;
 let aktuell = null, aktuellName = "", variante = 0;
-let schrittNr = 0, beantwortet = false, tippOffen = false, fehlversuche = 0;
+let schrittNr = 0, beantwortet = false, hilfeStufe = 0, fehlversuche = 0;
 let reihenfolge = [];   // in welcher Reihenfolge die Antworten gerade angezeigt werden
 let falschGeklickt = [];   // welche Antworten in diesem Schritt schon danebenlagen
 let insBildHolen = "";   // was nach dem Zeichnen sichtbar sein muss (CSS-Auswahl, letzter Treffer)
@@ -7591,7 +7598,7 @@ function starte(name, welche){
   variante = welche % anzahl;
   aktuell = baueAufgabe(name, variante);   // Zahlen werden hier frisch gewürfelt
   gastZaehler[name] = (gastZaehler[name] || 0) + 1;
-  schrittNr = 0; beantwortet = false; tippOffen = false; fehlversuche = 0;
+  schrittNr = 0; beantwortet = false; hilfeStufe = 0; fehlversuche = 0;
   schrittZuruecksetzen();
   neueReihenfolge();
   ansicht = "loesen"; render();
@@ -7650,26 +7657,47 @@ function antwort(i){
   fehlversuche++;
   insBildHolen = "#screen .feedback";   /* die Erklärung darf nicht unter dem Bildrand liegen */
   /* Stufe 1: Tipp erscheint von allein */
-  if (fehlerImSchritt === 1 && einstellungen.autoTipp) tippOffen = true;
+  if (fehlerImSchritt === 1 && einstellungen.autoTipp) hilfeStufe = Math.max(hilfeStufe, 1);
   /* Stufe 2: Erklärung zum Thema wird angeboten */
   if (fehlerImSchritt === 2) erklaerungAngeboten = true;
   /* Stufe 3: Lösung wird gezeigt, damit niemand hängen bleibt */
   if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
   render(i);
 }
-/* „Ich weiß nicht weiter“: der Tipp steht unter den Antworten und liegt auf dem
-   Handy leicht unter dem Bildrand. Ohne das Nachführen sieht es so aus, als
-   würde der Knopf gar nichts tun. */
-function tippZeigen(){
-  tippOffen = true;
-  insBildHolen = "#screen .feedback.tipp";
-  render();
+/* ---------- Hilfe in Stufen ----------
+   „Ich weiß nicht weiter“ soll bei jedem Druck etwas Neues bringen, sonst
+   sieht es aus, als täte der Knopf nichts:
+     Stufe 1  der Tipp zum Schritt
+     Stufe 2  die Regeln zum Thema
+     Stufe 3  die ganze Erklärung
+   Die Lösung ist in keiner Stufe dabei — den letzten Schritt macht immer
+   der Lernende selbst. */
+function regelnZumThema(){
+  const e = ERKLAERUNGEN[aktuellName];
+  return e && e.regeln && e.regeln.length ? e.regeln : [];
 }
-/* Der Tipp ist schon offen: dann nicht neu zeichnen, sondern nur hinscrollen
-   und kurz hervorheben, damit man sieht, wo er steht. */
+function naechsteHilfe(){
+  if (hilfeStufe === 0) return { text:"Ich weiß nicht weiter", art:"tipp" };
+  if (hilfeStufe === 1 && regelnZumThema().length) return { text:"Das reicht mir noch nicht", art:"regeln" };
+  if (hatErklaerung(aktuellName)) return { text:"Erklär mir das Thema von vorn", art:"erklaerung" };
+  return { text:"Tipp noch einmal zeigen", art:"hin" };
+}
+function hilfeWeiter(){
+  const naechste = naechsteHilfe();
+  if (naechste.art === "tipp"){
+    hilfeStufe = 1; insBildHolen = "#screen .feedback.tipp"; render(); return;
+  }
+  if (naechste.art === "regeln"){
+    hilfeStufe = 2; insBildHolen = "#screen .feedback.regel"; render(); return;
+  }
+  if (naechste.art === "erklaerung"){ zeigeErklaerung(); return; }
+  zumTippSpringen();
+}
+/* Es gibt nichts Neues mehr zu zeigen: dann wenigstens hinscrollen und kurz
+   hervorheben, damit man sieht, wo der Tipp steht. */
 function zumTippSpringen(){
   const el = document.querySelector("#screen .feedback.tipp");
-  if (!el) { tippZeigen(); return; }
+  if (!el) return;
   el.scrollIntoView({ behavior: "smooth", block: "center" });
   el.classList.remove("blinkt");
   void el.offsetWidth;             // Neustart der Animation erzwingen
@@ -7701,7 +7729,7 @@ function eingabePruefen(){
   fehlerImSchritt++;
   fehlversuche++;
   insBildHolen = "#screen .feedback";   /* auch beim Eintippen darf die Erklärung nicht unten wegrutschen */
-  if (fehlerImSchritt === 1 && einstellungen.autoTipp) tippOffen = true;
+  if (fehlerImSchritt === 1 && einstellungen.autoTipp) hilfeStufe = Math.max(hilfeStufe, 1);
   if (fehlerImSchritt === 2) erklaerungAngeboten = true;
   if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
   render();
@@ -7711,7 +7739,7 @@ function schrittZuruecksetzen(){
   falschGeklickt = []; fehlerImSchritt = 0; aufgeloest = false; erklaerungAngeboten = false; letzteEingabe = "";
 }
 async function weiter(){
-  schrittNr++; beantwortet = false; tippOffen = false;
+  schrittNr++; beantwortet = false; hilfeStufe = 0;
   schrittZuruecksetzen();
   if (schrittNr < aktuell.schritte.length) neueReihenfolge();
   if (schrittNr >= aktuell.schritte.length){
@@ -8209,7 +8237,12 @@ function render(gewaehlt){
     const o = s.optionen[gewaehlt];
     fb = `<div class="feedback ${o.ok ? "ok" : "nope"}">${o.fb}</div>`;
   }
-  if (tippOffen && !aufgeloest) fb += `<div class="feedback tipp"><b>Tipp:</b> ${s.tipp}</div>`;
+  if (hilfeStufe >= 1 && !aufgeloest) fb += `<div class="feedback tipp"><b>Tipp:</b> ${s.tipp}</div>`;
+  if (hilfeStufe >= 2 && !aufgeloest && regelnZumThema().length)
+    fb += `<div class="feedback regel">
+             <b>Und das gilt beim Thema ${aktuellName}:</b>
+             <ul>${regelnZumThema().map(r => `<li>${r}</li>`).join("")}</ul>
+           </div>`;
   if (erklaerungAngeboten && !beantwortet && hatErklaerung(aktuellName))
     fb += `<div class="feedback hilfe">
              <b>Kommst du nicht weiter?</b> Dann liegt es vielleicht am Thema, nicht an der Aufgabe.
@@ -8233,16 +8266,15 @@ function render(gewaehlt){
       ${fb}
       ${beantwortet
         ? `<button class="btn full" id="weiterBtn" style="margin-top:18px" onclick="weiter()">Weiter</button>`
-        : tippOffen
-          /* Der Tipp steht schon da — der Knopf hätte nichts mehr zu tun und würde
-             wie kaputt wirken. Stattdessen der Weg zur nächsten Hilfe. */
-          ? `<button class="btn ghost full" id="tippBtn" style="margin-top:12px" onclick="zumTippSpringen()">Tipp noch einmal zeigen</button>`
-          : `<button class="btn ghost full" id="tippBtn" style="margin-top:12px" onclick="tippZeigen()">Ich weiß nicht weiter</button>`}
-      ${hatErklaerung(aktuellName) && !beantwortet
+        : `<button class="btn ghost full" id="tippBtn" style="margin-top:12px" onclick="hilfeWeiter()">${naechsteHilfe().text}</button>`}
+      ${/* nicht doppelt anbieten: weder wenn die Stufenleiter selbst schon dorthin
+            führt, noch wenn der Hinweiskasten die Erklärung bereits vorschlägt */
+        !beantwortet && hatErklaerung(aktuellName)
+        && !erklaerungAngeboten && naechsteHilfe().art !== "erklaerung"
         ? `<button class="btn ghost full" id="erklBtn" style="margin-top:10px" onclick="zeigeErklaerung()">Ich verstehe das Thema gar nicht</button>` : ""}
     </div>
     <div class="card">
-      <p class="small soft" style="margin:0">Auch beim Tipp bekommst du keine Lösung — nur einen Hinweis. Den letzten Schritt machst immer du.</p>
+      <p class="small soft" style="margin:0">Auch nach allen Hinweisen bekommst du nie die Lösung. Den letzten Schritt machst immer du.</p>
     </div>`;
 }
 
