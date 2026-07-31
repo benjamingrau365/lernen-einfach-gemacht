@@ -30,12 +30,14 @@
        und Fortschritt, damit man auf einen Blick weiß, wo man ist.
        Richtig bleibt überall grün, falsch rot, Hinweis bernstein — Bedeutung
        hat Vorrang vor Fachfarbe. */
-    --mathe:#0f9c7a;        --mathe-soft:#e1f5ee;        --mathe-dark:#0a7358;
-    --deutsch:#6b4fd8;      --deutsch-soft:#eeeaff;      --deutsch-dark:#5238b8;
-    --englisch:#2478c9;     --englisch-soft:#e6f1fb;     --englisch-dark:#1c5e9e;
-    --franzoesisch:#c0416a; --franzoesisch-soft:#fce9ef; --franzoesisch-dark:#9c3355;
-    --geschichte:#a8681a;   --geschichte-soft:#fbf0e1;   --geschichte-dark:#855314;
-    --erdkunde:#12857f;     --erdkunde-soft:#e0f4f3;     --erdkunde-dark:#0d6763;
+    /* Die Farben der Schnellhefter, die Schüler ohnehin kennen:
+       Mathe dunkelblau, Deutsch rot, Englisch gelb, Französisch grün. */
+    --mathe:#1f4fa8;        --mathe-soft:#e8eefb;        --mathe-dark:#173c80;
+    --deutsch:#c22f24;      --deutsch-soft:#fdeae8;      --deutsch-dark:#9b241b;
+    --englisch:#a06c00;     --englisch-soft:#fbf2dd;     --englisch-dark:#7f5600;
+    --franzoesisch:#2c7a34; --franzoesisch-soft:#e6f4e7; --franzoesisch-dark:#215d27;
+    --geschichte:#95522a;   --geschichte-soft:#f9ece5;   --geschichte-dark:#763f20;
+    --erdkunde:#0f6f6a;     --erdkunde-soft:#e0f2f1;     --erdkunde-dark:#0b5551;
     /* Abschnittsfarben der Willkommensseite */
     --rose:#ad3149;   --rose-soft:#fdeaee;
     --indigo:#5546c4; --indigo-soft:#ecebff;
@@ -52,12 +54,12 @@
     --heroink:#eafaf4; --heroglanz1:#3fd3a7; --heroglanz2:#7ff0cb;
     --bau1:#d9a63c; --bau2:#b8862a; --bauink:#241a03;
 
-    --mathe:#33c79f;        --mathe-soft:#123329;        --mathe-dark:#6fdcbb;
-    --deutsch:#a695f7;      --deutsch-soft:#241f42;      --deutsch-dark:#c5b9ff;
-    --englisch:#79b6ee;     --englisch-soft:#152a3d;     --englisch-dark:#a5d0f6;
-    --franzoesisch:#f0879f; --franzoesisch-soft:#3a1f26; --franzoesisch-dark:#f7b0c1;
-    --geschichte:#e0ab63;   --geschichte-soft:#332612;   --geschichte-dark:#eec894;
-    --erdkunde:#4fc9c2;     --erdkunde-soft:#12312f;     --erdkunde-dark:#88e0da;
+    --mathe:#7aa7f0;        --mathe-soft:#152340;        --mathe-dark:#a8c7f7;
+    --deutsch:#f28b80;      --deutsch-soft:#3a1c18;      --deutsch-dark:#f8b4ac;
+    --englisch:#e3bb6a;     --englisch-soft:#332812;     --englisch-dark:#efd39a;
+    --franzoesisch:#78ce80; --franzoesisch-soft:#173219; --franzoesisch-dark:#a8e2ad;
+    --geschichte:#d9a07a;   --geschichte-soft:#33231a;   --geschichte-dark:#e8c0a5;
+    --erdkunde:#4fc4bd;     --erdkunde-soft:#12302e;     --erdkunde-dark:#88ded8;
     --rose:#f28ea0;   --rose-soft:#3a1f26;
     --indigo:#a89cf7; --indigo-soft:#221f3f;
     --himmel:#7db9ee; --himmel-soft:#152a3d;
@@ -8282,9 +8284,11 @@ function render(gewaehlt){
   renderSeite();
   const shell = document.getElementById("shell");
   shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
-  /* Fachfarbe setzen: sobald ein Fach gewählt ist, färbt sie Pfad, Kacheln
-     und Fortschritt. Auf Seiten ohne Fach bleibt es beim Markengrün. */
-  const mitFach = ["start","loesen","fertig","erklaerung","klassenwahl"].includes(ansicht);
+  /* Fachfarbe nur zur Orientierung — beim Suchen und Auswählen.
+     Auf dem Aufgabenbildschirm bewusst NICHT: dort heißt Rot „falsch“ und
+     Grün „richtig“. Wäre Deutsch dort rot, könnte man die Fachfarbe für eine
+     Bewertung halten. Bedeutung geht vor Wiedererkennung. */
+  const mitFach = ["start","klassenwahl"].includes(ansicht);
   document.documentElement.dataset.fach = (mitFach && fach) ? fach : "";
 
   if (ansicht === "laden"){
