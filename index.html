@@ -18,6 +18,8 @@
   :root{
     --bg:#f4f8f7; --card:#ffffff; --ink:#16211e; --soft:#5b6b66; --line:#dfe8e5;
     --ac:#10a37f; --ac-soft:#e4f5ef; --ac-dark:#0b7a5f;
+    /* „richtig“ und „geschafft“ bleiben immer grün, egal welches Fach */
+    --gut:#10a37f; --gut-soft:#e4f5ef; --gut-dark:#0b7a5f;
     --red:#b3382f; --red-soft:#fdecea;
     --amber:#8a5a09; --amber-soft:#fdf3e0;
     /* Farben für die große Titelfläche auf der Startseite */
@@ -48,6 +50,7 @@
   html.dunkel{
     --bg:#131a18; --card:#1b2422; --ink:#e9f1ee; --soft:#9cb0a9; --line:#2c3a36;
     --ac:#2ebd95; --ac-soft:#17322a; --ac-dark:#6fdcbb;
+    --gut:#2ebd95; --gut-soft:#17322a; --gut-dark:#6fdcbb;
     --red:#ff9b90; --red-soft:#3a2220;
     --amber:#e6bd6d; --amber-soft:#332a17;
     --hero1:#1e2b28; --hero2:#17322a; --hero3:#123a2d;
@@ -67,8 +70,13 @@
   }
 
   /* Das gewählte Fach färbt alles darunter — gesetzt in render() */
-  [data-fach="mathe"]{--fach:var(--mathe);--fach-soft:var(--mathe-soft);--fach-dark:var(--mathe-dark)}
-  [data-fach="deutsch"]{--fach:var(--deutsch);--fach-soft:var(--deutsch-soft);--fach-dark:var(--deutsch-dark)}
+  /* Das gewählte Fach färbt die gesamte Oberfläche — Knöpfe, Pillen, Links,
+     Fortschritt. Nur die Bedeutungsfarben bleiben davon unberührt:
+     --gut (richtig), --red (falsch), --amber (Hinweis). */
+  html[data-fach="mathe"]{--fach:var(--mathe);--fach-soft:var(--mathe-soft);--fach-dark:var(--mathe-dark);
+    --ac:var(--mathe);--ac-soft:var(--mathe-soft);--ac-dark:var(--mathe-dark)}
+  html[data-fach="deutsch"]{--fach:var(--deutsch);--fach-soft:var(--deutsch-soft);--fach-dark:var(--deutsch-dark);
+    --ac:var(--deutsch);--ac-soft:var(--deutsch-soft);--ac-dark:var(--deutsch-dark)}
   /* Schriftgröße-Regler: skaliert den gesamten Inhalt über die Variable --fs */
   .reglerreihe{display:flex;align-items:center;gap:14px}
   .reglerreihe .reglerklein{font-size:15px;color:var(--soft);font-weight:800;flex:none}
@@ -97,7 +105,7 @@
 
   .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;
     letter-spacing:-.01em;padding:20px 2px 18px;line-height:1.25}
-  .logo .dot{width:30px;height:30px;border-radius:9px;background:var(--ac);flex:none;
+  .logo .dot{width:30px;height:30px;border-radius:9px;background:var(--gut);flex:none;
     display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:800;letter-spacing:.02em}
 
   /* Auf dem Handy steht die Seitenleiste UNTER dem Inhalt — sonst muss man
@@ -180,9 +188,9 @@
   button.pick:not(:disabled):hover .pickbuchstabe{border-color:var(--ac);color:var(--ac-dark);background:var(--card)}
   button.pick:not(:disabled):active{transform:scale(.985)}
   button.pick:disabled{cursor:default;opacity:.5}
-  .pick.richtig{border-color:var(--ac);background:var(--ac-soft);opacity:1}
+  .pick.richtig{border-color:var(--gut);background:var(--gut-soft);opacity:1}
   .pick.falsch{border-color:var(--red);background:var(--red-soft);opacity:1}
-  .pick.richtig .pickbuchstabe{background:var(--ac);border-color:var(--ac);color:#fff}
+  .pick.richtig .pickbuchstabe{background:var(--gut);border-color:var(--gut);color:#fff}
   .pick.falsch .pickbuchstabe{background:var(--red);border-color:var(--red);color:#fff}
 
   /* Begründung hängt direkt unter der angetippten Antwort */
@@ -191,7 +199,7 @@
   .pickgrund{border:2px solid;border-top:none;border-radius:0 0 13px 13px;
     padding:11px 16px 13px;font-size:15px;line-height:1.5}
   .pickgrund.falsch{border-color:var(--red);background:var(--red-soft);color:var(--red)}
-  .pickgrund.richtig{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
+  .pickgrund.richtig{border-color:var(--gut);background:var(--gut-soft);color:var(--gut-dark)}
   .pickblock.mitgrund > .pick:disabled{opacity:1}
 
   /* Hilfe steht darunter, abgesetzt und ohne Kasten — damit man sie nicht
@@ -216,7 +224,7 @@
   .fortschritt i.an{background:var(--fach)}
 
   .feedback{border-radius:12px;padding:15px 17px;margin:16px 0 0;font-size:16px}
-  .feedback.ok{background:var(--ac-soft);color:var(--ac-dark)}
+  .feedback.ok{background:var(--gut-soft);color:var(--gut-dark)}
   .feedback.nope{background:var(--red-soft);color:var(--red)}
   .feedback.tipp{background:var(--amber-soft);color:var(--amber)}
   /* der zweite Tipp: dieselbe Familie, aber am Balken erkennbar als „noch einer“ */
@@ -270,11 +278,11 @@
   .wann{font-size:12.5px;font-weight:700;white-space:nowrap;background:var(--amber-soft);
     color:var(--amber);padding:6px 12px;border-radius:999px}
   .wann.spaeter{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
-  .wann.sitzt{background:var(--ac-soft);color:var(--ac-dark)}
+  .wann.sitzt{background:var(--gut-soft);color:var(--gut-dark)}
 
   .schritte-log{margin:0 0 18px;padding:0;list-style:none}
   .schritte-log li{font-size:15px;color:var(--soft);padding:7px 0 7px 27px;position:relative}
-  .schritte-log li::before{content:"✓";position:absolute;left:0;top:6px;color:var(--ac);font-weight:700}
+  .schritte-log li::before{content:"✓";position:absolute;left:0;top:6px;color:var(--gut);font-weight:700}
 
   /* auf dem Handy zwei mal zwei — vier Spalten passten dort nie hinein
      und schoben die Seite seitlich hinaus */
@@ -686,18 +694,19 @@
     background:none;border:none;font:inherit;color:var(--ink);cursor:pointer;padding:4px;text-align:left}
   .marke .ekkuerzel{font-size:clamp(23px,6.2vw,34px);font-weight:900;letter-spacing:.03em;
     color:var(--ink);white-space:nowrap}
-  .marke .ekkuerzel .kap{color:var(--ac-dark)}
+  /* Die Marke bleibt die Marke — sie färbt sich nicht mit dem Fach um */
+  .marke .ekkuerzel .kap{color:var(--gut-dark)}
   .marke .markewort{display:flex;flex-direction:column;line-height:1.12;min-width:0}
   .marke .markewort b{font-size:clamp(20px,5.4vw,28px);font-weight:900;letter-spacing:-.02em;
     color:var(--ink);white-space:nowrap}
-  .marke .markewort .kap{color:var(--ac-dark)}
+  .marke .markewort .kap{color:var(--gut-dark)}
   .marke .slogan{font-size:clamp(11px,3vw,14px);font-weight:600;letter-spacing:.01em;
     color:var(--soft);white-space:nowrap}
   .marke .markentext{white-space:nowrap;letter-spacing:.03em}
   /* Wortmarke in der Leiste (nur Desktop) */
   .marke .markewortmark{display:none;font-size:24px;font-weight:900;letter-spacing:-.02em;
     color:var(--ink);white-space:nowrap}
-  .marke .markewortmark .kap{color:var(--ac-dark)}
+  .marke .markewortmark .kap{color:var(--gut-dark)}
   /* Kleiner Zusatz „Schritt für Schritt" neben der Glühbirne — NUR auf dem
      Handy, in den Markenfarben (grün→türkis) mit demselben Schimmer wie
      „kapiert" im Hero. Auf dem Desktop ausgeblendet (siehe 820px-Query). */
@@ -905,17 +914,17 @@
   /* ---------- der Moment am Ende einer Aufgabe ---------- */
   .geschafftkarte{text-align:center}
   .geschafftkarte h1{margin-top:6px}
-  .geschafftkreis{width:64px;height:64px;border-radius:50%;background:var(--ac);color:#fff;
+  .geschafftkreis{width:64px;height:64px;border-radius:50%;background:var(--gut);color:#fff;
     display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;
-    margin:0 auto 14px;box-shadow:0 12px 28px -12px var(--ac);
+    margin:0 auto 14px;box-shadow:0 12px 28px -12px var(--gut);
     animation:hakenrein .5s cubic-bezier(.2,1.5,.4,1) 1}
   @keyframes hakenrein{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
   @media(prefers-reduced-motion:reduce){.geschafftkreis{animation:none}}
   .geschafftzahlen{display:flex;justify-content:center;gap:10px;margin:20px 0 0;flex-wrap:wrap}
   .geschafftzahlen div{background:var(--bg);border-radius:13px;padding:12px 18px;min-width:88px}
-  .geschafftzahlen b{display:block;font-size:24px;line-height:1.15;color:var(--ac-dark)}
+  .geschafftzahlen b{display:block;font-size:24px;line-height:1.15;color:var(--gut-dark)}
   .geschafftzahlen span{font-size:12.5px;color:var(--soft)}
-  .geschafftlob{margin:16px 0 0;font-size:15.5px;font-weight:600;color:var(--ac-dark)}
+  .geschafftlob{margin:16px 0 0;font-size:15.5px;font-weight:600;color:var(--gut-dark)}
 
   .zielkopf{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15.5px}
   .zielkopf svg{width:18px;height:18px;color:var(--ac);flex:none}
@@ -8284,11 +8293,11 @@ function render(gewaehlt){
   renderSeite();
   const shell = document.getElementById("shell");
   shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
-  /* Fachfarbe nur zur Orientierung — beim Suchen und Auswählen.
-     Auf dem Aufgabenbildschirm bewusst NICHT: dort heißt Rot „falsch“ und
-     Grün „richtig“. Wäre Deutsch dort rot, könnte man die Fachfarbe für eine
-     Bewertung halten. Bedeutung geht vor Wiedererkennung. */
-  const mitFach = ["start","klassenwahl"].includes(ansicht);
+  /* Das Fach färbt die ganze Oberfläche: Mathe blau, Deutsch rot — auch beim
+     Rechnen. Damit „falsch“ auf einer roten Seite trotzdem eindeutig bleibt,
+     zeigt das Kästchen der Antwort nach dem Tippen ✗ statt des Buchstabens
+     (und ✓ bei der richtigen). Die Farbe ist dann nur noch der zweite Hinweis. */
+  const mitFach = ["start","klassenwahl","loesen","fertig","erklaerung"].includes(ansicht);
   document.documentElement.dataset.fach = (mitFach && fach) ? fach : "";
 
   if (ansicht === "laden"){
@@ -8673,9 +8682,10 @@ function render(gewaehlt){
     /* Die Begründung hängt direkt an der angetippten Antwort. Früher stand sie
        weit darunter in einem eigenen Kasten — man sah nicht, worauf sie sich
        bezieht, und auf dem Handy war sie oft gar nicht im Bild. */
+    const zeichen = cls === "falsch" ? "✗" : cls === "richtig" ? "✓" : ("ABCDEFGH"[platz] || "•");
     return `<div class="pickblock${cls ? " mitgrund" : ""}">
               <button class="pick ${cls}" ${gesperrt ? "disabled" : ""} onclick="antwort(${i})">
-                <span class="pickbuchstabe">${"ABCDEFGH"[platz] || "•"}</span>
+                <span class="pickbuchstabe">${zeichen}</span>
                 <span class="picktext">${o.t}</span>
               </button>
               ${cls ? `<div class="pickgrund ${cls}">${o.fb}</div>` : ""}
@@ -8787,7 +8797,7 @@ function probeHtml(){
           const falsch = probeFalsch.includes(idx);
           return `<div class="pickblock${falsch ? " mitgrund" : ""}">
                     <button class="pick ${falsch ? "falsch" : ""}" ${falsch ? "disabled" : ""} onclick="probeAntwort(${idx})">
-                      <span class="pickbuchstabe">${"ABCDEFGH"[platz] || "•"}</span>
+                      <span class="pickbuchstabe">${falsch ? "✗" : ("ABCDEFGH"[platz] || "•")}</span>
                       <span class="picktext">${o.t}</span>
                     </button>
                     ${falsch ? `<div class="pickgrund falsch">${o.fb}</div>` : ""}
