@@ -131,13 +131,43 @@
   .frage{font-size:19.5px;margin:0 0 18px;line-height:1.45}
 
   .optionen{display:grid;gap:10px}
-  button.pick{width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);
-    border-radius:13px;padding:15px 17px;font:inherit;font-size:16.5px;color:var(--ink);
-    cursor:pointer;transition:border-color .12s,background .12s;line-height:1.4}
+  /* Antwortmöglichkeiten tragen einen Buchstaben und einen kräftigeren Rahmen.
+     Vorher sahen sie aus wie die Hilfeknöpfe darunter — man tippte daneben. */
+  .pick{width:100%;text-align:left;background:var(--card);border:2px solid var(--line);
+    border-radius:13px;padding:14px 16px;font:inherit;font-size:16.5px;color:var(--ink);
+    cursor:pointer;transition:border-color .12s,background .12s,transform .08s;line-height:1.4;
+    display:flex;align-items:flex-start;gap:12px}
+  .pickbuchstabe{flex:none;width:29px;height:29px;border-radius:9px;background:var(--bg);
+    border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:800;color:var(--soft);transition:inherit}
+  .picktext{min-width:0;padding-top:2px}
   button.pick:not(:disabled):not(.richtig):not(.falsch):hover{border-color:var(--ac);background:var(--ac-soft)}
+  button.pick:not(:disabled):hover .pickbuchstabe{border-color:var(--ac);color:var(--ac-dark);background:var(--card)}
+  button.pick:not(:disabled):active{transform:scale(.985)}
   button.pick:disabled{cursor:default;opacity:.5}
-  button.pick.richtig{border-color:var(--ac);background:var(--ac-soft);opacity:1}
-  button.pick.falsch{border-color:var(--red);background:var(--red-soft);opacity:1}
+  .pick.richtig{border-color:var(--ac);background:var(--ac-soft);opacity:1}
+  .pick.falsch{border-color:var(--red);background:var(--red-soft);opacity:1}
+  .pick.richtig .pickbuchstabe{background:var(--ac);border-color:var(--ac);color:#fff}
+  .pick.falsch .pickbuchstabe{background:var(--red);border-color:var(--red);color:#fff}
+
+  /* Begründung hängt direkt unter der angetippten Antwort */
+  .pickblock{display:grid}
+  .pickblock.mitgrund > .pick{border-radius:13px 13px 0 0;opacity:1}
+  .pickgrund{border:2px solid;border-top:none;border-radius:0 0 13px 13px;
+    padding:11px 16px 13px;font-size:15px;line-height:1.5}
+  .pickgrund.falsch{border-color:var(--red);background:var(--red-soft);color:var(--red)}
+  .pickgrund.richtig{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
+  .pickblock.mitgrund > .pick:disabled{opacity:1}
+
+  /* Hilfe steht darunter, abgesetzt und ohne Kasten — damit man sie nicht
+     versehentlich für eine vierte Antwort hält */
+  .hilfezeile{display:grid;gap:2px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
+  .hilfeknopf{background:none;border:none;padding:11px 8px;font:inherit;font-size:15px;
+    font-weight:600;color:var(--soft);cursor:pointer;text-align:center;border-radius:10px;
+    text-decoration:none;display:block}
+  /* nur mit Maus hervorheben — auf dem Handy bliebe die Hervorhebung
+     nach dem Antippen sonst kleben */
+  @media(hover:hover){ .hilfeknopf:hover{color:var(--ac-dark);background:var(--ac-soft)} }
 
   .btn{display:inline-block;background:var(--ac);color:#fff;border:none;border-radius:12px;
     padding:14px 24px;font:inherit;font-weight:600;font-size:16.5px;cursor:pointer}
@@ -176,6 +206,9 @@
   .thema{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
     text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:13px;
     padding:14px 16px;font:inherit;font-size:16.5px;color:var(--ink);cursor:pointer}
+  /* der Themenname darf umbrechen, die Anzahl daneben nicht — sonst wird die
+     Zeile auf schmalen Geräten breiter als der Bildschirm */
+  .thema > span:first-child{min-width:0;overflow-wrap:anywhere}
   .thema:hover{border-color:var(--ac);background:var(--ac-soft)}
   .thema.aus{cursor:default;color:var(--soft);background:var(--bg);border-style:dashed}
   .thema.aus:hover{border-color:var(--line);background:var(--bg)}
@@ -206,7 +239,10 @@
   .schritte-log li{font-size:15px;color:var(--soft);padding:7px 0 7px 27px;position:relative}
   .schritte-log li::before{content:"✓";position:absolute;left:0;top:6px;color:var(--ac);font-weight:700}
 
-  .zahlen{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center}
+  /* auf dem Handy zwei mal zwei — vier Spalten passten dort nie hinein
+     und schoben die Seite seitlich hinaus */
+  .zahlen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;text-align:center}
+  @media(min-width:560px){ .zahlen{grid-template-columns:repeat(4,minmax(0,1fr))} }
   .zahlen div{background:var(--bg);border-radius:13px;padding:16px 8px}
   .zahlen b{display:block;font-size:26px;line-height:1.1}
   .zahlen span{font-size:12.5px;color:var(--soft)}
@@ -343,7 +379,7 @@
 
   /* ---------- Erklärung ---------- */
   .themazeile{display:flex;gap:8px;align-items:stretch}
-  .themazeile .thema{flex:1;margin:0}
+  .themazeile .thema{flex:1;margin:0;min-width:0}   /* darf schrumpfen, sonst läuft die Zeile über */
   .erklknopf{flex:none;width:46px;border:1.5px solid var(--line);background:var(--card);
     border-radius:13px;font:inherit;font-size:19px;font-weight:800;color:var(--soft);cursor:pointer}
   .erklknopf:hover{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
@@ -456,9 +492,15 @@
     border-radius:999px;font:inherit;font-size:13.5px;font-weight:700;
     padding:4px 13px;cursor:pointer;text-decoration:none}
   .bknopf:hover{background:#fff}
-  /* auf dem Handy soll das Band nicht den halben Bildschirm einnehmen */
-  @media(max-width:560px){
-    .baustelle{padding:8px 14px;gap:8px;font-size:13.5px}
+  /* Auf dem Handy war das Band dreizeilig und kostete zusammen mit der
+     Kopfleiste 203 px — fast ein Viertel des ersten Bildschirms. Jetzt eine
+     einzige Zeile: Zeichen, Kurztext, ein kleiner Knopf. */
+  @media(max-width:819px){
+    .baustelle{flex-wrap:nowrap;justify-content:flex-start;text-align:left;
+      padding:7px 12px;gap:8px;font-size:13px;line-height:1.25}
+    .baustelle .btext{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .baustelle svg{width:17px;height:17px}
+    .baustelle .bknopf{font-size:12px;padding:3px 11px;margin-left:auto}
     .baustelle .bknopf:last-child{display:none}
   }
 
@@ -533,6 +575,13 @@
     border-bottom:1px solid var(--line);
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:18px 20px;max-width:1140px;margin:0 auto}
+  /* Sicherheitsnetz: Marke und Slogan dürfen notfalls schrumpfen. Ohne das
+     schob die Leiste die ganze Seite auf jedem Handy seitlich hinaus. */
+  .marke{min-width:0}
+  .marke .markeslogan{flex:0 1 auto;min-width:0;overflow:hidden}
+  /* langer Knopftext nur, wenn Platz dafür ist */
+  .nurschmal{display:none}
+  @media(max-width:819px){ .nurbreit{display:none} .nurschmal{display:inline} }
   .kopfspacer{width:46px;flex:none}
   .kopfleiste a{text-decoration:none}
   /* Beim Rechnen: flachere Leiste, keine Menüzeile, kein Aktions-Knopf.
@@ -754,6 +803,21 @@
   .serie span{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
   .ziel{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
     background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+  /* ---------- der Moment am Ende einer Aufgabe ---------- */
+  .geschafftkarte{text-align:center}
+  .geschafftkarte h1{margin-top:6px}
+  .geschafftkreis{width:64px;height:64px;border-radius:50%;background:var(--ac);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;
+    margin:0 auto 14px;box-shadow:0 12px 28px -12px var(--ac);
+    animation:hakenrein .5s cubic-bezier(.2,1.5,.4,1) 1}
+  @keyframes hakenrein{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+  @media(prefers-reduced-motion:reduce){.geschafftkreis{animation:none}}
+  .geschafftzahlen{display:flex;justify-content:center;gap:10px;margin:20px 0 0;flex-wrap:wrap}
+  .geschafftzahlen div{background:var(--bg);border-radius:13px;padding:12px 18px;min-width:88px}
+  .geschafftzahlen b{display:block;font-size:24px;line-height:1.15;color:var(--ac-dark)}
+  .geschafftzahlen span{font-size:12.5px;color:var(--soft)}
+  .geschafftlob{margin:16px 0 0;font-size:15.5px;font-weight:600;color:var(--ac-dark)}
+
   .zielkopf{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15.5px}
   .zielkopf svg{width:18px;height:18px;color:var(--ac);flex:none}
   .zielpunkte{display:flex;gap:7px}
@@ -6365,7 +6429,7 @@ function kopfleisteHtml(){
       </nav>
       <div class="kopfrechts">
         ${benutzer && aktivitaet.geladen ? `<a class="serie serie--mini" href="/serie" onclick="return navKlick(event, zeigeSerie)" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></a>` : ""}
-        ${amLoesen() ? "" : `<a class="btn kopfcta" href="${benutzer ? "/faecher" : "/anmelden"}" onclick="return navKlick(event, ${benutzer ? "zurFachwahl" : "zeigeAnmeldung"})">${benutzer ? "Üben" : "Anmelden / Registrieren"}</a>`}
+        ${amLoesen() ? "" : `<a class="btn kopfcta" href="${benutzer ? "/faecher" : "/anmelden"}" onclick="return navKlick(event, ${benutzer ? "zurFachwahl" : "zeigeAnmeldung"})">${benutzer ? "Üben" : `<span class="nurbreit">Anmelden / Registrieren</span><span class="nurschmal">Anmelden</span>`}</a>`}
         <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
           <i></i><i></i><i></i>
         </button>
@@ -7128,9 +7192,11 @@ function wartungBandHtml(){
   return `
     <div class="baustelle">
       <span class="bzeichen">${BAU_SYM}</span>
-      <span class="btext"><b>Baustelle.</b> An dieser Seite wird gerade gebaut —
-        ${s.fertig} von ${s.gesamt} Themen sind fertig.</span>
-      ${navLink("/baustelle", "zeigeSeite('baustelle')", "Was ist schon fertig?", "bknopf")}
+      <span class="btext"><b>Baustelle.</b>
+        <span class="nurbreit">An dieser Seite wird gerade gebaut — ${s.fertig} von ${s.gesamt} Themen sind fertig.</span>
+        <span class="nurschmal">${s.fertig} von ${s.gesamt} Themen fertig.</span></span>
+      ${navLink("/baustelle", "zeigeSeite('baustelle')",
+        `<span class="nurbreit">Was ist schon fertig?</span><span class="nurschmal">mehr</span>`, "bknopf")}
       <button class="bknopf" onclick="wartungZeigen()">Was heißt das?</button>
     </div>`;
 }
@@ -7896,7 +7962,9 @@ function antwort(i){
   falschGeklickt.push(i);
   fehlerImSchritt++;
   fehlversuche++;
-  insBildHolen = "#screen .feedback";   /* die Erklärung darf nicht unter dem Bildrand liegen */
+  /* Der unterste neue Kasten muss ins Bild: die Begründung an der Antwort —
+     oder, wenn der Tipp von allein aufgeht, dieser. */
+  insBildHolen = "#screen .pickgrund, #screen .feedback";
   /* Stufe 1: Tipp erscheint von allein */
   if (fehlerImSchritt === 1 && einstellungen.autoTipp) hilfeStufe = Math.max(hilfeStufe, 1);
   /* Stufe 2: Erklärung zum Thema wird angeboten */
@@ -8432,11 +8500,29 @@ function render(gewaehlt){
     const gespeichert = benutzer
       ? `<div class="feedback ok" style="margin-bottom:18px"><b>${aktuellName}</b> ist gespeichert. Du siehst dieses Thema automatisch wieder — je sicherer du wirst, desto später.</div>`
       : `<div class="feedback tipp" style="margin-bottom:18px">Ohne Konto wird nichts gespeichert. Mit Konto käme <b>${aktuellName}</b> jetzt auf deinen Wiederholungsplan.</div>`;
+    /* Der Moment, auf den alles zuläuft. Vorher stand hier nur „Geschafft" —
+       jetzt sieht und liest man, was man gerade geschafft hat. */
+    const anlaeufe = fehlversuche;
+    const lob = anlaeufe === 0
+      ? "Durch, ohne einen einzigen Fehltritt."
+      : anlaeufe <= 2 ? "Ein paar Anläufe gebraucht — genau so lernt man."
+      : "Das war zäh. Aber du bist durch, und nur das zählt.";
+    const heuteZahl = aktivitaet.heute || 0;
+    const serieZahl = aktivitaet.serie || 0;
     el.innerHTML = `
-      <div class="card">
+      <div class="card geschafftkarte">
+        <div class="geschafftkreis">✓</div>
         <span class="tag">Geschafft</span>
         <h1>${aktuell.loesung}</h1>
         <p class="soft">${aktuell.schluss}</p>
+        <div class="geschafftzahlen">
+          <div><b>${aktuell.schritte.length}</b><span>${aktuell.schritte.length === 1 ? "Schritt" : "Schritte"}</span></div>
+          ${/* Eine 0 direkt nach dem Lösen wäre entmutigend und obendrein falsch —
+                gezählt wird nur mit Konto. Dann lieber gar keine Kachel. */
+            heuteZahl > 0 ? `<div><b>${heuteZahl}</b><span>heute gelöst</span></div>` : ""}
+          ${serieZahl > 0 ? `<div><b>${serieZahl}</b><span>${serieZahl === 1 ? "Tag" : "Tage"} in Folge</span></div>` : ""}
+        </div>
+        <p class="geschafftlob">${lob}</p>
       </div>
       <div class="card">
         <h2>Was du gemacht hast</h2>
@@ -8466,15 +8552,24 @@ function render(gewaehlt){
              onkeydown="if(event.key==='Enter')eingabePruefen()">
       ${beantwortet ? "" : `<button class="btn" onclick="eingabePruefen()">Prüfen</button>`}
     </div>
-    ${beantwortet ? `<div class="pick richtig" style="cursor:default">${s.tippAntwort || richtigeOption.t}</div>` : ""}
+    ${beantwortet ? `<div class="pick richtig" style="cursor:default"><span class="pickbuchstabe">✓</span><span class="picktext">${s.tippAntwort || richtigeOption.t}</span></div>` : ""}
     <p class="small soft" style="margin-top:10px">Hier gibt es nichts zum Anklicken — schreib das Ergebnis selbst hin.</p>`
-   : reihenfolge.map(i => {
+   : reihenfolge.map((i, platz) => {
     const o = s.optionen[i];
     let cls = "";
     if (falschGeklickt.includes(i)) cls = "falsch";
     else if (beantwortet && o.ok) cls = "richtig";
     const gesperrt = beantwortet || falschGeklickt.includes(i);
-    return `<button class="pick ${cls}" ${gesperrt ? "disabled" : ""} onclick="antwort(${i})">${o.t}</button>`;
+    /* Die Begründung hängt direkt an der angetippten Antwort. Früher stand sie
+       weit darunter in einem eigenen Kasten — man sah nicht, worauf sie sich
+       bezieht, und auf dem Handy war sie oft gar nicht im Bild. */
+    return `<div class="pickblock${cls ? " mitgrund" : ""}">
+              <button class="pick ${cls}" ${gesperrt ? "disabled" : ""} onclick="antwort(${i})">
+                <span class="pickbuchstabe">${"ABCDEFGH"[platz] || "•"}</span>
+                <span class="picktext">${o.t}</span>
+              </button>
+              ${cls ? `<div class="pickgrund ${cls}">${o.fb}</div>` : ""}
+            </div>`;
   }).join("");
 
   let fb = "";
@@ -8482,10 +8577,8 @@ function render(gewaehlt){
     fb += `<div class="feedback nope">„${letzteEingabe}“ stimmt noch nicht. Schau dir den Tipp an und versuch es noch einmal.</div>`;
   if (tippen && beantwortet && !aufgeloest && letzteEingabe)
     fb += `<div class="feedback ok">Richtig — und diesmal ohne Auswahl. Das kannst du wirklich.</div>`;
-  if (gewaehlt !== undefined){
-    const o = s.optionen[gewaehlt];
-    fb = `<div class="feedback ${o.ok ? "ok" : "nope"}">${o.fb}</div>`;
-  }
+  /* Die Rückmeldung zur angetippten Antwort steht jetzt an der Antwort selbst
+     (siehe .pickgrund oben) — hier braucht es keinen eigenen Kasten mehr. */
   if (hilfeStufe >= 1 && !aufgeloest) fb += `<div class="feedback tipp"><b>Tipp:</b> ${s.tipp}</div>`;
   if (hilfeStufe >= 2 && !aufgeloest && zweiterTipp())
     fb += `<div class="feedback tipp tipp2"><b>Noch ein Tipp:</b> ${zweiterTipp()}</div>`;
@@ -8517,12 +8610,14 @@ function render(gewaehlt){
       ${fb}
       ${beantwortet
         ? `<button class="btn full" id="weiterBtn" style="margin-top:18px" onclick="weiter()">Weiter</button>`
-        : `<button class="btn ghost full" id="tippBtn" style="margin-top:12px" onclick="hilfeWeiter()">${naechsteHilfe().text}</button>`}
-      ${/* nicht doppelt anbieten: weder wenn die Stufenleiter selbst schon dorthin
-            führt, noch wenn der Hinweiskasten die Erklärung bereits vorschlägt */
-        !beantwortet && hatErklaerung(aktuellName)
-        && !erklaerungAngeboten && naechsteHilfe().art !== "erklaerung"
-        ? `<button class="btn ghost full" id="erklBtn" style="margin-top:10px" onclick="zeigeErklaerung()">Ich verstehe das Thema gar nicht</button>` : ""}
+        : `<div class="hilfezeile">
+             <button class="hilfeknopf" id="tippBtn" onclick="hilfeWeiter()">${naechsteHilfe().text}</button>
+             ${/* nicht doppelt anbieten: weder wenn die Stufenleiter selbst schon
+                   dorthin führt, noch wenn der Hinweiskasten sie schon vorschlägt */
+               hatErklaerung(aktuellName) && !erklaerungAngeboten
+               && naechsteHilfe().art !== "erklaerung"
+               ? `<button class="hilfeknopf" id="erklBtn" onclick="zeigeErklaerung()">Ich verstehe das Thema gar nicht</button>` : ""}
+           </div>`}
     </div>
     <div class="card">
       <p class="small soft" style="margin:0">Auch nach allen Hinweisen bekommst du nie die Lösung. Den letzten Schritt machst immer du.</p>
