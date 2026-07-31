@@ -154,7 +154,9 @@
   .feedback.ok{background:var(--ac-soft);color:var(--ac-dark)}
   .feedback.nope{background:var(--red-soft);color:var(--red)}
   .feedback.tipp{background:var(--amber-soft);color:var(--amber)}
-  /* zweite Hilfestufe: die Regeln zum Thema — bewusst anders als der Tipp,
+  /* der zweite Tipp: dieselbe Familie, aber am Balken erkennbar als „noch einer“ */
+  .feedback.tipp2{border-left:4px solid var(--amber)}
+  /* letzte Hilfestufe vor der Erklärung: die Regeln zum Thema — bewusst anders als der Tipp,
      damit man sieht, dass etwas Neues dazugekommen ist */
   .feedback.regel{background:var(--amber-soft);color:var(--ink);border:1.5px solid var(--amber)}
   .feedback.regel b{display:block;margin-bottom:9px;color:var(--amber)}
@@ -918,16 +920,19 @@ const AUFGABEN = {
     schluss:"Beim Runden zählt immer nur die eine Ziffer rechts neben der Rundungsstelle.",
     schritte:[
      {frage:`Welche Ziffer steht bei <b>${z(n)}</b> an der <b>Hunderterstelle</b>?`,
+      tipp2:"Leg den Finger auf die letzte Ziffer und zähl nach links: erste, zweite, dritte Stelle. Die dritte ist gesucht.",
       tipp:"Von rechts: Einer, Zehner, Hunderter.",
       optionen:[R(`Die ${h}`, "Richtig. Das ist die Stelle, auf die gerundet wird."),
                 F(`Die ${e}`, "Die steht an der Zehnerstelle."),
                 F(`Die ${t}`, "Die steht an der Tausenderstelle.")]},
      {frage:"Welche Ziffer <b>entscheidet</b>, ob auf- oder abgerundet wird?",
+      tipp2:"Nicht die Rundungsstelle selbst und keine weiter hinten — genau die eine Nachbarin rechts daneben.",
       tipp:"Immer die Ziffer direkt rechts neben der Rundungsstelle.",
       optionen:[R(`Die ${e} rechts daneben`, "Genau. Nur diese eine Ziffer entscheidet."),
                 F(`Die ${n%10} ganz rechts`, "Die steht zu weit weg, sie spielt keine Rolle."),
                 F("Alle Ziffern zusammen", "Nein — nur die eine direkt rechts daneben.")]},
      {frage:`Die entscheidende Ziffer ist eine <b>${e}</b>. Was heißt das?`,
+      tipp2:"Du musst nur eines wissen: Ist sie kleiner als 5 oder nicht?",
       tipp:"0 bis 4 heißt abrunden, 5 bis 9 heißt aufrunden.",
       optionen: zieheVerschiedene(auf
         ? [R("Aufrunden", `${e} ist 5 oder größer — also aufrunden.`),
@@ -937,6 +942,7 @@ const AUFGABEN = {
            F("Aufrunden", "Aufgerundet wird erst ab 5."),
            F("Die Ziffer stehen lassen", "Beim Runden verschwindet alles rechts der Rundungsstelle.")], 3)},
      {frage:"Wie heißt das Ergebnis?",
+      tipp2:"Beim Abrunden bleibt die Hunderterziffer stehen, beim Aufrunden wird sie um eins größer. Alles rechts davon wird null.",
       tipp:"Die Hunderterziffer bleibt oder wächst um eins, dahinter stehen zwei Nullen.",
       optionen:[R(z(erg), "Richtig."),
                 F(z(gegen), auf ? "Das wäre abgerundet." : "Das wäre aufgerundet."),
@@ -960,6 +966,7 @@ const AUFGABEN = {
     schluss:"Der Wert einer Ziffer hängt davon ab, an welcher Stelle sie steht — nicht davon, wie groß die Ziffer selbst ist.",
     schritte:[
      {frage:`An welcher Stelle steht die <b>${ziffer}</b> in ${z(n)}?`,
+      tipp2:"Zähl die Ziffern rechts von ihr: keine heißt Einer, eine heißt Zehner, zwei heißt Hunderter, drei heißt Tausender.",
       tipp:"Zähl von rechts: Einer, Zehner, Hunderter, Tausender, Zehntausender.",
       optionen: (() => {
         const kand = [R(st.name, "Richtig."),
@@ -969,16 +976,19 @@ const AUFGABEN = {
         return zieheVerschiedene(einmalig, einmalig.length);
       })()},
      {frage:`Wie viel ist <b>ein einzelner ${st.name}</b> wert?`,
+      tipp2:"Jede Stelle ist zehnmal so viel wert wie ihre Nachbarin rechts daneben.",
       tipp:"Einer = 1, Zehner = 10, Hunderter = 100, Tausender = 1000.",
       optionen:[R(z(st.wert), "Genau."),
                 F(z(st.wert*10), "Das ist die nächsthöhere Stelle."),
                 F(z(st.wert/10), "Das ist die nächstniedrigere Stelle.")]},
      {frage:`Du hast <b>${ziffer}</b> davon. Welche Rechnung ergibt den Wert?`,
+      tipp2:"Nicht zusammenzählen: Drei Hunderter sind 3 · 100, nicht 3 + 100.",
       tipp:"Anzahl mal Stellenwert.",
       optionen:[R(`${ziffer} · ${z(st.wert)}`, "Richtig."),
                 F(`${ziffer} + ${z(st.wert)}`, "Addieren passt hier nicht."),
                 F(`${z(st.wert)} : ${ziffer}`, "Geteilt würde den Wert verkleinern.")]},
      {frage:`Und das ergibt?`,
+      tipp2:"Bei glatten Stellenwerten reicht es, an die Ziffer die passende Anzahl Nullen anzuhängen.",
       tipp:`${ziffer} mal ${z(st.wert)}.`,
       optionen:[R(z(erg), "Fertig."),
                 F(z(ziffer), "Das ist nur die Ziffer selbst, ohne ihren Stellenwert."),
@@ -997,16 +1007,19 @@ const AUFGABEN = {
     schluss:"Punkt vor Strich — Mal und Geteilt kommen immer vor Plus und Minus.",
     schritte:[
      {frage:"Welche Rechnung machst du <b>zuerst</b>?",
+      tipp2:"Punkt vor Strich: Mal und geteilt kommen vor plus und minus — egal, was weiter links steht.",
       tipp:"Es gibt eine feste Reihenfolge, egal wie die Aufgabe dasteht.",
       optionen:[R(`${b} · ${c}`, "Richtig — Punkt vor Strich."),
                 F(`${a} + ${b}`, `Das wäre von links nach rechts. Dann käme ${z(falsch)} heraus, und das ist falsch.`),
                 F(`${a} · ${c}`, `Die ${a} und die ${c} stehen nicht nebeneinander — dazwischen steht ein Pluszeichen.`)]},
      {frage:`Was ergibt <b>${b} · ${c}</b>?`,
+      tipp2:"Wenn du das Einmaleins gerade nicht sicher hast, rechne es als wiederholtes Zusammenzählen.",
       tipp:`${b} mal die ${c}.`,
       optionen:[R(z(b*c), "Ja."),
                 F(z(b+c), "Das wäre plus statt mal."),
                 F(z(b*c + 1), "Rechne das kleine Einmaleins noch mal nach.")]},
      {frage:`Jetzt steht da <b>${a} + ${z(b*c)}</b>. Wie viel ist das?`,
+      tipp2:"Der Malteil ist erledigt. Übrig bleibt eine einzige Plusaufgabe.",
       tipp:"Ganz normal zusammenzählen.",
       optionen:(() => {
         const kand = [a*b*c, erg-2, erg+2, erg-1].filter((x,i,arr) => x !== erg && arr.indexOf(x) === i);
@@ -1028,19 +1041,23 @@ const AUFGABEN = {
     schluss:"Erst Klammer, dann Punkt, dann Strich. In dieser Reihenfolge, immer.",
     schritte:[
      {frage:"Womit fängst du an?",
+      tipp2:"Die Reihenfolge lautet: erst Klammer, dann Punkt, dann Strich.",
       tipp:"Eine Sache hat immer Vorrang, sogar vor dem Malzeichen.",
       optionen:[R("Mit der Klammer", "Richtig. Klammer schlägt alles."),
                 F(`Mit ${b} · ${c}`, `Die ${b} steht in der Klammer und gehört zur ${a}.`),
                 F(`Mit ${c} − ${d}`, "Minus kommt zuletzt.")]},
      {frage:"Was kommt in der Klammer heraus?",
+      tipp2:"Rechne nur, was zwischen den Klammern steht — alles andere bleibt vorerst liegen.",
       tipp:`${a} plus ${b}.`,
       optionen:[R(z(a+b), `Ja. Jetzt heißt die Aufgabe ${z(a+b)} · ${c} − ${d}.`),
                 F(z(a*b), "Das wäre mal statt plus.")]},
      {frage:`Jetzt <b>${z(a+b)} · ${c} − ${d}</b>. Was kommt zuerst?`,
+      tipp2:"Die Klammer ist weg, es bleiben mal und minus. Mal gewinnt.",
       tipp:"Punkt vor Strich.",
       optionen:[R(`${z(a+b)} · ${c} = ${z((a+b)*c)}`, "Genau."),
                 F(`${c} − ${d} = ${z(c-d)}`, "Mal geht vor Minus.")]},
      {frage:`Letzter Schritt: <b>${z((a+b)*c)} − ${d}</b>`,
+      tipp2:"Nur noch diese eine Minusaufgabe, alles andere ist schon erledigt.",
       tipp:"Einfach abziehen.",
       optionen:[R(z(erg), "Fertig."),
                 F(z((a+b)*c + d), "Da wurde addiert statt abgezogen.")]}]};
@@ -1058,21 +1075,25 @@ const AUFGABEN = {
     schluss:"Erst die große Einheit umrechnen, dann den Rest dazuzählen.",
     schritte:[
      {frage:"Wie viele Gramm sind <b>1 Kilogramm</b>?",
+      tipp2:"Dieselbe Tausenderstufe wie bei Kilometer und Meter oder bei Liter und Milliliter.",
       tipp:"Kilo heißt tausend.",
       optionen:[R("1.000 g", "Richtig."),
                 F("100 g", "Das wäre ein Zehntel Kilogramm."),
                 F("10.000 g", "Das wären 10 Kilogramm.")]},
      {frage:`Was rechnest du also mit den <b>${kg} kg</b>?`,
+      tipp2:"Von der großen zur kleinen Einheit: Die Zahl wird größer, also wird malgenommen.",
       tipp:`${kg} Kilogramm sind ${kg} mal tausend Gramm.`,
       optionen:[R(`${kg} · 1.000 = ${z(kg*1000)} g`, "Genau."),
                 F(`${kg} : 1.000`, "Geteilt würde die Zahl kleiner — Gramm sind aber kleinere Portionen, davon braucht man mehr."),
                 F(`${kg} + 1.000`, "Addieren passt hier nicht, es wird umgerechnet.")]},
      {frage:`Jetzt fehlen noch die <b>${z(g)} g</b>. Was machst du damit?`,
+      tipp2:"Umrechnen musst du nur, was noch in der falschen Einheit steht.",
       tipp:"Die stehen schon in der richtigen Einheit.",
       optionen:[R("Einfach dazuzählen", "Richtig, sie sind ja schon in Gramm."),
                 F("Auch mal 1.000 nehmen", "Nur die Kilogramm mussten umgerechnet werden."),
                 F("Durch 1.000 teilen", "Dann würden aus Gramm Kilogramm — genau verkehrt herum.")]},
      {frage:`<b>${z(kg*1000)} + ${z(g)}</b> ergibt?`,
+      tipp2:"Beide Zahlen stehen jetzt in Gramm — erst dann darf man sie überhaupt zusammenzählen.",
       tipp:"Ganz normal zusammenzählen.",
       optionen:[R(z(erg) + " g", "Fertig."),
                 F(z(kg*1000 + g*10) + " g", "Achte auf die Stellen.")]}]};
@@ -1087,16 +1108,19 @@ const AUFGABEN = {
     schluss:"Bei der Zeit wird nicht in Zehnerschritten gerechnet — eine Stunde hat 60 Minuten, nicht 100.",
     schritte:[
      {frage:"Wie viele Minuten hat <b>eine Stunde</b>?",
+      tipp2:"Bei der Zeit gilt nicht die Tausenderstufe wie bei Metern und Gramm.",
       tipp:"Schau auf eine Uhr.",
       optionen:[R("60", "Richtig — und genau das ist die Falle bei Zeitangaben."),
                 F("100", "Bei der Zeit wird nicht in Hundertern gerechnet."),
                 F("90", "90 Minuten sind eineinhalb Stunden.")]},
      {frage:`Was ergeben die <b>${h} ${h === 1 ? "Stunde" : "Stunden"}</b> in Minuten?`,
+      tipp2:"Von groß nach klein wird malgenommen — hier mit 60 statt mit 1.000.",
       tipp:`${h} mal 60.`,
       optionen:[R(`${h} · 60 = ${z(h*60)}`, "Genau."),
                 F(`${h} · 100 = ${z(h*100)}`, "Eine Stunde hat 60 Minuten, nicht 100."),
                 F(`${h} + 60 = ${z(h+60)}`, "Hier wird umgerechnet, nicht addiert.")]},
      {frage:`Und jetzt die <b>${m} Minuten</b> dazu: ${z(h*60)} + ${m}`,
+      tipp2:"Erst umrechnen, dann zusammenzählen — nie umgekehrt.",
       tipp:"Die Minuten stehen schon in der richtigen Einheit.",
       optionen:[R(z(erg) + " min", "Fertig."),
                 F(z(h*100 + m) + " min", "Da wurde mit 100 statt mit 60 gerechnet.")]}]};
@@ -1115,21 +1139,25 @@ const AUFGABEN = {
     schluss:"Umfang ist der Weg einmal außen herum — deshalb zählt jede Seite mit.",
     schritte:[
      {frage:"Was bedeutet <b>Umfang</b>?",
+      tipp2:"Es geht um den Weg am Rand, nicht um den Platz in der Mitte.",
       tipp:"Stell dir vor, du läufst außen um das Rechteck herum.",
       optionen:[R("Die Länge aller vier Seiten zusammen", "Genau."),
                 F("Der Platz innen drin", "Das ist der Flächeninhalt."),
                 F("Nur die längste Seite", "Nein, alle vier Seiten zählen.")]},
      {frage:"Ein Rechteck hat <b>wie viele</b> Seiten von jeder Sorte?",
+      tipp2:"Vier Seiten insgesamt, aber nur zwei verschiedene Längen.",
       tipp:"Gegenüberliegende Seiten sind gleich lang.",
       optionen:[R("Zwei lange und zwei kurze", "Richtig."),
                 F("Eine lange und eine kurze", "Dann wäre es kein geschlossenes Rechteck."),
                 F("Vier gleich lange", "Das wäre ein Quadrat.")]},
      {frage:"Welche Rechnung passt?",
+      tipp2:"Jede der beiden Längen kommt zweimal vor, und alle vier Stücke werden zusammengezählt.",
       tipp:`Zweimal ${l} und zweimal ${b}.`,
       optionen:[R(`2 · ${l} + 2 · ${b}`, "Genau das ist die Umfangsformel."),
                 F(`${l} · ${b}`, "Das wäre der Flächeninhalt."),
                 F(`${l} + ${b}`, "Das sind nur zwei der vier Seiten.")]},
      {frage:`Rechne aus: <b>${z(2*l)} + ${z(2*b)}</b>`,
+      tipp2:"Beide Doppelstücke sind schon ausgerechnet — jetzt fehlt nur noch die Summe.",
       tipp:`2·${l} = ${z(2*l)} und 2·${b} = ${z(2*b)}.`,
       optionen:[R(z(erg) + " cm", "Fertig."),
                 F(z(l*b === erg ? erg + 2 : l*b) + " cm",
@@ -1147,16 +1175,19 @@ const AUFGABEN = {
     schluss:"Fläche ist Länge mal Breite — und die Einheit bekommt eine kleine 2, weil zwei Längen multipliziert wurden.",
     schritte:[
      {frage:"Was ist der <b>Flächeninhalt</b>?",
+      tipp2:"Nicht der Rand, sondern das, was der Rand einschließt.",
       tipp:"Wie viele Zentimeterquadrate passen hinein?",
       optionen:[R("Der Platz innerhalb des Rechtecks", "Richtig."),
                 F("Der Weg außen herum", "Das ist der Umfang."),
                 F("Die Länge der längsten Seite", "Eine einzelne Seite ist weder Fläche noch Umfang.")]},
      {frage:"Welche Rechnung gehört zur Fläche?",
+      tipp2:"Denk an die Kästchen im Bild: so viele Reihen mit je so vielen Kästchen.",
       tipp:"Länge und Breite werden verbunden — aber nicht addiert.",
       optionen:[R(`${l} · ${b}`, "Genau: Länge mal Breite."),
                 F(`${l} + ${b}`, "Addieren ergibt keine Fläche."),
                 F(`2 · ${l} + 2 · ${b}`, "Das ist die Umfangsformel.")]},
      {frage:`Wie viel ist <b>${l} · ${b}</b>?`,
+      tipp2:"Zerleg die größere Zahl, wenn es hilft: erst mit den Zehnern rechnen, dann mit den Einern.",
       tipp:"Schriftlich oder in Schritten rechnen.",
       optionen:(() => {
         const kand = [l+b, erg-l, erg+l, erg-1].filter((x,i,arr) => x > 0 && x !== erg && arr.indexOf(x) === i);
@@ -1165,6 +1196,7 @@ const AUFGABEN = {
                 F(z(kand[1]), "Knapp daneben — rechne noch mal nach.")];
       })()},
      {frage:"Welche <b>Einheit</b> gehört dahinter?",
+      tipp2:"Beim Umfang bleibt es cm. Werden zwei Längen malgenommen, kommt die kleine Zwei dazu.",
       tipp:"Es wurden zwei Längen miteinander multipliziert.",
       optionen:[R("cm²", "Richtig — Quadratzentimeter."),
                 F("cm", "cm ist eine Länge, keine Fläche."),
@@ -1188,19 +1220,23 @@ const AUFGABEN = {
     schluss:"Bei einer senkrechten Achse muss die linke Hälfte das Spiegelbild der rechten sein.",
     schritte:[
      {frage:"Was heißt <b>senkrechte</b> Spiegelachse?",
+      tipp2:"Die Achse steht wie ein senkrechter Strich in der Mitte — links und rechts davon wird verglichen.",
       tipp:"Senkrecht = von oben nach unten.",
       optionen:[R("Linke und rechte Hälfte sind spiegelgleich", "Genau."),
                 F("Obere und untere Hälfte sind spiegelgleich", "Das wäre eine waagerechte Achse."),
                 F("Die Figur sieht gedreht gleich aus", "Das wäre Drehsymmetrie.")]},
      {frage:`Prüf das <b>${f1}</b>: Sieht die linke Hälfte aus wie die gespiegelte rechte?`,
+      tipp2:"Halte die linke Hälfte gedanklich vor einen Spiegel: Käme dabei die rechte heraus?",
       tipp:"Mal dir den Buchstaben auf und falte ihn in der Mitte.",
       optionen:[R("Nein", `Richtig, das ${f1} ist links und rechts verschieden.`),
                 F("Ja", `Beim ${f1} klappt das nicht — gespiegelt zeigt es in die andere Richtung.`)]},
      {frage:`Und das <b>${richtig}</b>?`,
+      tipp2:"Buchstaben wie A, M oder T bestehen die Probe. Buchstaben wie F, L oder P nicht.",
       tipp:"Falte es einmal senkrecht in der Mitte.",
       optionen:[R("Ja", `Richtig, das ${richtig} ist senkrecht spiegelsymmetrisch.`),
                 F("Nein", `Doch — beim ${richtig} passen beide Hälften genau aufeinander.`)]},
      {frage:"Welcher Buchstabe ist also die Antwort?",
+      tipp2:"Du hast die drei eben einzeln geprüft — nimm den, bei dem es gepasst hat.",
       tipp:"Nur einer der drei hat die Eigenschaft.",
       optionen:[R(richtig, "Richtig."),
                 F(f2, `Das ${f2} hat keine senkrechte Spiegelachse.`)]}]};
@@ -1223,16 +1259,19 @@ const AUFGABEN = {
     schluss:"Eine Symmetrieachse ist jede Linie, an der man die Figur falten kann, sodass beide Hälften genau aufeinanderliegen.",
     schritte:[
      {frage:"Was ist eine <b>Symmetrieachse</b>?",
+      tipp2:"Nach dem Falten müssen beide Hälften genau aufeinanderliegen, nicht nur ungefähr.",
       tipp:"Denk ans Falten eines Papiers.",
       optionen:[R("Eine Linie, an der man falten kann und beide Hälften passen genau", "Genau."),
                 F("Jede Linie, die die Figur in zwei Teile teilt", "Teilen reicht nicht — die Hälften müssen deckungsgleich sein."),
                 F("Die längste Linie in der Figur", "Damit hat Symmetrie nichts zu tun.")]},
      {frage:`Wie musst du bei ${f.name} vorgehen?`,
+      tipp2:"Denk an die senkrechte Linie, die waagerechte und die beiden schrägen.",
       tipp:"Probier gedanklich jede mögliche Faltlinie durch.",
       optionen:[R("Jede Faltlinie einzeln durchprobieren", "Richtig — und nur die zählen, bei denen es wirklich passt."),
                 F("Die Ecken zählen", "Die Anzahl der Ecken ist nicht automatisch die Anzahl der Achsen."),
                 F("Die Seiten zählen", "Auch das stimmt nicht bei jeder Figur.")]},
      {frage:`Wie viele Achsen findest du bei ${f.name}?`,
+      tipp2:"Beim Quadrat sind es mehr als beim Rechteck, weil dort auch die Diagonalen passen.",
       tipp: f.hilfe,
       optionen: zieheVerschiedene([
         R(String(f.n), `Richtig — ${f.hilfe}.`),
@@ -1261,23 +1300,27 @@ const AUFGABEN = {
     schluss:"Brüche addieren ist immer derselbe Ablauf: gleicher Nenner, dann Zähler addieren.",
     schritte:[
      {frage:`Warum kannst du hier nicht einfach ${a} + ${c} rechnen?`,
+      tipp2:"Zwei Brüche darf man erst zusammenzählen, wenn beide dieselbe Sorte von Teilen beschreiben.",
       tipp:"Schau auf die Zahlen unter dem Strich.",
       optionen:[R("Weil die Nenner verschieden sind", "Genau. Die Stücke sind unterschiedlich groß."),
                 F("Weil die Zähler verschieden sind", "Die oberen Zahlen dürfen ruhig verschieden sein."),
                 F("Weil man Brüche nie addieren kann", "Doch — man muss sie nur erst passend machen.")]},
      {frage:`Du brauchst einen gemeinsamen Nenner für ${b} und ${d}. Welcher ist der <b>kleinste</b>?`,
+      tipp2:"Geh die Vielfachen der größeren Zahl durch und prüfe bei jedem, ob die kleinere hineinpasst.",
       tipp:`Such die kleinste Zahl, in der ${b} und ${d} ohne Rest aufgehen.`,
       optionen: zieheVerschiedene([
         R(String(n), `Richtig — ${b} · ${fb} = ${n} und ${d} · ${fd} = ${n}.`),
         F(String(b*d === n ? n + b : b*d), "Das ist zwar ein gemeinsamer Nenner, aber nicht der kleinste."),
         F(String(b + d), "Einfach addieren ergibt keinen gemeinsamen Nenner.")], 3)},
      {frage:`Was wird aus <b>${a}/${b}</b> mit dem Nenner ${n}?`,
+      tipp2:"Erweitern heißt: oben und unten mit derselben Zahl malnehmen. Der Wert des Bruchs ändert sich dadurch nicht.",
       tipp:`Der Nenner wird mal ${fb} genommen. Mit dem Zähler machst du dasselbe.`,
       optionen:[R(`${a*fb}/${n}`, `Ja — oben und unten mal ${fb}.`),
                 F(`${a}/${n}`, "Du hast nur unten erweitert. Oben muss dasselbe passieren."),
                 F(`${n}/${n}`, "Das wäre genau 1.")]},
      {frage:`Und <b>${c}/${d}</b> mit dem Nenner ${n}? Dann kannst du addieren.`,
       tippAntwort: `${zaehler}/${n}`,
+      tipp2:"Haben beide denselben Nenner, werden nur noch die Zähler zusammengezählt.",
       tipp:`Der Nenner wird mal ${fd} genommen — der Zähler auch.`,
       optionen:(() => {
         const richtigZ = c*fd;
@@ -1300,22 +1343,26 @@ const AUFGABEN = {
     schluss:"„von“ heißt beim Rechnen immer: mal. Am einfachsten gehst du über einen einzelnen Teil.",
     schritte:[
      {frage:"Was bedeutet das Wort <b>von</b> in dieser Aufgabe?",
+      tipp2:"Bei Brüchen und bei Prozenten steht dieses Wörtchen immer für dieselbe Rechenart.",
       tipp:"Es ist eine Rechenanweisung.",
       optionen:[R("Mal", `Richtig: ${a}/${b} · ${z(N)}.`),
                 F("Minus", "Nein, abgezogen wird hier nichts."),
                 F("Plus", "Addiert wird hier auch nichts.")]},
      {frage:`Rechne zuerst <b>ein ${b}tel</b> von ${z(N)}. Wie kommst du da hin?`,
+      tipp2:"Erst in gleich große Teile zerlegen — geteilt wird durch die Zahl unter dem Bruchstrich.",
       tipp:"Der Nenner sagt dir, in wie viele gleiche Teile du zerlegst.",
       optionen:[R(`${z(N)} : ${b}`, "Genau — durch den Nenner teilen."),
                 F(`${z(N)} · ${b}`, "Dann würde es größer statt kleiner."),
                 F(`${z(N)} : ${a}`, `Die ${a} ist der Zähler, nicht der Nenner.`)]},
      {frage:`<b>${z(N)} : ${b}</b> ergibt?`,
+      tipp2:"Frag dich: Mal was ergibt der Teiler die große Zahl?",
       tipp:"Kleines Einmaleins rückwärts.",
       optionen:[R(z(teil), `Ja, ein ${b}tel von ${z(N)} sind ${z(teil)}.`),
                 F(z(teil + 1), "Rechne noch mal nach."),
                 F(z(N - b), "Hier wird geteilt, nicht abgezogen.")]},
      {frage:`Du brauchst aber <b>${a}</b> davon. Wie viel ist das?`,
       tippAntwort: String(erg),
+      tipp2:"Ein einzelnes Teil ist jetzt bekannt. Nimm es so oft, wie der Zähler sagt.",
       tipp:"Der Zähler sagt, wie viele dieser Teile du nimmst.",
       optionen:[R(`${z(teil)} · ${a} = ${z(erg)}`, "Fertig."),
                 F(`${z(teil)} : ${a} = ${z(teil/a)}`, `${a} Teile sind mehr als einer, nicht weniger.`)]}]};
@@ -1335,16 +1382,19 @@ const AUFGABEN = {
     schluss:"Bei Dezimalzahlen zählt die Stelle, nicht die Ziffernanzahl — Komma unter Komma.",
     schritte:[
      {frage:`Warum darfst du die Ziffern nicht einfach von rechts untereinanderschreiben?`,
+      tipp2:"Zusammenzählen darf man nur Ziffern, die für dieselbe Stelle stehen.",
       tipp:`Was bedeutet die ${Math.round(a*10)} bei ${z(a)} — Zehntel oder Hundertstel?`,
       optionen:[R("Weil sonst Zehntel und Hundertstel zusammengezählt würden", "Genau. Man darf nur Gleiches mit Gleichem zusammenzählen."),
                 F("Weil man Kommazahlen nicht addieren darf", "Doch, man darf — nur stellenrichtig."),
                 F("Weil eine Zahl größer ist als die andere", "Damit hat es nichts zu tun.")]},
      {frage:`Wie schreibst du <b>${z(a)}</b>, damit beide gleich viele Nachkommastellen haben?`,
+      tipp2:"Häng so viele Nullen an, bis beide Zahlen gleich viele Stellen hinter dem Komma haben.",
       tipp:"Eine Null hinten ändert den Wert nicht.",
       optionen:[R(z(a).padEnd(4, "0"), `Richtig, ${Math.round(a*10)} Zehntel sind ${Math.round(a*100)} Hundertstel.`),
                 F("0,0" + Math.round(a*10), "Das wäre zehnmal kleiner."),
                 F(Math.round(a*10) + ",0", "Das wäre zehnmal größer.")]},
      {frage:`Jetzt <b>${z(a).padEnd(4,"0")} + ${z(b)}</b>. Was kommt heraus?`,
+      tipp2:"Rechne wie mit ganzen Zahlen und setz das Komma am Ende wieder untereinander.",
       tipp:`${Math.round(a*100)} Hundertstel plus ${Math.round(b*100)} Hundertstel.`,
       optionen: zieheVerschiedene([
         R(z(erg), "Genau."),
@@ -1363,16 +1413,19 @@ const AUFGABEN = {
     schluss:"Mal 10 heißt: Komma eine Stelle nach rechts. Bei 100 zwei Stellen, bei 1000 drei.",
     schritte:[
      {frage:`Was passiert mit dem <b>Komma</b>, wenn du mal ${z(faktor)} rechnest?`,
+      tipp2:"Zähl die Nullen im Faktor: So viele Stellen wandert das Komma.",
       tipp:"Die Zahl wird größer.",
       optionen:[R(`Es wandert ${stellen} ${stellen === 1 ? "Stelle" : "Stellen"} nach rechts`, "Genau, dadurch wird die Zahl größer."),
                 F(`Es wandert ${stellen} ${stellen === 1 ? "Stelle" : "Stellen"} nach links`, "Nach links würde die Zahl kleiner — das wäre geteilt."),
                 F("Es bleibt, wo es ist", "Dann würde sich die Zahl nicht ändern.")]},
      {frage:`Verschieb es bei <b>${z(grund)}</b> entsprechend.`,
+      tipp2:"Fehlen hinten Stellen, füllst du mit Nullen auf.",
       tipp:`Aus ${z(grund)} wird ${z(erg)}.`,
       optionen:[R(z(erg), "Richtig."),
                 F(z(Math.round(grund / faktor * 10000) / 10000), "Das wäre nach links, also geteilt."),
                 F(z(Math.round(grund * faktor * 10) / 10 * 10), "Eine Stelle zu weit.")]},
      {frage:`Kontrolle: Ist <b>${z(erg)}</b> ungefähr ${z(faktor)}-mal so groß wie ${z(grund)}?`,
+      tipp2:"Beim Überschlag rundest du grob und schaust nur, ob die Größenordnung stimmt.",
       tipp:`${z(grund)} ist ungefähr ${Math.round(grund)} — mal ${z(faktor)} sind das etwa ${z(Math.round(grund)*faktor)}.`,
       optionen:[R("Ja, das passt", "Diese Abschätzung solltest du dir angewöhnen — sie fängt fast alle Kommafehler ab."),
                 F("Nein", `Doch: ${z(grund)} · ${z(faktor)} liegt in der Nähe von ${z(Math.round(grund)*faktor)}.`)]}]};
@@ -1393,17 +1446,20 @@ const AUFGABEN = {
     schluss:"Für die 3 gibt es eine Abkürzung: die Quersumme. Damit sparst du dir das Ausrechnen.",
     schritte:[
      {frage:"Es gibt eine Regel für die 3. Welche?",
+      tipp2:"Nicht die letzte Ziffer entscheidet wie bei der 2 oder der 5, sondern alle Ziffern zusammen.",
       tipp:"Man addiert etwas an der Zahl.",
       optionen:[R("Die Quersumme muss durch 3 teilbar sein", "Genau — alle Ziffern zusammenzählen."),
                 F("Die letzte Ziffer muss durch 3 teilbar sein", "Das gilt bei 2, 5 und 10 — bei der 3 nicht."),
                 F("Die Zahl muss gerade sein", "Das ist die Regel für die 2.")]},
      {frage:`Wie groß ist die <b>Quersumme von ${z(n)}</b>?`,
+      tipp2:"Alle Ziffern einzeln zusammenzählen — die Stellenwerte spielen dabei keine Rolle.",
       tipp: String(n).split("").join(" + "),
       optionen: zieheVerschiedene([
         R(String(q), "Richtig."),
         F(String(q + 1), `Rechne noch mal: ${String(n).split("").join(" + ")}.`),
         F(String(n), "Die Quersumme ist die Summe der einzelnen Ziffern, nicht die Zahl selbst.")], 3)},
      {frage:`Ist <b>${q}</b> durch 3 teilbar?`,
+      tipp2:"Geh die Dreierreihe durch und schau, ob die Zahl darin vorkommt.",
       tipp:"3, 6, 9, 12, 15, 18, 21 …",
       optionen: zieheVerschiedene(q % 3 === 0
         ? [R("Ja", `Ja — 3 · ${q/3} = ${q}.`),
@@ -1413,6 +1469,7 @@ const AUFGABEN = {
            F("Ja", `Nein, ${q} : 3 geht nicht ohne Rest auf.`),
            F("Nur wenn man aufrundet", "Teilbarkeit hat mit Runden nichts zu tun.")], 3)},
      {frage:`Also ist ${z(n)} …`,
+      tipp2:"Was für die Quersumme gilt, gilt genauso für die ganze Zahl.",
       tipp:"Quersumme teilbar heißt Zahl teilbar.",
       optionen: teilbar
         ? [R("durch 3 teilbar", `Richtig. ${z(n)} : 3 = ${z(n/3)}.`), F("nicht durch 3 teilbar", "Die Quersumme sagt eindeutig ja.")]
@@ -1432,23 +1489,27 @@ const AUFGABEN = {
     schluss:"Bei der 4 musst du nie die ganze Zahl anschauen — die letzten beiden Ziffern genügen.",
     schritte:[
      {frage:"Welche Regel gilt für die <b>4</b>?",
+      tipp2:"Bei der 2 reicht die letzte Ziffer. Bei der 4 braucht man eine Ziffer mehr.",
       tipp:"Es reicht ein kleiner Teil der Zahl.",
       optionen:[R("Die letzten beiden Ziffern müssen durch 4 teilbar sein", "Genau, alles davor ist immer durch 4 teilbar."),
                 F("Die Quersumme muss durch 4 teilbar sein", "Die Quersumme hilft bei 3 und 9, nicht bei 4."),
                 F("Die letzte Ziffer muss gerade sein", "Das ist nur die Regel für 2.")]},
      {frage:`Welche Zahl bilden die <b>letzten beiden Ziffern</b> von ${z(n)}?`,
+      tipp2:"Die beiden Ziffern bleiben in ihrer Reihenfolge stehen und ergeben zusammen eine zweistellige Zahl.",
       tipp:"Die beiden ganz rechts.",
       optionen: zieheVerschiedene([
         R(letzteText, "Richtig."),
         F(String(Math.floor(n/100)), "Das sind die ersten beiden."),
         F(String(n % 10), "Es sind zwei Ziffern, nicht eine.")], 3)},
      {frage:`Ist <b>${letzteText}</b> durch 4 teilbar?`,
+      tipp2:"Halbiere zweimal. Geht beides ohne Rest auf, ist die Zahl durch 4 teilbar.",
       tipp:"4, 8, 12, 16, 20, 24 …",
       optionen: letzte % 4 === 0
         ? [R("Ja", `Ja — 4 · ${letzte/4} = ${letzte}.`), F("Nein", `Doch: ${letzte} : 4 = ${letzte/4}.`)]
         : [R(`Nein, es bleibt ein Rest von ${letzte % 4}`, `Genau — ${letzte} liegt zwischen ${Math.floor(letzte/4)*4} und ${Math.ceil(letzte/4)*4}.`),
            F("Ja", `${letzte} : 4 geht nicht glatt auf.`)]},
      {frage:`Also ist ${z(n)} …`,
+      tipp2:"Der Rest der Zahl muss dafür gar nicht geprüft werden.",
       tipp:"Letzte zwei Ziffern teilbar heißt Zahl teilbar.",
       optionen: teilbar
         ? [R("durch 4 teilbar", `Richtig. ${z(n)} : 4 = ${z(n/4)}.`), F("nicht durch 4 teilbar", "Die letzten beiden Ziffern gehen auf.")]
@@ -1475,22 +1536,26 @@ const AUFGABEN = {
     schluss:"Der Dreisatz geht immer über den Einzelwert: erst herunter auf eins, dann hoch auf die gesuchte Anzahl.",
     schritte:[
      {frage:"Was ist der übliche <b>erste Schritt</b> beim Dreisatz?",
+      tipp2:"Such dir die kleinstmögliche Menge — von der aus lässt sich jede andere leicht ausrechnen.",
       tipp:"Eine bestimmte Menge ist besonders praktisch.",
       optionen:[R(`Ausrechnen, was ein einzelnes ${ware.ein} kostet`, "Genau — über den Einzelwert geht es immer."),
                 F(`Sofort mal ${m} rechnen`, `Dann hättest du den Preis für ${k*m} ${ware.mehr}.`),
                 F(`${eur(preisK)} und ${m} addieren`, "Preise und Stückzahlen kann man nicht addieren.")]},
      {frage:`Wie kommst du auf den Preis für <b>ein</b> ${ware.ein}?`,
+      tipp2:"Aus vielen wird eins. Dafür wird geteilt, nicht malgenommen.",
       tipp:`Aus ${k} ${ware.mehr} wird 1 ${ware.ein}.`,
       optionen:[R(`${eur(preisK)} : ${k}`, "Richtig."),
                 F(`${eur(preisK)} · ${k}`, `Ein ${ware.ein} ist billiger als ${k}, nicht teurer.`),
                 F(`${eur(preisK)} − ${k}`, "Von einem Preis eine Stückzahl abzuziehen ergibt keinen Sinn.")]},
      {frage:`<b>${eur(preisK)} : ${k}</b> ergibt?`,
+      tipp2:"Rechne in Cent weiter, dann musst du dich nicht mit dem Komma herumschlagen.",
       tipp:`${Math.round(preisK*100)} Cent durch ${k}.`,
       optionen: zieheVerschiedene([
         R(eur(stueck), "Genau."),
         F(eur(Math.round(stueck*100 + 10)/100), "Rechne noch mal in Cent nach."),
         F(eur(Math.round(preisK*k*100)/100), "Das wäre mal statt geteilt.")], 3)},
      {frage:`Letzter Schritt: ${m} ${ware.mehr} zu je ${eur(stueck)}`,
+      tipp2:"Der Preis für ein Stück steht fest — jetzt so oft nehmen, wie gefragt ist.",
       tipp:"Jetzt wird multipliziert.",
       optionen: zieheVerschiedene([
         R(eur(erg), "Fertig."),
@@ -1514,17 +1579,20 @@ const AUFGABEN = {
     schluss:"Immer derselbe Weg: durch die gegebene Anzahl teilen, mal die gesuchte Anzahl nehmen.",
     schritte:[
      {frage:"Womit fängst du an?",
+      tipp2:"Erst herunterrechnen auf eins, dann hochrechnen auf die gesuchte Anzahl.",
       tipp:"Wieder über den Wert für ein einzelnes Stück.",
       optionen:[R(`${z(gesamtK)} : ${k}`, `Genau, die Anzahl pro ${sache.ding.slice(0,-1)}.`),
                 F(`${z(gesamtK)} · ${m}`, "Das wäre viel zu viel."),
                 F(`${m} − ${k}`, "Die Differenz hilft hier nicht weiter.")]},
      {frage:`<b>${z(gesamtK)} : ${k}</b> ergibt?`,
+      tipp2:"Frag dich: Mal was ergibt der Teiler die große Zahl?",
       tipp:"Einmaleins rückwärts.",
       optionen: zieheVerschiedene([
         R(z(proStueck), "Richtig."),
         F(z(proStueck + 1), "Rechne noch mal nach."),
         F(z(gesamtK - k), "Hier wird geteilt, nicht abgezogen.")], 3)},
      {frage:`Und ${m} ${sache.ding} zu je ${z(proStueck)} ${sache.inhalt}?`,
+      tipp2:"Der Wert für ein Stück ist bekannt. Es bleibt eine einzige Malaufgabe.",
       tipp:"Jetzt multiplizieren.",
       optionen: zieheVerschiedene([
         R(z(erg), "Fertig."),
@@ -1549,22 +1617,26 @@ const AUFGABEN = {
     schluss:"Spitz unter 90°, recht genau 90°, stumpf zwischen 90° und 180°, gestreckt genau 180°.",
     schritte:[
      {frage:"Wie viel Grad hat ein <b>rechter</b> Winkel?",
+      tipp2:"Es ist genau ein Viertel der vollen Drehung von 360°.",
       tipp:"Die Ecke eines Blatt Papiers.",
       optionen:[R("90°", "Richtig — das ist die wichtigste Grenze."),
                 F("180°", "180° ist ein gestreckter Winkel, also eine gerade Linie."),
                 F("45°", "45° ist ein halber rechter Winkel.")]},
      {frage:`Vergleich: Ist <b>${w}°</b> kleiner, gleich oder größer als 90°?`,
+      tipp2:"Nur die beiden Zahlen vergleichen — die Zeichnung kann täuschen.",
       tipp:"Reiner Zahlenvergleich.",
       optionen: zieheVerschiedene([
         R(w < 90 ? "Kleiner" : w === 90 ? "Genau 90°" : "Größer", "Genau."),
         F(w < 90 ? "Größer" : "Kleiner", `${w} und 90 noch mal vergleichen.`),
         F(w === 90 ? "Größer" : "Genau 90°", `${w}° ist nicht genau 90°.`)], 3)},
      {frage:`Und im Vergleich zu <b>180°</b>?`,
+      tipp2:"Zwischen 90° und 180° liegt der stumpfe Bereich, darüber der überstumpfe.",
       tipp:"180° wäre eine ganz gerade Linie.",
       optionen: zieheVerschiedene([
         R(w < 180 ? "Kleiner als 180°" : "Genau 180°", "Richtig."),
         F(w < 180 ? "Genau 180°" : "Kleiner als 180°", `${w}° noch mal mit 180 vergleichen.`)], 2)},
      {frage:"Wie heißt so ein Winkel?",
+      tipp2:"Unter 90° ist spitz, genau 90° ist der rechte Winkel, zwischen 90° und 180° ist stumpf.",
       tipp: art === "spitz" ? "Unter 90°." : art === "recht" ? "Genau 90°."
           : art === "stumpf" ? "Zwischen 90° und 180°." : "Genau 180°.",
       optionen: zieheVerschiedene([
@@ -1585,16 +1657,19 @@ const AUFGABEN = {
     schluss:"Ergänzen heißt schlicht: Rest ausrechnen. Das brauchst du später bei Dreiecken ständig.",
     schritte:[
      {frage:`Was heißt „ergänzen sich zu ${ganz}°“?`,
+      tipp2:"Der gesuchte Winkel ist der Rest, der zum vollen Betrag noch fehlt.",
       tipp:"Beide zusammen ergeben etwas Bestimmtes.",
       optionen:[R(`Beide zusammen ergeben ${ganz}°`, "Genau."),
                 F(`Jeder ist ${ganz}° groß`, `Dann wären es zusammen ${ganz*2}°.`),
                 F(`Der Unterschied beträgt ${ganz}°`, "Es geht um die Summe, nicht um die Differenz.")]},
      {frage:"Welche Rechnung führt zum zweiten Winkel?",
+      tipp2:"Gesucht ist der fehlende Teil — dafür wird abgezogen, nicht dazugezählt.",
       tipp:"Vom Ganzen den bekannten Teil abziehen.",
       optionen:[R(`${ganz}° − ${a}°`, "Richtig."),
                 F(`${ganz}° + ${a}°`, `Dann wäre die Summe größer als ${ganz}°.`),
                 F(`${a}° · 2`, "Es gibt keinen Grund, den Winkel zu verdoppeln.")]},
      {frage:`<b>${ganz} − ${a}</b> ergibt?`,
+      tipp2:"Rechne in Schritten: erst bis zur nächsten Zehnerzahl, dann den Rest.",
       tipp:`Von ${ganz} die ${a} abziehen.`,
       optionen: zieheVerschiedene([
         R(erg + "°", "Fertig."),
@@ -1616,22 +1691,26 @@ const AUFGABEN = {
     schluss:"Immer dieselbe Reihenfolge: zuerst das Plus oder Minus wegräumen, dann die Zahl vor dem x.",
     schritte:[
      {frage:"Am Ende soll nur noch <b>x</b> alleine dastehen. Was steht ihm auf der linken Seite gerade im Weg?",
+      tipp2:"Zuerst stört das, was dazugezählt oder abgezogen wird. Die Zahl vor dem x ist später dran.",
       tipp:`Schau dir die linke Seite an: ${a}x + ${b}.`,
       optionen:[R(`Die + ${b}`, "Genau. Erst das, was addiert wird."),
                 F(`Die ${a} vor dem x`, "Die kommt dran — aber erst später."),
                 F(`Die ${c} auf der rechten Seite`, "Die steht auf der anderen Seite, die stört das x nicht.")]},
      {frage:`Wie wirst du die <b>+ ${b}</b> los?`,
+      tipp2:"Man macht das Gegenteil: Aus Plus wird Minus — und zwar links und rechts gleichzeitig.",
       tipp:"Was du auf einer Seite machst, musst du auf beiden Seiten machen.",
       optionen:[R(`Auf beiden Seiten ${b} abziehen`, "Richtig — dann bleibt die Gleichung im Gleichgewicht."),
                 F(`Auf beiden Seiten ${b} addieren`, `Dann stünde da + ${2*b}.`),
                 F(`Beide Seiten durch ${b} teilen`, "Teilen hilft gegen Mal-Rechnen, nicht gegen Plus.")]},
      {frage:"Was steht jetzt da?",
+      tipp2:"Links bleibt nur noch das x-Glied stehen, rechts eine einzige Zahl.",
       tipp:`Links: ${a}x. Rechts: ${c} − ${b}.`,
       optionen:[R(`${a}x = ${a*x}`, "Sauber. Jetzt ist nur noch die Zahl vor dem x im Weg."),
                 F(`${a}x = ${c + b}`, "Rechts wurde addiert statt abgezogen."),
                 F(`x = ${a*x}`, `Noch nicht — die ${a} vor dem x steht ja noch da.`)]},
      {frage:`Letzter Schritt: <b>${a}x = ${a*x}</b> — wie groß ist x?`,
       tippAntwort: String(x),
+      tipp2:"Das Gegenteil von Malnehmen ist Teilen. Beide Seiten durch die Zahl vor dem x.",
       tipp:`${a}x heißt „${a} mal x“. Das Gegenteil von mal ist …`,
       optionen:[R(`Beide Seiten durch ${a} teilen, also x = ${x}`, `Genau. Probe: ${a}·${x} + ${b} = ${c}. Stimmt.`),
                 F(`Auf beiden Seiten ${a} abziehen`, "Abziehen hilft gegen Plus. Hier wird mal gerechnet."),
@@ -1647,22 +1726,26 @@ const AUFGABEN = {
     schluss:"Das Gegenteil von minus ist plus — und was du auf einer Seite machst, machst du auf beiden.",
     schritte:[
      {frage:"Was räumst du <b>zuerst</b> weg?",
+      tipp2:"Beim Umstellen räumt man erst die Strichrechnung weg, dann die Punktrechnung — genau andersherum als beim Ausrechnen.",
       tipp:"Erst das, was addiert oder abgezogen wird.",
       optionen:[R(`Die − ${b}`, "Richtig, immer zuerst Plus und Minus."),
                 F(`Die ${a} vor dem x`, "Die kommt zum Schluss."),
                 F(`Die ${c} rechts vom Gleichheitszeichen`, "Die steht auf der anderen Seite und stört das x nicht.")]},
      {frage:`Wie wirst du die <b>− ${b}</b> los?`,
+      tipp2:"Aus Minus wird Plus, auf beiden Seiten gleichzeitig.",
       tipp:`Das Gegenteil von minus ${b}.`,
       optionen:[R(`Auf beiden Seiten ${b} addieren`, "Genau."),
                 F(`Auf beiden Seiten ${b} abziehen`, `Dann stünde da − ${2*b}.`),
                 F(`Beide Seiten mit ${b} multiplizieren`, "Mal-Rechnen hilft gegen Mal-Rechnen, nicht gegen Minus.")]},
      {frage:"Was steht jetzt da?",
+      tipp2:"Rechts werden die beiden Zahlen zusammengefasst, links bleibt das x-Glied stehen.",
       tipp:`Links bleibt ${a}x, rechts ${c} + ${b}.`,
       optionen:[R(`${a}x = ${a*x}`, "Richtig."),
                 F(`${a}x = ${c - b}`, "Da wurde rechts abgezogen statt addiert."),
                 F(`x = ${a*x}`, `Noch nicht — die ${a} vor dem x steht ja noch da.`)]},
      {frage:`<b>${a}x = ${a*x}</b> — wie groß ist x?`,
       tippAntwort: String(x),
+      tipp2:"Teile beide Seiten durch dieselbe Zahl, dann steht x allein da.",
       tipp:"Durch die Zahl vor dem x teilen.",
       optionen:[R(`Beide Seiten durch ${a} teilen, also x = ${x}`, `Fertig. Probe: ${a}·${x} − ${b} = ${c}. Stimmt.`),
                 F(`Beide Seiten mal ${a}, also x = ${a*a*x}`, "Mal macht es größer, du willst es kleiner."),
@@ -1686,26 +1769,31 @@ const AUFGABEN = {
     schluss:"Der schwierige Teil ist nicht das Rechnen — sondern herauszufinden, was überhaupt gerechnet werden muss.",
     schritte:[
      {frage:"Bevor du rechnest: Was ist überhaupt <b>gesucht</b>?",
+      tipp2:"Achte auf den Unterschied: Ist der Nachlass gefragt oder das, was am Ende zu zahlen ist?",
       tipp:"Lies den letzten Satz der Aufgabe.",
       optionen:[R("Der neue Preis", "Richtig. Nicht der Rabatt — der neue Preis."),
                 F("Wie viel Euro gespart wird", "Das ist ein Zwischenschritt, aber nicht die Frage."),
                 F("Wie viel Prozent Rabatt es gibt", `Die ${rabatt} % stehen schon da, die sind gegeben.`)]},
      {frage:"Bei Prozent gilt immer: irgendetwas sind die <b>100 %</b>. Was ist hier 100 %?",
+      tipp2:"Der Prozentsatz bezieht sich immer auf den Wert von vor der Änderung.",
       tipp:"100 % ist immer der volle Wert — bevor sich etwas ändert.",
       optionen:[R(`Die ${eur(preis)}`, "Genau. Der alte Preis ist der ganze Kuchen."),
                 F(`Die ${rabatt} %`, "Das ist der Anteil, der wegfällt — nicht das Ganze."),
                 F("Der neue Preis", "Den suchen wir gerade.")]},
      {frage:`${rabatt} % gehen weg. <b>Wie viel Prozent zahlst du dann noch?</b>`,
+      tipp2:"Zieh den Nachlass von hundert ab — der Rest ist dein Anteil.",
       tipp:`Das Ganze sind 100 %. Davon fallen ${rabatt} % weg.`,
       optionen:[R(`${rest} %`, "Ja. Damit rechnest du weiter — in einem Schritt statt in zweien."),
                 F(`${rabatt} %`, "Das ist der Rabatt, nicht der Rest."),
                 F(`${100 + rabatt} %`, "Es wird günstiger, nicht teurer.")]},
      {frage:`Du zahlst ${rest} % von ${eur(preis)}. <b>Welche Rechnung</b> ist das?`,
+      tipp2:"Ein Schritt genügt: den vollen Preis mit der Kommazahl malnehmen.",
       tipp:`${rest} % = ${z(rest/100)}. Und „von“ heißt beim Rechnen: mal.`,
       optionen:[R(`${z(preis)} · ${z(rest/100)}`, "Perfekt. Das ist der ganze Trick bei Prozent-Textaufgaben."),
                 F(`${z(preis)} · ${z(rabatt/100)}`, "Das wäre der Rabatt in Euro — nur ein Zwischenschritt."),
                 F(`${z(preis)} : ${z(rest/100)}`, "Geteilt brauchst du, wenn du rückwärts rechnest.")]},
      {frage:`Rechne aus: <b>${z(preis)} · ${z(rest/100)}</b>`,
+      tipp2:"Rechne über ein Prozent: erst durch hundert teilen, dann so oft nehmen, wie gebraucht wird.",
       tipp:`1 % von ${eur(preis)} sind ${eur(preis/100)}.`,
       optionen: zieheVerschiedene([
         R(eur(erg), `Fertig. Gespart hast du ${eur(preis - erg)}.`),
@@ -1730,21 +1818,25 @@ const AUFGABEN = {
     schluss:"Prozent in Kommazahl umwandeln, dann mal den Grundwert — das ist der Standardweg.",
     schritte:[
      {frage:"Was sind hier die <b>100 %</b>?",
+      tipp2:"Es ist die Gruppe, von der ein Anteil genannt wird — nicht der Anteil selbst.",
       tipp:"Der volle Wert, auf den sich die Prozentangabe bezieht.",
       optionen:[R(`Die ${anzahl} ${gruppe.ganz}`, "Richtig, die ganze Gruppe."),
                 F(`Die ${p} %`, "Das ist der Anteil, nicht das Ganze."),
                 F(`Die Anzahl der ${gruppe.teil}`, "Die suchen wir ja gerade.")]},
      {frage:`Wie schreibst du <b>${p} %</b> als Kommazahl?`,
+      tipp2:"Beim Teilen durch hundert wandert das Komma zwei Stellen nach links.",
       tipp:"Prozent heißt „von hundert“ — also durch 100 teilen.",
       optionen:[R(z(p/100), `Genau: ${p} : 100 = ${z(p/100)}.`),
                 F(z(p/10), `Das wären ${p*10} %.`),
                 F(z(p/1000), `Das wären ${z(p/10)} %.`)]},
      {frage:"Welche Rechnung führt zum Ergebnis?",
+      tipp2:"Die Größe der Gruppe wird mit der Kommazahl malgenommen.",
       tipp:`„${p} % von ${anzahl}“ — und „von“ heißt mal.`,
       optionen:[R(`${anzahl} · ${z(p/100)}`, "Richtig."),
                 F(`${anzahl} : ${z(p/100)}`, "Geteilt bräuchtest du, wenn du das Ganze suchst."),
                 F(`${anzahl} − ${p}`, "Prozente kann man nicht direkt abziehen.")]},
      {frage:`<b>${anzahl} · ${z(p/100)}</b> ergibt?`,
+      tipp2:"Rechne über ein Prozent, dann bleibt nur noch eine Malaufgabe.",
       tipp:`1 % von ${anzahl} sind ${z(anzahl/100)}.`,
       optionen: zieheVerschiedene([
         R(z(erg), "Fertig."),
@@ -1764,21 +1856,25 @@ const AUFGABEN = {
     schluss:"Zinsen sind nichts anderes als Prozentrechnung: Zinssatz mal angelegtes Geld.",
     schritte:[
      {frage:"Was ist bei Zinsen der Wert, der <b>100 %</b> entspricht?",
+      tipp2:"Die Zinsen sind der Anteil. Gesucht ist der Betrag, von dem sie berechnet werden.",
       tipp:"Der Betrag, auf den die Zinsen gezahlt werden.",
       optionen:[R(`Die angelegten ${eur(kapital)}`, "Richtig — das nennt man das Kapital."),
                 F(`Die ${satz} %`, "Das ist der Zinssatz, also der Anteil."),
                 F("Die Zinsen selbst", "Die suchen wir gerade.")]},
      {frage:`Wie schreibst du <b>${satz} %</b> als Kommazahl?`,
+      tipp2:"Komma zwei Stellen nach links, notfalls vorne mit einer Null auffüllen.",
       tipp:"Prozent heißt „von hundert“ — also durch 100.",
       optionen:[R(z(satz/100), `Genau: ${satz} : 100 = ${z(satz/100)}.`),
                 F(z(satz/10), `Das wären ${satz*10} %.`),
                 F(z(satz), `Das wären ${satz*100} %.`)]},
      {frage:"Welche Rechnung ergibt die Zinsen für <b>ein</b> Jahr?",
+      tipp2:"Es ist dieselbe Rechnung wie bei jeder Prozentaufgabe: Grundwert mal Kommazahl.",
       tipp:"Zinssatz mal Kapital.",
       optionen:[R(`${z(kapital)} · ${z(satz/100)}`, "Richtig."),
                 F(`${z(kapital)} : ${z(satz/100)}`, "Geteilt bräuchtest du beim Rückwärtsrechnen."),
                 F(`${z(kapital)} + ${satz}`, "Prozent kann man nicht einfach dazuaddieren.")]},
      {frage:`<b>${z(kapital)} · ${z(satz/100)}</b> ergibt?`,
+      tipp2:"Ein Prozent ausrechnen und das dann so oft nehmen, wie der Zinssatz sagt.",
       tipp:`1 % von ${eur(kapital)} sind ${eur(kapital/100)} — und du brauchst ${satz} davon.`,
       optionen: zieheVerschiedene([
         R(eur(erg), `Fertig. Nach einem Jahr hast du ${eur(kapital + erg)} auf dem Konto.`),
@@ -1804,16 +1900,19 @@ const AUFGABEN = {
     schluss:"Nur Gleichartiges darf zusammen: x zu x, Zahl zu Zahl. Ein x ist keine Zahl — deshalb bleiben zwei Teile stehen.",
     schritte:[
      {frage:"Der Term hat vier Teile. <b>Welche davon gehören zusammen?</b>",
+      tipp2:"Es entstehen zwei Gruppen: die Teile mit x und die ohne. Über Kreuz geht nichts zusammen.",
       tipp:"Schau, welche Teile ein x dabeihaben und welche nicht.",
       optionen:[R(`${a}x und ${c}x — und davon getrennt ${b} und ${d}`, "Genau. Zusammenfassen darf man nur Gleichartiges."),
                 F(`${a}x und ${b} — und ${c}x und ${d}`, "Die stehen zwar nebeneinander, aber ein x und eine Zahl sind nichts Gleichartiges."),
                 F("Alle vier auf einmal", "Dann würdest du x-Teile und reine Zahlen vermischen — das geht nicht.")]},
      {frage:`Fass zuerst die x-Teile zusammen: <b>${a}x + ${c}x</b>`,
+      tipp2:"Nur die Zahlen davor werden zusammengezählt. Das x bleibt einfach stehen.",
       tipp:`Denk es als „${a} Stück x“ plus „${c} Stück x“.`,
       optionen:[R(`${xs}x`, "Richtig. Die Anzahl der x wird addiert, das x bleibt stehen."),
                 F(`${a*c}x`, "Hier wird addiert, nicht multipliziert."),
                 F(`${xs}x²`, "Beim Addieren ändert sich die Hochzahl nicht.")]},
      {frage:`Und jetzt die reinen Zahlen: <b>${b} + ${d}</b>`,
+      tipp2:"Diese beiden haben kein x — deshalb dürfen sie zusammen.",
       tipp:"Ganz normale Addition.",
       optionen: zieheVerschiedene([
         R(String(zs), "Genau."),
@@ -1821,6 +1920,7 @@ const AUFGABEN = {
         F(String(Math.abs(b - d)), "Da wurde abgezogen statt addiert.")], 3)},
      {frage:"<b>Wie lautet der fertige Term?</b>",
       tippAntwort:`${xs}x + ${zs}`,
+      tipp2:"Erst das x-Glied, dann die Zahl. Weiter zusammenfassen lässt sich das nicht.",
       tipp:"Beide Ergebnisse hinschreiben — mehr geht nicht zusammen.",
       optionen:[R(`${xs}x + ${zs}`, "Fertig. Weiter kann man nicht kürzen, weil x und Zahl verschieden sind."),
                 F(`${xs + zs}x`, "Hier wurde die Zahl noch ans x gehängt — sie gehört aber nicht dazu."),
@@ -1835,22 +1935,26 @@ const AUFGABEN = {
     schluss:"Die Zahl vor der Klammer trifft jeden Teil in der Klammer — keinen darf man auslassen.",
     schritte:[
      {frage:`Zuerst muss die Klammer weg. <b>Was macht die ${a} vor der Klammer?</b>`,
+      tipp2:"Sie trifft jeden einzelnen Teil in der Klammer, nicht nur den ersten.",
       tipp:"Sie steht vor der ganzen Klammer, nicht nur vor einem Teil davon.",
       optionen:[R(`Sie wird mit <b>jedem</b> Teil in der Klammer malgenommen`, "Genau — das nennt man ausmultiplizieren."),
                 F("Sie wird nur mit dem x malgenommen", `Dann würde die ${b} leer ausgehen, obwohl sie auch in der Klammer steht.`),
                 F("Sie wird zu allem addiert", "Zwischen Zahl und Klammer steht ein Mal, kein Plus.")]},
      {frage:`Rechne aus: <b>${a} · x</b> und <b>${a} · ${b}</b>`,
+      tipp2:"Es entstehen zwei Einzelprodukte: eines mit dem x und eines mit der Zahl.",
       tipp:`${a} mal x schreibt man kurz als ${a}x.`,
       optionen:[R(`${a}x und ${a*b}`, "Richtig."),
                 F(`${a}x und ${a + b}`, "Der zweite Teil wurde addiert statt malgenommen."),
                 F(`${a + 1}x und ${a*b}`, "Beim ersten Teil wurde dazugezählt statt malgenommen.")]},
      {frage:`Jetzt steht da: <b>${a}x + ${a*b} + ${c}</b>. Was geht noch zusammen?`,
+      tipp2:"Das x-Glied steht allein da. Zusammenfassen lassen sich nur die beiden reinen Zahlen.",
       tipp:"Suche wieder Gleichartiges.",
       optionen:[R(`Die ${a*b} und die ${c}`, "Genau, das sind beides reine Zahlen."),
                 F(`Die ${a}x und die ${a*b}`, "Eins hat ein x, das andere nicht — das ist nicht gleichartig."),
                 F("Nichts mehr", `Doch — ${a*b} und ${c} sind beide reine Zahlen.`)]},
      {frage:"<b>Wie lautet der fertige Term?</b>",
       tippAntwort:`${a}x + ${a*b + c}`,
+      tipp2:"Das x-Glied bleibt unverändert stehen, dahinter kommt die zusammengefasste Zahl.",
       tipp:`${a*b} + ${c} zusammenrechnen, das x-Glied bleibt stehen.`,
       optionen:[R(`${a}x + ${a*b + c}`, `Fertig. Probe mit x = 1: ${a} · (1 + ${b}) + ${c} = ${a*(1+b)+c}. Stimmt.`),
                 F(`${a}x + ${b + c}`, `Die ${b} wurde nicht mit ${a} malgenommen.`),
@@ -1868,22 +1972,26 @@ const AUFGABEN = {
     schluss:"Bei (x + b)² fehlt fast immer der mittlere Teil. Merke: erstes Quadrat, doppeltes Produkt, zweites Quadrat.",
     schritte:[
      {frage:`Was bedeutet <b>(x + ${b})²</b> überhaupt?`,
+      tipp2:"Nicht die einzelnen Teile quadrieren — die ganze Klammer wird zweimal hingeschrieben.",
       tipp:"Hoch 2 heißt: mit sich selbst malnehmen.",
       optionen:[R(`(x + ${b}) · (x + ${b})`, "Genau. Und genau deshalb entsteht mehr als nur zwei Quadrate."),
                 F(`x² + ${b}²`, "Das ist der häufigste Fehler überhaupt — dazu kommen wir gleich."),
                 F(`2 · (x + ${b})`, "Hoch 2 heißt malnehmen mit sich selbst, nicht verdoppeln.")]},
      {frage:"Beim Ausmultiplizieren trifft <b>jeder</b> Teil der ersten Klammer jeden Teil der zweiten. <b>Wie viele Einzelprodukte sind das?</b>",
+      tipp2:"Jeder der beiden linken Teile trifft jeden der beiden rechten.",
       tipp:"2 Teile mal 2 Teile.",
       optionen:[R("Vier", "Richtig: x·x, x·" + b + ", " + b + "·x und " + b + "·" + b + "."),
                 F("Zwei", "Dann würdest du zwei der vier Verbindungen vergessen."),
                 F("Drei", "Es sind vier — auch wenn zwei davon gleich groß sind.")]},
      {frage:`Zwei der vier Produkte sind gleich: <b>x · ${b}</b> und <b>${b} · x</b>. Was ergibt das zusammen?`,
+      tipp2:"Zweimal dasselbe heißt: das Doppelte davon.",
       tipp:"Zweimal dasselbe.",
       optionen:[R(`${2*b}x`, "Genau — daher das „doppelte Produkt“ in der Mitte."),
                 F(`${b}x`, "Es sind zwei gleiche Produkte, also doppelt so viel."),
                 F(String(b*b), "Die beiden werden addiert, nicht malgenommen — und das x bleibt stehen.")]},
      {frage:"<b>Wie lautet das Ergebnis?</b>",
       tippAntwort:`x² + ${2*b}x + ${b*b}`,
+      tipp2:"Drei Teile: das Quadrat des ersten, das doppelte Produkt und das Quadrat des zweiten.",
       tipp:"x² , dann das doppelte Produkt, dann " + b + "².",
       optionen:[R(`x² + ${2*b}x + ${b*b}`, `Richtig. Probe mit x = 1: (1 + ${b})² = ${(1+b)*(1+b)} und 1 + ${2*b} + ${b*b} = ${1 + 2*b + b*b}. Stimmt.`),
                 F(`x² + ${b*b}`, "Das ist der klassische Fehler — der mittlere Teil fehlt."),
@@ -1898,22 +2006,26 @@ const AUFGABEN = {
     schluss:"Plus mal Minus mit denselben Zahlen: die Mitte hebt sich auf, übrig bleibt die Differenz zweier Quadrate.",
     schritte:[
      {frage:"Hier steht einmal <b>+ " + b + "</b> und einmal <b>− " + b + "</b>. <b>Worauf läuft das hinaus?</b>",
+      tipp2:"Die beiden mittleren Produkte sind gleich groß, haben aber verschiedene Vorzeichen.",
       tipp:"Rechne die vier Einzelprodukte im Kopf durch und schau auf die mittleren.",
       optionen:[R("Die beiden mittleren Teile heben sich gegenseitig auf", "Genau das ist der Trick an dieser Formel."),
                 F("Es kommt dasselbe heraus wie bei (x + " + b + ")²", "Nein — dort verstärken sich die mittleren Teile, hier löschen sie sich."),
                 F("Man darf hier gar nicht ausmultiplizieren", "Doch, man darf immer ausmultiplizieren.")]},
      {frage:`Rechne die mittleren Produkte aus: <b>x · (−${b})</b> und <b>${b} · x</b>`,
+      tipp2:"Gleicher Betrag, entgegengesetztes Vorzeichen — zusammen ergibt das null.",
       tipp:"Einmal minus, einmal plus, sonst dasselbe.",
       optionen:[R(`−${b}x und +${b}x`, "Richtig — zusammen ergibt das null."),
                 F(`−${b}x und −${b}x`, `Der zweite Teil kommt von +${b} mal x, ist also positiv.`),
                 F(`−${b*b}x und +${b*b}x`, "Hier wird x mit " + b + " malgenommen, nicht " + b + " mit " + b + ".")]},
      {frage:`Und die äußeren Produkte: <b>x · x</b> und <b>${b} · (−${b})</b>`,
+      tipp2:"x mal x ergibt x². Beim zweiten Produkt entscheidet das Vorzeichen.",
       tipp:"Plus mal Minus ergibt Minus.",
       optionen:[R(`x² und −${b*b}`, "Genau."),
                 F(`x² und +${b*b}`, "Plus mal Minus ergibt Minus."),
                 F(`x und −${b*b}`, "x mal x ist x², nicht x.")]},
      {frage:"<b>Wie lautet das Ergebnis?</b>",
       tippAntwort:`x² − ${b*b}`,
+      tipp2:"Übrig bleiben das Quadrat des ersten Teils und das Quadrat des zweiten.",
       tipp:"Die Mitte fällt weg, es bleiben zwei Teile.",
       optionen:[R(`x² − ${b*b}`, `Richtig. Probe mit x = 1: (1 + ${b})(1 − ${b}) = ${(1+b)*(1-b)} und 1 − ${b*b} = ${1 - b*b}. Stimmt.`),
                 F(`x² + ${b*b}`, "Das Vorzeichen stimmt nicht: plus mal minus ergibt minus."),
@@ -1938,17 +2050,20 @@ const AUFGABEN = {
     schluss:"Steigung heißt immer: wie viel geht es hoch, geteilt durch wie weit es nach rechts geht.",
     schritte:[
      {frage:"<b>Was beschreibt die Steigung einer Geraden?</b>",
+      tipp2:"Es geht um ein Verhältnis: wie viel nach oben auf wie viel nach rechts.",
       tipp:"Stell dir vor, du läufst die Gerade entlang nach rechts.",
       optionen:[R("Wie viel die Gerade nach oben geht, wenn man ein Stück nach rechts geht", "Genau — Höhenunterschied geteilt durch Schritt nach rechts."),
                 F("Wie weit die Gerade von der Null entfernt ist", "Das ist der y-Achsenabschnitt, nicht die Steigung."),
                 F("Wie lang die Gerade ist", "Eine Gerade ist unendlich lang — das kann es nicht sein.")]},
      {frage:`Wie weit geht es von P nach Q <b>nach rechts</b>? (von x = ${x1} bis x = ${x2})`,
+      tipp2:"Achte auf die Vorzeichen: Minus einer negativen Zahl bedeutet plus.",
       tipp:`Rechne ${x2} − (${x1}).`,
       optionen: zieheVerschiedene([
         R(String(dx), "Richtig."),
         F(String(x1 + x2), "Die beiden Werte wurden addiert statt voneinander abgezogen."),
         F(String(Math.abs(x2) + Math.abs(x1) + 1), "Rechne genau: hinterer x-Wert minus vorderer x-Wert.")], 3)},
      {frage:`Und wie viel geht es <b>nach oben</b>? (von y = ${y1} bis y = ${y2})`,
+      tipp2:"Kommt etwas Negatives heraus, geht die Gerade nach unten statt nach oben.",
       tipp:`Rechne ${y2} − (${y1}).`,
       optionen: zieheVerschiedene([
         R(String(y2 - y1), "Genau."),
@@ -1956,6 +2071,7 @@ const AUFGABEN = {
         F(String(y1 - y2), "Die Reihenfolge ist vertauscht — hinterer minus vorderer Wert.")], 3)},
      {frage:`<b>Wie groß ist die Steigung?</b> (${y2 - y1} nach oben auf ${dx} nach rechts)`,
       tippAntwort:String(m),
+      tipp2:"Die Höhe kommt in den Zähler, die Breite in den Nenner — nicht umgekehrt.",
       tipp:"Nach oben geteilt durch nach rechts.",
       optionen:[R(`m = ${m}`, `Genau: ${y2 - y1} geteilt durch ${dx} ist ${m}.`),
                 F(`m = ${y2 - y1}`, `Das ist nur der Höhenunterschied — er muss noch durch ${dx} geteilt werden.`),
@@ -1978,22 +2094,26 @@ const AUFGABEN = {
     schluss:"Ein Punkt liegt genau dann auf einer Geraden, wenn seine beiden Werte die Gleichung erfüllen. Einsetzen, ausrechnen, vergleichen.",
     schritte:[
      {frage:"<b>Wie findet man heraus, ob ein Punkt auf einer Geraden liegt?</b>",
+      tipp2:"Man rechnet mit dem x-Wert nach, welches y die Gerade an dieser Stelle hätte.",
       tipp:"Der Punkt hat einen x-Wert und einen y-Wert. Die Gleichung auch.",
       optionen:[R("Man setzt den x-Wert ein und schaut, ob der passende y-Wert herauskommt", "Genau — das nennt man die Punktprobe."),
                 F("Man zeichnet und schaut hin", "Zeichnen ist ungenau — rechnen ist sicher."),
                 F("Man vergleicht den Punkt mit der Steigung", "Die Steigung allein sagt nichts über einen einzelnen Punkt.")]},
      {frage:`Setz <b>x = ${px}</b> in <b>y = ${m}x ${vz}</b> ein. Was steht dann da?`,
+      tipp2:"Setz die Zahl überall dort ein, wo x steht. Der Rest der Gleichung bleibt unverändert.",
       tipp:`Erst ${m} mal ${px} rechnen.`,
       optionen:[R(`y = ${m} · ${px} ${vz}`, "Richtig — nur das x wird ersetzt."),
                 F(`y = ${m} · ${px} · ${b}`, `Zwischen ${m}x und ${b} steht ein Plus oder Minus, kein Mal.`),
                 F(`y = ${px} ${vz}`, `Die ${m} vor dem x darf nicht verschwinden.`)]},
      {frage:"<b>Was kommt heraus?</b>",
+      tipp2:"Erst Punktrechnung, dann Strichrechnung.",
       tipp:`${m} · ${px} = ${m*px}, und davon dann ${b < 0 ? Math.abs(b) + " abziehen" : b + " dazu"}.`,
       optionen: zieheVerschiedene([
         R(String(richtig), "Genau."),
         F(String(m*px), `Der Teil ${vz} fehlt noch.`),
         F(String(m + px + b), "Hier wurde addiert statt malgenommen.")], 3)},
      {frage:`Herausgekommen ist <b>${richtig}</b>, der Punkt hat aber <b>y = ${py}</b>. <b>Liegt er auf der Geraden?</b>`,
+      tipp2:"Fast gleich reicht nicht. Es muss genau derselbe Wert sein.",
       tipp:"Nur wenn beide Werte genau gleich sind.",
       optionen: drauf
         ? [R("Ja, denn beide Werte sind gleich", "Richtig — die Punktprobe geht auf."),
@@ -2027,17 +2147,20 @@ const AUFGABEN = {
     schluss:"Die p-q-Formel funktioniert immer, wenn die Gleichung mit einem reinen x² anfängt. Erst p und q ablesen, dann einsetzen.",
     schritte:[
      {frage:"Bevor du rechnest: <b>Was sind hier p und q?</b>",
+      tipp2:"Das Vorzeichen gehört zur Zahl dazu: Steht ein Minus davor, ist der Wert negativ.",
       tipp:"In der Form x² + px + q = 0 ist p die Zahl vor dem x und q die Zahl ganz hinten.",
       optionen:[R(`p = ${p} und q = ${q}`, "Genau — mit Vorzeichen abgelesen, das ist die häufigste Fehlerquelle."),
                 F(`p = ${q} und q = ${p}`, "Vertauscht: p gehört zum x, q steht allein."),
                 F(`p = ${Math.abs(p)} und q = ${Math.abs(q)}`, "Die Vorzeichen gehören dazu, sonst stimmt das Ergebnis nicht.")]},
      {frage:`Die p-q-Formel beginnt mit <b>−p/2</b>. Was ist das hier?`,
+      tipp2:"Erst das Vorzeichen umdrehen, dann halbieren.",
       tipp:`p ist ${p}. Also −(${p}) geteilt durch 2.`,
       optionen: zieheVerschiedene([
         R(String(-halb), "Richtig — auf das Minus vor dem p achten."),
         F(String(halb), "Das Minus vor dem p wurde vergessen."),
         F(String(-p), "Es muss noch durch 2 geteilt werden.")], 3)},
      {frage:`Unter der Wurzel steht <b>(p/2)² − q</b>. Was kommt da heraus?`,
+      tipp2:"Erst quadrieren, dann q abziehen. Ein negatives q wird dabei zu einem Plus.",
       tipp:`(${halb})² ist ${halb*halb}, davon ${q < 0 ? Math.abs(q) + " dazu" : q + " abziehen"}.`,
       optionen: zieheVerschiedene([
         R(String(unterWurzel), "Genau."),
@@ -2045,6 +2168,7 @@ const AUFGABEN = {
         F(String(halb - q), "Der Teil p/2 muss noch quadriert werden.")], 3)},
      {frage:`Also <b>x = ${-halb} ± √${unterWurzel}</b>. <b>Wie heißen die beiden Lösungen?</b>`,
       tippAntwort:`${klein} und ${gross}`,
+      tipp2:"Zwei Rechnungen mit derselben Zahl: einmal dazuzählen, einmal abziehen.",
       tipp:`√${unterWurzel} ist ${Math.sqrt(unterWurzel)}. Einmal dazu, einmal davon abziehen.`,
       optionen:[R(`x₁ = ${klein} und x₂ = ${gross}`, `Richtig. Probe: ${klein} · ${gross} = ${q}, und das ist genau q.`),
                 F(`x₁ = ${-halb} und x₂ = ${Math.sqrt(unterWurzel)}`, "Die beiden Teile gehören zusammen — einmal mit Plus, einmal mit Minus."),
@@ -2064,17 +2188,20 @@ const AUFGABEN = {
     schluss:"Steht ein Produkt auf null, reicht es, wenn ein Faktor null wird. Deshalb darf man hier jede Klammer einzeln betrachten.",
     schritte:[
      {frage:"Hier ist ein <b>Produkt gleich null</b>. Was folgt daraus?",
+      tipp2:"Sobald ein einziger Faktor null ist, ist das ganze Produkt null. Auf die anderen kommt es dann nicht mehr an.",
       tipp:"Wann wird ein Produkt überhaupt null?",
       optionen:[R("Mindestens einer der beiden Faktoren muss null sein", "Genau — das ist der Satz vom Nullprodukt."),
                 F("Beide Faktoren müssen null sein", "Einer reicht schon: null mal irgendetwas ist null."),
                 F("Man muss zuerst ausmultiplizieren", "Man darf — aber man macht sich damit unnötig Arbeit.")]},
      {frage:`Wann wird die erste Klammer <b>${t(a)}</b> null?`,
+      tipp2:"Setz die Klammer für sich allein gleich null und stell nach x um.",
       tipp:`Welche Zahl muss x sein, damit ${a < 0 ? "x + " + Math.abs(a) : "x − " + a} null ergibt?`,
       optionen: zieheVerschiedene([
         R(`x = ${a}`, "Richtig."),
         F(`x = ${-a}`, "Vorzeichen vertauscht — setz die Zahl einmal probeweise ein."),
         F(`x = 0`, `Dann stünde in der Klammer ${a < 0 ? Math.abs(a) : -a}, nicht null.`)], 3)},
      {frage:`Und wann wird die zweite Klammer <b>${t(b)}</b> null?`,
+      tipp2:"Dieselbe Überlegung noch einmal, nur mit der anderen Zahl.",
       tipp:"Genauso wie eben.",
       optionen: zieheVerschiedene([
         R(`x = ${b}`, "Genau."),
@@ -2082,6 +2209,7 @@ const AUFGABEN = {
         F(`x = ${a}`, "Das war die Lösung der ersten Klammer.")], 3)},
      {frage:"<b>Wie lauten also beide Lösungen?</b>",
       tippAntwort:`${klein} und ${gross}`,
+      tipp2:"Üblicherweise schreibt man die kleinere Lösung zuerst.",
       tipp:"Beide Klammern liefern je eine Lösung.",
       optionen:[R(`x₁ = ${klein} und x₂ = ${gross}`, "Fertig — ohne einmal die p-q-Formel zu brauchen."),
                 F(`x = ${klein}`, "Es gibt zwei Klammern, also auch zwei Lösungen."),
@@ -2101,16 +2229,19 @@ const AUFGABEN = {
     schluss:"a² + b² = c² gilt nur im rechtwinkligen Dreieck — und c ist immer die Seite gegenüber dem rechten Winkel.",
     schritte:[
      {frage:"<b>Welche Seite ist die Hypotenuse?</b>",
+      tipp2:"Such zuerst den rechten Winkel. Die Seite, die ihn nicht berührt, ist gesucht.",
       tipp:"Sie ist immer die längste Seite im rechtwinkligen Dreieck.",
       optionen:[R("Die Seite, die dem rechten Winkel gegenüberliegt", "Genau — und sie ist immer die längste."),
                 F("Die längere der beiden Seiten am rechten Winkel", "Die beiden Seiten am rechten Winkel heißen Katheten."),
                 F("Es ist egal, welche man nimmt", "Nein — in der Formel steht c an einer festen Stelle.")]},
      {frage:"<b>Wie heißt die Formel?</b>",
+      tipp2:"Alle drei Seiten kommen quadriert vor, nicht einfach so.",
       tipp:"Die beiden kurzen Seiten auf der einen, die lange auf der anderen Seite.",
       optionen:[R("a² + b² = c²", "Richtig."),
                 F("a + b = c", "Ohne Quadrate stimmt es nicht — sonst wäre der Umweg immer gleich lang wie der direkte Weg."),
                 F("a² − b² = c²", "Addiert, nicht abgezogen — c ist ja die längste Seite.")]},
      {frage:`Setz ein: <b>${a}² + ${b}²</b>. Was kommt heraus?`,
+      tipp2:"Erst beide Quadrate einzeln ausrechnen, dann zusammenzählen.",
       tipp:`${a}² = ${a*a} und ${b}² = ${b*b}.`,
       optionen: zieheVerschiedene([
         R(String(a*a + b*b), "Genau — das ist c², noch nicht c."),
@@ -2118,6 +2249,7 @@ const AUFGABEN = {
         F(String(a*b), "Die Quadrate werden addiert, die Seiten nicht malgenommen.")], 3)},
      {frage:`<b>c² = ${c*c}</b> — wie lang ist c?`,
       tippAntwort:String(c),
+      tipp2:"Frag dich: Welche Zahl ergibt mit sich selbst malgenommen diesen Wert?",
       tipp:"Die Wurzel zieht das Quadrat wieder weg.",
       optionen:[R(`c = ${c} cm`, `Richtig. Probe: ${a}² + ${b}² = ${a*a} + ${b*b} = ${c*c} = ${c}².`),
                 F(`c = ${c*c} cm`, "Das ist c², die Wurzel fehlt noch."),
@@ -2134,16 +2266,19 @@ const AUFGABEN = {
     schluss:"Wird eine Kathete gesucht, wird abgezogen statt addiert. Die Hypotenuse ist immer die Große, von der man abzieht.",
     schritte:[
      {frage:"Gesucht ist diesmal eine <b>Kathete</b>, nicht die Hypotenuse. <b>Was ändert sich?</b>",
+      tipp2:"Die gesuchte Seite steht jetzt auf der Seite mit den beiden kurzen — deshalb wird abgezogen statt dazugezählt.",
       tipp:"Die Formel bleibt gleich — nur wird nach etwas anderem umgestellt.",
       optionen:[R("Man stellt a² + b² = c² nach b² um, es wird also abgezogen", "Genau: b² = c² − a²."),
                 F("Man addiert wie immer", "Dann käme etwas Längeres heraus als die Hypotenuse — unmöglich."),
                 F("Man braucht eine ganz andere Formel", "Nein, es ist dieselbe Formel, nur umgestellt.")]},
      {frage:"<b>Wie lautet die umgestellte Formel?</b>",
+      tipp2:"Vom Quadrat der längsten Seite wird das Quadrat der bekannten kurzen Seite abgezogen.",
       tipp:"Auf beiden Seiten a² abziehen.",
       optionen:[R("b² = c² − a²", "Richtig."),
                 F("b² = a² − c²", `Dann käme etwas Negatives heraus, denn ${a} ist kleiner als ${c}.`),
                 F("b² = c² + a²", "Dann wäre b länger als die Hypotenuse.")]},
      {frage:`Setz ein: <b>${c}² − ${a}²</b>`,
+      tipp2:"Erst beide Quadrate ausrechnen, dann die Differenz bilden.",
       tipp:`${c}² = ${c*c} und ${a}² = ${a*a}.`,
       optionen: zieheVerschiedene([
         R(String(c*c - a*a), "Genau — das ist b²."),
@@ -2151,6 +2286,7 @@ const AUFGABEN = {
         F(String(c*c + a*a), "Bei der gesuchten Kathete wird abgezogen.")], 3)},
      {frage:`<b>b² = ${b*b}</b> — wie lang ist b?`,
       tippAntwort:String(b),
+      tipp2:"Welche Zahl ergibt mit sich selbst malgenommen diesen Wert?",
       tipp:"Wurzel ziehen.",
       optionen:[R(`b = ${b} cm`, `Richtig. Probe: ${a}² + ${b}² = ${a*a + b*b} = ${c}².`),
                 F(`b = ${b*b} cm`, "Das ist b², die Wurzel fehlt."),
@@ -2176,6 +2312,7 @@ const AUFGABEN = {
     schluss:"Gleiche Grundzahl mal genommen: Hochzahlen addieren. Geteilt: Hochzahlen abziehen. Die Grundzahl bleibt immer stehen.",
     schritte:[
      {frage:`Was bedeutet <b>a<sup>${e1}</sup></b> ausgeschrieben?`,
+      tipp2:"Die Grundzahl steht unten, die Hochzahl zählt nur, wie oft sie vorkommt.",
       tipp:"Die Hochzahl sagt, wie oft die Grundzahl als Faktor auftritt.",
       optionen:[R(`a mal a mal a … insgesamt ${e1}-mal`, "Genau. Mehr steckt hinter einer Potenz nicht."),
                 F(`a mal ${e1}`, "Die Hochzahl ist kein Faktor, sondern eine Anzahl."),
@@ -2183,18 +2320,21 @@ const AUFGABEN = {
      {frage: malRechnen
         ? `Wenn du <b>${m} Stück a</b> und <b>${n} Stück a</b> aneinanderhängst — wie viele sind es dann?`
         : `Wenn du von <b>${gross} Stück a</b> jeweils <b>${klein} Stück a</b> wegkürzt — wie viele bleiben?`,
+      tipp2:"Schreib beide Potenzen ausgeschrieben hintereinander und zähl, wie viele Faktoren insgesamt dastehen.",
       tipp: malRechnen ? "Einfach zusammenzählen." : "Einfach abziehen.",
       optionen: zieheVerschiedene([
         R(String(erg), "Richtig."),
         F(String(malRechnen ? m * n : gross * klein), malRechnen ? "Die Hochzahlen werden addiert, nicht malgenommen." : "Die Hochzahlen werden abgezogen, nicht malgenommen."),
         F(String(malRechnen ? Math.abs(m - n) : gross + klein), malRechnen ? "Beim Malnehmen kommen sie dazu." : "Beim Teilen gehen sie weg.")], 3)},
      {frage:"<b>Was passiert mit der Grundzahl a?</b>",
+      tipp2:"Verrechnet werden nur die Hochzahlen. Die Grundzahl wird nie malgenommen.",
       tipp:"Sie ist bei beiden Potenzen dieselbe.",
       optionen:[R("Sie bleibt einfach a", "Genau — nur die Hochzahl ändert sich."),
                 F(malRechnen ? "Sie wird zu a²" : "Sie fällt weg", "Die Grundzahl bleibt immer unverändert stehen."),
                 F("Sie wird auch malgenommen", "Nur die Hochzahlen werden verrechnet.")]},
      {frage:"<b>Wie lautet das Ergebnis?</b>",
       tippAntwort:`a hoch ${erg}`,
+      tipp2:"Gleiche Grundzahl und ein Malzeichen dazwischen: Dann werden die Hochzahlen zusammengezählt.",
       tipp:"Grundzahl a, dazu die neue Hochzahl.",
       optionen:[R(`a<sup>${erg}</sup>`, "Fertig."),
                 F(`a<sup>${malRechnen ? m*n : gross+klein}</sup>`, malRechnen ? "Beim Malnehmen werden die Hochzahlen addiert." : "Beim Teilen werden sie abgezogen."),
@@ -2210,16 +2350,19 @@ const AUFGABEN = {
     schluss:"Die Wurzel fragt: welche Zahl mit sich selbst malgenommen ergibt das? Deshalb macht sie das Quadrieren rückgängig.",
     schritte:[
      {frage:`<b>Was fragt die Wurzel eigentlich?</b>`,
+      tipp2:"Sie ist die Umkehrung des Quadrierens.",
       tipp:"Denk daran, was sie rückgängig macht.",
       optionen:[R("Welche Zahl mit sich selbst malgenommen ergibt " + q + "?", "Genau — die Wurzel ist die Umkehrung des Quadrierens."),
                 F("Welche Zahl mal 2 ergibt " + q + "?", "Das wäre die Hälfte, nicht die Wurzel."),
                 F("Welche Zahl geteilt durch 2 ergibt " + q + "?", "Das wäre das Doppelte.")]},
      {frage:`Probier es ein: Ist <b>${w - 1} · ${w - 1}</b> schon ${q}?`,
+      tipp2:"Rechne es aus und vergleiche mit der Zahl unter dem Wurzelzeichen.",
       tipp:`${w-1} mal ${w-1} ausrechnen.`,
       optionen:[R(`Nein, das ergibt ${(w-1)*(w-1)} — zu klein`, "Richtig, also muss die Zahl größer sein."),
                 F(`Ja, genau ${q}`, `Nein, ${w-1} · ${w-1} ist ${(w-1)*(w-1)}.`),
                 F(`Nein, das ist zu groß`, `${(w-1)*(w-1)} ist kleiner als ${q}, nicht größer.`)]},
      {frage:`Und <b>${w} · ${w}</b>?`,
+      tipp2:"Wenn es genau aufgeht, hast du die Wurzel gefunden.",
       tipp:"Jetzt sollte es passen.",
       optionen: zieheVerschiedene([
         R(`Das ergibt genau ${q}`, "Damit ist die Wurzel gefunden."),
@@ -2227,6 +2370,7 @@ const AUFGABEN = {
         F(`Das ergibt ${w*2}`, "Das wäre das Doppelte, nicht das Quadrat.")], 3)},
      {frage:`<b>Wie groß ist √${q}?</b>`,
       tippAntwort:String(w),
+      tipp2:"Es ist die Zahl aus dem Schritt davor, bei dem es genau gepasst hat.",
       tipp:"Die Zahl, die eben aufgegangen ist.",
       optionen:[R(String(w), `Richtig, denn ${w}² = ${q}.`),
                 F(String(q / 2), "Halbieren ist nicht Wurzelziehen."),
@@ -2250,17 +2394,20 @@ const AUFGABEN = {
     schluss:"In der Scheitelform steht der Scheitelpunkt direkt da — man muss nur beim x-Wert das Vorzeichen umdrehen.",
     schritte:[
      {frage:"<b>Was ist der Scheitelpunkt einer Parabel?</b>",
+      tipp2:"Es ist die Stelle, an der die Parabel umkehrt.",
       tipp:"Denk an die Form einer Parabel.",
       optionen:[R("Der höchste oder tiefste Punkt der Parabel", "Genau — hier kehrt sie ihre Richtung um."),
                 F("Der Punkt, an dem sie die x-Achse schneidet", "Das sind die Nullstellen, die können auch fehlen."),
                 F("Der Punkt, an dem sie die y-Achse schneidet", "Das ist der y-Achsenabschnitt.")]},
      {frage:`In der Klammer steht <b>${innen}</b>. <b>Welchen x-Wert hat der Scheitelpunkt?</b>`,
+      tipp2:"Steht in der Klammer ein Minus, ist der x-Wert positiv — und umgekehrt.",
       tipp:"Frag dich: für welches x wird die Klammer null?",
       optionen: zieheVerschiedene([
         R(String(d), "Richtig — das Vorzeichen dreht sich gegenüber der Klammer um."),
         F(String(-d), "Genau anders herum: die Klammer wird null, wenn x gleich " + d + " ist."),
         F(String(e), "Das ist die Zahl hinter der Klammer, die gehört zum y-Wert.")], 3)},
      {frage:`Hinter der Klammer steht <b>${hinten}</b>. <b>Welchen y-Wert hat der Scheitelpunkt?</b>`,
+      tipp2:"Ist die Klammer null, bleibt nur noch die Zahl dahinter übrig.",
       tipp:"Setz den eben gefundenen x-Wert ein — dann wird die Klammer null.",
       optionen: zieheVerschiedene([
         R(String(e), "Genau — hier bleibt das Vorzeichen, wie es ist."),
@@ -2268,6 +2415,7 @@ const AUFGABEN = {
         F(String(d), "Das war der x-Wert.")], 3)},
      {frage:"<b>Wie lautet der Scheitelpunkt?</b>",
       tippAntwort:`(${d} | ${e})`,
+      tipp2:"Beide Werte hast du schon. Sie werden nur noch als Paar aufgeschrieben.",
       tipp:"Erst der x-Wert, dann der y-Wert.",
       optionen:[R(`S(${d} | ${e})`, `Richtig. Merke: in der Klammer Vorzeichen drehen, hinten nicht.`),
                 F(`S(${-d} | ${e})`, "Beim x-Wert dreht sich das Vorzeichen gegenüber der Klammer um."),
@@ -2287,6 +2435,7 @@ const AUFGABEN = {
     schluss:"Das Vorzeichen vor dem x² entscheidet über die Richtung, sein Betrag über die Breite. Die Zahl dahinter verschiebt nur nach oben oder unten.",
     schritte:[
      {frage:`Vor dem x² steht <b>${z(a)}</b>. <b>Wohin ist die Parabel geöffnet?</b>`,
+      tipp2:"Ein positives Vorzeichen öffnet nach oben, ein negatives nach unten. Der Betrag spielt dafür keine Rolle.",
       tipp:"Das Vorzeichen entscheidet.",
       optionen: offen
         ? [R("Nach oben", "Richtig — bei einem positiven Faktor öffnet sie nach oben."),
@@ -2294,6 +2443,7 @@ const AUFGABEN = {
         : [R("Nach unten", "Richtig — das Minus dreht die Parabel um."),
            F("Nach oben", "Das Minus vor dem x² dreht sie nach unten.")]},
      {frage:`<b>Was sagt der Betrag ${z(Math.abs(a))} über die Form?</b>`,
+      tipp2:"Größer als 1 macht die Parabel schmaler, kleiner als 1 macht sie breiter.",
       tipp:"Vergleiche mit der Normalparabel, bei der einfach x² steht.",
       optionen: schmal
         ? [R("Sie ist schmaler als die Normalparabel", "Genau — ein Betrag größer als 1 zieht sie in die Länge."),
@@ -2303,6 +2453,7 @@ const AUFGABEN = {
            F("Sie ist schmaler", "Schmaler wird sie erst bei einem Betrag größer als 1."),
            F("Sie ist genauso breit", "Genauso breit wäre sie nur bei Betrag 1.")]},
      {frage:`Hinten steht <b>${hinten}</b>. <b>Was bewirkt das?</b>`,
+      tipp2:"Die ganze Parabel wandert nach oben oder unten. Ihre Form ändert sich dabei nicht.",
       tipp:"Es wird zu jedem Funktionswert dazugerechnet.",
       optionen: zieheVerschiedene([
         R(`Die Parabel wird um ${Math.abs(e)} nach ${e < 0 ? "unten" : "oben"} verschoben`, "Richtig — es verändert nur die Höhe."),
@@ -2310,6 +2461,7 @@ const AUFGABEN = {
         F("Die Parabel wird breiter", "Die Breite hängt allein vom Faktor vor dem x² ab.")], 3)},
      {frage:"<b>Wo liegt der Scheitelpunkt?</b>",
       tippAntwort:`(0 | ${e})`,
+      tipp2:"Der x-Wert bleibt null. Den y-Wert liest du an der Zahl hinten ab.",
       tipp:"Beim x steht keine Verschiebung, also bleibt er auf der y-Achse.",
       optionen:[R(`S(0 | ${e})`, "Richtig — ohne Klammer beim x bleibt er auf der y-Achse."),
                 F(`S(${e} | 0)`, "x und y sind vertauscht."),
@@ -2336,23 +2488,27 @@ const AUFGABEN = {
     schluss:"Erst schauen, welche zwei Seiten im Spiel sind — daraus ergibt sich die Funktion von selbst.",
     schritte:[
      {frage:"<b>Woran erkennt man die Gegenkathete?</b>",
+      tipp2:"Sie berührt den Winkel nicht. Die andere kurze Seite liegt an ihm an.",
       tipp:"Der Name verrät es: sie liegt dem Winkel gegenüber.",
       optionen:[R("Sie liegt dem betrachteten Winkel gegenüber", "Genau — und die Ankathete liegt am Winkel an."),
                 F("Sie ist immer die längste Seite", "Das ist die Hypotenuse."),
                 F("Sie liegt immer unten", "Das hängt nur davon ab, wie das Dreieck gedreht ist.")]},
      {frage:`Hier sind <b>${f.geg}</b> und <b>${f.anpassend}</b> im Spiel. <b>Welche Funktion verbindet genau diese beiden?</b>`,
+      tipp2:"Geh die drei Formeln durch und such die, in der genau diese beiden Seiten vorkommen.",
       tipp:"Sinus: Gegen zu Hypotenuse. Kosinus: An zu Hypotenuse. Tangens: Gegen zu An.",
       optionen: zieheVerschiedene([
         R(f.fkt, `Richtig: ${f.kurz}(α) = ${f.regel}.`),
         F(andere[0].fkt, `${andere[0].fkt} verbindet ${andere[0].geg} und ${andere[0].anpassend}.`),
         F(andere[1].fkt, `${andere[1].fkt} verbindet ${andere[1].geg} und ${andere[1].anpassend}.`)], 3)},
      {frage:`<b>Wie lautet die Formel für den ${f.fkt}?</b>`,
+      tipp2:"Im Namen steckt die Reihenfolge: Was zuerst genannt wird, steht im Bruch oben.",
       tipp:"Die zuerst genannte Seite steht oben im Bruch.",
       optionen: zieheVerschiedene([
         R(`${f.kurz}(α) = ${f.regel}`, "Genau."),
         F(`${f.kurz}(α) = ${f.anpassend} geteilt durch ${f.geg}`, "Der Bruch steht auf dem Kopf."),
         F(`${f.kurz}(α) = ${f.geg} mal ${f.anpassend}`, "Es ist ein Verhältnis, also geteilt.")], 3)},
      {frage:"<b>Wozu ist das gut?</b>",
+      tipp2:"Ohne diese Funktionen bräuchte man immer zwei Seiten. Mit ihnen reichen eine Seite und ein Winkel.",
       tipp:"Was kann man damit ausrechnen, was vorher nicht ging?",
       optionen:[R("Aus einem Winkel und einer Seite lässt sich eine andere Seite berechnen", "Genau das ist der Sinn — Winkel und Seiten hängen zusammen."),
                 F("Man kann damit den Umfang bestimmen", "Dafür braucht man keine Winkelfunktionen."),
@@ -2372,22 +2528,26 @@ const AUFGABEN = {
     schluss:"Wenn Hypotenuse und Winkel bekannt sind und die Gegenkathete gesucht ist, führt immer der Sinus zum Ziel.",
     schritte:[
      {frage:"Bekannt: Hypotenuse und Winkel. Gesucht: Gegenkathete. <b>Welche Funktion passt?</b>",
+      tipp2:"Es ist die Funktion, die mit der Gegenkathete oben und der Hypotenuse unten arbeitet.",
       tipp:"Welche Funktion verbindet Gegenkathete und Hypotenuse?",
       optionen:[R("Sinus", "Genau: sin(α) = Gegenkathete geteilt durch Hypotenuse."),
                 F("Kosinus", "Der Kosinus verbindet Ankathete und Hypotenuse."),
                 F("Tangens", "Der Tangens verbindet die beiden Katheten, die Hypotenuse kommt darin nicht vor.")]},
      {frage:`<b>Wie sieht die Gleichung mit den Zahlen aus?</b>`,
+      tipp2:"Links steht die Funktion mit dem Winkel, rechts der Bruch aus den beiden Seiten.",
       tipp:"Gegenkathete geteilt durch Hypotenuse.",
       optionen:[R(`sin(${winkel}°) = a : ${hyp}`, "Richtig."),
                 F(`sin(${winkel}°) = ${hyp} : a`, "Der Bruch steht auf dem Kopf — die Hypotenuse gehört nach unten."),
                 F(`sin(${winkel}°) = a · ${hyp}`, "Es ist ein Verhältnis, also geteilt.")]},
      {frage:`Nach <b>a</b> umgestellt — was steht dann da?`,
+      tipp2:"Die Hypotenuse steht im Nenner. Man wird sie los, indem man beide Seiten damit malnimmt.",
       tipp:"Beide Seiten mit " + hyp + " malnehmen.",
       optionen:[R(`a = ${hyp} · sin(${winkel}°)`, "Genau."),
                 F(`a = ${hyp} : sin(${winkel}°)`, "Es wird malgenommen, nicht geteilt."),
                 F(`a = sin(${winkel}°) − ${hyp}`, "Aus einem Mal wird beim Umstellen kein Minus.")]},
      {frage:`<b>Wie lang ist a?</b> (sin(${winkel}°) ≈ ${z(wert)})`,
       tippAntwort:z(geg),
+      tipp2:"Setz den Zahlenwert der Funktion ein und rechne die Malaufgabe.",
       tipp:`${hyp} mal ${z(wert)} ausrechnen.`,
       optionen: zieheVerschiedene([
         R(`a ≈ ${z(geg)} cm`, "Richtig — und sie ist kürzer als die Hypotenuse, wie es sein muss."),
@@ -2413,23 +2573,27 @@ const AUFGABEN = {
     schluss:"Beim exponentiellen Wachstum wird jedes Jahr mit demselben Faktor malgenommen — nicht immer derselbe Betrag addiert.",
     schritte:[
      {frage:`Nach einem Jahr sind ${p} % dazugekommen. <b>Mit welcher Zahl nimmt man dafür mal?</b>`,
+      tipp2:"Der alte Bestand bleibt vollständig erhalten, der Zuwachs kommt oben drauf. Beides steckt in einer einzigen Zahl.",
       tipp:"Das Ganze bleibt erhalten (100 %) und " + p + " % kommen dazu.",
       optionen: zieheVerschiedene([
         R(z(faktor), `Richtig: 100 % + ${p} % = ${100+p} %, also mal ${z(faktor)}.`),
         F(z(p/100), `Das wären nur die ${p} % Zuwachs — der ursprüngliche Betrag fehlt.`),
         F(String(p), "Das ist die Prozentzahl selbst, kein Faktor.")], 3)},
      {frage:`Und im <b>zweiten</b> Jahr — wovon werden die ${p} % berechnet?`,
+      tipp2:"Der Prozentsatz bezieht sich immer auf den Stand vom Jahresanfang, nicht auf den Startwert.",
       tipp:"Der Betrag ist ja inzwischen größer geworden.",
       optionen:[R("Vom neuen, bereits gewachsenen Betrag", "Genau das macht den Unterschied zum gleichmäßigen Wachstum."),
                 F("Immer vom ursprünglichen Betrag", `Dann wäre es lineares Wachstum und es käme ${z(linear)} € heraus.`),
                 F("Von der Differenz des ersten Jahres", "Nein, immer vom aktuellen Gesamtbetrag.")]},
      {frage:`<b>Wie rechnet man ${jahre} Jahre auf einmal?</b>`,
+      tipp2:"Derselbe Faktor mehrfach hintereinander — dafür gibt es die Hochzahl.",
       tipp:"Jedes Jahr derselbe Faktor.",
       optionen:[R(`${z(start)} · ${z(faktor)}<sup>${jahre}</sup>`, "Richtig — der Faktor kommt in die Hochzahl."),
                 F(`${z(start)} · ${z(faktor)} · ${jahre}`, "Hier würde der Faktor nur einmal wirken und dann verdoppelt — das ist lineares Denken."),
                 F(`${z(start)} + ${z(faktor)}<sup>${jahre}</sup>`, "Der Startwert wird malgenommen, nicht addiert.")]},
      {frage:"<b>Wie viel ist es am Ende ungefähr?</b>",
       tippAntwort:z(ende),
+      tipp2:"Rechne notfalls Jahr für Jahr durch, das Ergebnis ist dasselbe.",
       tipp:`${z(start)} mal ${z(faktor)}, und das ${jahre}-mal hintereinander.`,
       optionen: zieheVerschiedene([
         R(`etwa ${z(ende)} €`, "Richtig — und mehr als bei gleichmäßigem Wachstum, weil der Zuwachs mitwächst."),
@@ -2451,24 +2615,28 @@ const AUFGABEN = {
     schluss:"Auch beim Abnehmen wird malgenommen — nur mit einem Faktor kleiner als 1. Deshalb wird nie ganz null erreicht.",
     schritte:[
      {frage:`Der Bestand nimmt um ${p} % <b>ab</b>. <b>Wie viel Prozent bleiben übrig?</b>`,
+      tipp2:"Beim Abnehmen wird der Prozentsatz von hundert abgezogen, beim Zunehmen dazugezählt.",
       tipp:`Von 100 % gehen ${p} % weg.`,
       optionen: zieheVerschiedene([
         R(`${100 - p} %`, "Richtig — und genau damit wird gerechnet."),
         F(`${p} %`, `Das ist der Teil, der verschwindet, nicht der, der bleibt.`),
         F(`${100 + p} %`, "Bei einer Abnahme wird es weniger, nicht mehr.")], 3)},
      {frage:"<b>Welcher Faktor gehört dazu?</b>",
+      tipp2:"Durch hundert teilen: Das Komma wandert zwei Stellen nach links.",
       tipp:`${100 - p} % als Kommazahl.`,
       optionen: zieheVerschiedene([
         R(z(faktor), "Genau — kleiner als 1, deshalb wird es weniger."),
         F(z(1 + p/100), "Das wäre ein Wachstum."),
         F(z(p/100), `Das sind die ${p} %, die wegfallen.`)], 3)},
      {frage:`<b>Wie rechnet man ${schritte} Jahre?</b>`,
+      tipp2:"Die Anzahl der Jahre wird zur Hochzahl.",
       tipp:"Denselben Faktor mehrfach anwenden.",
       optionen:[R(`${z(start)} · ${z(faktor)}<sup>${schritte}</sup>`, "Richtig."),
                 F(`${z(start)} − ${p} · ${schritte}`, "Es wird malgenommen, nicht abgezogen."),
                 F(`${z(start)} : ${schritte}`, "Teilen durch die Jahre hat damit nichts zu tun.")]},
      {frage:"<b>Wie groß ist der Bestand ungefähr?</b>",
       tippAntwort:z(ende),
+      tipp2:"Beim Abnehmen muss das Ergebnis kleiner sein als der Startwert. Das ist eine gute Kontrolle.",
       tipp:`${z(start)} mal ${z(faktor)}, ${schritte}-mal hintereinander.`,
       optionen: zieheVerschiedene([
         R(`etwa ${z(ende)}`, "Richtig."),
@@ -2509,11 +2677,13 @@ const AUFGABEN = {
     schluss:"Diesen Test kannst du bei jedem einzelnen Satz anwenden — du musst dir keine Regel merken.",
     schritte:[
      {frage:"Es gibt einen einfachen Test. <b>Welcher ist es?</b>",
+      tipp2:"Man tauscht das Wort probeweise gegen ein hinweisendes Wort aus und hört, ob der Satz noch geht.",
       tipp:"Man versucht, das Wort durch ein anderes zu ersetzen.",
       optionen:[R("Man ersetzt es durch „dieses“, „jenes“ oder „welches“", "Genau das ist der Test. Klappt immer."),
                 F("Man schaut, ob ein Komma davorsteht", "Ein Komma steht in beiden Fällen — hilft nicht."),
                 F("Man zählt die Wörter im Satz", "Damit hat es nichts zu tun.")]},
      {frage:`Setz den Test ein: <b>„${s.vorn} dieses ${s.hint.replace(/<[^>]+>/g,"")}“</b> — ergibt das Sinn?`,
+      tipp2:"Klingt der Satz mit dem Ersatzwort schief, war es nicht das hinweisende Wort.",
       tipp:"Lies den Satz laut.",
       optionen: istDass
         ? [R("Nein, das klingt falsch", "Richtig. Und wenn der Test nicht klappt, ist es „dass“ mit zwei s."),
@@ -2521,6 +2691,7 @@ const AUFGABEN = {
         : [R("Ja, das passt", "Richtig. Und wenn der Test klappt, ist es „das“ mit einem s."),
            F("Nein, das klingt falsch", "Doch — „dieses“ passt hier an die Stelle.")]},
      {frage:"<b>Welche Aufgabe hat das Wort dann im Satz?</b>",
+      tipp2:"Schau, was hinter dem Wort kommt: ein ganzer Satzteil mit eigenem Verb ganz am Ende.",
       tipp: istDass ? "Es verbindet zwei Satzteile miteinander." : "Es steht vor einem Nomen.",
       optionen: istDass
         ? [R("Es leitet einen Nebensatz ein", "Genau — es ist ein Bindewort."),
@@ -2528,6 +2699,7 @@ const AUFGABEN = {
         : [R("Es gehört als Begleiter zu einem Nomen", "Genau — es ist ein Artikel."),
            F("Es leitet einen Nebensatz ein", "Dann wäre es „dass“ mit zwei s.")]},
      {frage:"Also: <b>Wie schreibst du es?</b>",
+      tipp2:"Test bestanden heißt ein s, Test nicht bestanden heißt zwei s.",
       tipp: istDass ? "Test klappt nicht → zwei s." : "Test klappt → ein s.",
       optionen: zieheVerschiedene([
         R(s.loes, "Richtig."),
@@ -2561,20 +2733,24 @@ const AUFGABEN = {
     schluss:"Zwei Verben, zwei Sätze — und dazwischen gehört ein Komma.",
     schritte:[
      {frage:"Zähl nach: <b>Wie viele Verben</b> stehen in dem Satz?",
+      tipp2:"Zähl nur die gebeugten Formen. Jeder Satzteil hat genau eine davon.",
       tipp:`Verben sind Tuwörter: ${s.v1}, ${s.v2}.`,
       optionen:[R(`Zwei: „${s.v1}“ und „${s.v2}“`, "Genau. Zwei Verben heißt: zwei Satzteile."),
                 F(`Eines: „${s.v1}“`, `„${s.v2}“ am Ende ist auch ein Verb.`),
                 F("Drei", "Zähl noch mal — es sind genau zwei.")]},
      {frage:"Zwei Verben, also zwei Satzteile. <b>Welcher davon ist der Nebensatz?</b>",
+      tipp2:"Der Nebensatz beginnt mit einem Bindewort wie weil, wenn oder dass.",
       tipp:"Im Nebensatz rutscht das Verb ganz ans Ende.",
       optionen:[R(`„${s.wort} ${s.neben}“`, `Richtig — „${s.v2}“ steht ganz hinten.`),
                 F(`„${s.haupt}“`, "Der steht für sich allein, das ist der Hauptsatz.")]},
      {frage:"<b>Was gehört zwischen Hauptsatz und Nebensatz?</b>",
+      tipp2:"Zwischen Hauptsatz und Nebensatz steht immer dasselbe Zeichen, ohne Ausnahme.",
       tipp:"Es ist ein Satzzeichen.",
       optionen:[R("Ein Komma", "Ja — und zwar immer."),
                 F("Gar nichts", "Zwischen Haupt- und Nebensatz steht im Deutschen immer ein Komma."),
                 F("Ein Doppelpunkt", "Der käme nur vor einer Aufzählung oder wörtlicher Rede.")]},
      {frage:"<b>Wo genau</b> steht das Komma?",
+      tipp2:"Vor das Bindewort, nicht dahinter.",
       tipp:"Direkt dort, wo der Nebensatz beginnt.",
       optionen:[R(`Direkt vor „${s.wort}“`, "Genau."),
                 F(`Nach „${s.wort}“`, `„${s.wort}“ gehört schon zum Nebensatz.`)]}]};
@@ -2608,6 +2784,7 @@ const AUFGABEN = {
     schluss:"Wenn ein Artikel davorsteht, ist aus dem Verb ein Nomen geworden. Und Nomen schreibt man groß.",
     schritte:[
      {frage:`Schau dir das Wort <b>vor</b> der Lücke an: „${f.vor}“. <b>Was steckt da drin?</b>`,
+      tipp2:"Wörter wie beim, zum, vom, im und am sind zusammengezogen — ein Artikel steckt darin.",
       tipp: zusammen ? `„${f.vor}“ ist eine Zusammenziehung aus zwei Wörtern.` : "Es ist schon selbst ein Begleiter.",
       optionen: zusammen
         ? [R(`Eine Präposition und der Artikel „${f.artikel}“`, "Genau — und ein Artikel ist ein Begleiter."),
@@ -2617,15 +2794,18 @@ const AUFGABEN = {
            F("Ein Verb", "Nein, das ist kein Tuwort."),
            F("Ein Adjektiv", "Adjektive beschreiben, hier wird begleitet.")]},
      {frage:"Da steht also ein <b>Artikel</b>. Was bedeutet das für das Wort dahinter?",
+      tipp2:"Ein Artikel kann nur vor einem Nomen stehen, auch wenn das Wort ursprünglich ein Verb war.",
       tipp:"Artikel stehen immer vor einer bestimmten Wortart.",
       optionen:[R("Es ist ein Nomen geworden", "Richtig. Artikel + Verb = das Verb wird zum Nomen."),
                 F("Es bleibt ein Verb", "Ein Verb hätte nie einen Artikel vor sich."),
                 F("Es ist ein Adjektiv", "Adjektive beschreiben etwas.")]},
      {frage:"<b>Wie schreibt man Nomen</b> im Deutschen?",
+      tipp2:"Alle Nomen ohne Ausnahme, auch die, die aus Verben entstanden sind.",
       tipp:"Die Regel, die es nur im Deutschen gibt.",
       optionen:[R("Groß", "Ja — auch bei Verben, die zu Nomen werden."),
                 F("Klein", "Nomen werden im Deutschen immer großgeschrieben.")]},
      {frage:"Also: <b>Wie steht es richtig im Satz?</b>",
+      tipp2:"Das Wort selbst bleibt, wie es ist. Nur der erste Buchstabe ändert sich.",
       tipp:"Artikel davor → Nomen → groß.",
       optionen:[R(`${f.vor} ${f.nomen} ${f.rest}`, "Richtig."),
                 F(`${f.vor} ${f.verb} ${f.rest}`, `Der Artikel in „${f.vor}“ macht daraus ein Nomen.`)]}]};
@@ -2655,16 +2835,19 @@ const AUFGABEN = {
     schluss:"Der Konjunktiv I zeigt: Das sind nicht meine Worte, ich gebe nur wieder, was jemand gesagt hat. Deshalb steht er in Berichten und Zeitungen.",
     schritte:[
      {frage:"<b>Wozu gibt es die indirekte Rede überhaupt?</b>",
+      tipp2:"Sie macht hörbar, dass die Aussage von jemand anderem stammt.",
       tipp:"Überleg, was der Unterschied ist, wenn eine Zeitung schreibt, was jemand gesagt hat.",
       optionen:[R("Um weiterzugeben, was jemand gesagt hat, ohne es als eigene Aussage auszugeben", "Genau — man macht damit sichtbar, dass man nur berichtet."),
                 F("Um den Satz kürzer zu machen", "Kürzer wird er dadurch meist nicht."),
                 F("Um höflicher zu klingen", "Höflichkeit ist eine andere Sache — hier geht es um die Quelle der Aussage.")]},
      {frage:"<b>Welche Verbform benutzt man dafür?</b>",
+      tipp2:"Es ist die erste der beiden Möglichkeitsformen, nicht die für Wünsche.",
       tipp:"Sie heißt nach der Möglichkeitsform.",
       optionen:[R("Den Konjunktiv I", "Richtig — er ist genau dafür da."),
                 F("Das Präteritum", "Das ist eine Zeitform, keine Möglichkeitsform."),
                 F("Das Partizip", "Das braucht man für Perfekt und Passiv.")]},
      {frage:`Der Konjunktiv I wird vom Stamm des Verbs <b>„${f.grund}“</b> gebildet. <b>Wie lautet er in der dritten Person?</b>`,
+      tipp2:"Nimm die Grundform, streich die Endung, häng -e an. Ein Umlaut kommt dabei nicht vor.",
       tipp:"Stamm plus -e. Der Umlaut aus der normalen Form fällt dabei weg.",
       optionen: zieheVerschiedene([
         R(f.konj, "Genau — und man hört sofort, dass es nicht die normale Form ist."),
@@ -2672,6 +2855,7 @@ const AUFGABEN = {
         F(f.grund, "Das ist die Grundform, die passt nicht zu „er“ oder „sie“.")], 3)},
      {frage:"<b>Wie lautet der Satz in indirekter Rede?</b>",
       tippAntwort: f.konj,
+      tipp2:"Nur das Verb ändert sich, alles andere im Satz bleibt stehen.",
       tipp:"Die Konjunktiv-Form einsetzen.",
       optionen:[R(`${f.wer} sagt, er oder sie ${f.konj} ${f.rest}.`, "Richtig — daran erkennt man sofort, dass es eine Wiedergabe ist."),
                 F(`${f.wer} sagt, er oder sie ${f.norm} ${f.rest}.`, "So klingt es, als würdest du selbst behaupten, dass es stimmt.")]}]};
@@ -2701,11 +2885,13 @@ const AUFGABEN = {
     schluss:"Nicht das Bindewort auswendig lernen — sondern schauen, wohin es das Verb schiebt. Das Verb verrät die Satzart immer.",
     schritte:[
      {frage:"<b>Woran erkennt man einen Nebensatz sicher?</b>",
+      tipp2:"Entscheidend ist, an welcher Stelle im Satzteil das gebeugte Verb steht.",
       tipp:"Es geht nicht um die Länge, sondern um eine bestimmte Stelle im Satz.",
       optionen:[R("Am Platz des Verbs: im Nebensatz rutscht es ans Ende", "Genau — das ist das zuverlässigste Erkennungszeichen."),
                 F("Daran, dass er kürzer ist als der Hauptsatz", "Ein Nebensatz kann auch länger sein."),
                 F("Daran, dass ein Komma davorsteht", "Ein Komma steht auch bei zwei Hauptsätzen mit „aber“.")]},
      {frage:`Schau auf den zweiten Teil: <b>${f.wort} ${f.t2}</b>. <b>Wo steht dort das Verb „${f.verb2}“?</b>`,
+      tipp2:"Schau auf das letzte Wort des Satzteils.",
       tipp:"Zähl die Wörter nach dem Bindewort durch.",
       optionen: gefuege
         ? [R("Ganz am Ende", "Richtig — typisch für einen Nebensatz."),
@@ -2713,6 +2899,7 @@ const AUFGABEN = {
         : [R("An zweiter Stelle", "Richtig — wie in einem ganz normalen Hauptsatz."),
            F("Ganz am Ende", `Nein, „${f.verb2}“ steht gleich vorne mit.`)]},
      {frage:"<b>Was ist der zweite Teil damit?</b>",
+      tipp2:"Du hast eben gesehen, wo das Verb steht. Daraus folgt die Antwort unmittelbar.",
       tipp:"Verb am Ende heißt Nebensatz, Verb an zweiter Stelle heißt Hauptsatz.",
       optionen: gefuege
         ? [R("Ein Nebensatz", "Genau — er kann allein nicht stehen."),
@@ -2721,6 +2908,7 @@ const AUFGABEN = {
            F("Ein Nebensatz", "Dann müsste das Verb ganz nach hinten rutschen.")]},
      {frage:"<b>Wie heißt diese Satzart?</b>",
       tippAntwort: f.art,
+      tipp2:"Zwei Hauptsätze ergeben eine Satzreihe, ein Hauptsatz mit Nebensatz ein Satzgefüge.",
       tipp: gefuege ? "Ein Hauptsatz mit einem Nebensatz darin." : "Zwei gleichwertige Hauptsätze nebeneinander.",
       optionen:[R(f.art, gefuege
                   ? "Richtig — Hauptsatz plus Nebensatz nennt man Satzgefüge."
@@ -2753,22 +2941,26 @@ const AUFGABEN = {
     schluss:`Bei „um zu“, „ohne zu“, „statt zu“, „anstatt zu“, „außer zu“ und „als zu“ steht immer ein Komma — das sind die sicheren Fälle, die man sich merken kann.`,
     schritte:[
      {frage:`<b>Was ist eine Infinitivgruppe?</b>`,
+      tipp2:"Sie hat kein eigenes Subjekt. Daran erkennt man sie sicher.",
       tipp:"Schau dir den zweiten Teil des Satzes an: welche Wörter stecken darin?",
       optionen:[R("Eine Wortgruppe mit „zu“ und der Grundform eines Verbs", `Genau — hier: „zu ${f.rest.split(" zu ")[1] || f.rest}“.`),
                 F("Ein Satz mit eigenem Subjekt und eigenem Verb", "Genau das hat eine Infinitivgruppe nicht — sie hat kein eigenes Subjekt."),
                 F("Eine Aufzählung von Verben", "Es geht nicht um eine Aufzählung.")]},
      {frage:`Die Gruppe wird mit <b>„${f.wort}“</b> eingeleitet. <b>Was bedeutet das für das Komma?</b>`,
+      tipp2:"Steht eines dieser Wörter davor, ist das Komma keine Frage des Geschmacks.",
       tipp:"Es gibt eine kleine Gruppe von Wörtern, bei denen das Komma immer gesetzt wird.",
       optionen:[R("Bei diesem Wort muss ein Komma stehen", `Richtig — „${f.wort} … zu“ gehört zu den Fällen mit Komma-Pflicht.`),
                 F("Das Komma ist freigestellt", `Freigestellt ist es bei manchen Infinitivgruppen — aber nicht bei „${f.wort}“.`),
                 F("Ein Komma wäre hier falsch", "Nein, hier ist es sogar vorgeschrieben.")]},
      {frage:"<b>Welche Wörter gehören noch zu dieser Gruppe mit Komma-Pflicht?</b>",
+      tipp2:"Eines davon drückt einen Zweck aus, die übrigen einen Ersatz oder eine Ausnahme.",
       tipp:"Es sind sechs Stück, du kannst sie dir als Reihe merken.",
       optionen:[R("um, ohne, statt, anstatt, außer, als", "Genau diese sechs — mehr musst du dir nicht merken."),
                 F("und, oder, aber, denn", "Das sind Bindewörter zwischen Hauptsätzen, keine Einleiter von Infinitivgruppen."),
                 F("weil, dass, wenn, obwohl", "Die leiten Nebensätze mit eigenem Verb ein, keine Infinitivgruppen.")]},
      {frage:"<b>Wie steht der Satz richtig?</b>",
       tippAntwort:"mit Komma",
+      tipp2:"Nur ein einziges Komma, und zwar an der Nahtstelle zwischen Hauptsatz und Infinitivgruppe.",
       tipp:"Das Komma kommt direkt vor das Einleitewort.",
       optionen:[R(`${f.haupt}, ${f.wort} ${f.rest}.`, "Richtig."),
                 F(`${f.haupt} ${f.wort} ${f.rest}.`, `Hier fehlt das Komma vor „${f.wort}“.`)]}]};
@@ -2800,6 +2992,7 @@ const AUFGABEN = {
     schluss:"Ein Stilmittel zu benennen reicht nicht — in der Deutung zählt immer, welche Wirkung es erzeugt.",
     schritte:[
      {frage:"<b>Steht in dem Satz das Wörtchen „wie“?</b>",
+      tipp2:"Such das Wörtchen wörtlich im Satz. Nur dann ist es ein Vergleich.",
       tipp:"Das ist die schnellste Weiche: Vergleich oder nicht.",
       optionen: hatWie
         ? [R("Ja", "Richtig — und damit ist die Sache schon fast entschieden."),
@@ -2807,12 +3000,14 @@ const AUFGABEN = {
         : [R("Nein", "Richtig — also ist es kein Vergleich."),
            F("Ja", `Nein, in „${f.satz}“ kommt kein „wie“ vor.`)]},
      {frage:"<b>Was passiert in dem Satz?</b>",
+      tipp2:"Achte darauf, ob etwas gleichgesetzt, vermenschlicht, übertrieben oder im Klang wiederholt wird.",
       tipp:"Beschreib zuerst, was da sprachlich gemacht wird — der Fachbegriff kommt danach.",
       optionen: zieheVerschiedene([
         R(f.warum, "Genau das ist der Kern."),
         F("Eine Frage wird gestellt, auf die keine Antwort erwartet wird", "Das wäre eine rhetorische Frage — hier steht aber keine Frage."),
         F("Ein Wort wird am Anfang mehrerer Sätze wiederholt", "Das wäre eine Anapher — dafür bräuchte es mehrere Sätze.")], 3)},
      {frage:"<b>Wie heißt dieses Stilmittel?</b>",
+      tipp2:"Vergleich mit wie, Metapher ohne wie, Personifikation bei Unbelebtem, Alliteration beim Anfangslaut.",
       tipp: hatWie ? "Mit „wie“ heißt es immer so." : "Denk an das, was du gerade beschrieben hast.",
       optionen: zieheVerschiedene([
         R(f.mittel, "Richtig."),
@@ -2820,6 +3015,7 @@ const AUFGABEN = {
         F(andere[1], "Das trifft auf diesen Satz nicht zu.")], 3)},
      {frage:"<b>Und welche Wirkung hat das?</b>",
       tippAntwort: f.mittel,
+      tipp2:"Bilder machen anschaulich, Übertreibungen verstärken, Klangfiguren prägen sich ein.",
       tipp:"Frag dich: Was macht der Satz mit dir beim Lesen?",
       optionen: zieheVerschiedene([
         R(f.wirkung, "Genau — und das gehört in jede Deutung mit hinein."),
@@ -2859,11 +3055,13 @@ const AUFGABEN = {
     schluss:"Das Reimschema ist nur der Anfang — es sagt etwas über den Klang und darüber, ob ein Gedicht ruhig fließt oder gebunden wirkt.",
     schritte:[
      {frage:"<b>Worauf schaut man, um das Reimschema zu bestimmen?</b>",
+      tipp2:"Entscheidend ist der Klang am Zeilenende.",
       tipp:"Nicht auf den Inhalt.",
       optionen:[R("Auf das letzte Wort jeder Zeile", "Genau — nur die Zeilenenden zählen."),
                 F("Auf das erste Wort jeder Zeile", "Am Anfang stehende Gleichklänge wären eine Anapher, kein Reim."),
                 F("Auf die Anzahl der Silben", "Das gehört zum Versmaß, nicht zum Reimschema.")]},
      {frage:`Die Zeilen enden auf: <b>${f.endungen.join(" · ")}</b>. <b>Welche Zeilen reimen sich?</b>`,
+      tipp2:"Vergleiche jede Endung mit allen anderen. Es zählt der Klang, nicht die Schreibweise.",
       tipp:"Sprich die Endungen laut hintereinander.",
       optionen: kreuz
         ? [R("Zeile 1 mit 3 und Zeile 2 mit 4", "Richtig — die Reime überkreuzen sich."),
@@ -2871,6 +3069,7 @@ const AUFGABEN = {
         : [R("Zeile 1 mit 2 und Zeile 3 mit 4", "Richtig — jeweils zwei benachbarte Zeilen."),
            F("Zeile 1 mit 3 und Zeile 2 mit 4", "Lies noch mal: hier reimen sich direkt benachbarte Zeilen.")]},
      {frage:"<b>Wie schreibt man dieses Schema mit Buchstaben?</b>",
+      tipp2:"Fang bei der ersten Zeile mit a an und vergib für jeden neuen Klang den nächsten Buchstaben.",
       tipp:"Gleicher Buchstabe bedeutet gleicher Reim.",
       optionen: zieheVerschiedene([
         R(f.schema, "Genau."),
@@ -2879,6 +3078,7 @@ const AUFGABEN = {
         F("abba", "Das wäre der umarmende Reim: außen ein Reim, innen ein anderer.")], 3)},
      {frage:"<b>Wie heißt dieses Reimschema?</b>",
       tippAntwort: f.name,
+      tipp2:"aabb heißt Paarreim, abab Kreuzreim, abba umarmender Reim.",
       tipp: f.erklaerung,
       optionen: zieheVerschiedene([
         R(f.name, "Richtig."),
@@ -2908,16 +3108,19 @@ const AUFGABEN = {
     schluss:"Wer die Bausteine kennt, kann die Bedeutung vieler Fremdwörter selbst erschließen — auch bei Wörtern, die er noch nie gehört hat.",
     schritte:[
      {frage:"<b>Was ist überhaupt ein Fremdwort?</b>",
+      tipp2:"Man merkt es oft an einer Schreibung oder Betonung, die es im Deutschen sonst nicht gibt.",
       tipp:"Es geht um die Herkunft, nicht um die Länge.",
       optionen:[R("Ein Wort, das aus einer anderen Sprache übernommen wurde und fremd klingt", "Genau — man hört ihm die Herkunft noch an."),
                 F("Ein besonders langes Wort", "Länge hat damit nichts zu tun."),
                 F("Ein Wort, das nur Fachleute benutzen", "Das wäre ein Fachbegriff — der kann auch deutsch sein.")]},
      {frage:`Aus welcher Sprache kommt <b>${f.wort}</b>?`,
+      tipp2:"Achte auf die Bausteine: tele, bio, geo und logos kommen aus dem Griechischen, trans, per und con aus dem Lateinischen.",
       tipp:"Die meisten Fremdwörter im Deutschen kommen aus zwei alten Sprachen.",
       optionen:[R(f.sprache, `Richtig — ${f.teile}.`),
                 F(andereSprache, `Nein, dieses Wort stammt aus dem ${f.sprache}en.`),
                 F("Japanisch", "Aus dem Japanischen stammen im Deutschen nur sehr wenige Wörter.")]},
      {frage:`Das Wort besteht aus zwei Bausteinen: <b>${f.teile}</b>. <b>Was heißt es wörtlich?</b>`,
+      tipp2:"Übersetz beide Bausteine einzeln und häng sie in derselben Reihenfolge aneinander.",
       tipp:"Setz die beiden Bedeutungen einfach zusammen.",
       optionen: zieheVerschiedene([
         R(f.bedeutung, "Genau — das steckt wörtlich darin."),
@@ -2925,6 +3128,7 @@ const AUFGABEN = {
         F("Es hat keine wörtliche Bedeutung", "Fast jedes Fremdwort lässt sich aus seinen Bausteinen erklären.")], 3)},
      {frage:`<b>Welches deutsche Wort sagt dasselbe?</b>`,
       tippAntwort: f.deutsch,
+      tipp2:"Such kein zweites Fremdwort, sondern ein gewöhnliches deutsches Wort.",
       tipp:"Ein Wort, das du im Alltag benutzen würdest.",
       optionen: zieheVerschiedene([
         R(f.deutsch, "Richtig — oft gibt es ein gutes deutsches Wort daneben."),
@@ -2955,17 +3159,20 @@ const AUFGABEN = {
     schluss:"Rhetorische Mittel sind Werkzeuge. Wer sie erkennt, merkt auch, wann jemand versucht, ihn zu überzeugen — und kann selbst entscheiden.",
     schritte:[
      {frage:"<b>Was will eine Rede vor allem erreichen?</b>",
+      tipp2:"Es geht nicht darum, Wissen weiterzugeben, sondern etwas in Bewegung zu setzen.",
       tipp:"Anders als ein Sachtext richtet sie sich direkt an Zuhörer.",
       optionen:[R("Sie will überzeugen und zum Handeln bewegen", "Genau — deshalb wird sie so sorgfältig gebaut."),
                 F("Sie will nur sachlich informieren", "Reine Information wäre ein Sachtext oder ein Bericht."),
                 F("Sie will unterhalten", "Unterhaltung kann dabei sein, ist aber nicht das Ziel.")]},
      {frage:"<b>Was fällt an diesem Satz auf?</b>",
+      tipp2:"Achte auf Wiederholungen am Satzanfang, auf Fragen ohne Antwort und auf Dreierreihen.",
       tipp:"Beschreib erst, was gemacht wird — der Fachbegriff kommt danach.",
       optionen: zieheVerschiedene([
         R(f.warum, "Genau das ist der Kniff."),
         F("Zwei Dinge werden mit „wie“ verglichen", "Das wäre ein Vergleich — hier steht kein „wie“."),
         F("Etwas Unbelebtes handelt wie ein Mensch", "Das wäre eine Personifikation.")], 3)},
      {frage:"<b>Wie heißt dieses rhetorische Mittel?</b>",
+      tipp2:"Wiederholter Satzanfang heißt Anapher, Frage ohne Antwort rhetorische Frage, Dreierreihe Dreierfigur.",
       tipp:"Denk an das, was du gerade beschrieben hast.",
       optionen: zieheVerschiedene([
         R(f.mittel, "Richtig."),
@@ -2973,6 +3180,7 @@ const AUFGABEN = {
         F(andere[1], "Das passt hier nicht.")], 3)},
      {frage:"<b>Welche Wirkung soll das haben?</b>",
       tippAntwort: f.mittel,
+      tipp2:"Wiederholung prägt ein, die Frage lenkt zur gewünschten Antwort, der Appell soll zum Handeln bringen.",
       tipp:"Frag dich: Was soll bei den Zuhörern passieren?",
       optionen: zieheVerschiedene([
         R(f.wirkung, "Genau — und darauf kommt es bei der Analyse an."),
@@ -3011,17 +3219,20 @@ const AUFGABEN = {
     schluss:"Sprache verändert sich ständig — das ist kein Verfall, sondern ein Zeichen dafür, dass sie lebendig ist und benutzt wird.",
     schritte:[
      {frage:"<b>Warum verändert sich Sprache überhaupt?</b>",
+      tipp2:"Neue Dinge brauchen neue Wörter, und mit alten Dingen verschwinden ihre Wörter.",
       tipp:"Denk daran, wer Sprache benutzt und wofür.",
       optionen:[R("Weil Menschen sie benutzen und sich die Welt um sie herum ändert", "Genau — neue Dinge brauchen neue Wörter, alte verschwinden."),
                 F("Weil immer weniger Menschen die Regeln beherrschen", "Sprachwandel ist kein Fehler, sondern ein normaler Vorgang."),
                 F("Weil der Duden das so festlegt", "Der Duden hält fest, wie gesprochen wird — er bestimmt es nicht.")]},
      {frage:`Vergleiche: früher <b>${f.frueher}</b>, heute <b>${f.heute}</b>. <b>Was ist passiert?</b>`,
+      tipp2:"Vergleiche den Umfang: Meint das Wort heute mehr Fälle als früher oder weniger?",
       tipp:"Ist die Bedeutung enger geworden, weiter, besser oder schlechter?",
       optionen: zieheVerschiedene([
         R(f.erklaerung, "Genau."),
         F("Das Wort wird heute genauso verwendet wie früher", `Nein — früher hieß es „${f.frueher}“, heute „${f.heute}“.`),
         F("Das Wort wurde nur anders geschrieben", "Es geht hier um die Bedeutung, nicht um die Schreibweise.")], 3)},
      {frage:"<b>Wie nennt man diese Art von Sprachwandel?</b>",
+      tipp2:"Enger heißt Verengung, weiter heißt Erweiterung. Kommt eine Wertung dazu, heißt es Verschlechterung oder Verbesserung.",
       tipp: f.erklaerung,
       optionen: zieheVerschiedene([
         R(f.art, "Richtig."),
@@ -3029,6 +3240,7 @@ const AUFGABEN = {
         F(andere[1], "Das trifft hier nicht zu.")], 3)},
      {frage:"<b>Was folgt daraus für alte Texte?</b>",
       tippAntwort: f.art,
+      tipp2:"Ein bekanntes Wort ist kein Beweis dafür, dass man den Satz richtig verstanden hat.",
       tipp:"Denk daran, was passiert, wenn du ein Wort von heute in einen alten Text hineinliest.",
       optionen:[R("Man muss aufpassen, weil Wörter darin etwas anderes bedeuten können als heute", "Genau — deshalb braucht man bei alten Texten oft Erklärungen."),
                 F("Alte Texte kann man genauso lesen wie heutige", `Gerade nicht — „${f.wort}“ ist ein gutes Beispiel dafür.`),
@@ -3060,17 +3272,20 @@ const AUFGABEN = {
     schluss:"Epochen sind keine Schubladen mit festen Wänden — sie überschneiden sich. Wichtig ist, woran man sie erkennt, nicht die genaue Jahreszahl.",
     schritte:[
      {frage:"<b>Wozu teilt man Literatur überhaupt in Epochen ein?</b>",
+      tipp2:"Texte antworten auf ihre Zeit. Deshalb ähneln sich Texte aus derselben Zeit.",
       tipp:"Denk daran, was Texte aus derselben Zeit gemeinsam haben.",
       optionen:[R("Weil Texte einer Zeit ähnliche Themen und Haltungen zeigen", "Genau — sie antworten auf dieselbe Welt."),
                 F("Weil man Bücher sonst nicht sortieren könnte", "Sortieren könnte man auch nach Autor oder Titel."),
                 F("Weil jede Epoche eigene Rechtschreibregeln hatte", "Die Rechtschreibung ist nicht der Grund für die Einteilung.")]},
      {frage:`<b>Welche Haltung steckt hinter diesem Merkmal?</b>`,
+      tipp2:"Frag dich, ob das Merkmal für Vernunft steht, für Gefühl, für Maß oder für Sehnsucht.",
       tipp:"Lies das Merkmal noch einmal und frag dich, wogegen oder wofür es sich richtet.",
       optionen: zieheVerschiedene([
         R(f.leitwort, "Genau — das ist der Kerngedanke dieser Epoche."),
         F(zwei[0].leitwort, `Das gehört zur Epoche ${zwei[0].epoche}.`),
         F(zwei[1].leitwort, `Das gehört zur Epoche ${zwei[1].epoche}.`)], 3)},
      {frage:"<b>Wie heißt diese Epoche?</b>",
+      tipp2:"Ordne zuerst grob ein: 18. Jahrhundert, Wende zum 19. Jahrhundert oder Anfang des 20.",
       tipp: `Sie liegt ${f.zeit}.`,
       optionen: zieheVerschiedene([
         R(f.epoche, "Richtig."),
@@ -3078,6 +3293,7 @@ const AUFGABEN = {
         F(zwei[1].epoche, `Dort ging es um etwas anderes: ${zwei[1].merkmal}`)], 3)},
      {frage:"<b>Wer schrieb in dieser Zeit?</b>",
       tippAntwort: f.epoche,
+      tipp2:"Zu jeder Epoche gehören ein, zwei Namen, die man immer mit ihr nennt. Geh von der Zeitangabe aus.",
       tipp:`Ein bekannter Name aus der Zeit ${f.zeit}.`,
       optionen: zieheVerschiedene([
         R(f.autor, `Richtig — ${f.autor} steht für die ${f.epoche}.`),
@@ -3263,18 +3479,21 @@ Object.assign(AUFGABEN, {
     schluss:"Wortarten erkennst du an ihrer Aufgabe im Satz — nicht an ihrer Länge oder Stellung.",
     schritte:[
      {frage:`Was macht das Wort <b>„${f.wort}“</b> in diesem Satz?`,
+      tipp2:"Prüf der Reihe nach: Lässt es sich beugen, lässt es sich steigern, könnte ein Artikel davorstehen?",
       tipp:"Überleg, welche Aufgabe es übernimmt.",
       optionen: zieheVerschiedene([
         R(f.rolle, "Genau."),
         F(rollen[andereArten[0]], `Das würde auf ein ${andereArten[0]} zutreffen.`),
         F(rollen[andereArten[1]], `Das würde auf ein ${andereArten[1]} zutreffen.`)], 3)},
      {frage:"Wie heißt diese Wortart?",
+      tipp2:"Artikel davor möglich heißt Nomen, beugbar heißt Verb, steigerbar heißt Adjektiv.",
       tipp: f.merkmal,
       optionen: zieheVerschiedene([
         R(f.art, "Richtig."),
         F(andereArten[0], `Ein ${andereArten[0]} hat eine andere Aufgabe.`),
         F(andereArten[1], `Ein ${andereArten[1]} passt hier nicht.`)], 3)},
      {frage:`Woran erkennst du ein <b>${f.art}</b> sicher wieder?`,
+      tipp2:"Jede Wortart hat ihre eigene Probe: die Artikelprobe, die Beugeprobe oder die Steigerungsprobe.",
       tipp:"Es gibt für jede Wortart ein typisches Merkmal.",
       optionen: zieheVerschiedene([
         R(f.merkmal, "Genau das ist das Erkennungszeichen."),
@@ -3319,17 +3538,20 @@ Object.assign(AUFGABEN, {
     schluss:"Satzglieder findest du immer über die passende Frage. Die Frage bestimmt das Satzglied, nicht die Stellung im Satz.",
     schritte:[
      {frage:"Satzglieder findet man über Fragen. <b>Womit fängst du an?</b>",
+      tipp2:"Ohne diesen Teil lässt sich keine der anderen Fragen überhaupt stellen.",
       tipp:"Zuerst braucht man immer die Tätigkeit im Satz.",
       optionen:[R("Mit dem Verb — was geschieht?", "Richtig, das Prädikat ist der Ausgangspunkt."),
                 F("Mit dem letzten Wort", "Die Stellung hilft nicht weiter."),
                 F("Mit dem längsten Wort", "Damit hat es nichts zu tun.")]},
      {frage:`Mit welcher <b>Frage</b> findest du „${f.teil}“?`,
+      tipp2:"Wer oder was? findet den Handelnden, Wen oder was? und Wem? finden die Ergänzungen.",
       tipp:"Probier die Fragen der Reihe nach durch.",
       optionen: zieheVerschiedene([
         R(f.frage, `Genau — „${f.frage}“ führt zu „${f.teil}“.`),
         F(alle[andere[0]], `Damit fändest du das ${andere[0]}.`),
         F(alle[andere[1]], `Damit fändest du das ${andere[1]}.`)], 3)},
      {frage:"Wie heißt dieses Satzglied?",
+      tipp2:"Wer? führt zum Subjekt, Wen oder was? zum Akkusativobjekt, Wem? zum Dativobjekt.",
       tipp:`Die Frage „${f.frage}“ gehört zu einem bestimmten Satzglied.`,
       optionen: zieheVerschiedene([
         R(f.glied, "Richtig."),
@@ -3368,17 +3590,20 @@ Object.assign(AUFGABEN, {
     schluss:"Der sicherste Test: Steht ein Begleiter davor oder könnte einer davorstehen? Dann groß.",
     schritte:[
      {frage:"Was ist der sicherste <b>Test</b> für die Großschreibung?",
+      tipp2:"Es ist das Wort, das man vor jedes Nomen setzen kann: der, die oder das.",
       tipp:"Es geht um ein kleines Wort davor.",
       optionen:[R("Steht ein Artikel davor oder könnte einer davorstehen?", "Genau — der, die, das, ein, dem."),
                 F("Ist das Wort lang?", "Mit der Länge hat es nichts zu tun."),
                 F("Steht es am Satzende?", "Die Stellung entscheidet nicht.")]},
      {frage:`Steht bei <b>„${f.wort}“</b> in diesem Satz ein Begleiter davor?`,
+      tipp2:"Auch versteckte zählen: In beim, zum, vom, im und am steckt ein Artikel drin.",
       tipp: f.vorn.match(/^(Der|Die|Das|Ein|Eine|Beim|Zum|Vom|Im)\b/) || /\b(die|der|das|ein|eine|dem)\b/i.test(f.vorn)
             ? "Schau dir das Wort direkt davor genau an." : "Schau dir das Wort direkt davor genau an.",
       optionen: f.istGross
         ? [R("Ja", f.grund), F("Nein", "Doch — " + f.grund.toLowerCase())]
         : [R("Nein", f.grund), F("Ja", "Nein — davor steht kein Begleiter, sondern ein anderes Wort.")]},
      {frage:"Was für eine Wortart ist es damit?",
+      tipp2:"Was einen Artikel bei sich hat, ist damit zu einem Nomen geworden.",
       tipp: f.istGross ? "Artikel davor bedeutet immer dasselbe." : "Ohne Begleiter bleibt es, was es war.",
       optionen: f.istGross
         ? [R("Ein Nomen", "Richtig — und Nomen werden großgeschrieben."),
@@ -3386,6 +3611,7 @@ Object.assign(AUFGABEN, {
         : [R("Weiterhin ein Verb oder Adjektiv", "Richtig — also klein."),
            F("Ein Nomen", "Dafür fehlt der Begleiter davor.")]},
      {frage:"Wie schreibst du es also?",
+      tipp2:"Nomen werden im Deutschen ausnahmslos großgeschrieben.",
       tipp: f.istGross ? "Nomen → groß." : "Verb oder Adjektiv → klein.",
       optionen: zieheVerschiedene([
         R(f.gross, "Richtig."),
@@ -3427,11 +3653,13 @@ Object.assign(AUFGABEN, {
     schluss:"Begleitsatz vorne → Doppelpunkt. Begleitsatz hinten → Komma nach der Rede.",
     schritte:[
      {frage:"Was ist der <b>Begleitsatz</b>?",
+      tipp2:"Es ist der Teil ohne Anführungszeichen.",
       tipp:"Der Teil, der sagt, wer spricht.",
       optionen:[R(`„${f.begleit}“`, "Genau — er sagt, wer spricht."),
                 F(`„${f.rede}“`, "Das ist die wörtliche Rede selbst, also das Gesagte."),
                 F("Die Anführungszeichen", "Das sind Satzzeichen, kein Satzteil.")]},
      {frage:"Steht der Begleitsatz <b>vor</b> oder <b>hinter</b> der wörtlichen Rede?",
+      tipp2:"Schau, was zuerst dasteht: der Begleitsatz oder die Anführungszeichen.",
       tipp:"Schau auf die Reihenfolge im Satz.",
       optionen: zieheVerschiedene(f.vorn
         ? [R("Davor", "Richtig."), F("Dahinter", "Nein, er steht am Anfang."),
@@ -3439,6 +3667,7 @@ Object.assign(AUFGABEN, {
         : [R("Dahinter", "Richtig."), F("Davor", "Nein, er steht am Ende."),
            F("Mitten in der Rede", "Das gibt es zwar auch, hier aber nicht.")], 3)},
      {frage:"Welches <b>Satzzeichen</b> gehört dann an die Lücke?",
+      tipp2:"Steht der Begleitsatz vorn, kündigt er die Rede an. Steht er hinten, wird die Rede abgetrennt.",
       tipp: f.vorn ? "Vor der Rede kündigt ein Zeichen sie an." : "Nach der Rede trennt ein Zeichen ab.",
       optionen: f.vorn
         ? [R("Ein Doppelpunkt", "Genau — der Begleitsatz kündigt die Rede an."),
@@ -3448,6 +3677,7 @@ Object.assign(AUFGABEN, {
            F("Ein Doppelpunkt", "Der käme nur, wenn der Begleitsatz vorne stünde."),
            F("Gar nichts", "Ein Zeichen muss dort stehen.")]},
      {frage:"Wie sieht der ganze Satz richtig aus?",
+      tipp2:"Die Anführungszeichen unten beginnen die Rede, die oben schließen sie.",
       tipp:"Anführungszeichen nicht vergessen.",
       optionen: zieheVerschiedene([
         R(loesung, "Richtig."),
@@ -3478,6 +3708,7 @@ Object.assign(AUFGABEN, {
     schluss:"Zähl zuerst die Teile: ein Wort heißt Präsens oder Präteritum, zwei Wörter heißen Perfekt, Plusquamperfekt oder Futur.",
     schritte:[
      {frage:`Aus wie vielen Teilen besteht <b>„${f.form}“</b>? (Das „ich“ zählt nicht mit.)`,
+      tipp2:"Hilfsverben wie haben, sein oder werden zählen mit.",
       tipp:"Zähl die Verbformen.",
       optionen: zieheVerschiedene(f.teile === 1
         ? [R("Aus einem Wort", "Richtig — dann kommen nur Präsens oder Präteritum infrage."),
@@ -3487,6 +3718,7 @@ Object.assign(AUFGABEN, {
            F("Aus einem Wort", "Nein, es sind zwei Verbformen."),
            F("Aus drei Wörtern", "Zähl noch mal — es sind genau zwei.")], 3)},
      {frage:"Was folgt daraus?",
+      tipp2:"Aus einem einzigen Wort gebildet werden nur die Gegenwart und die einfache Vergangenheit.",
       tipp: f.teile === 1 ? "Einteilige Formen sind Gegenwart oder einfache Vergangenheit."
                           : "Zweiteilige Formen brauchen ein Hilfsverb.",
       optionen: zieheVerschiedene(f.teile === 1
@@ -3497,6 +3729,7 @@ Object.assign(AUFGABEN, {
            F("Es ist Präsens oder Präteritum", "Die bestehen nur aus einem Wort."),
            F("Es ist gar keine Zeitform", "Doch — jede Verbform steht in einer Zeit.")], 3)},
      {frage:"Welche Zeitform ist es genau?",
+      tipp2:"Passiert es gerade, ist es die Gegenwart. Ist es vorbei, die einfache Vergangenheit.",
       tipp: f.hinweis,
       optionen: zieheVerschiedene([
         R(f.zeit, `Richtig — ${f.hinweis}`),
@@ -3533,21 +3766,25 @@ Object.assign(AUFGABEN, {
     schluss:`Zwischen den Gliedern ein Komma — aber niemals vor „${f.schluss}“.`,
     schritte:[
      {frage:"Wie viele Glieder hat diese Aufzählung?",
+      tipp2:"Zähl die aufgezählten Dinge, nicht die Satzzeichen.",
       tipp:`${f.teile.join(", ")}`,
       optionen:[R("Drei", "Richtig."),
                 F("Zwei", "Zähl noch mal — es sind drei."),
                 F("Vier", "Es sind genau drei.")]},
      {frage:`Was gehört zwischen <b>${f.teile[0]}</b> und <b>${f.teile[1]}</b>?`,
+      tipp2:"Zwischen den Gliedern einer Aufzählung steht immer dasselbe Zeichen.",
       tipp:"Zwischen Aufzählungsgliedern trennt ein Zeichen.",
       optionen:[R("Ein Komma", "Genau."),
                 F("Gar nichts", "Ohne Komma liefe die Aufzählung ineinander."),
                 F("Ein Punkt", "Ein Punkt beendet den ganzen Satz.")]},
      {frage:`Und was gehört <b>vor „${f.schluss}“</b>?`,
+      tipp2:"Vor und und vor oder bleibt die Stelle leer.",
       tipp:`Das ist die Ausnahme, die man sich merken muss.`,
       optionen:[R("Gar nichts", `Richtig — vor „${f.schluss}“ steht in einer Aufzählung kein Komma.`),
                 F("Ein Komma", `Nein, genau vor „${f.schluss}“ bleibt es weg.`),
                 F("Ein Semikolon", "Ein Semikolon trennt ganze Sätze, nicht Aufzählungsglieder.")]},
      {frage:"Wie sieht der Satz richtig aus?",
+      tipp2:"Bei drei Gliedern steht genau ein Komma.",
       tipp:`Ein Komma in der Mitte, keines vor „${f.schluss}“.`,
       optionen: zieheVerschiedene([
         R(richtig, "Richtig."),
@@ -3578,11 +3815,13 @@ Object.assign(AUFGABEN, {
     schluss:"Drei Stufen: Grundform, Vergleichsform, Höchstform. Ein paar wichtige Adjektive sind dabei unregelmäßig — die muss man kennen.",
     schritte:[
      {frage:"Wie heißen die <b>drei Stufen</b> der Steigerung?",
+      tipp2:"Die erste ist die Form aus dem Wörterbuch, die zweite vergleicht zwei, die dritte steht über allen.",
       tipp:"Von der einfachen Form bis zur höchsten.",
       optionen:[R("Grundform, Vergleichsform, Höchstform", "Genau — auch Positiv, Komparativ und Superlativ genannt."),
                 F("Gegenwart, Vergangenheit, Zukunft", "Das sind Zeitformen bei Verben."),
                 F("Einzahl, Mehrzahl, Höchstzahl", "Das gibt es so nicht.")]},
      {frage:`Ist <b>„${f.grund}“</b> regelmäßig oder unregelmäßig?`,
+      tipp2:"Unregelmäßig sind nur wenige: gut, viel und gern. Alle anderen folgen dem Muster.",
       tipp: f.art === "regelmäßig" ? "Reicht ein angehängtes „-er“?"
            : f.art === "mit Umlaut" ? "Verändert sich der Selbstlaut?"
            : "Ändert sich das ganze Wort?",
@@ -3593,6 +3832,7 @@ Object.assign(AUFGABEN, {
         F(f.art === "unregelmäßig" ? "Regelmäßig — es bekommt einfach ein „-er“" : "Unregelmäßig — die Form ändert sich ganz",
           f.art === "unregelmäßig" ? `„${naiv}“ gibt es nicht.` : "So stark ändert sich dieses Wort nicht.")], 2)},
      {frage:`Wie heißt die <b>Vergleichsform</b> von „${f.grund}“?`,
+      tipp2:"Regelmäßig wird -er angehängt, manchmal kommt zusätzlich ein Umlaut dazu.",
       tipp:`Man benutzt sie mit „als“: schneller als …`,
       optionen: zieheVerschiedene([
         R(f.komp, "Richtig."),
@@ -3600,6 +3840,7 @@ Object.assign(AUFGABEN, {
           naiv === f.komp ? "Doppelt gesteigert wird nicht." : `„${naiv}“ ist hier nicht die richtige Form.`),
         F("mehr " + f.grund, "Im Deutschen steigert man nicht mit „mehr“ davor — das ist Englisch.")], 3)},
      {frage:`Und die <b>Höchstform</b>?`,
+      tipp2:"Am plus Grundform plus -sten, gegebenenfalls wieder mit Umlaut.",
       tipp:"Sie beginnt mit „am“.",
       optionen: zieheVerschiedene([
         R(f.sup, "Fertig."),
@@ -7665,20 +7906,25 @@ function antwort(i){
   render(i);
 }
 /* ---------- Hilfe in Stufen ----------
-   „Ich weiß nicht weiter“ soll bei jedem Druck etwas Neues bringen, sonst
-   sieht es aus, als täte der Knopf nichts:
-     Stufe 1  der Tipp zum Schritt
-     Stufe 2  die Regeln zum Thema
-     Stufe 3  die ganze Erklärung
+   „Ich weiß nicht weiter“ bringt bei jedem Druck etwas Neues:
+     Stufe 1  der erste Tipp zum Schritt   — worauf man schauen muss
+     Stufe 2  der zweite Tipp zum Schritt  — wie man vorgeht
+     Stufe 3  die Regeln zum Thema
+     Stufe 4  die ganze Erklärung
    Die Lösung ist in keiner Stufe dabei — den letzten Schritt macht immer
    der Lernende selbst. */
+function zweiterTipp(){
+  const s = aktuell && aktuell.schritte[schrittNr];
+  return s && s.tipp2 ? s.tipp2 : "";
+}
 function regelnZumThema(){
   const e = ERKLAERUNGEN[aktuellName];
   return e && e.regeln && e.regeln.length ? e.regeln : [];
 }
 function naechsteHilfe(){
   if (hilfeStufe === 0) return { text:"Ich weiß nicht weiter", art:"tipp" };
-  if (hilfeStufe === 1 && regelnZumThema().length) return { text:"Das reicht mir noch nicht", art:"regeln" };
+  if (hilfeStufe === 1 && zweiterTipp()) return { text:"Ich brauche noch einen Hinweis", art:"tipp2" };
+  if (hilfeStufe <= 2 && regelnZumThema().length) return { text:"Zeig mir die Regeln zum Thema", art:"regeln" };
   if (hatErklaerung(aktuellName)) return { text:"Erklär mir das Thema von vorn", art:"erklaerung" };
   return { text:"Tipp noch einmal zeigen", art:"hin" };
 }
@@ -7687,8 +7933,11 @@ function hilfeWeiter(){
   if (naechste.art === "tipp"){
     hilfeStufe = 1; insBildHolen = "#screen .feedback.tipp"; render(); return;
   }
+  if (naechste.art === "tipp2"){
+    hilfeStufe = 2; insBildHolen = "#screen .feedback.tipp2"; render(); return;
+  }
   if (naechste.art === "regeln"){
-    hilfeStufe = 2; insBildHolen = "#screen .feedback.regel"; render(); return;
+    hilfeStufe = 3; insBildHolen = "#screen .feedback.regel"; render(); return;
   }
   if (naechste.art === "erklaerung"){ zeigeErklaerung(); return; }
   zumTippSpringen();
@@ -8238,7 +8487,9 @@ function render(gewaehlt){
     fb = `<div class="feedback ${o.ok ? "ok" : "nope"}">${o.fb}</div>`;
   }
   if (hilfeStufe >= 1 && !aufgeloest) fb += `<div class="feedback tipp"><b>Tipp:</b> ${s.tipp}</div>`;
-  if (hilfeStufe >= 2 && !aufgeloest && regelnZumThema().length)
+  if (hilfeStufe >= 2 && !aufgeloest && zweiterTipp())
+    fb += `<div class="feedback tipp tipp2"><b>Noch ein Tipp:</b> ${zweiterTipp()}</div>`;
+  if (hilfeStufe >= 3 && !aufgeloest && regelnZumThema().length)
     fb += `<div class="feedback regel">
              <b>Und das gilt beim Thema ${aktuellName}:</b>
              <ul>${regelnZumThema().map(r => `<li>${r}</li>`).join("")}</ul>
