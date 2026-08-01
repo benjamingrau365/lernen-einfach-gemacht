@@ -989,6 +989,35 @@
   .fachzeile:hover .fachname{color:var(--akz,var(--ac-dark))}
   .fachname{font-weight:600;font-size:17px;color:var(--akz,var(--ink))}
 
+  /* ---------- Einstellungen: Gruppen und Schalter ---------- */
+  .gruppe{font-size:calc(12px * var(--fs,1));letter-spacing:.14em;text-transform:uppercase;
+    color:var(--soft);font-weight:700;margin:22px 0 8px;padding-left:4px}
+  .gruppe:first-of-type{margin-top:14px}
+  .schalter{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;
+    text-align:left;background:none;border:1.5px solid var(--line);border-radius:13px;
+    padding:14px 16px;font:inherit;color:var(--ink);cursor:pointer;margin-bottom:10px}
+  .schalter:last-child{margin-bottom:0}
+  .schalter.an{border-color:var(--ac);background:var(--ac-soft)}
+  .schaltertext{min-width:0}
+  .schaltertext b{display:block;font-size:16.5px;margin-bottom:2px}
+  .schaltertext span{font-size:13.5px;color:var(--soft);line-height:1.45;display:block}
+  .schalterknopf{flex:none;width:48px;height:28px;border-radius:999px;background:var(--line);
+    position:relative;transition:background .15s}
+  .schalterknopf::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;
+    border-radius:50%;background:var(--card);transition:transform .15s;
+    box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  .schalter.an .schalterknopf{background:var(--ac)}
+  .schalter.an .schalterknopf::after{transform:translateX(20px)}
+
+  /* Lesehilfe: mehr Luft zwischen Zeilen und Buchstaben */
+  html.lesehilfe body{letter-spacing:.022em;word-spacing:.06em}
+  html.lesehilfe p,html.lesehilfe li,html.lesehilfe .picktext,html.lesehilfe .frage,
+  html.lesehilfe .zeile1,html.lesehilfe .probefrage{line-height:1.85}
+  /* Bewegung aus */
+  html.ruhig *,html.ruhig *::before,html.ruhig *::after{
+    animation-duration:0s !important;animation-iteration-count:1 !important;
+    transition-duration:0s !important;scroll-behavior:auto !important}
+
   /* ---------- Farbwahl je Fach in den Einstellungen ---------- */
   .farbzeile{display:flex;align-items:center;justify-content:space-between;gap:12px;
     flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
@@ -7023,6 +7052,8 @@ const SYM = {
 /* ---------- Aktivität: Serie und Tagesziel ---------- */
 let aktivitaet = {serie: 0, heute: 0, geladen: false};
 const TAGESZIEL = 5;
+/* Wie viele Aufgaben am Tag zählen als geschafft — in den Einstellungen änderbar */
+function tagesziel(){ return einstellungen.tagesziel > 0 ? einstellungen.tagesziel : TAGESZIEL; }
 const MEILENSTEINE = [3, 7, 14, 30, 50, 100, 200, 365];
 let neuerMeilenstein = 0;   // frisch erreichter Meilenstein für die Feier-Anzeige
 function meilensteinPruefen(){
@@ -7125,7 +7156,7 @@ function uebersichtHtml(){
   const merk = merksatzDesTages();
   const tipp = empfehlung();
   const faecher = fachFortschritt();
-  const punkte = n => Array.from({length: TAGESZIEL}, (_,i) =>
+  const punkte = n => Array.from({length: tagesziel()}, (_,i) =>
     `<i class="${i < n ? "voll" : ""}"></i>`).join("");
   const serieText = aktivitaet.serie === 0
     ? "Heute ist ein guter Tag zum Anfangen."
@@ -7174,12 +7205,12 @@ function uebersichtHtml(){
       ${benutzer ? `
         <p class="soft" style="margin-bottom:14px">${serieText}</p>
         <div class="ziel">
-          <span class="zielkopf">${SYM.ziel} Heute: ${aktivitaet.heute} von ${TAGESZIEL} Aufgaben</span>
-          <span class="zielpunkte">${punkte(Math.min(aktivitaet.heute, TAGESZIEL))}</span>
+          <span class="zielkopf">${SYM.ziel} Heute: ${aktivitaet.heute} von ${tagesziel()} Aufgaben</span>
+          <span class="zielpunkte">${punkte(Math.min(aktivitaet.heute, tagesziel()))}</span>
         </div>
-        <p class="small soft" style="margin-top:10px">${aktivitaet.heute >= TAGESZIEL
+        <p class="small soft" style="margin-top:10px">${aktivitaet.heute >= tagesziel()
           ? "Tagesziel geschafft. Alles Weitere ist geschenkt."
-          : aktivitaet.heute > 0 ? `Noch ${TAGESZIEL - aktivitaet.heute} — dann ist heute im Kasten.`
+          : aktivitaet.heute > 0 ? `Noch ${tagesziel() - aktivitaet.heute} — dann ist heute im Kasten.`
           : "Fünf Aufgaben reichen für heute. Mehr geht immer, muss aber nicht."}</p>`
         : ""}
     </div>` : ""}
@@ -7708,7 +7739,10 @@ const FARBEN = [
 const FARBE_STANDARD = {mathe:"blau", deutsch:"rot", englisch:"gelb",
   franzoesisch:"gruen", geschichte:"braun", erdkunde:"tuerkis"};
 const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true,
-  eingabe:"gemischt", bundesland:"", fachfarben:{}};
+  eingabe:"gemischt", bundesland:"", fachfarben:{},
+  lesehilfe:false,      /* mehr Abstand zwischen Zeilen und Buchstaben */
+  bewegung:true,        /* Animationen an oder aus */
+  tagesziel:0};         /* 0 = Voreinstellung benutzen */
 const BUNDESLAENDER = ["Baden-Württemberg","Bayern","Berlin","Brandenburg","Bremen","Hamburg",
   "Hessen","Mecklenburg-Vorpommern","Niedersachsen","Nordrhein-Westfalen","Rheinland-Pfalz",
   "Saarland","Sachsen","Sachsen-Anhalt","Schleswig-Holstein","Thüringen"];
@@ -7745,6 +7779,8 @@ function wendeEinstellungenAn(){
     dunkel = window.matchMedia("(prefers-color-scheme: dark)").matches;
   document.documentElement.classList.toggle("dunkel", dunkel);
   document.documentElement.style.setProperty("--fs", einstellungen.schriftSkala || 1);
+  document.documentElement.classList.toggle("lesehilfe", !!einstellungen.lesehilfe);
+  document.documentElement.classList.toggle("ruhig", einstellungen.bewegung === false);
   farbenAnwenden();
 }
 /* Die gewählte Farbe je Fach als Eigenschaft an <html> schreiben. Sie zeigt auf
@@ -7767,6 +7803,12 @@ function setzeFachFarbe(f, farbe){
   if (!einstellungen.fachfarben) einstellungen.fachfarben = {};
   einstellungen.fachfarben[f] = farbe;
   speichereEinstellungen(); farbenAnwenden(); render();
+}
+/* Alles auf dieser Seite auf den Anfangszustand — Fortschritt bleibt unberührt */
+function einstellungenZuruecksetzen(){
+  Object.assign(einstellungen, {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true,
+    eingabe:"gemischt", bundesland:"", fachfarben:{}, lesehilfe:false, bewegung:true, tagesziel:0});
+  speichereEinstellungen(); wendeEinstellungenAn(); render();
 }
 function farbenZuruecksetzen(){
   einstellungen.fachfarben = {};
@@ -8061,8 +8103,8 @@ function serieHtml(){
   const serieText = s === 0 ? "Heute ist ein guter Tag zum Anfangen."
     : s === 1 ? "Tag 1 — der Anfang ist gemacht."
     : `${s} Tage in Folge — stark!`;
-  const geschafft = heute >= TAGESZIEL;
-  const punkte = Array.from({length: TAGESZIEL}, (_, i) => `<i class="${i < heute ? "voll" : ""}"></i>`).join("");
+  const geschafft = heute >= tagesziel();
+  const punkte = Array.from({length: tagesziel()}, (_, i) => `<i class="${i < heute ? "voll" : ""}"></i>`).join("");
   const naechster = MEILENSTEINE.find(m => m > s);
   const badges = MEILENSTEINE.map(m =>
     `<span class="msbadge ${s >= m ? "erreicht" : ""}">${s >= m ? "✓ " : ""}${m}</span>`).join("");
@@ -8079,11 +8121,11 @@ function serieHtml(){
       <p class="soft" style="margin:12px 0 0">${serieText}</p>
     </div>
     <div class="card">
-      <span class="zielkopf">${SYM.ziel} Heute: ${heute} von ${TAGESZIEL} Aufgaben</span>
+      <span class="zielkopf">${SYM.ziel} Heute: ${heute} von ${tagesziel()} Aufgaben</span>
       <div class="zielpunkte" style="margin-top:12px">${punkte}</div>
       <p class="small soft" style="margin-top:14px">${geschafft
         ? "Heute geschafft — die Serie läuft weiter! 🔥"
-        : `Noch ${TAGESZIEL - heute}, dann ist heute im Kasten und die Serie wächst.`}</p>
+        : `Noch ${tagesziel() - heute}, dann ist heute im Kasten und die Serie wächst.`}</p>
     </div>
     <div class="card">
       <p class="ueberschrift">Meilensteine</p>
@@ -8604,16 +8646,25 @@ function render(gewaehlt){
       <button class="option ${einstellungen[feld] === wert ? "an" : ""}" onclick="setzeEinstellung('${feld}', ${typeof wert === "string" ? `'${wert}'` : wert})">
         <b>${titel}</b>${unter ? `<span>${unter}</span>` : ""}
       </button>`;
+    const schalter = (feld, titel, unter, umgekehrt) => `
+      <button class="schalter ${(umgekehrt ? !einstellungen[feld] : !!einstellungen[feld]) ? "an" : ""}"
+              role="switch" aria-checked="${umgekehrt ? !einstellungen[feld] : !!einstellungen[feld]}"
+              onclick="setzeEinstellung('${feld}', !einstellungen.${feld})">
+        <span class="schaltertext"><b>${titel}</b><span>${unter}</span></span>
+        <span class="schalterknopf"></span>
+      </button>`;
     el.innerHTML = `
       <div class="card">
         ${navLink(pfadFuer(vorEinstellungen, fach, klasse), "zurueckVonEinstellungen()", "← Zurück", "zurueck")}
         <span class="tag">Einstellungen</span>
         <h1>Wie hättest du es gern?</h1>
-        <p class="soft">Alles hier lässt sich jederzeit wieder ändern.</p>
+        <p class="soft">Alles hier lässt sich jederzeit wieder ändern. Gespeichert wird es auf diesem Gerät.</p>
       </div>
 
+      <p class="gruppe">Aussehen</p>
+
       <div class="card">
-        <p class="ueberschrift">Aussehen</p>
+        <p class="ueberschrift">Hell oder dunkel</p>
         <div class="optionen3">
           ${wahl("modus","hell","Hell","Heller Hintergrund")}
           ${wahl("modus","dunkel","Dunkel","Schont die Augen abends")}
@@ -8651,18 +8702,18 @@ function render(gewaehlt){
           <span class="reglergross">A</span>
         </div>
         <p class="small soft" style="margin:12px 0 0;text-align:center">
-          Nach rechts wischen = größer, nach links = kleiner · <b id="schriftwert">${Math.round((einstellungen.schriftSkala || 1) * 100)} %</b>
-        </p>
+          Nach rechts wischen = größer, nach links = kleiner ·
+          <b>${Math.round((einstellungen.schriftSkala || 1) * 100)} %</b></p>
         <div class="schriftvorschau">So sieht dein Text in dieser Größe aus.</div>
       </div>
 
-      ${erinnerungenHtml()}
-
       <div class="card">
-        <p class="ueberschrift">Bundesland</p>
-        <p class="small soft" style="margin:0 0 12px">Damit wir die Themen später an deinen Lehrplan anpassen können.</p>
-        <select class="feld" onchange="setBundesland(this.value)">${bundeslandOptionen()}</select>
+        <p class="ueberschrift">Leichter lesen</p>
+        ${schalter("lesehilfe","Mehr Abstand","Größerer Zeilen- und Buchstabenabstand — hilft, wenn Zeilen ineinanderlaufen")}
+        ${schalter("bewegung","Bewegung reduzieren","Schaltet Animationen aus, wenn sie dich stören", true)}
       </div>
+
+      <p class="gruppe">Üben</p>
 
       <div class="card">
         <p class="ueberschrift">Antworten</p>
@@ -8679,7 +8730,50 @@ function render(gewaehlt){
           ${wahl("autoTipp",true,"Tipp kommt von allein","Nach dem ersten Fehler")}
           ${wahl("autoTipp",false,"Tipp nur auf Knopfdruck","Ich will es erst selbst versuchen")}
         </div>
-        <p class="small soft" style="margin-top:14px">Nach dem zweiten Fehler wird dir die Erklärung zum Thema angeboten. Nach dem dritten wird die Lösung gezeigt, damit du nicht stecken bleibst.</p>
+        <p class="small soft" style="margin-top:14px">In beiden Fällen bringt „Ich weiß nicht weiter“ dich stufenweise weiter: erst ein Tipp, dann ein zweiter, dann die Regeln, dann die ganze Erklärung. Die Lösung ist in keiner Stufe dabei.</p>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Tagesziel</p>
+        <p class="small soft" style="margin:0 0 12px">So viele Aufgaben am Tag zählen als geschafft. Lieber klein anfangen — geschafft ist besser als viel.</p>
+        <div class="optionen3">
+          ${[3,5,10].map(n => `
+            <button class="option ${tagesziel() === n ? "an" : ""}" onclick="setzeEinstellung('tagesziel', ${n})">
+              <b>${n} Aufgaben</b><span>${n === 3 ? "Für jeden Tag machbar" : n === 5 ? "Voreinstellung" : "Wenn du mehr willst"}</span>
+            </button>`).join("")}
+        </div>
+      </div>
+
+      <p class="gruppe">Erinnerungen</p>
+      ${erinnerungenHtml() || `<div class="card"><p class="small soft" style="margin:0">Erinnerungen sind auf diesem Gerät nicht möglich.</p></div>`}
+
+      <p class="gruppe">Über dich</p>
+
+      <div class="card">
+        <p class="ueberschrift">Bundesland</p>
+        <p class="small soft" style="margin:0 0 12px">Damit wir die Themen später an deinen Lehrplan anpassen können.</p>
+        <select class="feld" onchange="setBundesland(this.value)" aria-label="Bundesland">
+          <option value="">Nicht angegeben</option>
+          ${BUNDESLAENDER.map(l => `<option value="${l}" ${einstellungen.bundesland === l ? "selected" : ""}>${l}</option>`).join("")}
+        </select>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Dein Zugang</p>
+        ${benutzer
+          ? `<p class="small soft" style="margin:0 0 12px">Angemeldet als <b>${benutzer.email}</b>. Dein Fortschritt wird gespeichert.</p>
+             ${navLink("/konto", "zeigeSeite('konto')", "Mein Konto", "btn ghost full")}`
+          : `<p class="small soft" style="margin:0 0 12px">Du übst ohne Konto. Alles funktioniert — nur der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, braucht ein Konto.</p>
+             ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "btn full")}
+             ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost full", "margin-top:10px")}`}
+      </div>
+
+      <p class="gruppe">Auf diesem Gerät</p>
+
+      <div class="card">
+        <p class="ueberschrift">Einstellungen zurücksetzen</p>
+        <p class="small soft" style="margin:0 0 12px">Setzt alles auf dieser Seite auf den Anfangszustand — Aussehen, Farben, Schriftgröße, Tagesziel. ${benutzer ? "Dein Fortschritt bleibt erhalten." : "Es gibt hier nichts anderes zu löschen: ohne Konto wird kein Fortschritt gespeichert."}</p>
+        <button class="btn ghost full" onclick="einstellungenZuruecksetzen()">Alles zurücksetzen</button>
       </div>`;
     return;
   }
