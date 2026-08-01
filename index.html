@@ -989,6 +989,29 @@
   .fachzeile:hover .fachname{color:var(--akz,var(--ac-dark))}
   .fachname{font-weight:600;font-size:17px;color:var(--akz,var(--ink))}
 
+  /* ---------- Einstellungen: Sprungleiste, Gruppen und Schalter ---------- */
+  .einstnav{position:sticky;top:0;z-index:30;display:flex;gap:8px;overflow-x:auto;
+    padding:10px 2px;margin:0 0 4px;background:var(--bg);
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .einstnav::-webkit-scrollbar{display:none}
+  .einstchip{flex:none;background:var(--card);border:1.5px solid var(--line);border-radius:999px;
+    padding:9px 15px;font:inherit;font-size:calc(14.5px * var(--fs,1));font-weight:600;
+    color:var(--soft);cursor:pointer;white-space:nowrap}
+  .einstchip.an{background:var(--ac);border-color:var(--ac);color:#fff}
+  @media(hover:hover){ .einstchip:not(.an):hover{border-color:var(--ac);color:var(--ac-dark)} }
+
+  .stufenreihe{display:flex;flex-wrap:wrap;gap:8px}
+  .stufe{background:var(--card);border:1.5px solid var(--line);border-radius:11px;
+    padding:10px 14px;font:inherit;font-size:calc(15px * var(--fs,1));font-weight:600;
+    color:var(--ink);cursor:pointer}
+  .stufe.an{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
+  @media(hover:hover){ .stufe:not(.an):hover{border-color:var(--ac)} }
+
+  /* Stärkerer Kontrast: dunklere Schrift, deutlichere Linien */
+  html.kontrast{--soft:#3d4b47; --line:#b9c8c3}
+  html.kontrast.dunkel{--soft:#c4d6d0; --line:#4a5c57}
+  html.kontrast .card{border-width:1.5px}
+
   /* ---------- Einstellungen: Gruppen und Schalter ---------- */
   .gruppe{font-size:calc(12px * var(--fs,1));letter-spacing:.14em;text-transform:uppercase;
     color:var(--soft);font-weight:700;margin:22px 0 8px;padding-left:4px}
@@ -7742,7 +7765,11 @@ const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:
   eingabe:"gemischt", bundesland:"", fachfarben:{},
   lesehilfe:false,      /* mehr Abstand zwischen Zeilen und Buchstaben */
   bewegung:true,        /* Animationen an oder aus */
-  tagesziel:0};         /* 0 = Voreinstellung benutzen */
+  kontrast:false,       /* kräftigere Schrift und Linien */
+  tagesziel:0,          /* 0 = Voreinstellung benutzen */
+  stufe:0,              /* Lieblings-Klassenstufe, 0 = jedes Mal fragen */
+  autoWeiter:false,     /* nach richtiger Antwort von allein weiterblättern */
+  erklaerungZuerst:false};  /* Thema erst erklären, dann rechnen */
 const BUNDESLAENDER = ["Baden-Württemberg","Bayern","Berlin","Brandenburg","Bremen","Hamburg",
   "Hessen","Mecklenburg-Vorpommern","Niedersachsen","Nordrhein-Westfalen","Rheinland-Pfalz",
   "Saarland","Sachsen","Sachsen-Anhalt","Schleswig-Holstein","Thüringen"];
@@ -7781,6 +7808,7 @@ function wendeEinstellungenAn(){
   document.documentElement.style.setProperty("--fs", einstellungen.schriftSkala || 1);
   document.documentElement.classList.toggle("lesehilfe", !!einstellungen.lesehilfe);
   document.documentElement.classList.toggle("ruhig", einstellungen.bewegung === false);
+  document.documentElement.classList.toggle("kontrast", !!einstellungen.kontrast);
   farbenAnwenden();
 }
 /* Die gewählte Farbe je Fach als Eigenschaft an <html> schreiben. Sie zeigt auf
@@ -7804,10 +7832,59 @@ function setzeFachFarbe(f, farbe){
   einstellungen.fachfarben[f] = farbe;
   speichereEinstellungen(); farbenAnwenden(); render();
 }
+/* ---------- Bereiche der Einstellungen ---------- */
+const EINST_BEREICHE = [
+  ["aussehen","Aussehen"], ["ueben","Üben"], ["erinnerungen","Erinnerungen"],
+  ["dich","Über dich"], ["geraet","Gerät"]
+];
+/* Zu einem Bereich springen — der Abstand richtet sich nach der Leiste,
+   damit die Überschrift nicht darunter verschwindet. */
+function zuAbschnitt(id){
+  const ziel = document.getElementById(id);
+  if (!ziel) return;
+  const leiste = document.querySelector(".einstnav");
+  const abstand = (leiste ? leiste.getBoundingClientRect().height : 0) + 18;
+  const y = window.scrollY + ziel.getBoundingClientRect().top - abstand;
+  window.scrollTo({ top: Math.max(0, y),
+    behavior: einstellungen.bewegung === false ? "auto" : "smooth" });
+}
+/* Der Punkt, in dem man gerade steckt, wird in der Leiste hervorgehoben. */
+let einstBeobachter = null;
+function einstNavAktivieren(){
+  if (einstBeobachter){ einstBeobachter.disconnect(); einstBeobachter = null; }
+  const chips = [...document.querySelectorAll(".einstchip")];
+  if (!chips.length) return;
+  const setzen = (id) => chips.forEach(c => c.classList.toggle("an", c.dataset.ziel === id));
+  setzen(chips[0].dataset.ziel);
+  einstBeobachter = new IntersectionObserver((eintraege) => {
+    const sichtbar = eintraege.filter(e => e.isIntersecting)
+      .sort((a,b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+    if (sichtbar) setzen(sichtbar.target.id);
+  }, { rootMargin: "-90px 0px -70% 0px" });
+  EINST_BEREICHE.forEach(([id]) => {
+    const el = document.getElementById("gr-" + id);
+    if (el) einstBeobachter.observe(el);
+  });
+}
+/* Alles frisch aus dem Netz holen — hilft, wenn eine alte Fassung hängen bleibt */
+async function appNeuLaden(){
+  try {
+    if ("serviceWorker" in navigator){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+    if (window.caches){
+      const namen = await caches.keys();
+      await Promise.all(namen.map(n => caches.delete(n)));
+    }
+  } catch(e){ /* dann eben nur neu laden */ }
+  location.reload();
+}
 /* Alles auf dieser Seite auf den Anfangszustand — Fortschritt bleibt unberührt */
 function einstellungenZuruecksetzen(){
   Object.assign(einstellungen, {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true,
-    eingabe:"gemischt", bundesland:"", fachfarben:{}, lesehilfe:false, bewegung:true, tagesziel:0});
+    eingabe:"gemischt", bundesland:"", fachfarben:{}, lesehilfe:false, bewegung:true,
+    kontrast:false, tagesziel:0, stufe:0, autoWeiter:false, erklaerungZuerst:false});
   speichereEinstellungen(); wendeEinstellungenAn(); render();
 }
 function farbenZuruecksetzen(){
@@ -8091,7 +8168,29 @@ async function speichereErgebnis(){
 }
 
 /* ---------- Navigation ---------- */
-function waehleFach(f){ fach = f; klasse = null; ansicht = "klassenwahl"; wunschZuruecksetzen(); render(); }
+/* Ist eine Lieblings-Klassenstufe eingestellt, wird die Klassenwahl übersprungen.
+   Über den Pfad oben kommt man trotzdem jederzeit in eine andere Klasse. */
+function waehleFach(f){
+  fach = f; wunschZuruecksetzen();
+  const wunsch = einstellungen.stufe;
+  if (wunsch >= 5 && wunsch <= 10 && KATALOG[f] && KATALOG[f].themen[wunsch]){
+    klasse = wunsch; ansicht = "start";
+  } else { klasse = null; ansicht = "klassenwahl"; }
+  render();
+}
+/* Auf Wunsch nach einer richtigen Antwort von allein weiterblättern. Kurze
+   Pause, damit man die grüne Bestätigung noch sieht — und nur, wenn seither
+   nichts anderes passiert ist. */
+let weiterUhr = null;
+function autoWeiter(){
+  clearTimeout(weiterUhr);
+  if (!einstellungen.autoWeiter || aufgeloest || ansicht !== "loesen") return;
+  const standNr = schrittNr, standName = aktuellName;
+  weiterUhr = setTimeout(() => {
+    if (ansicht === "loesen" && beantwortet && schrittNr === standNr && aktuellName === standName) weiter();
+  }, 1100);
+}
+
 function waehleKlasse(k){ klasse = k; ansicht = "start"; wunschZuruecksetzen(); render(); }
 function zurFachwahl(){ ansicht = "fachwahl"; render(); }
 function zurUebersicht(){ ansicht = "uebersicht"; render(); }
@@ -8142,6 +8241,7 @@ function zurKlassenwahl(){ ansicht = "klassenwahl"; render(); }
 function zeigePlan(){ ansicht = ansicht === "plan" ? (klasse ? "start" : "uebersicht") : "plan"; render(); }
 
 function starte(name, welche){
+  const ersterAufruf = welche === undefined;   /* nicht „noch eine Aufgabe" */
   aktuellName = name;
   const anzahl = anzahlAufgaben(name);
   if (welche === undefined){
@@ -8155,6 +8255,11 @@ function starte(name, welche){
   schrittNr = 0; beantwortet = false; hilfeStufe = 0; fehlversuche = 0;
   schrittZuruecksetzen();
   neueReihenfolge();
+  /* Auf Wunsch erst die Erklaerung, dann die Aufgabe. Zurueck fuehrt von dort
+     genau hierher, weil die Aufgabe schon fertig gewuerfelt bereitliegt. */
+  if (einstellungen.erklaerungZuerst && ersterAufruf && hatErklaerung(name)){
+    vorErklaerung = "loesen"; ansicht = "erklaerung"; render(); return;
+  }
   ansicht = "loesen"; render();
 }
 function naechsteVariante(){ starte(aktuellName, variante + 1); }
@@ -8204,6 +8309,7 @@ function antwort(i){
   if (aktuell.schritte[schrittNr].optionen[i].ok){
     beantwortet = true;
     render(i);
+    autoWeiter();
     return;
   }
   falschGeklickt.push(i);
@@ -8646,13 +8752,16 @@ function render(gewaehlt){
       <button class="option ${einstellungen[feld] === wert ? "an" : ""}" onclick="setzeEinstellung('${feld}', ${typeof wert === "string" ? `'${wert}'` : wert})">
         <b>${titel}</b>${unter ? `<span>${unter}</span>` : ""}
       </button>`;
-    const schalter = (feld, titel, unter, umgekehrt) => `
-      <button class="schalter ${(umgekehrt ? !einstellungen[feld] : !!einstellungen[feld]) ? "an" : ""}"
-              role="switch" aria-checked="${umgekehrt ? !einstellungen[feld] : !!einstellungen[feld]}"
+    const schalter = (feld, titel, unter, umgekehrt) => {
+      const an = umgekehrt ? !einstellungen[feld] : !!einstellungen[feld];
+      return `
+      <button class="schalter ${an ? "an" : ""}" role="switch" aria-checked="${an}"
               onclick="setzeEinstellung('${feld}', !einstellungen.${feld})">
         <span class="schaltertext"><b>${titel}</b><span>${unter}</span></span>
         <span class="schalterknopf"></span>
       </button>`;
+    };
+    const gruppe = (id, titel) => `<p class="gruppe" id="gr-${id}">${titel}</p>`;
     el.innerHTML = `
       <div class="card">
         ${navLink(pfadFuer(vorEinstellungen, fach, klasse), "zurueckVonEinstellungen()", "← Zurück", "zurueck")}
@@ -8661,7 +8770,12 @@ function render(gewaehlt){
         <p class="soft">Alles hier lässt sich jederzeit wieder ändern. Gespeichert wird es auf diesem Gerät.</p>
       </div>
 
-      <p class="gruppe">Aussehen</p>
+      <nav class="einstnav" aria-label="Bereiche">
+        ${EINST_BEREICHE.map(([id, titel]) =>
+          `<button class="einstchip" data-ziel="gr-${id}" onclick="zuAbschnitt('gr-${id}')">${titel}</button>`).join("")}
+      </nav>
+
+      ${gruppe("aussehen","Aussehen")}
 
       <div class="card">
         <p class="ueberschrift">Hell oder dunkel</p>
@@ -8710,10 +8824,11 @@ function render(gewaehlt){
       <div class="card">
         <p class="ueberschrift">Leichter lesen</p>
         ${schalter("lesehilfe","Mehr Abstand","Größerer Zeilen- und Buchstabenabstand — hilft, wenn Zeilen ineinanderlaufen")}
+        ${schalter("kontrast","Stärkerer Kontrast","Kräftigere Schrift und deutlichere Linien")}
         ${schalter("bewegung","Bewegung reduzieren","Schaltet Animationen aus, wenn sie dich stören", true)}
       </div>
 
-      <p class="gruppe">Üben</p>
+      ${gruppe("ueben","Üben")}
 
       <div class="card">
         <p class="ueberschrift">Antworten</p>
@@ -8722,6 +8837,7 @@ function render(gewaehlt){
           ${wahl("eingabe","auswahl","Immer auswählen","Aus mehreren Möglichkeiten anklicken")}
           ${wahl("eingabe","tippen","Immer eintippen","Schwerer, aber ohne Rateglück")}
         </div>
+        ${schalter("autoWeiter","Von allein weiterblättern","Nach einer richtigen Antwort geht es nach kurzer Pause weiter, ohne „Weiter“ zu drücken")}
       </div>
 
       <div class="card">
@@ -8731,6 +8847,11 @@ function render(gewaehlt){
           ${wahl("autoTipp",false,"Tipp nur auf Knopfdruck","Ich will es erst selbst versuchen")}
         </div>
         <p class="small soft" style="margin-top:14px">In beiden Fällen bringt „Ich weiß nicht weiter“ dich stufenweise weiter: erst ein Tipp, dann ein zweiter, dann die Regeln, dann die ganze Erklärung. Die Lösung ist in keiner Stufe dabei.</p>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Erklärung zuerst</p>
+        ${schalter("erklaerungZuerst","Thema erst erklären lassen","Beim Öffnen eines Themas kommt zuerst die Erklärung mit Bild, dann die Aufgaben")}
       </div>
 
       <div class="card">
@@ -8744,10 +8865,20 @@ function render(gewaehlt){
         </div>
       </div>
 
-      <p class="gruppe">Erinnerungen</p>
+      ${gruppe("erinnerungen","Erinnerungen")}
       ${erinnerungenHtml() || `<div class="card"><p class="small soft" style="margin:0">Erinnerungen sind auf diesem Gerät nicht möglich.</p></div>`}
 
-      <p class="gruppe">Über dich</p>
+      ${gruppe("dich","Über dich")}
+
+      <div class="card">
+        <p class="ueberschrift">Deine Klassenstufe</p>
+        <p class="small soft" style="margin:0 0 12px">Wenn du sie festlegst, kommst du nach dem Fach sofort zu den Themen — die Klassenwahl fällt weg. Über den Pfad oben kommst du trotzdem in jede andere Klasse.</p>
+        <div class="stufenreihe">
+          <button class="stufe ${!einstellungen.stufe ? "an" : ""}" onclick="setzeEinstellung('stufe', 0)">Jedes Mal fragen</button>
+          ${[5,6,7,8,9,10].map(k => `
+            <button class="stufe ${einstellungen.stufe === k ? "an" : ""}" onclick="setzeEinstellung('stufe', ${k})">Klasse ${k}</button>`).join("")}
+        </div>
+      </div>
 
       <div class="card">
         <p class="ueberschrift">Bundesland</p>
@@ -8768,13 +8899,31 @@ function render(gewaehlt){
              ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost full", "margin-top:10px")}`}
       </div>
 
-      <p class="gruppe">Auf diesem Gerät</p>
+      ${gruppe("geraet","Auf diesem Gerät")}
+
+      ${istInstalliert() ? "" : `
+      <div class="card">
+        <p class="ueberschrift">${SYM.handy} Aufs Gerät legen</p>
+        <p class="small soft" style="margin:0 0 12px">Dann startet es wie eine App, ohne Browserleiste — und funktioniert auch ohne Netz weiter.</p>
+        ${installEvent
+          ? `<button class="btn full" onclick="installStarten()">Jetzt ablegen</button>`
+          : `<p class="small soft" style="margin:0">${istApple()
+              ? "In Safari auf das Teilen-Zeichen tippen und „Zum Home-Bildschirm“ wählen."
+              : "Im Browsermenü auf „Zum Startbildschirm hinzufügen“ tippen."}</p>`}
+      </div>`}
+
+      <div class="card">
+        <p class="ueberschrift">Neu laden</p>
+        <p class="small soft" style="margin:0 0 12px">Wenn etwas hängt oder du eine ältere Fassung siehst: holt alles frisch aus dem Netz. Dein Fortschritt bleibt.</p>
+        <button class="btn ghost full" onclick="appNeuLaden()">App neu laden</button>
+      </div>
 
       <div class="card">
         <p class="ueberschrift">Einstellungen zurücksetzen</p>
-        <p class="small soft" style="margin:0 0 12px">Setzt alles auf dieser Seite auf den Anfangszustand — Aussehen, Farben, Schriftgröße, Tagesziel. ${benutzer ? "Dein Fortschritt bleibt erhalten." : "Es gibt hier nichts anderes zu löschen: ohne Konto wird kein Fortschritt gespeichert."}</p>
+        <p class="small soft" style="margin:0 0 12px">Setzt alles auf dieser Seite auf den Anfangszustand. ${benutzer ? "Dein Fortschritt bleibt erhalten." : "Es gibt hier nichts anderes zu löschen: ohne Konto wird kein Fortschritt gespeichert."}</p>
         <button class="btn ghost full" onclick="einstellungenZuruecksetzen()">Alles zurücksetzen</button>
       </div>`;
+    einstNavAktivieren();
     return;
   }
 
