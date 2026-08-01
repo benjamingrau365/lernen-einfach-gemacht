@@ -975,8 +975,27 @@
   .fachzeile{display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center;
     padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
   .fachzeile:last-of-type{border-bottom:none}
-  .fachzeile:hover .fachname{color:var(--ac-dark)}
-  .fachname{font-weight:600;font-size:17px}
+  /* ohne eigene Farbe rutschten diese Links ins Browser-Blau (#0000EE) */
+  a.fachzeile{color:var(--ink)}
+  .fachzeile:hover .fachname{color:var(--akz,var(--ac-dark))}
+  .fachname{font-weight:600;font-size:17px;color:var(--akz,var(--ink))}
+
+  /* ---------- Einstieg in die Fächer, ganz oben auf der Startseite ---------- */
+  .grussszeile{margin:0 0 12px;font-size:16px;color:var(--soft)}
+  .grussszeile b{color:var(--ink)}
+  .einstieg{display:grid;gap:12px;margin-bottom:14px}
+  @media(min-width:560px){ .einstieg{grid-template-columns:1fr 1fr} }
+  .einstiegkachel{display:block;background:var(--akz-soft);border:2px solid transparent;
+    border-radius:18px;padding:20px 20px 18px;color:var(--ink);text-decoration:none;cursor:pointer;
+    transition:border-color .12s,transform .08s}
+  @media(hover:hover){ .einstiegkachel:hover{border-color:var(--akz)} }
+  .einstiegkachel:active{transform:scale(.99)}
+  .einstiegzeichen{display:flex;align-items:center;justify-content:center;
+    width:52px;height:52px;border-radius:16px;background:var(--akz);color:#fff;
+    font-size:25px;font-weight:900;margin-bottom:12px;
+    box-shadow:0 10px 22px -12px var(--akz)}
+  .einstiegkachel b{display:block;font-size:24px;letter-spacing:-.01em;color:var(--akz-dark)}
+  .einstiegzahl{display:block;font-size:14.5px;color:var(--soft);margin-top:2px}
   .fachzahl{font-size:13.5px;color:var(--soft);white-space:nowrap;text-align:right}
   .fachbalken{grid-column:1 / -1;height:9px;border-radius:999px;background:var(--bg);
     border:1px solid var(--line);overflow:hidden;display:block}
@@ -7090,11 +7109,23 @@ function uebersichtHtml(){
     : aktivitaet.serie === 1 ? "Tag 1 — der Anfang ist gemacht."
     : `${aktivitaet.serie} Tage in Folge.`;
 
+  /* Die zwei Fächer als farbiger Einstieg — das Erste, was man sieht und
+     antippen kann. Vorher lag der erste Knopf zum Lernen 1.095 px weiter
+     unten, hinter Marke, Begrüßung und Baustellenkasten. */
+  const einstieg = `
+    <div class="einstieg">
+      ${Object.entries(KATALOG).map(([k, v]) => {
+        let fertig = 0;
+        for (const liste of Object.values(v.themen)) fertig += liste.filter(t => AUFGABEN[t]).length;
+        return navLink(`/${k}`, `waehleFach('${k}')`, `
+          <span class="einstiegzeichen">${v.name[0]}</span>
+          <b>${v.name}</b>
+          <span class="einstiegzahl">${fertig} Themen fertig</span>
+        `, "einstiegkachel", `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
+      }).join("")}
+    </div>`;
+
   return `
-    <div class="startkopf">
-      <h1 class="grosstitel">Endlich <span class="glanz">kapiert</span></h1>
-      <p class="startkopfsub">Du kommst selbst drauf</p>
-    </div>
     ${neuerMeilenstein ? `
     <div class="card feierkarte">
       <button class="feierzu" onclick="meilensteinWeg()" aria-label="Schließen">×</button>
@@ -7103,6 +7134,12 @@ function uebersichtHtml(){
       <p>Stark durchgehalten — deine Serie steht bei ${neuerMeilenstein} Tagen. Weiter so!</p>
       <button class="btn" onclick="meilensteinWeg()">Weiter üben</button>
     </div>` : ""}
+    ${benutzer ? "" : `
+      <p class="grussszeile"><b>${begruessung()}</b> · Such dir ein Fach aus.</p>
+      ${einstieg}`}
+    ${/* Für Gäste sagt die Begrüßungszeile über den Fächern schon alles; die
+          große Karte wiederholte nur den Gruß. Angemeldete brauchen sie —
+          dort stehen Serie und Tagesziel drin. */ benutzer ? `
     <div class="card kopfkarte">
       <div class="kopfzeile">
         <div>
@@ -7121,11 +7158,11 @@ function uebersichtHtml(){
           ? "Tagesziel geschafft. Alles Weitere ist geschenkt."
           : aktivitaet.heute > 0 ? `Noch ${TAGESZIEL - aktivitaet.heute} — dann ist heute im Kasten.`
           : "Fünf Aufgaben reichen für heute. Mehr geht immer, muss aber nicht."}</p>`
-        : `<p class="soft">Du kannst alles ausprobieren. Ein Konto brauchst du erst, wenn dein Fortschritt gespeichert werden soll.</p>`}
-    </div>
+        : ""}
+    </div>` : ""}
 
+    ${benutzer ? einstieg : ""}
     ${installHinweisHtml()}
-    ${baustelleBoxHtml()}
 
     ${offen.length ? `
     <div class="card faellig">
@@ -7157,12 +7194,9 @@ function uebersichtHtml(){
       </div>`
       : `
       <div class="card kachel">
-        <p class="ueberschrift">${SYM.buch} Fach wählen</p>
-        <p class="small soft">Such dir aus, worin du üben willst.</p>
-        <div class="fachknoepfe">
-          ${Object.entries(KATALOG).map(([k,v]) =>
-            navLink(`/${k}`, `waehleFach('${k}')`, v.name, "btn ghost")).join("")}
-        </div>
+        <p class="ueberschrift">${SYM.buch} Von vorn erklärt</p>
+        <p class="small soft">Du verstehst ein Thema gar nicht? Zu jedem Thema gibt es eine
+          Erklärung mit Bild — such dir ein Fach aus und tipp beim Thema auf das Fragezeichen.</p>
       </div>`}
     </div>
 
@@ -7188,13 +7222,16 @@ function uebersichtHtml(){
       ${hatErklaerung(merk.thema) ? `<button class="btn ghost full" style="margin-top:12px" onclick="zeigeErklaerung('${merk.thema.replace(/'/g,"\\'")}')">Thema ansehen</button>` : ""}
     </div>` : ""}
 
+    ${/* Die Baustelle steht als Band über jeder Seite — hier unten stört sie
+          den Einstieg nicht mehr. */ baustelleBoxHtml()}
+
     <div class="card">
       <p class="ueberschrift">${SYM.balken} ${benutzer ? "Dein Fortschritt" : "Was drin ist"}</p>
       ${faecher.map(f => navLink(`/${f.schluessel}`, `waehleFach('${f.schluessel}')`, `
           <span class="fachname">${f.name}</span>
           <span class="fachzahl">${benutzer ? `${f.sicher} von ${f.moeglich} sicher` : `${f.moeglich} Themen`}</span>
           ${benutzer ? `<span class="fachbalken"><i style="width:${f.moeglich ? Math.round(f.sicher / f.moeglich * 100) : 0}%"></i></span>` : ""}
-        `, "fachzeile")).join("")}
+        `, "fachzeile", `--akz:var(--${f.schluessel}-dark)`)).join("")}
       <p class="small soft" style="margin-top:12px">${benutzer
         ? "„Sicher“ heißt: mehrfach fehlerfrei gelöst, mit Abstand dazwischen. Genau das ist der Unterschied zwischen können und geraten."
         : "Mit einem Konto siehst du hier, wie viel du schon sicher kannst."}</p>
