@@ -32,14 +32,22 @@
        und Fortschritt, damit man auf einen Blick weiß, wo man ist.
        Richtig bleibt überall grün, falsch rot, Hinweis bernstein — Bedeutung
        hat Vorrang vor Fachfarbe. */
-    /* Die Farben der Schnellhefter, die Schüler ohnehin kennen:
-       Mathe dunkelblau, Deutsch rot, Englisch gelb, Französisch grün. */
-    --mathe:#1f4fa8;        --mathe-soft:#e8eefb;        --mathe-dark:#173c80;
-    --deutsch:#c22f24;      --deutsch-soft:#fdeae8;      --deutsch-dark:#9b241b;
-    --englisch:#a06c00;     --englisch-soft:#fbf2dd;     --englisch-dark:#7f5600;
-    --franzoesisch:#2c7a34; --franzoesisch-soft:#e6f4e7; --franzoesisch-dark:#215d27;
-    --geschichte:#95522a;   --geschichte-soft:#f9ece5;   --geschichte-dark:#763f20;
-    --erdkunde:#0f6f6a;     --erdkunde-soft:#e0f2f1;     --erdkunde-dark:#0b5551;
+    /* Die Farbpalette, aus der man in den Einstellungen wählen kann */
+    --farbe-blau:#1f4fa8;    --farbe-blau-soft:#e8eefb;    --farbe-blau-dark:#173c80;
+    --farbe-rot:#c22f24;     --farbe-rot-soft:#fdeae8;     --farbe-rot-dark:#9b241b;
+    --farbe-gelb:#a06c00;    --farbe-gelb-soft:#fbf2dd;    --farbe-gelb-dark:#7f5600;
+    --farbe-gruen:#2c7a34;   --farbe-gruen-soft:#e6f4e7;   --farbe-gruen-dark:#215d27;
+    --farbe-lila:#6b4fd8;    --farbe-lila-soft:#eeeaff;    --farbe-lila-dark:#5238b8;
+    --farbe-tuerkis:#0f6f6a; --farbe-tuerkis-soft:#e0f2f1; --farbe-tuerkis-dark:#0b5551;
+    --farbe-braun:#95522a;   --farbe-braun-soft:#f9ece5;   --farbe-braun-dark:#763f20;
+    /* Voreinstellung: die Farben der Schnellhefter, die Schüler ohnehin kennen.
+       In den Einstellungen kann jedes Fach eine andere bekommen. */
+    --mathe:var(--farbe-blau);        --mathe-soft:var(--farbe-blau-soft);        --mathe-dark:var(--farbe-blau-dark);
+    --deutsch:var(--farbe-rot);       --deutsch-soft:var(--farbe-rot-soft);       --deutsch-dark:var(--farbe-rot-dark);
+    --englisch:var(--farbe-gelb);     --englisch-soft:var(--farbe-gelb-soft);     --englisch-dark:var(--farbe-gelb-dark);
+    --franzoesisch:var(--farbe-gruen);--franzoesisch-soft:var(--farbe-gruen-soft);--franzoesisch-dark:var(--farbe-gruen-dark);
+    --geschichte:var(--farbe-braun);  --geschichte-soft:var(--farbe-braun-soft);  --geschichte-dark:var(--farbe-braun-dark);
+    --erdkunde:var(--farbe-tuerkis);  --erdkunde-soft:var(--farbe-tuerkis-soft);  --erdkunde-dark:var(--farbe-tuerkis-dark);
     /* Abschnittsfarben der Willkommensseite */
     --rose:#ad3149;   --rose-soft:#fdeaee;
     --indigo:#5546c4; --indigo-soft:#ecebff;
@@ -57,12 +65,13 @@
     --heroink:#eafaf4; --heroglanz1:#3fd3a7; --heroglanz2:#7ff0cb;
     --bau1:#d9a63c; --bau2:#b8862a; --bauink:#241a03;
 
-    --mathe:#7aa7f0;        --mathe-soft:#152340;        --mathe-dark:#a8c7f7;
-    --deutsch:#f28b80;      --deutsch-soft:#3a1c18;      --deutsch-dark:#f8b4ac;
-    --englisch:#e3bb6a;     --englisch-soft:#332812;     --englisch-dark:#efd39a;
-    --franzoesisch:#78ce80; --franzoesisch-soft:#173219; --franzoesisch-dark:#a8e2ad;
-    --geschichte:#d9a07a;   --geschichte-soft:#33231a;   --geschichte-dark:#e8c0a5;
-    --erdkunde:#4fc4bd;     --erdkunde-soft:#12302e;     --erdkunde-dark:#88ded8;
+    --farbe-blau:#7aa7f0;    --farbe-blau-soft:#152340;    --farbe-blau-dark:#a8c7f7;
+    --farbe-rot:#f28b80;     --farbe-rot-soft:#3a1c18;     --farbe-rot-dark:#f8b4ac;
+    --farbe-gelb:#e3bb6a;    --farbe-gelb-soft:#332812;    --farbe-gelb-dark:#efd39a;
+    --farbe-gruen:#78ce80;   --farbe-gruen-soft:#173219;   --farbe-gruen-dark:#a8e2ad;
+    --farbe-lila:#a695f7;    --farbe-lila-soft:#241f42;    --farbe-lila-dark:#c5b9ff;
+    --farbe-tuerkis:#4fc4bd; --farbe-tuerkis-soft:#12302e; --farbe-tuerkis-dark:#88ded8;
+    --farbe-braun:#d9a07a;   --farbe-braun-soft:#33231a;   --farbe-braun-dark:#e8c0a5;
     --rose:#f28ea0;   --rose-soft:#3a1f26;
     --indigo:#a89cf7; --indigo-soft:#221f3f;
     --himmel:#7db9ee; --himmel-soft:#152a3d;
@@ -979,6 +988,20 @@
   a.fachzeile{color:var(--ink)}
   .fachzeile:hover .fachname{color:var(--akz,var(--ac-dark))}
   .fachname{font-weight:600;font-size:17px;color:var(--akz,var(--ink))}
+
+  /* ---------- Farbwahl je Fach in den Einstellungen ---------- */
+  .farbzeile{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
+  .farbzeile:last-of-type{border-bottom:none;margin-bottom:8px}
+  .farbfach{display:inline-flex;align-items:center;gap:10px;font-weight:600;font-size:16.5px;
+    color:var(--akz-dark)}
+  .farbzeichen{flex:none;width:30px;height:30px;border-radius:9px;background:var(--akz);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900}
+  .farbtupfer{display:flex;gap:8px;flex-wrap:wrap}
+  .tupfer{width:32px;height:32px;border-radius:50%;background:var(--tupfer);
+    border:2px solid transparent;box-shadow:0 0 0 1.5px var(--line) inset;cursor:pointer;padding:0}
+  .tupfer.an{border-color:var(--ink);box-shadow:0 0 0 2px var(--card) inset}
+  .tupfer:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
   /* ---------- Einstieg in die Fächer, ganz oben auf der Startseite ---------- */
   .grussszeile{margin:0 0 12px;font-size:16px;color:var(--soft)}
@@ -7677,7 +7700,15 @@ function erinnerungenHtml(){
 
 /* ---------- Einstellungen ---------- */
 const SCHRIFT_MIN = 0.85, SCHRIFT_MAX = 1.45;
-const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true, eingabe:"gemischt", bundesland:""};
+const FARBEN = [
+  ["blau","Blau"], ["rot","Rot"], ["gruen","Grün"], ["gelb","Gelb"],
+  ["lila","Lila"], ["tuerkis","Türkis"], ["braun","Braun"]
+];
+/* Voreinstellung nach den Schnellheftern — jeder kann sie umstellen */
+const FARBE_STANDARD = {mathe:"blau", deutsch:"rot", englisch:"gelb",
+  franzoesisch:"gruen", geschichte:"braun", erdkunde:"tuerkis"};
+const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true,
+  eingabe:"gemischt", bundesland:"", fachfarben:{}};
 const BUNDESLAENDER = ["Baden-Württemberg","Bayern","Berlin","Brandenburg","Bremen","Hamburg",
   "Hessen","Mecklenburg-Vorpommern","Niedersachsen","Nordrhein-Westfalen","Rheinland-Pfalz",
   "Saarland","Sachsen","Sachsen-Anhalt","Schleswig-Holstein","Thüringen"];
@@ -7714,6 +7745,32 @@ function wendeEinstellungenAn(){
     dunkel = window.matchMedia("(prefers-color-scheme: dark)").matches;
   document.documentElement.classList.toggle("dunkel", dunkel);
   document.documentElement.style.setProperty("--fs", einstellungen.schriftSkala || 1);
+  farbenAnwenden();
+}
+/* Die gewählte Farbe je Fach als Eigenschaft an <html> schreiben. Sie zeigt auf
+   die Palette, nicht auf einen festen Wert — dadurch stimmt sie in Hell und
+   Dunkel automatisch. */
+function farbenAnwenden(){
+  const wurzel = document.documentElement;
+  for (const f of Object.keys(FARBE_STANDARD)){
+    const farbe = fachFarbe(f);
+    wurzel.style.setProperty(`--${f}`, `var(--farbe-${farbe})`);
+    wurzel.style.setProperty(`--${f}-soft`, `var(--farbe-${farbe}-soft)`);
+    wurzel.style.setProperty(`--${f}-dark`, `var(--farbe-${farbe}-dark)`);
+  }
+}
+function fachFarbe(f){
+  const gewaehlt = einstellungen.fachfarben && einstellungen.fachfarben[f];
+  return FARBEN.some(([k]) => k === gewaehlt) ? gewaehlt : FARBE_STANDARD[f];
+}
+function setzeFachFarbe(f, farbe){
+  if (!einstellungen.fachfarben) einstellungen.fachfarben = {};
+  einstellungen.fachfarben[f] = farbe;
+  speichereEinstellungen(); farbenAnwenden(); render();
+}
+function farbenZuruecksetzen(){
+  einstellungen.fachfarben = {};
+  speichereEinstellungen(); farbenAnwenden(); render();
 }
 function setzeEinstellung(feld, wert){
   einstellungen[feld] = wert;
@@ -8562,6 +8619,26 @@ function render(gewaehlt){
           ${wahl("modus","dunkel","Dunkel","Schont die Augen abends")}
           ${wahl("modus","auto","Automatisch","Wie dein Gerät eingestellt ist")}
         </div>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Farbe der Fächer</p>
+        <p class="small soft" style="margin:0 0 14px">Voreingestellt sind die Farben der
+          Schnellhefter. Wenn deine anders sind, stell es um.</p>
+        ${Object.entries(KATALOG).map(([k, v]) => `
+          <div class="farbzeile">
+            <span class="farbfach" style="--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)">
+              <span class="farbzeichen">${v.name[0]}</span>${v.name}</span>
+            <span class="farbtupfer">
+              ${FARBEN.map(([schluessel, name]) => `
+                <button class="tupfer ${fachFarbe(k) === schluessel ? "an" : ""}"
+                        style="--tupfer:var(--farbe-${schluessel})"
+                        title="${v.name} in ${name}" aria-label="${v.name} in ${name}"
+                        aria-pressed="${fachFarbe(k) === schluessel}"
+                        onclick="setzeFachFarbe('${k}','${schluessel}')"></button>`).join("")}
+            </span>
+          </div>`).join("")}
+        <button class="btn ghost full" style="margin-top:6px" onclick="farbenZuruecksetzen()">Zurück auf Schnellhefter-Farben</button>
       </div>
 
       <div class="card">
