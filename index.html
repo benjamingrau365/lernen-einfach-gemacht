@@ -681,14 +681,14 @@
   .kopfleiste{position:sticky;top:0;z-index:40;background:var(--bg);
     border-bottom:1px solid var(--line);
     display:flex;align-items:center;justify-content:space-between;gap:10px;
-    padding:18px 20px;max-width:1140px;margin:0 auto}
+    padding:18px 20px;max-width:1320px;margin:0 auto}
   /* Sicherheitsnetz: Marke und Slogan dürfen notfalls schrumpfen. Ohne das
      schob die Leiste die ganze Seite auf jedem Handy seitlich hinaus. */
   .marke{min-width:0}
   .marke .markeslogan{flex:0 1 auto;min-width:0;overflow:hidden}
   /* langer Knopftext nur, wenn Platz dafür ist */
   .nurschmal{display:none}
-  @media(max-width:819px){ .nurbreit{display:none} .nurschmal{display:inline} }
+  @media(max-width:999px){ .nurbreit{display:none} .nurschmal{display:inline} }
   .kopfspacer{width:46px;flex:none}
   .kopfleiste a{text-decoration:none}
   /* Beim Rechnen: flachere Leiste, keine Menüzeile, kein Aktions-Knopf.
@@ -733,16 +733,27 @@
     letter-spacing:.01em;color:var(--soft);opacity:.85}
   @media(prefers-reduced-motion:reduce){.marke .markeslogan .stap{animation:none}}
   /* Menü-Links in der Mitte (nur Desktop) */
-  .kopfnav{display:none;align-items:center;gap:4px}
-  .kopflink{background:none;border:none;font:inherit;font-size:18px;font-weight:600;
-    color:var(--soft);cursor:pointer;padding:10px 16px;border-radius:11px}
-  .kopflink:hover{color:var(--ac-dark);background:var(--ac-soft)}
+  .kopfnav{display:none;align-items:center;gap:2px;min-width:0}
+  .kopflink{background:none;border:none;font:inherit;font-size:16px;font-weight:600;
+    color:var(--soft);cursor:pointer;padding:9px 12px;border-radius:11px;
+    white-space:nowrap;text-decoration:none}
+  @media(hover:hover){ .kopflink:hover{color:var(--ac-dark);background:var(--ac-soft)} }
+  /* die beiden Fächer führen die Leiste an, jedes in seiner Farbe */
+  .fachlink{color:var(--akz);font-weight:700}
+  @media(hover:hover){ .fachlink:hover{color:var(--akz);background:color-mix(in srgb,var(--akz) 12%,transparent)} }
+  .kopftrenner{width:1px;height:20px;background:var(--line);margin:0 6px;flex:none}
+  /* Die Leiste ist auf 1320 px gedeckelt — mehr Fenster heißt nicht mehr Platz.
+     Deshalb kommen die Punkte gestuft dazu, statt am Rand abgeschnitten zu werden. */
+  .abmittel,.abbreit,.absehrbreit{display:none}
   @media(min-width:820px){
     .marke .markewortmark{display:inline}
     .marke .markeslogan{display:none}   /* Desktop: Zusatz aus, nur Wortmarke */
     .kopfnav{display:flex}
     .startkopf{display:none}
   }
+  @media(min-width:900px){ .abmittel{display:inline-block} .kopftrenner.abmittel{display:block} }
+  @media(min-width:1100px){ .abbreit{display:inline-block} .kopflink{font-size:16.5px;padding:9px 14px} }
+  @media(min-width:1380px){ .absehrbreit{display:inline-block} }
   /* rechte Gruppe: Serie + Aktions-Button + Menü */
   .kopfrechts{display:flex;align-items:center;gap:9px;flex:none}
   .kopfrechts .serie--mini{flex-direction:row;gap:6px;min-width:0;padding:8px 13px;border-radius:999px;
@@ -6637,10 +6648,15 @@ function kopfleisteHtml(){
         <span class="markewortmark">Endlich <span class="kap">kapiert</span></span>
         <span class="markeslogan"><span class="stap">Schritt</span> <span class="fuer">für</span> <span class="stap stap2">Schritt</span></span>
       </a>
-      <nav class="kopfnav">
-        <a class="kopflink" href="/faecher" onclick="return navKlick(event, zurFachwahl)">Lernen</a>
-        <a class="kopflink" href="/hilfe" onclick="return navKlick(event, zeigeMelden)">Hilfe</a>
-        <a class="kopflink" href="/ueber" onclick="return navKlick(event, () => zeigeSeite('ueber'))">Über</a>
+      <nav class="kopfnav" aria-label="Hauptmenü">
+        ${Object.entries(KATALOG).map(([k, v]) =>
+          `<a class="kopflink fachlink" style="--akz:var(--${k}-dark)" href="/${k}"
+              onclick="return navKlick(event, () => waehleFach('${k}'))">${v.name}</a>`).join("")}
+        <span class="kopftrenner abmittel" aria-hidden="true"></span>
+        ${benutzer ? `<a class="kopflink absehrbreit" href="/plan" onclick="return navKlick(event, zeigePlan)">Wiederholungsplan</a>` : ""}
+        <a class="kopflink abbreit" href="/faq" onclick="return navKlick(event, () => zeigeSeite('faq'))">Häufige Fragen</a>
+        <a class="kopflink abmittel" href="/ueber" onclick="return navKlick(event, () => zeigeSeite('ueber'))">Über</a>
+        <a class="kopflink abmittel" href="/hilfe" onclick="return navKlick(event, zeigeMelden)">Hilfe</a>
       </nav>
       <div class="kopfrechts">
         ${benutzer && aktivitaet.geladen ? `<a class="serie serie--mini" href="/serie" onclick="return navKlick(event, zeigeSerie)" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></a>` : ""}
