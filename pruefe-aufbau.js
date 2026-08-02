@@ -104,7 +104,8 @@ for (const [fk, f] of Object.entries(KATALOG)) {
   for (const [kl, liste] of Object.entries(f.themen)) {
     const da = liste.filter((t) => AUFGABEN[t]);
     geplant += liste.length; fertig += da.length;
-    zeilen.push(`  Klasse ${String(kl).padStart(2)}: ${da.length}/${liste.length}` +
+    const wort = f.stufenwort === "Lehrjahr" ? "Lehrjahr" : "Klasse";
+    zeilen.push(`  ${wort} ${String(kl).padStart(2)}: ${da.length}/${liste.length}` +
       (da.length ? "  " + da.join(", ") : "   <-- leer"));
   }
   console.log(f.name + "\n" + zeilen.join("\n"));
