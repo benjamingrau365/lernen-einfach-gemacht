@@ -3663,6 +3663,13 @@ function istEintippbar(schritt){
   if (/^x = -?\d+$/.test(roh)) return true;             // Gleichungslösung
   return !!zahlTeile(roh);
 }
+/* Welche Tastatur das Handy zeigen soll. Stehen Buchstaben in der erwarteten
+   Antwort — „Kreuzreim", „8x + 14", „42 cm" —, braucht man die normale
+   Tastatur. Nur bei reinen Zahlen ist der Zahlenblock richtig. */
+function tastaturArt(erwartet){
+  const roh = String(erwartet).replace(/<[^>]+>/g, "");
+  return /[A-Za-zÄÖÜäöüßµ]/.test(roh) ? "text" : "decimal";
+}
 /* Vergleicht eine eingetippte Antwort mit der richtigen — großzügig bei Schreibweise. */
 function eingabePasst(eingabe, richtigText){
   const putzen = t => String(t).replace(/<[^>]+>/g, "").replace(/\s/g, "").toLowerCase();
@@ -3677,6 +3684,12 @@ function eingabePasst(eingabe, richtigText){
     if (!m) return null;
     return Number(m[0].replace(/\.(?=\d{3}\b)/g, "").replace(",", "."));
   };
+  /* Der lockere Zahlenvergleich gilt nur für reine Zahlen, notfalls mit
+     Einheit dahinter („42 cm", „70 %"). Steht ein Buchstabe mitten in der
+     Antwort — „8x + 14", „x = -1" —, muss sie genau stimmen. Sonst würde
+     dort schon das Eintippen von „8" als richtig durchgehen. */
+  const zahlMitEinheit = /^-?[\d.,]+(%|€|°|[a-zäöüß]{1,4}[²³]?)?$/;
+  if (!zahlMitEinheit.test(b)) return false;
   const za = zahl(a), zb = zahl(b);
   if (za === null || zb === null) return false;
   return Math.abs(za - zb) < 1e-6;
@@ -9022,7 +9035,10 @@ function render(gewaehlt){
   if (reihenfolge.length !== s.optionen.length) neueReihenfolge();
   const optionenHtml = tippen ? `
     <div class="eingabezeile">
-      <input class="feld antwortfeld" id="antwortFeld" type="text" inputmode="decimal"
+      <input class="feld antwortfeld" id="antwortFeld" type="text"
+             inputmode="${tastaturArt(s.tippAntwort || richtigeOption.t)}"
+             autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false"
+             enterkeyhint="done"
              placeholder="Deine Antwort" value="${letzteEingabe.replace(/"/g,"&quot;")}"
              ${beantwortet ? "disabled" : ""}
              onkeydown="if(event.key==='Enter')eingabePruefen()">
