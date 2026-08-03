@@ -2202,7 +2202,185 @@ const matheProben5 = {
   }
 };
 
-const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2,
+/* ----------------------------------------------------------- DEUTSCH III
+   Auch hier hält der Prüfer eigene Regeln: welche Argumente zu welcher Seite
+   gehören, was eine Textsorte ausmacht, was ein Zitat vollständig macht. */
+
+const deutschProben3 = {
+
+  "Erörterung": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Pro oder Contra — gegen eine eigene Zuordnung.
+       Unterschieden wird an der Lösung: roh() schiebt vor „-Seite" ein
+       Leerzeichen ein, am Aufgabentext lässt sich das nicht sauber festmachen. */
+    if (l === "Pro" || l === "Contra") {
+      const SEITEN = {
+        "Wer ständig aufs Handy schaut": "Pro",
+        "Für Recherchen ist ein Gerät": "Contra",
+        "Jugendliche werden abends später müde": "Pro",
+        "Der Nachmittag wird dann so voll": "Contra",
+        "Wer eigene Sachen anzieht": "Pro",
+        "Für kleine Betriebe wäre das": "Contra"
+      };
+      const treffer = Object.keys(SEITEN).find(k => t.includes(k));
+      if (!treffer) return "konnte das Argument nicht einordnen: " + t.slice(0, 100);
+      return l === SEITEN[treffer] ? null
+        : `„${treffer}…“ gehört auf die ${SEITEN[treffer]}-Seite, angegeben ist „${l}“`;
+    }
+
+    /* Reihenfolge der Argumente */
+    if (l !== "steigernd")
+      return `Argumente werden steigernd geordnet, angegeben ist „${l}“`;
+    return null;
+  },
+
+  "Sachtexte auswerten": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Textsorte — eigene Zuordnung nach dem Beispielsatz */
+    if (/Um welche Textsorte/.test(t)) {
+      const SORTEN = {
+        "Die Stadt teilt mit": "Bericht",
+        "Wer jetzt noch zögert": "Werbetext",
+        "Drücken Sie zuerst die Entriegelung": "Anleitung",
+        "Meiner Ansicht nach": "Kommentar",
+        "Kupfer leitet Strom besser": "Sachtext"
+      };
+      const treffer = Object.keys(SORTEN).find(k => t.includes(k));
+      if (!treffer) return "konnte den Beispielsatz nicht einordnen: " + t.slice(0, 100);
+      return l === SORTEN[treffer] ? null
+        : `„${treffer}…“ ist ein ${SORTEN[treffer]}, angegeben ist „${l}“`;
+    }
+
+    /* belegt oder behauptet — eigene Merkmale statt Übernahme */
+    const satz = (t.match(/„(.+?)“/) || [])[1];
+    if (!satz) return "konnte den Satz nicht lesen: " + t.slice(0, 90);
+    if (!["ja", "nein"].includes(l)) return `erwartet wird ja oder nein, angegeben ist „${l}“`;
+    /* ein Beleg braucht eine benannte Quelle, eine Zahl oder ein Datum */
+    const quelle = /Bundesamt|Untersuchung der|Prüfbericht|Statistisch/.test(satz);
+    const zahl   = /\d/.test(satz);
+    const floskel = /allgemein bekannt|Die meisten Leute|Jeder weiß/.test(satz);
+    const soll = (!floskel && (quelle || zahl)) ? "ja" : "nein";
+    return l === soll ? null
+      : `„${satz}“ ist ${soll === "ja" ? "belegt" : "nicht belegt"}, angegeben ist „${l}“`;
+  },
+
+  "Bewerbung schreiben": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Stelle im Aufbau */
+    const teil = (t.match(/Abschnitt „(.+?)“/) || [])[1];
+    if (teil) {
+      const REIHE = ["Betreffzeile", "Anrede", "Einstieg", "Hauptteil", "Schluss"];
+      const soll = REIHE.indexOf(teil) + 1;
+      if (!soll) return `„${teil}“ ist kein Abschnitt des Anschreibens`;
+      return String(soll) === l ? null
+        : `„${teil}“ steht an Stelle ${soll}, angegeben ist „${l}“`;
+    }
+
+    /* taugt der Satz? — eigene Merkmale */
+    const satz = (t.match(/„(.+?)“/) || [])[1];
+    if (!satz) return "konnte den Satz nicht lesen: " + t.slice(0, 90);
+    if (!["ja", "nein"].includes(l)) return `erwartet wird ja oder nein, angegeben ist „${l}“`;
+    const floskel  = /Hiermit bewerbe ich mich/.test(satz);
+    const leer     = /teamfähig, motiviert und belastbar/i.test(satz);
+    const konjunktiv = /würde mich freuen, wenn.*könnten/.test(satz);
+    const soll = (floskel || leer || konjunktiv) ? "nein" : "ja";
+    return l === soll ? null
+      : `„${satz}“ taugt ${soll === "ja" ? "" : "nicht "}für ein Anschreiben, angegeben ist „${l}“`;
+  },
+
+  "Textgebundene Erörterung": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* richtig zitiert? */
+    if (/richtig zitiert/.test(t)) {
+      if (!["ja", "nein"].includes(l)) return `erwartet wird ja oder nein, angegeben ist „${l}“`;
+      const form = t.split("Ist das so richtig zitiert")[0];
+      /* eigene Regel: entweder wörtlich mit Anführungszeichen UND Fundstelle,
+         oder indirekt im Konjunktiv — und nie eine eigene Wertung */
+      const anfuehr = /“/.test(form) || /"/.test(form);
+      const stelle  = /Z\. ?\d|Zeile ?\d/.test(form);
+      const indirekt = /schreibt, .*sei /.test(form);
+      const wertung  = /doof|blöd|toll/.test(form);
+      const soll = (!wertung && ((anfuehr && stelle) || indirekt)) ? "ja" : "nein";
+      return l === soll ? null
+        : `„${form.trim()}“ ist ${soll === "ja" ? "korrekt" : "nicht korrekt"} zitiert, angegeben ist „${l}“`;
+    }
+
+    /* in welchen Teil gehört der Satz? */
+    const TEILE = {
+      "Der Text stammt aus der Süddeutschen": "Einleitung",
+      "In der Kurzfassung geht es um": "Einleitung",
+      "Der Autor führt drei Gründe an": "Textwiedergabe",
+      "Diese Begründung überzeugt nicht": "Erörterung",
+      "Dem lässt sich entgegenhalten": "Erörterung",
+      "Insgesamt halte ich die Position": "Fazit"
+    };
+    const treffer = Object.keys(TEILE).find(k => t.includes(k));
+    if (!treffer) return "konnte den Satz nicht einordnen: " + t.slice(0, 100);
+    return l === TEILE[treffer] ? null
+      : `„${treffer}…“ gehört in die ${TEILE[treffer]}, angegeben ist „${l}“`;
+  },
+
+  "Interpretation": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Beschreibung oder Deutung */
+    if (/Beschreibung.*Deutung/.test(t)) {
+      const satz = (t.match(/„(.+?)“/) || [])[1];
+      if (!satz) return "konnte den Satz nicht lesen";
+      /* eigene Regel: eine Deutung nennt eine Wirkung */
+      const wirkung = /wirken|wirkt|zeigt|lässt|erzeugt/.test(satz);
+      const soll = wirkung ? "Deutung" : "Beschreibung";
+      return l === soll ? null
+        : `„${satz}“ ist eine ${soll}, angegeben ist „${l}“`;
+    }
+
+    /* taugt als Deutungshypothese? */
+    const satz = (t.match(/„(.+?)“/) || [])[1];
+    if (!satz) return "konnte den Satz nicht lesen: " + t.slice(0, 90);
+    if (!["ja", "nein"].includes(l)) return `erwartet wird ja oder nein, angegeben ist „${l}“`;
+    const geschmack = /Ich finde/.test(satz);
+    const nurThema  = /^Das Gedicht handelt von einem \w+\.$/.test(satz);
+    const zahl      = /^Der Text hat \d+ Zeilen\.$/.test(satz);
+    const aussage   = /zeigt|führt vor|stellt die Frage/.test(satz);
+    const soll = (!geschmack && !nurThema && !zahl && aussage) ? "ja" : "nein";
+    return l === soll ? null
+      : `„${satz}“ taugt ${soll === "ja" ? "" : "nicht "}als Deutungshypothese, angegeben ist „${l}“`;
+  },
+
+  "Facharbeit": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Stelle im Aufbau */
+    const teil = (t.match(/Teil „(.+?)“/) || [])[1];
+    if (teil) {
+      const REIHE = ["Deckblatt", "Inhaltsverzeichnis", "Einleitung", "Hauptteil", "Schluss", "Literaturverzeichnis"];
+      const soll = REIHE.indexOf(teil) + 1;
+      if (!soll) return `„${teil}“ ist kein Teil der Facharbeit`;
+      return String(soll) === l ? null
+        : `„${teil}“ steht an Stelle ${soll}, angegeben ist „${l}“`;
+    }
+
+    /* Quellenangabe vollständig? — die fünf Angaben einzeln prüfen */
+    const q = (t.match(/Quellenangabe: (.+?) Ist sie vollständig/) || [])[1];
+    if (!q) return "konnte die Quellenangabe nicht lesen: " + t.slice(0, 100);
+    if (!["ja", "nein"].includes(l)) return `erwartet wird ja oder nein, angegeben ist „${l}“`;
+    const verfasser = /^[A-ZÄÖÜ][\wäöüß]+(, [A-ZÄÖÜ][\wäöüß]+)?:/.test(q.trim());
+    const ort       = /München|Berlin|Bonn|Hamburg|Köln|Stuttgart|Frankfurt/.test(q);
+    const jahr      = /\b(19|20)\d{2}\b/.test(q);
+    const seite     = /S\. ?\d+/.test(q);
+    const soll = (verfasser && ort && jahr && seite) ? "ja" : "nein";
+    return l === soll ? null
+      : `„${q}“ ist ${soll === "ja" ? "vollständig" : "unvollständig"} ` +
+        `(Verfasser ${verfasser ? "ja" : "nein"}, Ort ${ort ? "ja" : "nein"}, ` +
+        `Jahr ${jahr ? "ja" : "nein"}, Seite ${seite ? "ja" : "nein"}), angegeben ist „${l}“`;
+  }
+};
+
+const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2, ...deutschProben3,
                  ...elektroProben, ...elektroProben2, ...elektroProben3, ...elektroProben4 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {

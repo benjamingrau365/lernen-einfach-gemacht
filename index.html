@@ -9803,6 +9803,407 @@ Object.assign(AUFGABEN, {
                 F("teilweise", "Entweder es wird begründet oder nicht.")]}]};
  }
 ]
+,
+
+"Erörterung":[
+
+ /* Pro oder Contra? */
+ () => {
+   const f = pick([
+     {these:"Handys sollten im Unterricht verboten sein", satz:"Wer ständig aufs Handy schaut, verpasst die Hälfte der Erklärung.", seite:"Pro"},
+     {these:"Handys sollten im Unterricht verboten sein", satz:"Für Recherchen ist ein Gerät mit Internetzugang oft die schnellste Lösung.", seite:"Contra"},
+     {these:"Die Schule sollte später anfangen", satz:"Jugendliche werden abends später müde und sind morgens noch nicht aufnahmefähig.", seite:"Pro"},
+     {these:"Die Schule sollte später anfangen", satz:"Der Nachmittag wird dann so voll, dass für Vereine und Nebenjobs keine Zeit bleibt.", seite:"Contra"},
+     {these:"Auszubildende sollten Arbeitskleidung gestellt bekommen", satz:"Wer eigene Sachen anzieht, trägt die Kosten für Verschleiß selbst.", seite:"Pro"},
+     {these:"Auszubildende sollten Arbeitskleidung gestellt bekommen", satz:"Für kleine Betriebe wäre das eine spürbare zusätzliche Belastung.", seite:"Contra"}
+   ]);
+   const w = f;
+   return {
+    typ:"text",
+    text:`These: <b>${w.these}</b>.<br>Argument: <i>„${w.satz}“</i><br>Steht das auf der <span class='luecke'>Pro</span>- oder der <span class='luecke'>Contra</span>-Seite?`,
+    loesung: w.seite,
+    schluss:"Eine Erörterung braucht beide Seiten. Wer nur eine bringt, hat keine Erörterung geschrieben, sondern eine Meinung.",
+    schritte:[
+     {frage:"Was gehört in eine <b>Erörterung</b>?",
+      tipp:"Es reicht nicht, die eigene Meinung zu begründen.",
+      tipp2:"Argumente für und gegen die These — und am Ende ein begründetes Fazit.",
+      optionen:[R("Argumente für und gegen die These, dann ein Fazit", "Richtig."),
+                F("Nur die Argumente, die zur eigenen Meinung passen", "Das wäre einseitig — und in der Klausur ein Punktabzug."),
+                F("Eine Zusammenfassung des Textes", "Das wäre eine Inhaltsangabe.")]},
+     {frage:`Unterstützt der Satz die These oder spricht er dagegen?`,
+      tippAntwort: w.seite,
+      tipp:"Lies die These und den Satz nacheinander: Passen sie zusammen?",
+      tipp2:`Der Satz spricht ${w.seite === "Pro" ? "für" : "gegen"} die These — also ${w.seite}.`,
+      optionen:[R(w.seite, "Richtig."),
+                F(w.seite === "Pro" ? "Contra" : "Pro", "Andersherum — lies die These noch einmal."),
+                F("Weder noch", "Der Satz bezieht klar Stellung.")]}]};
+ },
+
+ /* Reihenfolge der Argumente */
+ () => {
+   const f = pick([
+     {art:"steigernd", was:"vom schwächsten zum stärksten", warum:"Das letzte Argument bleibt am besten hängen.", falsch:"fallend"},
+     {art:"steigernd", was:"vom schwächsten zum stärksten", warum:"Wer stark anfängt, kann danach nur noch abfallen.", falsch:"zufällig"}
+   ]);
+   return {
+    typ:"text",
+    text:`In welcher <b>Reihenfolge</b> ordnet man die Argumente einer Erörterung? Schreib das Wort.`,
+    loesung: f.art,
+    schluss:"Innerhalb einer Seite wird gesteigert. Beim Sanduhr-Aufbau kommt zuerst die Gegenseite und danach die eigene — auch dort steht das Stärkste zuletzt.",
+    schritte:[
+     {frage:"Was bleibt beim Lesen am ehesten hängen?",
+      tipp:"Denk an einen Vortrag, den du gehört hast.",
+      tipp2:"Der Anfang und vor allem das Ende.",
+      optionen:[R("Anfang und Ende", "Richtig — deshalb gehört das Beste ans Ende."),
+                F("Die Mitte", "Die Mitte geht am ehesten unter."),
+                F("Alles gleich stark", "Leider nicht — die Reihenfolge wirkt.")]},
+     {frage:"Wie ordnet man die Argumente also?",
+      tippAntwort: f.art,
+      tipp:"Das stärkste Argument kommt zuletzt.",
+      tipp2:`${f.was} — man nennt das ${f.art}.`,
+      optionen:[R(f.art, f.warum),
+                F(f.falsch, "Dann verpufft die Wirkung — es geht bergab."),
+                F("alphabetisch", "Das hat mit dem Inhalt nichts zu tun.")]}]};
+ }
+],
+
+"Sachtexte auswerten":[
+
+ /* Textsorte bestimmen */
+ () => {
+   const f = pick([
+     {text:"Die Stadt teilt mit, dass die Brücke ab Montag gesperrt ist. Die Umleitung ist ausgeschildert.", sorte:"Bericht", ziel:"informieren"},
+     {text:"Wer jetzt noch zögert, verpasst das beste Angebot des Jahres. Greifen Sie zu!", sorte:"Werbetext", ziel:"überzeugen"},
+     {text:"Drücken Sie zuerst die Entriegelung, ziehen Sie dann den Stecker heraus.", sorte:"Anleitung", ziel:"anleiten"},
+     {text:"Meiner Ansicht nach ist die Entscheidung des Stadtrats ein Fehler, und zwar aus drei Gründen.", sorte:"Kommentar", ziel:"überzeugen"},
+     {text:"Kupfer leitet Strom besser als Aluminium, ist aber schwerer und teurer.", sorte:"Sachtext", ziel:"informieren"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.text}“</i><br>Um welche <b>Textsorte</b> handelt es sich? Schreib das Wort.`,
+    loesung: f.sorte,
+    schluss:"Die Textsorte verrät die Absicht. Wer weiß, ob ein Text informieren oder überzeugen will, liest ihn anders.",
+    schritte:[
+     {frage:"Wonach fragst du zuerst bei einem Sachtext?",
+      tipp:"Es geht um die Absicht des Verfassers.",
+      tipp2:"Was will der Text erreichen: informieren, anleiten oder überzeugen?",
+      optionen:[R("Was der Text erreichen will", "Richtig — daraus ergibt sich alles Weitere."),
+                F("Wie lang er ist", "Die Länge sagt nichts über die Absicht."),
+                F("Wann er geschrieben wurde", "Das ist nur eine Randinformation.")]},
+     {frage:"Was will dieser Text?",
+      tipp:"Lies den Satz noch einmal und achte auf die Wortwahl.",
+      tipp2:`Er will ${f.ziel}.`,
+      optionen: zieheVerschiedene([
+        R(f.ziel, "Richtig."),
+        F(f.ziel === "informieren" ? "überzeugen" : "informieren", "Dafür fehlen die typischen Merkmale."),
+        F(f.ziel === "anleiten" ? "unterhalten" : "anleiten", "Dafür müssten Handlungsschritte dastehen.")], 3)},
+     {frage:"Wie heißt die Textsorte?",
+      tippAntwort: f.sorte,
+      tipp:"Bericht, Kommentar, Anleitung, Werbetext oder Sachtext?",
+      tipp2:`Es ist ein ${f.sorte}.`,
+      optionen: zieheVerschiedene([
+        R(f.sorte, "Richtig."),
+        F(f.sorte === "Bericht" ? "Kommentar" : "Bericht", "Dafür passt die Absicht nicht."),
+        F(f.sorte === "Anleitung" ? "Werbetext" : "Anleitung", "Dafür fehlen die Handlungsschritte.")], 3)}]};
+ },
+
+ /* Behauptung oder belegte Aussage? */
+ () => {
+   const f = pick([
+     {satz:"Laut Statistischem Bundesamt lag die Quote 2023 bei 5,7 Prozent.", belegt:true,  grund:"eine Quelle und eine Zahl"},
+     {satz:"Das ist doch allgemein bekannt.", belegt:false, grund:"keine Quelle, keine Zahl"},
+     {satz:"Eine Untersuchung der TU München kam zu einem anderen Ergebnis.", belegt:true, grund:"eine benannte Quelle"},
+     {satz:"Die meisten Leute sehen das genauso.", belegt:false, grund:"„die meisten“ ohne Zahl und ohne Quelle"},
+     {satz:"Im Prüfbericht vom 12. März steht ein Isolationswiderstand von 1,4 MΩ.", belegt:true, grund:"Beleg mit Datum und Messwert"},
+     {satz:"Jeder weiß, dass das nichts bringt.", belegt:false, grund:"eine Behauptung ohne jeden Beleg"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>Ist diese Aussage <b>belegt</b>? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.belegt ? "ja" : "nein",
+    schluss:"Beim Auswerten eines Sachtextes trennst du, was belegt ist, von dem, was nur behauptet wird. Das ist der eigentliche Kern der Arbeit.",
+    schritte:[
+     {frage:"Woran erkennst du eine <b>belegte</b> Aussage?",
+      tipp:"Es muss nachprüfbar sein.",
+      tipp2:"An einer genannten Quelle, einer Zahl, einem Datum oder einem Messwert.",
+      optionen:[R("An Quelle, Zahl oder Datum — etwas Nachprüfbarem", "Richtig."),
+                F("Daran, dass sie überzeugend klingt", "Überzeugend klingen kann auch eine Behauptung."),
+                F("Daran, dass viele sie teilen", "Wie viele etwas glauben, belegt nichts.")]},
+     {frage:"Und diese hier?",
+      tippAntwort: f.belegt ? "ja" : "nein",
+      tipp:"Steht eine Quelle oder eine Zahl dabei?",
+      tipp2:`Der Satz hat ${f.grund}.`,
+      optionen:[R(f.belegt ? "ja" : "nein", `Richtig — ${f.grund}.`),
+                F(f.belegt ? "nein" : "ja", `Schau noch einmal hin: ${f.grund}.`),
+                F("teilweise", "Entweder ist etwas nachprüfbar oder nicht.")]}]};
+ }
+],
+
+"Bewerbung schreiben":[
+
+ /* Reihenfolge im Anschreiben */
+ () => {
+   const teile = [
+     {nr:1, name:"Betreffzeile", was:"Auf welche Stelle du dich bewirbst"},
+     {nr:2, name:"Anrede", was:"Mit Namen, wenn er bekannt ist"},
+     {nr:3, name:"Einstieg", was:"Warum gerade dieser Betrieb"},
+     {nr:4, name:"Hauptteil", was:"Was du mitbringst — mit Beispielen"},
+     {nr:5, name:"Schluss", was:"Bitte um ein Gespräch"}
+   ];
+   const t = pick(teile);
+   return {
+    typ:"text",
+    text:`In einem Bewerbungsanschreiben: An welcher <b>Stelle</b> steht der Abschnitt <b>„${t.name}“</b>?<br>Schreib die Zahl von 1 bis 5.`,
+    loesung: String(t.nr),
+    schluss:"Der Aufbau ist überall gleich. Wer ihn kennt, muss nicht mehr überlegen, wo was hingehört — und hat den Kopf frei für den Inhalt.",
+    schritte:[
+     {frage:"Wie ist ein Anschreiben aufgebaut?",
+      tipp:"Es sind fünf Teile, in fester Reihenfolge.",
+      tipp2:"Betreff, Anrede, Einstieg, Hauptteil, Schluss.",
+      optionen:[R("Betreff, Anrede, Einstieg, Hauptteil, Schluss", "Richtig."),
+                F("Anrede, Betreff, Schluss, Hauptteil", "Der Betreff steht immer vor der Anrede."),
+                F("Einleitung, Hauptteil, Schluss", "Das ist der Aufbau eines Aufsatzes, nicht eines Anschreibens.")]},
+     {frage:`An welcher Stelle steht „${t.name}“?`,
+      tippAntwort: String(t.nr),
+      tipp:t.was,
+      tipp2:`Der Abschnitt „${t.name}“ steht an Stelle ${z(t.nr)}.`,
+      optionen: zieheVerschiedene([
+        R(String(t.nr), "Richtig."),
+        F(String(t.nr === 5 ? 1 : t.nr + 1), "Eine Stelle zu spät."),
+        F(String(t.nr === 1 ? 5 : t.nr - 1), "Eine Stelle zu früh.")], 3)}]};
+ },
+
+ /* Formulierung: geht das so? */
+ () => {
+   const f = pick([
+     {satz:"Hiermit bewerbe ich mich um die ausgeschriebene Stelle.", ok:false, grund:"eine leere Floskel — sie sagt nur, was ohnehin klar ist"},
+     {satz:"In der Werkstatt meines Onkels habe ich vier Wochen lang Motoren zerlegt und wieder zusammengebaut.", ok:true, grund:"eine konkrete Erfahrung mit Beispiel"},
+     {satz:"Ich bin teamfähig, motiviert und belastbar.", ok:false, grund:"Behauptungen ohne Beleg — das schreibt jeder"},
+     {satz:"Über eine Einladung zu einem persönlichen Gespräch freue ich mich.", ok:true, grund:"ein klarer, höflicher Schluss"},
+     {satz:"Ich würde mich freuen, wenn Sie sich vielleicht bei mir melden könnten.", ok:false, grund:"zu viel Konjunktiv — das wirkt unsicher"},
+     {satz:"Ihre Ausbildungswerkstatt habe ich beim Tag der offenen Tür kennengelernt.", ok:true, grund:"ein echter Bezug zum Betrieb"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>Taugt dieser Satz für ein Anschreiben? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.ok ? "ja" : "nein",
+    schluss:"Ein gutes Anschreiben behauptet nicht, es zeigt. Nicht „ich bin zuverlässig“, sondern woran man das sehen konnte.",
+    schritte:[
+     {frage:"Was macht einen guten Satz im Anschreiben aus?",
+      tipp:"Denk daran, was der Betrieb daraus erfährt.",
+      tipp2:"Er sagt etwas Konkretes über dich, das nicht jeder schreiben könnte.",
+      optionen:[R("Er sagt etwas Konkretes, belegt mit einem Beispiel", "Richtig."),
+                F("Er klingt möglichst förmlich", "Förmlichkeit ersetzt keinen Inhalt."),
+                F("Er ist möglichst lang", "Kurz und konkret schlägt lang und leer.")]},
+     {frage:"Und dieser Satz?",
+      tippAntwort: f.ok ? "ja" : "nein",
+      tipp:"Steht da etwas Konkretes oder nur eine Behauptung?",
+      tipp2:`Der Satz ist ${f.grund}.`,
+      optionen:[R(f.ok ? "ja" : "nein", `Richtig — ${f.grund}.`),
+                F(f.ok ? "nein" : "ja", `Schau noch einmal hin: ${f.grund}.`),
+                F("kommt auf den Betrieb an", "Hier ist es eindeutig.")]}]};
+ }
+],
+
+"Textgebundene Erörterung":[
+
+ /* Richtig zitieren */
+ () => {
+   const f = pick([
+     {form:'Der Autor schreibt: „Die Regel ist überholt“ (Z. 14).', ok:true,  grund:"Anführungszeichen und Zeilenangabe"},
+     {form:'Der Autor schreibt, die Regel sei überholt.', ok:true, grund:"korrekt indirekt wiedergegeben, im Konjunktiv"},
+     {form:'Der Autor schreibt: Die Regel ist überholt.', ok:false, grund:"wörtlich übernommen, aber ohne Anführungszeichen"},
+     {form:'Der Autor findet die Regel doof (Z. 14).', ok:false, grund:"eine eigene Wertung, die dem Autor untergeschoben wird"},
+     {form:'„Die Regel ist überholt“ — so fasst es der Autor in Zeile 14 zusammen.', ok:true, grund:"Zitat mit Anführungszeichen und Fundstelle"},
+     {form:'Irgendwo steht, dass die Regel überholt ist.', ok:false, grund:"keine Fundstelle — nachprüfen kann das niemand"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>${f.form}</i><br>Ist das so richtig zitiert? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.ok ? "ja" : "nein",
+    schluss:"Jede Behauptung über den Text muss am Text belegt werden. Ohne Zeilenangabe kann niemand nachprüfen, ob es stimmt.",
+    schritte:[
+     {frage:"Was gehört zu einem <b>richtigen Zitat</b>?",
+      tipp:"Zwei Dinge: eine Kennzeichnung und eine Fundstelle.",
+      tipp2:"Anführungszeichen um den wörtlichen Teil und eine Zeilenangabe.",
+      optionen:[R("Anführungszeichen und Zeilenangabe", "Richtig."),
+                F("Nur die Zeilenangabe", "Dann sieht niemand, wo das Zitat anfängt und aufhört."),
+                F("Nur die Anführungszeichen", "Dann fehlt die Fundstelle zum Nachprüfen.")]},
+     {frage:"Und hier?",
+      tippAntwort: f.ok ? "ja" : "nein",
+      tipp:"Prüf: Kennzeichnung da? Fundstelle da? Wird nichts hinzugedichtet?",
+      tipp2:`Es ist ${f.grund}.`,
+      optionen:[R(f.ok ? "ja" : "nein", `Richtig — ${f.grund}.`),
+                F(f.ok ? "nein" : "ja", `Schau noch einmal hin: ${f.grund}.`),
+                F("nur in der Klausur", "Die Regeln gelten überall gleich.")]}]};
+ },
+
+ /* Was gehört in welchen Teil? */
+ () => {
+   const f = pick([
+     {satz:"Der Text stammt aus der Süddeutschen Zeitung vom 3. Mai 2024.", teil:"Einleitung"},
+     {satz:"Der Autor führt drei Gründe an, warum die Regel überholt sei.", teil:"Textwiedergabe"},
+     {satz:"Diese Begründung überzeugt nicht, weil sie einen Sonderfall verallgemeinert.", teil:"Erörterung"},
+     {satz:"Insgesamt halte ich die Position des Autors für teilweise berechtigt.", teil:"Fazit"},
+     {satz:"In der Kurzfassung geht es um den Umgang mit Handys an Schulen.", teil:"Einleitung"},
+     {satz:"Dem lässt sich entgegenhalten, dass gerade jüngere Schüler davon profitieren.", teil:"Erörterung"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>In welchen Teil einer textgebundenen Erörterung gehört dieser Satz?<br>Einleitung, Textwiedergabe, Erörterung oder Fazit?`,
+    loesung: f.teil,
+    schluss:"Die textgebundene Erörterung hat vier Teile. Wer sie vermischt, verliert Punkte — auch wenn inhaltlich alles stimmt.",
+    schritte:[
+     {frage:"Aus welchen vier Teilen besteht sie?",
+      tipp:"Erst der Text, dann die eigene Auseinandersetzung.",
+      tipp2:"Einleitung, Textwiedergabe, Erörterung, Fazit.",
+      optionen:[R("Einleitung, Textwiedergabe, Erörterung, Fazit", "Richtig."),
+                F("Pro, Contra, Fazit", "Das ist die freie Erörterung ohne Textbezug."),
+                F("These, Begründung, Beispiel", "Das ist der Aufbau eines einzelnen Arguments.")]},
+     {frage:"Wohin gehört der Satz?",
+      tippAntwort: f.teil,
+      tipp:"Gibt er den Text wieder oder bewertet er ihn?",
+      tipp2:`Er gehört in die ${f.teil}.`,
+      optionen: zieheVerschiedene([
+        R(f.teil, "Richtig."),
+        F(f.teil === "Einleitung" ? "Fazit" : "Einleitung", "Dort steht etwas anderes."),
+        F(f.teil === "Erörterung" ? "Textwiedergabe" : "Erörterung", "Dort steht etwas anderes.")], 3)}]};
+ }
+],
+
+"Interpretation":[
+
+ /* Deutung oder bloße Beschreibung? */
+ () => {
+   const f = pick([
+     {satz:"Das Gedicht besteht aus vier Strophen zu je vier Versen.", art:"Beschreibung"},
+     {satz:"Die kurzen Verse lassen das Gedicht gehetzt wirken.", art:"Deutung"},
+     {satz:"In Zeile 7 steht eine Metapher.", art:"Beschreibung"},
+     {satz:"Die Metapher vom Sturm zeigt, wie ohnmächtig das Ich sich fühlt.", art:"Deutung"},
+     {satz:"Der Text ist im Präteritum geschrieben.", art:"Beschreibung"},
+     {satz:"Durch das Präteritum wirkt das Erzählte abgeschlossen und fern.", art:"Deutung"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>Ist das eine <span class='luecke'>Beschreibung</span> oder eine <span class='luecke'>Deutung</span>?`,
+    loesung: f.art,
+    schluss:"Beschreiben allein reicht nicht. Die Punkte gibt es für die Deutung: Was bewirkt das Mittel an dieser Stelle?",
+    schritte:[
+     {frage:"Was ist der Unterschied?",
+      tipp:"Das eine sagt was dasteht, das andere was es bewirkt.",
+      tipp2:"Die Beschreibung stellt fest, die Deutung erklärt die Wirkung.",
+      optionen:[R("Die Beschreibung stellt fest, die Deutung erklärt die Wirkung", "Richtig."),
+                F("Die Deutung ist länger", "Mit der Länge hat es nichts zu tun."),
+                F("Es ist dasselbe", "Genau diese Verwechslung kostet in der Klausur die meisten Punkte.")]},
+     {frage:"Und dieser Satz?",
+      tippAntwort: f.art,
+      tipp:"Steht da nur, was der Fall ist — oder auch, was es bewirkt?",
+      tipp2:`Es ist eine ${f.art}.`,
+      optionen:[R(f.art, "Richtig."),
+                F(f.art === "Deutung" ? "Beschreibung" : "Deutung",
+                  f.art === "Deutung" ? "Der Satz nennt eine Wirkung — das geht über die Beschreibung hinaus."
+                                      : "Der Satz stellt nur fest, was dasteht."),
+                F("Zusammenfassung", "Zusammengefasst wird hier nichts.")]}]};
+ },
+
+ /* Die Deutungshypothese */
+ () => {
+   const f = pick([
+     {satz:"Das Gedicht handelt von einem Baum.", ok:false, grund:"nur das Thema — keine Deutung"},
+     {satz:"Das Gedicht zeigt am Bild des Baumes, wie sehr der Sprecher an seiner Heimat hängt.", ok:true, grund:"Bild und Aussage zusammengebracht"},
+     {satz:"Ich finde das Gedicht schön.", ok:false, grund:"ein Geschmacksurteil, keine Deutung"},
+     {satz:"Die Kurzgeschichte führt vor, wie Not aus zwei Vertrauten Fremde macht.", ok:true, grund:"eine überprüfbare Aussage über den Text"},
+     {satz:"Der Text hat 34 Zeilen.", ok:false, grund:"eine Beobachtung, keine Deutung"},
+     {satz:"Der Text stellt die Frage, ob Ehrlichkeit unter Druck standhält.", ok:true, grund:"eine Aussage über das, worauf der Text hinauswill"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>Taugt das als <b>Deutungshypothese</b>? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.ok ? "ja" : "nein",
+    schluss:"Die Deutungshypothese steht am Anfang und wird danach am Text belegt. Sie darf sich beim Schreiben ändern — dann schreibst du sie um.",
+    schritte:[
+     {frage:"Was ist eine <b>Deutungshypothese</b>?",
+      tipp:"Sie steht am Anfang der Interpretation.",
+      tipp2:"Eine Vermutung darüber, worauf der Text hinauswill — überprüfbar am Text.",
+      optionen:[R("Eine überprüfbare Vermutung, worauf der Text hinauswill", "Richtig."),
+                F("Eine Zusammenfassung des Inhalts", "Das ist die Inhaltsangabe."),
+                F("Die eigene Meinung über den Text", "Ob er dir gefällt, ist keine Deutung.")]},
+     {frage:"Und dieser Satz?",
+      tippAntwort: f.ok ? "ja" : "nein",
+      tipp:"Sagt er, worauf der Text hinauswill — oder nur, was drinsteht?",
+      tipp2:`Der Satz ist ${f.grund}.`,
+      optionen:[R(f.ok ? "ja" : "nein", `Richtig — ${f.grund}.`),
+                F(f.ok ? "nein" : "ja", `Schau noch einmal hin: ${f.grund}.`),
+                F("mit Einschränkung", "Hier ist es eindeutig.")]}]};
+ }
+],
+
+"Facharbeit":[
+
+ /* Quellenangabe vollständig? */
+ () => {
+   const f = pick([
+     {q:"Müller, Thomas: Elektrotechnik für Einsteiger. München 2021, S. 45.", ok:true,  fehlt:"nichts"},
+     {q:"Müller: Elektrotechnik für Einsteiger, S. 45.", ok:false, fehlt:"Vorname, Ort und Jahr"},
+     {q:"Elektrotechnik für Einsteiger. München 2021, S. 45.", ok:false, fehlt:"der Verfasser"},
+     {q:"Schmidt, Anna: Messtechnik im Betrieb. Berlin 2019, S. 112.", ok:true, fehlt:"nichts"},
+     {q:"aus dem Internet", ok:false, fehlt:"alles — so ist das keine Quellenangabe"},
+     {q:"Bundesnetzagentur: Monitoringbericht 2023. Bonn 2023, S. 8.", ok:true, fehlt:"nichts"}
+   ]);
+   return {
+    typ:"text",
+    text:`Quellenangabe: <i>${f.q}</i><br>Ist sie vollständig? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.ok ? "ja" : "nein",
+    schluss:"Eine Quellenangabe muss so genau sein, dass jemand anders die Stelle wiederfindet. Was das nicht leistet, ist keine Quellenangabe.",
+    schritte:[
+     {frage:"Was gehört in eine Quellenangabe für ein Buch?",
+      tipp:"Es sind fünf Angaben.",
+      tipp2:"Verfasser, Titel, Ort, Jahr und Seitenzahl.",
+      optionen:[R("Verfasser, Titel, Ort, Jahr, Seite", "Richtig."),
+                F("Titel und Seitenzahl", "Damit findet niemand das Buch wieder."),
+                F("Nur der Verfasser", "Der hat oft mehrere Bücher geschrieben.")]},
+     {frage:"Und diese hier?",
+      tippAntwort: f.ok ? "ja" : "nein",
+      tipp:"Geh die fünf Angaben durch.",
+      tipp2: f.ok ? "Alle fünf Angaben sind da." : `Es fehlt: ${f.fehlt}.`,
+      optionen:[R(f.ok ? "ja" : "nein", f.ok ? "Richtig — alle fünf sind da." : `Richtig — es fehlt: ${f.fehlt}.`),
+                F(f.ok ? "nein" : "ja", f.ok ? "Doch, alle fünf Angaben stehen da." : `Es fehlt: ${f.fehlt}.`),
+                F("nur im Literaturverzeichnis", "Die Angaben werden überall gebraucht.")]}]};
+ },
+
+ /* Aufbau der Facharbeit */
+ () => {
+   const teile = [
+     {nr:1, name:"Deckblatt", was:"Thema, Name, Schule, Datum"},
+     {nr:2, name:"Inhaltsverzeichnis", was:"Gliederung mit Seitenzahlen"},
+     {nr:3, name:"Einleitung", was:"Fragestellung und Vorgehen"},
+     {nr:4, name:"Hauptteil", was:"Die eigentliche Arbeit"},
+     {nr:5, name:"Schluss", was:"Ergebnis und offene Fragen"},
+     {nr:6, name:"Literaturverzeichnis", was:"Alle benutzten Quellen"}
+   ];
+   const t = pick(teile);
+   return {
+    typ:"text",
+    text:`Aufbau einer Facharbeit: An welcher <b>Stelle</b> steht der Teil <b>„${t.name}“</b>?<br>Schreib die Zahl von 1 bis 6.`,
+    loesung: String(t.nr),
+    schluss:"Der Aufbau ist festgelegt. Dazu kommt am Ende die Erklärung, dass du die Arbeit selbst verfasst hast — ohne sie wird sie nicht angenommen.",
+    schritte:[
+     {frage:"Womit beginnt eine Facharbeit?",
+      tipp:"Vor dem Inhalt kommt noch etwas.",
+      tipp2:"Mit dem Deckblatt, danach das Inhaltsverzeichnis.",
+      optionen:[R("Mit dem Deckblatt", "Richtig."),
+                F("Mit der Einleitung", "Davor stehen Deckblatt und Inhaltsverzeichnis."),
+                F("Mit dem Literaturverzeichnis", "Das steht ganz am Ende.")]},
+     {frage:`An welcher Stelle steht „${t.name}“?`,
+      tippAntwort: String(t.nr),
+      tipp:t.was,
+      tipp2:`„${t.name}“ steht an Stelle ${z(t.nr)} von 6.`,
+      optionen: zieheVerschiedene([
+        R(String(t.nr), "Richtig."),
+        F(String(t.nr === 6 ? 1 : t.nr + 1), "Eine Stelle zu spät."),
+        F(String(t.nr === 1 ? 6 : t.nr - 1), "Eine Stelle zu früh.")], 3)}]};
+ }
+]
 });
 /* ---------- Erklärungen ----------
    Aufbau: worum · einfach (von ganz vorn) · begriffe (Wörter, die man kennen muss)
@@ -9811,6 +10212,668 @@ Object.assign(AUFGABEN, {
 const SVG_STIL = `style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto"`;
 
 const ERKLAERUNGEN = {
+
+"Erörterung": {
+  worum:"Eine Erörterung wägt ab. Sie sammelt Argumente für und gegen eine These und kommt am Ende zu einem begründeten Urteil.",
+  wozu:[
+    "Im Betriebsrat, in der Prüfung und im Gespräch mit dem Chef geht es immer um dasselbe: eine Position begründen und die Gegenseite kennen. Wer die Einwände vorher schon durchdacht hat, steht sicherer da.",
+    "Auch für dich selbst ist es das Werkzeug für jede größere Entscheidung: Ausbildung wechseln, Auto finanzieren, Weiterbildung machen. Pro und Contra aufschreiben schlägt Bauchgefühl."
+  ],
+  rezept:[
+    "Formulier die These als Frage, die man mit ja oder nein beantworten kann.",
+    "Sammle Argumente für beide Seiten, ohne schon zu bewerten.",
+    "Ordne jede Seite steigernd: das stärkste Argument zuletzt.",
+    "Entscheide dich für einen Aufbau — Sanduhr oder Ping-Pong.",
+    "Schreib zu jedem Argument These, Begründung und Beispiel.",
+    "Zieh am Ende ein Fazit, das aus den Argumenten folgt — nicht aus deinem Bauchgefühl."
+  ],
+  fehler:[
+    ["Nur eine Seite gebracht", "Wer nur die eigene Meinung begründet, hat keine Erörterung geschrieben. Beide Seiten gehören hinein, auch die unbequeme."],
+    ["Das stärkste Argument zuerst", "Danach fällt alles ab. Innerhalb jeder Seite wird gesteigert — das Beste kommt zuletzt."],
+    ["Fazit ohne Bezug zu den Argumenten", "Das Fazit muss aus dem folgen, was davorsteht. Sonst hätte man sich die Argumente sparen können."],
+    ["Behauptungen statt Argumente", "„Das ist doch klar“ ist kein Argument. Ohne Begründung und Beispiel zählt es nicht."]
+  ],
+  einfach:[
+    "Eine Erörterung ist ein Text, in dem eine Frage von beiden Seiten betrachtet wird.",
+    "Am Anfang steht die These — die Behauptung, um die gestritten wird.",
+    "Dann kommen die Argumente dafür, die Pro-Seite.",
+    "Und die Argumente dagegen, die Contra-Seite.",
+    "Jedes einzelne Argument besteht wieder aus These, Begründung und Beispiel.",
+    "Innerhalb einer Seite wird gesteigert: Das stärkste Argument kommt zuletzt, weil es am besten hängen bleibt.",
+    "Beim Sanduhr-Aufbau kommt zuerst die Seite, gegen die du bist, danach deine eigene.",
+    "Beim Ping-Pong-Aufbau wechseln sich Pro und Contra ab, immer paarweise.",
+    "Der Sanduhr-Aufbau ist der übliche — deine Seite steht dann direkt vor dem Fazit.",
+    "Am Ende steht das Fazit: ein begründetes Urteil, das aus den Argumenten folgt."
+  ],
+  begriffe:[
+    ["These","Die Behauptung, über die gestritten wird."],
+    ["Pro-Seite","Die Argumente, die dafür sprechen."],
+    ["Contra-Seite","Die Argumente, die dagegen sprechen."],
+    ["Steigernde Anordnung","Das stärkste Argument zuletzt."],
+    ["Sanduhr-Aufbau","Erst die Gegenseite ganz, dann die eigene ganz."],
+    ["Ping-Pong-Aufbau","Pro und Contra wechseln sich paarweise ab."]
+  ],
+  tabelle:{
+    titel:"Die beiden Aufbauformen",
+    kopf:["","Sanduhr","Ping-Pong"],
+    zeilen:[
+      ["Reihenfolge","erst Gegenseite, dann eigene","Pro und Contra im Wechsel"],
+      ["Stärkstes Argument","am Ende der eigenen Seite","im letzten Paar"],
+      ["Wirkung","die eigene Seite bleibt hängen","die Abwägung wird sichtbar"],
+      ["Geeignet für","wenn du klar Stellung beziehst","wenn beide Seiten dicht beieinanderliegen"],
+      ["Häufigkeit in der Schule","der Normalfall","seltener verlangt"]
+    ],
+    fuss:"Beide sind zulässig. Entscheide dich vor dem Schreiben für eine — und misch sie nicht."
+  },
+  regeln:[
+    "Beide Seiten gehören hinein.",
+    "Jedes Argument: These, Begründung, Beispiel.",
+    "Innerhalb einer Seite steigernd ordnen.",
+    "Sanduhr: erst Gegenseite, dann eigene.",
+    "Das Fazit folgt aus den Argumenten.",
+    "Nie die Person angreifen, immer die Sache."
+  ],
+  beispiel:{aufgabe:"These: Die Schule sollte später anfangen. Nenne ein Pro- und ein Contra-Argument.",
+    schritte:["Pro: Jugendliche werden abends später müde","Contra: Der Nachmittag wird zu voll für Vereine und Nebenjobs"],
+    ergebnis:"Beide Seiten stehen — jetzt folgt das begründete Fazit."},
+  spiel:{
+    titel:"Aufbau durchgehen",
+    hinweis:"Schieb durch die Abschnitte und schau, was in welchen gehört.",
+    regler:[
+      {id:"a", name:"Aufbau (0 = Sanduhr, 1 = Ping-Pong)", von:0, bis:1, schritt:1, start:0},
+      {id:"i", name:"Abschnitt", von:1, bis:4, schritt:1, start:1}
+    ],
+    ausgabe:(w) => {
+      const SAND = [
+        ["Einleitung", "Zum Thema hinführen, die These nennen"],
+        ["Gegenseite", "Alle Argumente der Seite, gegen die du bist — steigernd geordnet"],
+        ["Eigene Seite", "Deine Argumente, das stärkste zuletzt"],
+        ["Fazit", "Begründetes Urteil, das aus den Argumenten folgt"]
+      ];
+      const PING = [
+        ["Einleitung", "Zum Thema hinführen, die These nennen"],
+        ["Erstes Paar", "Ein Pro-Argument, direkt danach das passende Contra"],
+        ["Weitere Paare", "Immer im Wechsel, von schwach nach stark"],
+        ["Fazit", "Begründetes Urteil nach der Abwägung"]
+      ];
+      const liste = w.a ? PING : SAND;
+      const t = liste[w.i - 1];
+      const uebersicht = liste.map((x, k) =>
+        `<div style="padding:2px 0;${k === w.i - 1 ? "font-weight:800" : "opacity:.5"}">${k + 1}. ${x[0]}</div>`).join("");
+      return {
+        werte:[
+          {name:"Aufbau", text: w.a ? "Ping-Pong" : "Sanduhr"},
+          {name:"Gliederung", text:uebersicht},
+          {name:"Abschnitt " + z(w.i), text:"<b>" + t[0] + "</b>"},
+          {name:"Was hineingehört", text:t[1]}
+        ],
+        satz: w.a
+          ? "Beim Ping-Pong wird abwechselnd abgewogen. Das wirkt ausgewogener, macht die eigene Position aber weniger deutlich."
+          : "Beim Sanduhr-Aufbau steht deine Seite direkt vor dem Fazit — deshalb bleibt sie am besten hängen."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Sanduhr-Aufbau einer Erörterung">
+    ${[["Einleitung","These nennen","#94a3b8"],
+       ["Gegenseite","steigernd, das Stärkste zuletzt","#b3382f"],
+       ["Eigene Seite","steigernd, das Stärkste zuletzt","#10a37f"],
+       ["Fazit","folgt aus den Argumenten","#3b82f6"]]
+      .map((s, i) => {
+        const y = 12 + i * 40;
+        return `<rect x="24" y="${y}" width="352" height="32" rx="7" fill="${s[2]}" fill-opacity=".2" stroke="${s[2]}" stroke-width="1.8"/>
+          <text x="40" y="${y + 14}" font-size="12" font-weight="800" fill="currentColor">${s[0]}</text>
+          <text x="40" y="${y + 27}" font-size="10" fill="currentColor">${s[1]}</text>`;
+      }).join("")}
+    <text x="200" y="170" text-anchor="middle" font-size="11" fill="currentColor">Sanduhr: erst die Gegenseite, dann die eigene — sie bleibt hängen.</text>
+  </svg>`
+},
+
+"Sachtexte auswerten": {
+  worum:"Einen Sachtext auswerten heißt: die Absicht erkennen, die Kernaussagen herausziehen und trennen, was belegt ist von dem, was nur behauptet wird.",
+  wozu:[
+    "Datenblätter, Betriebsanleitungen, Normauszüge und Prüfberichte sind Sachtexte. Wer sie schnell auf das Wesentliche bringen kann, spart bei jeder Aufgabe Zeit.",
+    "Und außerhalb der Arbeit: Wer erkennt, ob ein Text informieren oder überzeugen will, fällt seltener auf Werbung und Halbwahrheiten herein."
+  ],
+  rezept:[
+    "Überschrift, Zwischenüberschriften und Bilder zuerst — sie geben den Rahmen.",
+    "Beim ersten Lesen nichts markieren, nur verstehen.",
+    "Beim zweiten Lesen Sinnabschnitte abgrenzen und je eine Randnotiz machen.",
+    "Kläre die Absicht: informieren, anleiten oder überzeugen?",
+    "Trenne Belegtes von Behauptetem — such nach Quellen, Zahlen und Daten.",
+    "Fass die Kernaussage in einem einzigen Satz zusammen."
+  ],
+  fehler:[
+    ["Alles markiert", "Wer drei Viertel des Textes anstreicht, hat nichts herausgehoben. Markieren heißt auswählen."],
+    ["Absicht übersehen", "Ein Kommentar liest sich wie ein Bericht, will aber überzeugen. Wer das nicht merkt, übernimmt eine Meinung als Tatsache."],
+    ["Behauptung für Beleg gehalten", "„Studien zeigen“ ohne Angabe welcher ist kein Beleg. Erst Name, Jahr und Zahl machen daraus einen."],
+    ["Meinung des Autors mit eigener vermischt", "Beim Auswerten gibst du wieder, was im Text steht. Deine Bewertung kommt getrennt davon."]
+  ],
+  einfach:[
+    "Ein Sachtext will informieren, anleiten oder überzeugen — nicht unterhalten.",
+    "Zuerst schaust du, welche Absicht dahintersteckt. Das ändert alles Weitere.",
+    "Ein Bericht will informieren, eine Anleitung will anleiten, ein Kommentar will überzeugen.",
+    "Dann teilst du den Text in Sinnabschnitte — Stücke, die inhaltlich zusammengehören.",
+    "Zu jedem Abschnitt schreibst du eine kurze Randnotiz: Worum geht es hier?",
+    "Aus diesen Notizen wird später die Zusammenfassung.",
+    "Beim Auswerten trennst du Belegtes von Behauptetem.",
+    "Belegt ist etwas, wenn eine Quelle, eine Zahl oder ein Datum dabeisteht.",
+    "„Das weiß doch jeder“ und „die meisten Leute“ sind keine Belege.",
+    "Zum Schluss bringst du die Kernaussage in einen einzigen Satz. Wenn das nicht gelingt, hast du den Text noch nicht verstanden."
+  ],
+  begriffe:[
+    ["Sachtext","Ein Text, der informiert, anleitet oder überzeugen will."],
+    ["Intention","Die Absicht des Verfassers."],
+    ["Sinnabschnitt","Ein inhaltlich zusammengehöriges Textstück."],
+    ["Kernaussage","Das, worauf der ganze Text hinausläuft."],
+    ["Beleg","Quelle, Zahl oder Datum — etwas Nachprüfbares."],
+    ["Kommentar","Sachtext, der eine Meinung vertritt."]
+  ],
+  tabelle:{
+    titel:"Textsorten und ihre Absicht",
+    kopf:["Textsorte","Absicht","Woran man sie erkennt"],
+    zeilen:[
+      ["Bericht","informieren","sachlich, W-Fragen beantwortet, Präteritum"],
+      ["Nachricht","informieren","Wichtigstes zuerst, knapp"],
+      ["Anleitung","anleiten","Handlungsschritte, oft im Imperativ"],
+      ["Kommentar","überzeugen","Meinung, Wertungen, „meiner Ansicht nach“"],
+      ["Werbetext","überzeugen","Aufforderung, Superlative, Ansprache"],
+      ["Sachtext im engeren Sinn","informieren","erklärt Zusammenhänge, ohne zu werten"]
+    ],
+    fuss:"Die beiden mittleren Spalten entscheiden. Ein Text, der werten will, sich aber wie ein Bericht liest, ist besonders wirksam — und besonders leicht zu übersehen."
+  },
+  regeln:[
+    "Erst die Absicht klären, dann den Inhalt.",
+    "Sinnabschnitte bilden und je eine Randnotiz schreiben.",
+    "Belegtes von Behauptetem trennen.",
+    "Ein Beleg braucht Quelle, Zahl oder Datum.",
+    "Kernaussage in einem Satz zusammenfassen.",
+    "Eigene Bewertung getrennt vom Referieren."
+  ],
+  beispiel:{aufgabe:"„Laut Statistischem Bundesamt lag die Quote 2023 bei 5,7 Prozent.“ — belegt oder behauptet?",
+    schritte:["Quelle genannt: Statistisches Bundesamt","Jahr genannt: 2023","Zahl genannt: 5,7 Prozent"],
+    ergebnis:"belegt — alle drei Merkmale sind da"},
+  spiel:{
+    titel:"Absicht erkennen",
+    hinweis:"Schieb durch die Textsorten und vergleiche Absicht und Erkennungsmerkmale.",
+    regler:[
+      {id:"i", name:"Textsorte", von:0, bis:5, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const T = [
+        ["Bericht", "informieren", "sachlich, W-Fragen, Präteritum", "Die Stadt teilt mit, dass die Brücke ab Montag gesperrt ist."],
+        ["Nachricht", "informieren", "Wichtigstes zuerst, knapp", "Brücke ab Montag gesperrt — Umleitung ausgeschildert."],
+        ["Anleitung", "anleiten", "Handlungsschritte, Imperativ", "Drücken Sie zuerst die Entriegelung, ziehen Sie dann den Stecker."],
+        ["Kommentar", "überzeugen", "Meinung, Wertung, Ich-Bezug", "Meiner Ansicht nach ist die Sperrung ein Fehler."],
+        ["Werbetext", "überzeugen", "Aufforderung, Superlative", "Wer jetzt zögert, verpasst das beste Angebot des Jahres."],
+        ["Sachtext", "informieren", "erklärt Zusammenhänge, wertet nicht", "Kupfer leitet besser als Aluminium, ist aber schwerer."]
+      ];
+      const t = T[w.i];
+      return {
+        werte:[
+          {name:"Textsorte", text:"<b>" + t[0] + "</b>"},
+          {name:"Absicht", text:t[1]},
+          {name:"Woran man es erkennt", text:t[2]},
+          {name:"So klingt das", text:"<i>„" + t[3] + "“</i>"}
+        ],
+        satz: t[1] === "überzeugen"
+          ? "Dieser Text will dich <b>überzeugen</b>. Alles darin ist ausgewählt — auch das, was weggelassen wurde."
+          : t[1] === "anleiten" ? "Hier zählt die Reihenfolge der Schritte. Wer sie vertauscht, macht etwas kaputt."
+          : "Dieser Text will <b>informieren</b>. Prüf trotzdem, ob die Angaben belegt sind."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Drei Absichten von Sachtexten">
+    ${[["informieren","Bericht, Nachricht, Sachtext","#10a37f"],
+       ["anleiten","Anleitung, Rezept, Bedienungsanleitung","#3b82f6"],
+       ["überzeugen","Kommentar, Werbetext, Leserbrief","#f59e0b"]]
+      .map((s, i) => {
+        const x = 20 + i * 122;
+        return `<rect x="${x}" y="24" width="112" height="76" rx="10" fill="${s[2]}" fill-opacity=".2" stroke="${s[2]}" stroke-width="2"/>
+          <text x="${x + 56}" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">${s[0]}</text>
+          <text x="${x + 56}" y="72" text-anchor="middle" font-size="9" fill="currentColor">${s[1].split(", ")[0]}</text>
+          <text x="${x + 56}" y="86" text-anchor="middle" font-size="9" fill="currentColor">${s[1].split(", ").slice(1).join(", ")}</text>`;
+      }).join("")}
+    <text x="200" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Erste Frage an jeden Sachtext: Was will er?</text>
+    <text x="200" y="126" text-anchor="middle" font-size="11" fill="currentColor">Zweite Frage: Was davon ist belegt — mit Quelle, Zahl oder Datum?</text>
+    <text x="200" y="146" text-anchor="middle" font-size="11" fill="currentColor">Dritte Frage: Wie lautet die Kernaussage in einem Satz?</text>
+  </svg>`
+},
+
+"Bewerbung schreiben": {
+  worum:"Eine Bewerbung soll zeigen, dass du zu dieser Stelle passt. Nicht behaupten — zeigen, an Beispielen.",
+  wozu:[
+    "Ohne Bewerbung kein Ausbildungsplatz. Und weil fast alle dieselben Floskeln schreiben, fällt der auf, der konkret wird.",
+    "Auch später brauchst du es wieder: für die Übernahme, für den Wechsel, für die Weiterbildung. Der Aufbau bleibt derselbe."
+  ],
+  rezept:[
+    "Lies die Anzeige genau und streich an, was verlangt wird.",
+    "Such zu jedem Punkt eine eigene Erfahrung, die dazu passt.",
+    "Betreffzeile: auf welche Stelle, woher du davon weißt.",
+    "Anrede mit Namen — anrufen und nachfragen, wenn er nicht dasteht.",
+    "Einstieg: warum gerade dieser Betrieb. Kein „hiermit bewerbe ich mich“.",
+    "Hauptteil: was du mitbringst, jedes Mal mit Beispiel. Schluss: Bitte um ein Gespräch."
+  ],
+  fehler:[
+    ["Mit einer Floskel begonnen", "„Hiermit bewerbe ich mich um die ausgeschriebene Stelle“ sagt nichts, was nicht schon im Betreff steht. Der erste Satz ist der wichtigste — verschenk ihn nicht."],
+    ["Eigenschaften behauptet statt gezeigt", "„Teamfähig, motiviert, belastbar“ schreibt jeder. Ein Satz darüber, wo du das gezeigt hast, wiegt mehr als zehn Adjektive."],
+    ["Zu viel Konjunktiv", "„Ich würde mich freuen, wenn Sie sich vielleicht melden könnten“ klingt, als glaubtest du selbst nicht daran. Schreib es gerade heraus."],
+    ["Kein Bezug zum Betrieb", "Ein Anschreiben, das für jeden Betrieb passt, passt zu keinem. Ein Satz über diesen Betrieb macht den Unterschied."]
+  ],
+  einfach:[
+    "Zu einer Bewerbung gehören drei Teile: Anschreiben, Lebenslauf und Zeugnisse.",
+    "Das Anschreiben ist der einzige Teil, den du frei schreibst — dort entscheidet sich alles.",
+    "Es hat fünf Abschnitte in fester Reihenfolge.",
+    "Erstens die Betreffzeile: auf welche Stelle du dich bewirbst und woher du davon weißt.",
+    "Zweitens die Anrede. Wenn der Name in der Anzeige steht, benutz ihn. Wenn nicht, ruf an und frag.",
+    "Drittens der Einstieg: Warum gerade dieser Betrieb? Ein Satz, der nur auf ihn passt.",
+    "Viertens der Hauptteil: Was bringst du mit — und woran hat man das gesehen?",
+    "Nicht „ich bin zuverlässig“, sondern zum Beispiel: „In den Ferien habe ich vier Wochen lang jeden Morgen um sechs die Backstube aufgeschlossen.“",
+    "Fünftens der Schluss: die Bitte um ein persönliches Gespräch. Kurz und ohne Konjunktiv.",
+    "Eine Seite reicht. Wer mehr schreibt, wird seltener gelesen."
+  ],
+  begriffe:[
+    ["Anschreiben","Der frei formulierte Teil — hier entscheidet es sich."],
+    ["Betreffzeile","Auf welche Stelle du dich bewirbst."],
+    ["Lebenslauf","Tabellarisch, rückwärts geordnet, mit Foto nur wenn gewünscht."],
+    ["Initiativbewerbung","Bewerbung ohne ausgeschriebene Stelle."],
+    ["DIN 5008","Die Norm für Aufbau und Abstände im Geschäftsbrief."]
+  ],
+  tabelle:{
+    titel:"Floskel und Alternative",
+    kopf:["Statt","Besser"],
+    zeilen:[
+      ["Hiermit bewerbe ich mich …","Ihre Ausbildungswerkstatt habe ich beim Tag der offenen Tür kennengelernt."],
+      ["Ich bin teamfähig.","Im Fußballverein trainiere ich seit zwei Jahren die F-Jugend."],
+      ["Ich bin zuverlässig.","Meinen Ferienjob habe ich zwei Sommer hintereinander gemacht."],
+      ["Ich interessiere mich für Technik.","Ich habe mein Fahrrad selbst auf Nabenschaltung umgebaut."],
+      ["Ich würde mich freuen, wenn …","Über eine Einladung zu einem Gespräch freue ich mich."],
+      ["Mit freundlichen Grüßen (ohne Name)","Mit freundlichen Grüßen, darunter der ausgeschriebene Name"]
+    ],
+    fuss:"Die rechte Spalte hat einen gemeinsamen Nenner: Sie ist überprüfbar. Die linke könnte jeder schreiben."
+  },
+  regeln:[
+    "Fünf Abschnitte: Betreff, Anrede, Einstieg, Hauptteil, Schluss.",
+    "Anrede mit Namen, wenn irgend möglich.",
+    "Nicht behaupten, sondern an Beispielen zeigen.",
+    "Ein Satz muss auf diesen Betrieb gemünzt sein.",
+    "Konjunktiv sparsam — er klingt unsicher.",
+    "Eine Seite reicht."
+  ],
+  beispiel:{aufgabe:"Mach aus „Ich bin handwerklich geschickt“ einen überprüfbaren Satz.",
+    schritte:["Wo hast du das gezeigt?","Was genau hast du gemacht?","Wie lange?"],
+    ergebnis:"„In der Werkstatt meines Onkels habe ich vier Wochen lang Motoren zerlegt und wieder zusammengebaut.“"},
+  spiel:{
+    titel:"Aufbau des Anschreibens",
+    hinweis:"Schieb durch die fünf Abschnitte und sieh, was in jeden gehört.",
+    regler:[
+      {id:"i", name:"Abschnitt", von:1, bis:5, schritt:1, start:1}
+    ],
+    ausgabe:(w) => {
+      const T = [
+        ["Betreffzeile", "Auf welche Stelle, woher du davon weißt", "Bewerbung um einen Ausbildungsplatz als Elektroniker für Betriebstechnik, Ihre Anzeige vom 12. März"],
+        ["Anrede", "Mit Namen, wenn er bekannt ist", "Sehr geehrte Frau Berger,"],
+        ["Einstieg", "Warum gerade dieser Betrieb — ein Satz, der nur auf ihn passt", "Ihre Ausbildungswerkstatt habe ich beim Tag der offenen Tür kennengelernt."],
+        ["Hauptteil", "Was du mitbringst — jedes Mal mit Beispiel", "In der Werkstatt meines Onkels habe ich vier Wochen lang Motoren zerlegt und wieder zusammengebaut."],
+        ["Schluss", "Bitte um ein Gespräch, ohne Konjunktiv", "Über eine Einladung zu einem persönlichen Gespräch freue ich mich."]
+      ];
+      const t = T[w.i - 1];
+      const liste = T.map((x, k) =>
+        `<div style="padding:2px 0;${k === w.i - 1 ? "font-weight:800" : "opacity:.5"}">${k + 1}. ${x[0]}</div>`).join("");
+      return {
+        werte:[
+          {name:"Aufbau", text:liste},
+          {name:"Abschnitt " + z(w.i), text:"<b>" + t[0] + "</b>"},
+          {name:"Was hineingehört", text:t[1]},
+          {name:"So könnte es klingen", text:"<i>" + t[2] + "</i>"}
+        ],
+        satz: w.i === 3 ? "Der Einstieg entscheidet, ob weitergelesen wird. Hier gehört der Satz hin, der nur auf <b>diesen</b> Betrieb passt."
+          : w.i === 4 ? "Im Hauptteil zählt nur, was überprüfbar ist. Zu jeder Eigenschaft ein Beispiel — sonst weglassen."
+          : "Alle fünf Abschnitte zusammen passen auf eine Seite. Wer mehr schreibt, wird seltener gelesen."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 180" ${SVG_STIL} role="img" aria-label="Aufbau eines Bewerbungsanschreibens">
+    <rect x="90" y="10" width="220" height="160" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    ${[["Betreff",26],["Anrede",52],["Einstieg",76],["Hauptteil",106],["Schluss",146]]
+      .map(([n, y], i) => `<rect x="104" y="${y}" width="${i === 3 ? 192 : 150}" height="${i === 3 ? 30 : 14}" rx="3" fill="#10a37f" fill-opacity="${i === 3 ? ".3" : ".18"}" stroke="#10a37f" stroke-width="1.2"/>
+        <text x="112" y="${y + (i === 3 ? 19 : 11)}" font-size="10" font-weight="700" fill="currentColor">${n}</text>`).join("")}
+    <text x="200" y="176" text-anchor="middle" font-size="11" fill="currentColor">Eine Seite — der Hauptteil ist der längste Abschnitt.</text>
+  </svg>`
+},
+
+"Textgebundene Erörterung": {
+  worum:"Hier wird nicht frei erörtert, sondern über einen vorgegebenen Text. Jede Behauptung über den Text muss am Text belegt werden.",
+  wozu:[
+    "Sie ist die häufigste Aufsatzform in der Oberstufe und in vielen Abschlussprüfungen. Wer den Aufbau kennt, verliert dort keine Punkte mehr.",
+    "Und sie schult etwas Nützliches: einen fremden Standpunkt erst genau wiedergeben und dann geordnet prüfen, statt sofort dagegenzuhalten."
+  ],
+  rezept:[
+    "Text zweimal lesen, beim zweiten Mal die Argumente des Autors nummerieren.",
+    "Einleitung: Textsorte, Titel, Autor, Quelle, Erscheinungsjahr, Thema.",
+    "Textwiedergabe: die Position des Autors sachlich zusammenfassen, im Präsens.",
+    "Erörterung: jedes Argument des Autors prüfen — trägt es oder nicht?",
+    "Eigene Argumente ergänzen, die im Text fehlen.",
+    "Fazit: begründete eigene Position, die auf die Prüfung davor Bezug nimmt."
+  ],
+  fehler:[
+    ["Textwiedergabe und Erörterung vermischt", "Erst wird sachlich referiert, danach bewertet. Wer das mischt, verliert Punkte — auch wenn inhaltlich alles stimmt."],
+    ["Ohne Zeilenangabe zitiert", "Jedes Zitat braucht eine Fundstelle. Ohne sie kann niemand nachprüfen, ob der Autor das wirklich geschrieben hat."],
+    ["Dem Autor etwas untergeschoben", "„Der Autor findet das doof“ ist keine Wiedergabe, sondern eine Unterstellung. Beleg es oder lass es weg."],
+    ["Fazit ohne Bezug zur Erörterung", "Das Fazit muss aus dem folgen, was du geprüft hast — nicht aus deiner Meinung von vorher."]
+  ],
+  einfach:[
+    "Bei einer textgebundenen Erörterung liegt ein Text vor, meist ein Kommentar oder ein Zeitungsartikel.",
+    "Du sollst seine Position wiedergeben und dann prüfen, ob sie überzeugt.",
+    "Die Arbeit hat vier Teile.",
+    "Erstens die Einleitung: Textsorte, Titel, Autor, wo und wann erschienen, worum es geht.",
+    "Zweitens die Textwiedergabe: die Position des Autors sachlich zusammengefasst, im Präsens und ohne eigene Bewertung.",
+    "Drittens die Erörterung: Hier prüfst du seine Argumente eines nach dem anderen.",
+    "Dabei ergänzt du auch Gesichtspunkte, die im Text fehlen.",
+    "Viertens das Fazit: deine begründete Position, die auf die Prüfung davor Bezug nimmt.",
+    "Alles, was du über den Text sagst, gehört belegt — mit einem Zitat in Anführungszeichen und einer Zeilenangabe.",
+    "Zitierst du nicht wörtlich, gibst du im Konjunktiv wieder: „Der Autor schreibt, die Regel sei überholt.“"
+  ],
+  begriffe:[
+    ["Textwiedergabe","Die sachliche Zusammenfassung der Position des Autors."],
+    ["Deutungsbezug","Der Nachweis am Text, mit Zitat und Zeilenangabe."],
+    ["Direktes Zitat","Wörtlich, in Anführungszeichen, mit Fundstelle."],
+    ["Indirektes Zitat","Sinngemäß wiedergegeben, im Konjunktiv I."],
+    ["Zeilenangabe","(Z. 14) oder (Z. 14 f.) für zwei Zeilen."]
+  ],
+  tabelle:{
+    titel:"Die vier Teile",
+    kopf:["Teil","Was hineingehört","Zeitform"],
+    zeilen:[
+      ["Einleitung","Textsorte, Titel, Autor, Quelle, Jahr, Thema","Präsens"],
+      ["Textwiedergabe","Position des Autors, sachlich, ohne Wertung","Präsens"],
+      ["Erörterung","Prüfung seiner Argumente, eigene ergänzen","Präsens"],
+      ["Fazit","begründete eigene Position","Präsens"]
+    ],
+    fuss:"Alles steht im Präsens. Die Trennung zwischen Wiedergabe und Erörterung ist das, worauf am meisten geachtet wird."
+  },
+  regeln:[
+    "Vier Teile: Einleitung, Textwiedergabe, Erörterung, Fazit.",
+    "Alles im Präsens.",
+    "Wiedergabe sachlich, ohne eigene Wertung.",
+    "Jedes Zitat mit Anführungszeichen und Zeilenangabe.",
+    "Indirekte Wiedergabe im Konjunktiv I.",
+    "Das Fazit folgt aus der Erörterung."
+  ],
+  beispiel:{aufgabe:"Wie zitierst du korrekt, dass der Autor in Zeile 14 die Regel für überholt hält?",
+    schritte:["Wörtlich übernehmen","In Anführungszeichen setzen","Zeilenangabe dahinter"],
+    ergebnis:"Der Autor schreibt: „Die Regel ist überholt“ (Z. 14)."},
+  spiel:{
+    titel:"Wiedergeben oder erörtern?",
+    hinweis:"Schieb durch die Beispielsätze und schau, in welchen Teil jeder gehört.",
+    regler:[
+      {id:"i", name:"Beispielsatz", von:0, bis:5, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["Der Kommentar „Handys raus“ von Anna Berg erschien 2024 in der Rheinpost.", "Einleitung", "nennt Textsorte, Titel, Autor, Quelle und Jahr"],
+        ["Die Autorin führt an, dass Handys die Aufmerksamkeit zerstreuen (Z. 8 f.).", "Textwiedergabe", "gibt die Position sachlich wieder, mit Fundstelle"],
+        ["Dieses Argument überzeugt, weil es sich mit Beobachtungen aus dem Unterricht deckt.", "Erörterung", "prüft das Argument"],
+        ["Übersehen wird dabei, dass ein Gerät für Recherchen nützlich sein kann.", "Erörterung", "ergänzt einen fehlenden Gesichtspunkt"],
+        ["Insgesamt überzeugt die Position der Autorin nur teilweise.", "Fazit", "begründete eigene Position"],
+        ["„Der Unterricht leidet“, schreibt sie in Zeile 3.", "Textwiedergabe", "wörtliches Zitat mit Fundstelle"]
+      ];
+      const s = S[w.i];
+      return {
+        werte:[
+          {name:"Satz", text:"<i>" + s[0] + "</i>"},
+          {name:"Gehört in", text:"<b>" + s[1] + "</b>"},
+          {name:"Warum", text:s[2]}
+        ],
+        satz: s[1] === "Erörterung"
+          ? "In der <b>Erörterung</b> darfst du bewerten. In der Wiedergabe davor nicht — dort gibst du nur wieder, was dasteht."
+          : s[1] === "Textwiedergabe" ? "In der <b>Textwiedergabe</b> steht keine Bewertung. Nur, was der Autor sagt — belegt mit Fundstelle."
+          : "Einleitung und Fazit rahmen die Arbeit ein. Das Fazit muss aus der Erörterung folgen, nicht aus der Meinung von vorher."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Die vier Teile der textgebundenen Erörterung">
+    ${[["Einleitung","Textsorte, Titel, Autor, Quelle, Jahr, Thema","#94a3b8"],
+       ["Textwiedergabe","sachlich, im Präsens, ohne Wertung","#3b82f6"],
+       ["Erörterung","Argumente prüfen, eigene ergänzen","#10a37f"],
+       ["Fazit","begründete eigene Position","#f59e0b"]]
+      .map((s, i) => {
+        const y = 10 + i * 37;
+        return `<rect x="24" y="${y}" width="352" height="30" rx="7" fill="${s[2]}" fill-opacity=".2" stroke="${s[2]}" stroke-width="1.8"/>
+          <text x="40" y="${y + 13}" font-size="12" font-weight="800" fill="currentColor">${s[0]}</text>
+          <text x="40" y="${y + 25}" font-size="10" fill="currentColor">${s[1]}</text>`;
+      }).join("")}
+    <text x="200" y="160" text-anchor="middle" font-size="11" fill="currentColor">Wiedergabe und Erörterung nie vermischen — darauf wird am meisten geachtet.</text>
+  </svg>`
+},
+
+"Interpretation": {
+  worum:"Interpretieren heißt nicht raten, was der Autor gemeint hat. Es heißt zeigen, was der Text macht — und das am Text belegen.",
+  wozu:[
+    "In der Oberstufe und im Abitur ist die Interpretation die zentrale Aufsatzform. Und sie ist die, bei der die meisten hängenbleiben, weil sie beschreiben statt deuten.",
+    "Was du dabei lernst, geht über Literatur hinaus: genau hinschauen, eine Vermutung formulieren und sie belegen, statt sie zu behaupten."
+  ],
+  rezept:[
+    "Text mehrfach lesen, bis die erste Vermutung entsteht.",
+    "Deutungshypothese formulieren: Worauf will der Text hinaus?",
+    "Einleitung mit Textsorte, Titel, Autor, Jahr, Thema — und der Hypothese.",
+    "Kurze Inhaltsangabe, im Präsens.",
+    "Hauptteil: Auffälligkeiten benennen, ihre Wirkung deuten, am Text belegen.",
+    "Schluss: die Hypothese aufgreifen — bestätigt, verändert oder verworfen?"
+  ],
+  fehler:[
+    ["Beschrieben statt gedeutet", "„In Zeile 7 steht eine Metapher“ ist eine Beobachtung. Erst „die Metapher zeigt, wie ohnmächtig das Ich sich fühlt“ ist eine Deutung. Dafür gibt es die Punkte."],
+    ["Nach der Absicht des Autors gefragt", "Was der Autor gemeint hat, weiß niemand. Gefragt ist, was der Text zeigt — belegbar am Text."],
+    ["Ohne Beleg gedeutet", "Jede Deutung braucht eine Stelle im Text, an der man sie festmachen kann. Ohne sie ist es Meinung."],
+    ["Stilmittel nur aufgezählt", "Eine Liste der Mittel ist keine Interpretation. Zu jedem gehört: Was bewirkt es an dieser Stelle?"]
+  ],
+  einfach:[
+    "Eine Interpretation legt dar, was ein Text zeigt und wie er es macht.",
+    "Sie beginnt mit einer Deutungshypothese: einer Vermutung darüber, worauf der Text hinauswill.",
+    "Diese Hypothese steht am Anfang und wird danach am Text überprüft.",
+    "Dann folgt eine kurze Inhaltsangabe im Präsens.",
+    "Im Hauptteil arbeitest du dich durch den Text und suchst Auffälligkeiten: Aufbau, Wortwahl, Bilder, Satzbau, Rhythmus.",
+    "Zu jeder Auffälligkeit gehören drei Dinge: benennen, deuten, belegen.",
+    "Benennen heißt: Was ist das? Zum Beispiel eine Metapher.",
+    "Deuten heißt: Was bewirkt sie hier? Zum Beispiel, dass die Lage aussichtslos wirkt.",
+    "Belegen heißt: an welcher Stelle? Mit Zitat und Zeilenangabe.",
+    "Im Schluss greifst du die Hypothese wieder auf. Sie darf sich als falsch erwiesen haben — dann schreibst du das."
+  ],
+  begriffe:[
+    ["Deutungshypothese","Die Vermutung am Anfang, worauf der Text hinauswill."],
+    ["Lyrisches Ich","Die Stimme im Gedicht — nicht der Autor."],
+    ["Erzählperspektive","Aus wessen Sicht erzählt wird."],
+    ["Beschreibung","Feststellen, was dasteht."],
+    ["Deutung","Erklären, was es bewirkt."],
+    ["Beleg","Zitat mit Zeilenangabe."]
+  ],
+  tabelle:{
+    titel:"Beschreibung und Deutung",
+    kopf:["Beschreibung (zu wenig)","Deutung (das zählt)"],
+    zeilen:[
+      ["Das Gedicht hat vier Strophen.","Die gleichmäßigen Strophen wirken wie ein ruhiger Atem."],
+      ["In Zeile 7 steht eine Metapher.","Die Metapher vom Sturm zeigt die Ohnmacht des Ichs."],
+      ["Der Text steht im Präteritum.","Das Präteritum lässt das Erzählte abgeschlossen und fern wirken."],
+      ["Es gibt viele kurze Sätze.","Die kurzen Sätze treiben die Handlung und erzeugen Hast."],
+      ["Das Gedicht hat einen Kreuzreim.","Der Kreuzreim hält die Gegensätze beweglich beieinander."]
+    ],
+    fuss:"Links steht, was der Fall ist. Rechts steht, was es bewirkt. Nur rechts gibt es Punkte."
+  },
+  regeln:[
+    "Deutungshypothese an den Anfang.",
+    "Benennen, deuten, belegen — alle drei.",
+    "Jede Deutung braucht eine Textstelle.",
+    "Nicht nach der Absicht des Autors fragen.",
+    "Das lyrische Ich ist nicht der Autor.",
+    "Im Schluss die Hypothese wieder aufgreifen."
+  ],
+  beispiel:{aufgabe:"Mach aus „In Zeile 7 steht eine Metapher“ eine Deutung.",
+    schritte:["Welche Metapher genau?","Was bewirkt sie an dieser Stelle?","Wo steht sie?"],
+    ergebnis:"Die Metapher vom Sturm (Z. 7) zeigt, wie ohnmächtig das lyrische Ich der Lage gegenübersteht."},
+  spiel:{
+    titel:"Benennen, deuten, belegen",
+    hinweis:"Schieb durch die drei Stufen und sieh, wo aus einer Beobachtung eine Deutung wird.",
+    regler:[
+      {id:"b", name:"Beispiel", von:0, bis:3, schritt:1, start:0},
+      {id:"s", name:"Stufe", von:1, bis:3, schritt:1, start:1}
+    ],
+    ausgabe:(w) => {
+      const B = [
+        ["In Zeile 7 steht eine Metapher.",
+         "Die Metapher vom Sturm zeigt die Ohnmacht des lyrischen Ichs.",
+         "„… wie ein Sturm über mich“ (Z. 7)"],
+        ["Der Text besteht aus kurzen Sätzen.",
+         "Die kurzen Sätze treiben die Handlung und erzeugen Hast.",
+         "„Er lief. Er stolperte. Er stand wieder auf.“ (Z. 12 f.)"],
+        ["Das Gedicht hat vier gleich lange Strophen.",
+         "Der gleichmäßige Bau wirkt wie ein ruhiger Atem und steht im Gegensatz zum unruhigen Inhalt.",
+         "Strophenaufbau, V. 1–16"],
+        ["Der Text steht im Präteritum.",
+         "Das Präteritum lässt das Erzählte abgeschlossen und fern wirken.",
+         "„Es war einmal anders“ (Z. 1)"]
+      ];
+      const NAMEN = ["Benennen", "Deuten", "Belegen"];
+      const WAS = ["Was ist das? — noch keine Deutung, nur eine Beobachtung.",
+                   "Was bewirkt es hier? — hierfür gibt es die Punkte.",
+                   "Wo steht das? — ohne Beleg bleibt die Deutung Behauptung."];
+      const b = B[w.b];
+      return {
+        werte:[
+          {name:"Stufe " + z(w.s), text:"<b>" + NAMEN[w.s - 1] + "</b>"},
+          {name:"So klingt das", text:"<i>" + b[w.s - 1] + "</i>"},
+          {name:"Wozu die Stufe da ist", text:WAS[w.s - 1]},
+          {name:"Alle drei zusammen", text: w.s === 3 ? "vollständig" : "noch nicht vollständig"}
+        ],
+        satz: w.s === 1 ? "Bei der ersten Stufe stehenzubleiben ist der häufigste Fehler in der Interpretation. Beschreiben allein zählt nicht."
+          : w.s === 2 ? "Jetzt steht da, was das Mittel <b>bewirkt</b>. Das ist die eigentliche Interpretation."
+          : "Mit dem Beleg ist es vollständig: benannt, gedeutet, am Text festgemacht."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Benennen, deuten, belegen als drei Stufen">
+    ${[["1. Benennen","Was ist das? Eine Metapher.","#94a3b8"],
+       ["2. Deuten","Was bewirkt es? Sie zeigt die Ohnmacht.","#10a37f"],
+       ["3. Belegen","Wo steht es? „wie ein Sturm“ (Z. 7)","#3b82f6"]]
+      .map((s, i) => {
+        const y = 16 + i * 50;
+        return `<rect x="24" y="${y}" width="352" height="38" rx="8" fill="${s[2]}" fill-opacity=".2" stroke="${s[2]}" stroke-width="2"/>
+          <text x="42" y="${y + 17}" font-size="13" font-weight="800" fill="currentColor">${s[0]}</text>
+          <text x="42" y="${y + 32}" font-size="11" fill="currentColor">${s[1]}</text>` +
+          (i < 2 ? `<path d="M200 ${y + 38}v10" stroke="currentColor" stroke-width="1.4"/><path d="M195 ${y + 44}l5 6 5-6" fill="currentColor"/>` : "");
+      }).join("")}
+    <text x="200" y="170" text-anchor="middle" font-size="11" fill="currentColor">Wer bei Stufe 1 aufhört, beschreibt nur — dafür gibt es keine Punkte.</text>
+  </svg>`
+},
+
+"Facharbeit": {
+  worum:"Eine Facharbeit ist eine kleine wissenschaftliche Arbeit: eine Frage, sauber untersucht, mit belegten Quellen.",
+  wozu:[
+    "Sie ist oft die erste längere Arbeit, die du allein schreibst — und die Vorübung für alles, was in einer Weiterbildung oder im Studium folgt.",
+    "Auch im Betrieb schreibst du später Dokumentationen und Berichte. Sauber zitieren und gliedern ist dort dieselbe Fähigkeit."
+  ],
+  rezept:[
+    "Thema so eng fassen, dass es eine beantwortbare Frage ergibt.",
+    "Quellen suchen und dabei sofort vollständig notieren — sonst suchst du sie zweimal.",
+    "Gliederung entwerfen, bevor du schreibst.",
+    "Einleitung: Fragestellung und Vorgehen. Hauptteil: die Untersuchung. Schluss: Ergebnis.",
+    "Jede fremde Aussage belegen, ob wörtlich oder sinngemäß.",
+    "Literaturverzeichnis und Eigenständigkeitserklärung nicht vergessen."
+  ],
+  fehler:[
+    ["Thema zu weit gefasst", "„Erneuerbare Energien“ ist kein Thema für zwölf Seiten. „Wie wirtschaftlich ist eine Balkon-Photovoltaikanlage für einen Vierpersonenhaushalt?“ schon."],
+    ["Abgeschrieben ohne Beleg", "Auch sinngemäß Übernommenes muss belegt werden. Fehlt der Beleg, ist es ein Plagiat — und die Arbeit fällt durch."],
+    ["Quellen erst am Ende gesammelt", "Wer die Angaben nicht beim Lesen notiert, sucht am Ende stundenlang die Seitenzahlen zusammen."],
+    ["Eigenständigkeitserklärung vergessen", "Ohne sie wird die Arbeit nicht angenommen — unabhängig davon, wie gut sie ist."]
+  ],
+  einfach:[
+    "Eine Facharbeit untersucht eine einzige Frage, gründlich und mit Belegen.",
+    "Sie hat einen festen Aufbau aus sechs Teilen.",
+    "Erstens das Deckblatt: Thema, dein Name, Schule, Fach, Betreuer, Datum.",
+    "Zweitens das Inhaltsverzeichnis mit Gliederung und Seitenzahlen.",
+    "Drittens die Einleitung: Welche Frage untersuchst du, und wie gehst du vor?",
+    "Viertens der Hauptteil — die eigentliche Arbeit.",
+    "Fünftens der Schluss: das Ergebnis und was offen geblieben ist.",
+    "Sechstens das Literaturverzeichnis mit allen benutzten Quellen.",
+    "Dazu kommt am Ende die Eigenständigkeitserklärung: die Unterschrift, dass du die Arbeit selbst geschrieben hast.",
+    "Jede Quellenangabe für ein Buch braucht fünf Dinge: Verfasser, Titel, Ort, Jahr und Seite."
+  ],
+  begriffe:[
+    ["Fragestellung","Die eine Frage, die die Arbeit beantwortet."],
+    ["Gliederung","Der geplante Aufbau mit Kapitelnummern."],
+    ["Direktes Zitat","Wörtlich, in Anführungszeichen, mit Fundstelle."],
+    ["Indirektes Zitat","Sinngemäß, gekennzeichnet mit „vgl.“."],
+    ["Literaturverzeichnis","Alle benutzten Quellen, alphabetisch."],
+    ["Eigenständigkeitserklärung","Die Unterschrift, dass die Arbeit selbst verfasst wurde."]
+  ],
+  tabelle:{
+    titel:"So wird zitiert",
+    kopf:["Art der Quelle","So sieht die Angabe aus"],
+    zeilen:[
+      ["Buch","Müller, Thomas: Elektrotechnik für Einsteiger. München 2021, S. 45."],
+      ["Buch mit zwei Verfassern","Müller, Thomas / Berg, Anna: Messtechnik. Berlin 2019, S. 12."],
+      ["Aufsatz in einer Zeitschrift","Berg, Anna: Netzformen im Vergleich. In: de 3/2022, S. 18–21."],
+      ["Internetseite","Bundesnetzagentur: Monitoringbericht 2023. www.bundesnetzagentur.de (abgerufen am 3.5.2024)."],
+      ["Norm","DIN VDE 0100-600:2017-06, Abschnitt 6.4.3."],
+      ["Sinngemäß übernommen","vgl. Müller 2021, S. 45."]
+    ],
+    fuss:"Bei Internetquellen gehört immer das Abrufdatum dazu — Seiten ändern sich."
+  },
+  regeln:[
+    "Sechs Teile: Deckblatt, Inhaltsverzeichnis, Einleitung, Hauptteil, Schluss, Literaturverzeichnis.",
+    "Dazu die Eigenständigkeitserklärung.",
+    "Buchangabe: Verfasser, Titel, Ort, Jahr, Seite.",
+    "Wörtlich zitiert: Anführungszeichen. Sinngemäß: „vgl.“.",
+    "Internetquellen mit Abrufdatum.",
+    "Jede fremde Aussage wird belegt."
+  ],
+  beispiel:{aufgabe:"Vervollständige: „Elektrotechnik für Einsteiger, S. 45.“",
+    schritte:["Verfasser fehlt","Ort fehlt","Jahr fehlt"],
+    ergebnis:"Müller, Thomas: Elektrotechnik für Einsteiger. München 2021, S. 45."},
+  spiel:{
+    titel:"Aufbau durchgehen",
+    hinweis:"Schieb durch die sechs Teile und sieh, was in jeden gehört.",
+    regler:[
+      {id:"i", name:"Teil", von:1, bis:6, schritt:1, start:1}
+    ],
+    ausgabe:(w) => {
+      const T = [
+        ["Deckblatt", "Thema, Name, Schule, Fach, Betreuer, Datum", "ohne Seitenzahl"],
+        ["Inhaltsverzeichnis", "Gliederung mit Seitenzahlen", "wird zuletzt geschrieben"],
+        ["Einleitung", "Fragestellung und Vorgehen", "rund 10 % der Arbeit"],
+        ["Hauptteil", "Die eigentliche Untersuchung, gegliedert", "rund 80 % der Arbeit"],
+        ["Schluss", "Ergebnis und offene Fragen", "rund 10 % der Arbeit"],
+        ["Literaturverzeichnis", "Alle benutzten Quellen, alphabetisch", "dahinter die Eigenständigkeitserklärung"]
+      ];
+      const t = T[w.i - 1];
+      const liste = T.map((x, k) =>
+        `<div style="padding:2px 0;${k === w.i - 1 ? "font-weight:800" : "opacity:.5"}">${k + 1}. ${x[0]}</div>`).join("");
+      return {
+        werte:[
+          {name:"Aufbau", text:liste},
+          {name:"Teil " + z(w.i), text:"<b>" + t[0] + "</b>"},
+          {name:"Was hineingehört", text:t[1]},
+          {name:"Hinweis", text:t[2]}
+        ],
+        satz: w.i === 6
+          ? "Hinter das Literaturverzeichnis gehört die <b>Eigenständigkeitserklärung</b>. Ohne sie wird die Arbeit nicht angenommen — egal wie gut sie ist."
+          : w.i === 4 ? "Der Hauptteil macht rund 80 % aus. Hier steht die eigentliche Arbeit, gegliedert in nummerierte Kapitel."
+          : "Das Inhaltsverzeichnis schreibst du zuletzt — vorher stimmen die Seitenzahlen ohnehin nicht."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Die sechs Teile einer Facharbeit">
+    ${[["1. Deckblatt","Thema, Name, Datum"],["2. Inhaltsverzeichnis","Gliederung, Seitenzahlen"],
+       ["3. Einleitung","Fragestellung, Vorgehen"],["4. Hauptteil","die Untersuchung"],
+       ["5. Schluss","Ergebnis, offene Fragen"],["6. Literaturverzeichnis","alle Quellen"]]
+      .map((s, i) => {
+        const y = 10 + i * 26;
+        return `<rect x="24" y="${y}" width="352" height="21" rx="5" fill="#10a37f" fill-opacity="${i === 3 ? ".34" : ".15"}" stroke="#10a37f" stroke-width="1.4"/>
+          <text x="38" y="${y + 15}" font-size="11" font-weight="700" fill="currentColor">${s[0]}</text>
+          <text x="368" y="${y + 15}" text-anchor="end" font-size="10" fill="currentColor">${s[1]}</text>`;
+      }).join("")}
+    <text x="200" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">Dahinter: die Eigenständigkeitserklärung mit Unterschrift.</text>
+  </svg>`
+},
+
 
 "Zufall und Häufigkeit": {
   worum:"Die Wahrscheinlichkeit sagt, was zu erwarten ist. Die relative Häufigkeit sagt, was tatsächlich passiert ist. Beides stimmt nie ganz überein.",
