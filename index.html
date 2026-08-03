@@ -181,7 +181,9 @@
     font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 11px;
     border-radius:999px;margin-bottom:12px}
 
-  .kopf{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+  .kopf .tag{min-width:0;overflow-wrap:break-word;hyphens:auto}
+  .aufgabenzaehler{flex:none;white-space:nowrap;font-size:13px}
 
   /* Aufgabe: ganz ohne Kasten */
   .aufg{padding:14px 0 22px;border-bottom:1px solid var(--line);margin-bottom:24px}
@@ -29624,9 +29626,13 @@ function render(gewaehlt){
     <div class="card">
       ${navLink(pfadFuer("start", fach, klasse), "ansicht='start';render()", "← Zurück zur Übersicht", "zurueck")}
       <div class="fortschritt">${balken}</div>
+      ${/* Vorher stand das ganze Thema samt Aufgabennummer in einer Pille —
+            auf dem Handy brach sie in zwei Zeilen um und drängte die
+            Schrittangabe daneben ebenfalls in zwei. Jetzt trägt die Pille nur
+            das Thema, die Zählung steht klein und einzeilig daneben. */""}
       <div class="kopf">
-        <span class="tag" style="margin-bottom:0">${aktuellName}${anz > 1 ? ` · Aufgabe ${variante + 1} von ${anz}` : ""}</span>
-        <span class="small soft">Schritt ${schrittNr + 1} von ${aktuell.schritte.length}</span>
+        <span class="tag" style="margin-bottom:0">${aktuellName}</span>
+        <span class="small soft aufgabenzaehler">${anz > 1 ? `Aufgabe ${variante + 1} von ${anz} · ` : ""}Schritt ${schrittNr + 1} von ${aktuell.schritte.length}</span>
       </div>
       <div class="aufg klebt ${aufgabenGroesse(aktuell)}"><div class="zeile1">${aktuell.text}</div></div>
       <p class="frage">${s.frage}</p>
@@ -29742,7 +29748,6 @@ function willkommenHtml(){
         <li>Die Lösung steht da — aber du verstehst nicht, wie man darauf kommt.</li>
         <li>Bei Textaufgaben weißt du nicht mal, was du überhaupt rechnen sollst.</li>
         <li>Du hast es verstanden. Eine Woche später ist es wieder weg.</li>
-        <li>Du nimmst dir vor zu üben — und machst es dann doch nicht.</li>
       </ul>
     </div>
 
@@ -29750,14 +29755,16 @@ function willkommenHtml(){
       <p class="ueberschrift">So funktioniert es</p>
       <ol class="schritte">
         <li><b>Du suchst dir dein Thema</b><span>Fach wählen, Klasse wählen, Thema antippen.</span></li>
-        <li><b>Du wirst hingeführt, nicht bedient</b><span>Statt einer fertigen Lösung bekommst du kleine Fragen. Auch wenn du auf „Ich weiß nicht weiter“ drückst, kommt nur ein Hinweis — den letzten Schritt machst immer du.</span></li>
-        <li><b>Es kommt von allein wieder</b><span>Was du nicht konntest, legt dir die App nach einem Tag wieder vor. Dann nach drei Tagen, nach einer Woche, nach einem Monat — bis es wirklich sitzt.</span></li>
+        <li><b>Du wirst hingeführt, nicht bedient</b><span>Statt einer Lösung bekommst du kleine Fragen. Auch bei „Ich weiß nicht weiter“ kommt nur ein Hinweis — den letzten Schritt machst immer du.</span></li>
+        <li><b>Es kommt von allein wieder</b><span>Was du nicht konntest, kommt nach einem Tag wieder. Dann nach drei Tagen, nach einer Woche — bis es sitzt.</span></li>
       </ol>
     </div>
 
     <div class="card abschnitt indigo">
       <p class="ueberschrift">Warum nicht einfach eine KI fragen?</p>
-      <p class="soft" style="margin:0 0 16px;max-width:52ch">Kannst du. Für vieles ist sie das bessere Werkzeug. Nur macht sie dich nicht besser — sie nimmt dir die Arbeit ab. Drei Unterschiede:</p>
+      ${/* Der erklärende Absatz stand hier zweimal fast wortgleich — einmal
+            hier, einmal in den beiden Kästen darunter. Die Kästen sagen es
+            konkreter, also bleiben nur sie. */""}
       <div class="gegen">
         <div class="andere"><b>KI und Lösungs-Apps</b>Du fragst, du bekommst die Lösung. Das Gespräch ist vorbei, wenn du den Tab schließt. Und ob sich die KI verrechnet hat, merkst du bei einem neuen Thema nicht.</div>
         <div class="wir"><b>Endlich kapiert</b>Die Lösung gibt es hier nicht — nur Hinweise, bis du selbst darauf kommst. Was du nicht konntest, kommt von allein wieder. Und jede Aufgabe ist vorher von einem Programm nachgerechnet worden.</div>
@@ -29797,22 +29804,20 @@ function willkommenHtml(){
         }).join("")}
       </div>
       <p class="small soft" style="margin-top:14px">Bei Englisch gibt es zusätzlich einen Vokabeltrainer —
-        auch dort bekommst du die Lösung nie hingelegt, die Hilfe kommt in vier Stufen.
-        Und du kannst deine eigenen Wörter hinschreiben, genau die, die bei dir drankommen.
-        Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu.</p>
+        und du kannst deine eigenen Wörter hinschreiben, genau die, die bei dir drankommen.
+        Französisch, Geschichte und Erdkunde kommen dazu.</p>
     </div>
 
     <div class="card abschnitt">
       <p class="ueberschrift">Zum Nachlesen</p>
       <p class="soft" style="margin:0 0 14px;max-width:54ch">Zu jedem Thema gibt es eine Seite, auf der alles von
-        ganz vorn erklärt steht — mit Beispiel, den häufigsten Fehlern und einer Tabelle zum Nachschlagen.
-        Ohne Anmeldung, ohne Konto, einfach zum Lesen.</p>
+        ganz vorn erklärt steht — mit Beispiel, den häufigsten Fehlern und einer Tabelle. Einfach zum Lesen.</p>
       <a class="btn ghost full" href="/erklaerungen.html">Alle ${anzahlFertig()} Erklärungen ansehen</a>
     </div>
 
     <div class="card" style="text-align:center">
       <h2 style="margin-bottom:8px">Probier es einfach aus</h2>
-      <p class="soft" style="margin:0 auto 18px;max-width:44ch">Ohne Anmeldung, ohne Kosten. Ein Konto brauchst du erst, wenn die App sich deinen Fortschritt merken soll.</p>
+      <p class="soft" style="margin:0 auto 18px;max-width:44ch">Ohne Anmeldung, ohne Kosten.</p>
       <button class="btn" onclick="alsGast()">Jetzt ausprobieren</button>
     </div>
 
