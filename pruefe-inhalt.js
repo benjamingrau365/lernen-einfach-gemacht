@@ -1830,15 +1830,23 @@ const elektroProben4 = {
       const soll = Math.round(230 / z0);
       const fehl = stimmt(soll, loes(a));
       if (fehl) return fehl;
-      /* die Bewertung im letzten Schritt muss zum gerechneten Strom passen */
+      /* Der Auslösestrom des B-Automaten ist das Fünffache des Nennstroms —
+         das wird unabhängig nachgerechnet, nicht aus der Aufgabe übernommen. */
       const nen = dz((ganz.match(/B([\d.,]+)\s*-Automaten/) || [])[1]);
       if (!isFinite(nen)) return "Nennstrom der Sicherung nicht lesbar: " + ganz;
       const noetig = nen * 5;
-      const letzte = a.schritte[a.schritte.length - 1];
-      const gewaehlt = roh((letzte.optionen.find(o => o.ok) || {}).t || "");
-      const behauptet = /^Ja/.test(gewaehlt);
-      if (behauptet !== (soll >= noetig))
-        return `bei ${soll} A und nötigen ${noetig} A ist die Bewertung „${gewaehlt}“ falsch`;
+      const mitte = roh((a.schritte[1].optionen.find(o => o.ok) || {}).t || "");
+      if (dz((mitte.match(/^([\d.,]+)/) || [])[1]) !== noetig)
+        return `ein B${nen} braucht ${noetig} A zum sicheren Auslösen, angegeben ist „${mitte}“`;
+      /* Die Rückmeldung zur richtigen Antwort muss die Bewertung enthalten und
+         zum gerechneten Strom passen. */
+      const rueck = roh((a.schritte[a.schritte.length - 1].optionen.find(o => o.ok) || {}).fb || "");
+      const erfuellt = /Bedingung ist erfüllt/.test(rueck);
+      const reichtNicht = /reichen nicht/.test(rueck);
+      if (erfuellt === reichtNicht)
+        return `die Rückmeldung sagt nicht eindeutig, ob die Bedingung erfüllt ist: „${rueck}“`;
+      if (erfuellt !== (soll >= noetig))
+        return `bei ${soll} A und nötigen ${noetig} A ist die Bewertung falsch: „${rueck}“`;
       return null;
     }
 
@@ -1866,7 +1874,187 @@ const elektroProben4 = {
   }
 };
 
-const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...deutschProben,
+/* ------------------------------------------------------------ DEUTSCH II
+   Der Prüfer hält seine EIGENEN Regeln — welche Sätze sachlich sind, welche
+   Zeitform wohin gehört, was ein Argument ausmacht — und prüft, ob die
+   Aufgabe dazu passt. Er rechnet nicht die Aufgabe nach, sondern gegen. */
+
+const deutschProben2 = {
+
+  "Aktiv und Passiv": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Aktivsatz ins Passiv setzen — das Hilfsverb muss „wird“ sein */
+    const um = t.match(/Aktiv: (.+?) Passiv: (.+)$/);
+    if (um) {
+      const aktiv = um[1].trim(), passiv = um[2].trim();
+      if (l !== "wird")
+        return `das Vorgangspassiv wird mit „werden“ gebildet, angegeben ist „${l}“`;
+      /* eigene Tabelle: zu jedem Verb im Aktivsatz das erwartete Partizip II */
+      const PART = {"prüft":"geprüft", "repariert":"repariert", "unterschreibt":"unterschrieben",
+                    "misst":"gemessen", "bezahlt":"bezahlt", "tauscht":"getauscht"};
+      const verb = Object.keys(PART).find(v => aktiv.includes(" " + v + " "));
+      if (!verb) return `für den Aktivsatz „${aktiv}“ ist kein Verb hinterlegt`;
+      if (!passiv.includes(PART[verb]))
+        return `zu „${verb}“ gehört das Partizip „${PART[verb]}“ — im Passivsatz steht es nicht: „${passiv}“`;
+      /* der Täter aus dem Aktivsatz muss im Passivsatz mit von/vom auftauchen */
+      if (!/\bvo[nm]\b/.test(passiv))
+        return `die Täterangabe mit „von“ fehlt: „${passiv}“`;
+      /* Aktiv- und Passivsatz dürfen nicht identisch sein */
+      if (aktiv === passiv) return "Aktiv- und Passivsatz sind gleich";
+      return null;
+    }
+
+    /* Vorgangs- oder Zustandspassiv erkennen */
+    const satz = (t.match(/^(.+?)\s+Wie heißt diese Form/) || [])[1];
+    if (!satz) return "konnte die Aufgabe nicht einordnen: " + t.slice(0, 80);
+    const hatWird = /\bwird\b|\bwerden\b/.test(satz);
+    const hatIst  = /\bist\b|\bsind\b/.test(satz);
+    if (hatWird === hatIst)
+      return `im Satz „${satz.trim()}“ ist nicht eindeutig, ob werden oder sein steht`;
+    const soll = hatWird ? "Vorgangspassiv" : "Zustandspassiv";
+    return l === soll ? null : `„${satz.trim()}“ ist ${soll}, angegeben ist „${l}“`;
+  },
+
+  "Berichten": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Fehlende W-Frage: eigene Prüfung am Text statt Übernahme der Angabe */
+    if (/Welche .?W-Frage.? ist noch unbeantwortet/.test(t)) {
+      const bericht = (t.match(/„(.+?)“/) || [])[1] || "";
+      const FRAGEN = ["Wer", "Was", "Wann", "Wo", "Wie", "Warum"];
+      if (!FRAGEN.includes(l)) return `„${l}“ ist keine der sechs W-Fragen`;
+      /* Warum gilt als beantwortet, wenn eine Ursache genannt wird */
+      const beantwortet = {
+        Warum: /\bweil\b|\bda\b\s|\bUrsache\b|\bnicht gesichert\b|\büberhitzt\b/.test(bericht),
+        Wann:  /\bam \w+tag\b|\bgestern\b|\bGegen \d|\bUhr\b|\bmorgen\b/i.test(bericht),
+        Wo:    /\bin der \w+halle\b|\bIn der Werkstatt\b|\bWerkhalle\b|\bLagerhalle\b/i.test(bericht),
+        Wer:   /\bMitarbeiter\b|\bAuszubildender\b|\bHausmeister\b/i.test(bericht)
+      };
+      if (beantwortet[l] === true)
+        return `„${l}“ wird im Text schon beantwortet: „${bericht}“`;
+      return null;
+    }
+
+    /* Gehört der Satz in einen Bericht? */
+    const satz = (t.match(/„(.+?)“/) || [])[1];
+    if (!satz) return "konnte den Satz nicht lesen: " + t.slice(0, 80);
+    if (!["ja", "nein"].includes(l)) return `erwartet wird ja oder nein, angegeben ist „${l}“`;
+    /* eigene Regeln: Wertung, Gefühl oder wörtliche Rede schließen aus */
+    const wertung = /\btypisch\b|\bzum Glück\b|\bleider\b|\bnatürlich\b|\bwieder mal\b|\bgruselig\b|\bziemlich\b|\bIch fand\b/i.test(satz);
+    const zitat   = /^„|“,\s*sagte|\bsagte er\b/.test(satz);
+    const soll = (wertung || zitat) ? "nein" : "ja";
+    return l === soll ? null
+      : `„${satz}“ gehört ${soll === "ja" ? "" : "nicht "}in einen Bericht (${wertung ? "Wertung" : zitat ? "wörtliche Rede" : "sachlich"}), angegeben ist „${l}“`;
+  },
+
+  "Erzählen": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Welcher Satz ist anschaulicher? */
+    if (/anschaulicher/.test(t)) {
+      if (l !== "B") return `die anschaulichere Fassung steht immer bei B, angegeben ist „${l}“`;
+      const A = (t.match(/A: „(.+?)“/) || [])[1] || "";
+      const B = (t.match(/B: „(.+?)“/) || [])[1] || "";
+      if (!A || !B) return "konnte die beiden Sätze nicht lesen";
+      if (A === B) return "beide Sätze sind gleich";
+      /* eigene Regel: die blasse Fassung enthält ein Verstärkungswort oder ein
+         allgemeines Wort, die starke nicht */
+      const schwach = /\bsehr\b|\bganz\b|\bschnell\b|\bGeräusche\b|\betwas\b|\bgroße\b/i.test(A);
+      if (!schwach)
+        return `Fassung A („${A}“) enthält kein erkennbar schwaches Wort — dann ist der Vergleich nicht eindeutig`;
+      if (/\bsehr\b|\bganz\b/i.test(B))
+        return `Fassung B („${B}“) enthält noch ein Verstärkungswort`;
+      return null;
+    }
+
+    /* Zeitform: die Lösung muss Präteritum sein, nicht Präsens */
+    const verb = (t.match(/Setz das Verb (\w+) in die richtige Zeitform/) || [])[1];
+    if (!verb) return "konnte die Aufgabe nicht einordnen: " + t.slice(0, 80);
+    /* eigene Tabelle der Präteritumformen */
+    const PRAET = { gehen:"ging", drehen:"drehte", beginnen:"begann", treiben:"trieb" };
+    const soll = PRAET[verb];
+    if (!soll) return `für „${verb}“ ist keine Präteritumform hinterlegt`;
+    return l === soll ? null : `„${verb}“ heißt im Präteritum „${soll}“, angegeben ist „${l}“`;
+  },
+
+  "Inhaltsangabe": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Gehört der Satz in eine Inhaltsangabe? */
+    if (/Gehört dieser Satz so in eine Inhaltsangabe/.test(t)) {
+      const satz = (t.match(/„(.+?)“/) || [])[1];
+      if (!satz) return "konnte den Satz nicht lesen";
+      if (!["ja", "nein"].includes(l)) return `erwartet wird ja oder nein, angegeben ist „${l}“`;
+      /* eigene Regeln: Präteritum, Meinung, Zitat oder Spannung schließen aus */
+      /* Vorsicht: ß zählt in JavaScript nicht als Wortzeichen, deshalb kein \b dahinter */
+      const praeteritum = /verließ|\brief\b|\bging\b|\bwar\b|\bhatte\b/.test(satz);
+      const meinung     = /\bIch fand\b|\bspannend\b|\bverrate ich nicht\b|\brichtig\b/.test(satz);
+      const zitat       = /^„|“,\s*ruft|“,\s*sagt/.test(satz);
+      const soll = (praeteritum || meinung || zitat) ? "nein" : "ja";
+      return l === soll ? null
+        : `„${satz}“ gehört ${soll === "ja" ? "" : "nicht "}hinein (${praeteritum ? "Präteritum" : meinung ? "Meinung" : zitat ? "Zitat" : "Präsens, sachlich"}), angegeben ist „${l}“`;
+    }
+
+    /* Fehlende Pflichtangabe im Einleitungssatz */
+    const ein = (t.match(/„(.+?)“\s*Welche der fünf Pflichtangaben/) || t.match(/„(.+?)“/) || [])[1];
+    if (!ein) return "konnte den Einleitungssatz nicht lesen";
+    const PFLICHT = ["Textart", "Titel", "Autor", "Erscheinungsjahr", "Thema"];
+    if (!PFLICHT.includes(l)) return `„${l}“ ist keine der fünf Pflichtangaben`;
+    /* unabhängig am Satz prüfen, ob die genannte Angabe wirklich fehlt */
+    const da = {
+      Textart:          /\bKurzgeschichte\b|\bRoman\b|\bGedicht\b|\bErzählung\b/.test(ein),
+      Titel:            /Das Brot/.test(ein),
+      Autor:            /Borchert/.test(ein),
+      Erscheinungsjahr: /\b1946\b/.test(ein),
+      Thema:            /handelt von|geht es um/.test(ein)
+    };
+    if (da[l]) return `„${l}“ steht doch im Satz: „${ein}“`;
+    const fehlenAuch = PFLICHT.filter(x => x !== l && !da[x]);
+    if (fehlenAuch.length)
+      return `es fehlt nicht nur „${l}“, sondern auch: ${fehlenAuch.join(", ")}`;
+    return null;
+  },
+
+  "Argumentieren": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Welcher Teil des Arguments fehlt? */
+    if (/Welcher .*fehlt hier/.test(t) || /Ein vollständiges Argument hat drei Teile/.test(t)) {
+      const TEILE = ["These", "Begründung", "Beispiel"];
+      if (!TEILE.includes(l)) return `„${l}“ ist keiner der drei Teile`;
+      const text = (t.match(/„(.+?)“/) || [])[1] || "";
+      /* eigene Erkennung: Begründung am weil/denn, Beispiel an einem Beleg */
+      const hatBegruendung = /\bweil\b|\bdenn\b|\bda\b\s/.test(text);
+      const hatBeispiel    = /\bStudie\b|\bletztes Jahr\b|\bIn unserer\b|\bdrei Schüler\b|\bKollege\b|\bzeigt\b/.test(text);
+      const hatThese       = /\bsollten?\b/.test(text);
+      /* These und Beispiel haben verlässliche Merkmale und lassen sich prüfen.
+         Eine Begründung ohne „weil" erkennt kein Muster — dort wird nur geprüft,
+         dass wenigstens die anderen beiden Teile vorhanden sind. */
+      const da = { These: hatThese, "Begründung": hatBegruendung, Beispiel: hatBeispiel };
+      if (l !== "Begründung" && da[l])
+        return `„${l}“ steht doch schon im Text: „${text}“`;
+      if (l === "Begründung" && hatBegruendung)
+        return `im Text steht ein „weil" oder „denn" — die Begründung fehlt also nicht: „${text}“`;
+      const braucht = TEILE.filter(x => x !== l && x !== "Begründung");
+      const auchWeg = braucht.filter(x => !da[x]);
+      if (auchWeg.length) return `es fehlt nicht nur „${l}“, sondern auch: ${auchWeg.join(", ")}`;
+      return null;
+    }
+
+    /* Argument oder bloße Behauptung? */
+    const satz = (t.match(/„(.+?)“/) || [])[1];
+    if (!satz) return "konnte den Satz nicht lesen: " + t.slice(0, 80);
+    if (!["ja", "nein"].includes(l)) return `erwartet wird ja oder nein, angegeben ist „${l}“`;
+    const begruendet = /\bweil\b|\bdenn\b/.test(satz);
+    const schein = /\bweiß doch jeder\b|\bkeine Ahnung\b|\bAlle meine Freunde\b|\bschon immer\b/.test(satz);
+    const soll = (begruendet && !schein) ? "ja" : "nein";
+    return l === soll ? null
+      : `„${satz}“ ist ${soll === "ja" ? "ein Argument" : "kein Argument"}, angegeben ist „${l}“`;
+  }
+};
+
+const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...deutschProben, ...deutschProben2,
                  ...elektroProben, ...elektroProben2, ...elektroProben3, ...elektroProben4 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {

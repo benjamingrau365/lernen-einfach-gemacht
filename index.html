@@ -8347,21 +8347,24 @@ const AUFGABEN = {
       optionen:[R("I_k = 230 V : Z_s", "Richtig — das Ohmsche Gesetz für die Fehlerschleife."),
                 F("I_k = 230 V · Z_s", "Malgenommen würde der Strom mit größerem Widerstand steigen — das ist verkehrt."),
                 F("I_k = Z_s : 230 V", "Vertauscht.")]},
+     {frage:`Wie viel Strom braucht ein <b>B${z(sicherung.a)}</b> zum sicheren Auslösen?`,
+      tipp:"Ein B-Automat löst beim Fünffachen seines Nennstroms sicher aus.",
+      tipp2:`5 · ${z(sicherung.a)} A = ${z(sicherung.ia)} A.`,
+      optionen:[R(`${z(sicherung.ia)} A`, `Richtig — 5 · ${z(sicherung.a)} A.`),
+                F(`${z(sicherung.a * 10)} A`, "Das Zehnfache gilt für die C-Kennlinie, nicht für B."),
+                F(`${z(sicherung.a)} A`, "Das ist der Nennstrom. Zum schnellen Auslösen braucht es das Fünffache.")]},
+     /* Die Rechnung steht bewusst am Schluss: In der Standardeinstellung ist nur
+        der letzte Schritt zum Eintippen, und genau diesen Wert soll man selbst
+        ausrechnen — nicht aus drei Vorschlägen heraussuchen. */
      {frage:`Was ergibt <b>230 V : ${z(zs)} Ω</b>?`,
       tippAntwort: z(ik),
       tipp:"Teile 230 durch die gemessene Impedanz.",
       tipp2:`Rechne 230 : ${z(zs)}.`,
-      optionen:[R(`${z(ik)} A`, "Richtig."),
+      optionen:[R(`${z(ik)} A`, haelt
+                  ? `Richtig — ${z(ik)} A liegen über den nötigen ${z(sicherung.ia)} A. Die Bedingung ist erfüllt.`
+                  : `Richtig — aber ${z(ik)} A reichen nicht: nötig sind ${z(sicherung.ia)} A. Hier muss nachgebessert werden: kürzere Leitung, größerer Querschnitt oder ein FI.`),
                 F(`${z(Math.round(230 * zs))} A`, "Hier wird geteilt, nicht malgenommen."),
-                F(`${z(Math.round(400 / zs))} A`, "Bei einem Einphasenkreis wird mit 230 V gerechnet, nicht mit 400 V.")]},
-     {frage:`Schaltet der B${z(sicherung.a)} damit rechtzeitig ab? (nötig: ${z(sicherung.ia)} A)`,
-      tipp:`Vergleiche ${z(ik)} A mit ${z(sicherung.ia)} A.`,
-      tipp2:haelt ? `${z(ik)} A liegen über ${z(sicherung.ia)} A — die Bedingung ist erfüllt.`
-                  : `${z(ik)} A liegen unter ${z(sicherung.ia)} A — die Bedingung ist nicht erfüllt.`,
-      optionen:[R(haelt ? "Ja, die Bedingung ist erfüllt" : "Nein, die Bedingung ist nicht erfüllt",
-                  haelt ? "Richtig." : "Richtig — hier muss nachgebessert werden: kürzere Leitung, größerer Querschnitt oder ein FI."),
-                F(haelt ? "Nein, die Bedingung ist nicht erfüllt" : "Ja, die Bedingung ist erfüllt", "Vergleich noch einmal die beiden Ströme."),
-                F("Das lässt sich daraus nicht sagen", `Doch — der gemessene Kurzschlussstrom wird mit dem Auslösestrom verglichen.`)]}]};
+                F(`${z(Math.round(400 / zs))} A`, "Bei einem Einphasenkreis wird mit 230 V gerechnet, nicht mit 400 V.")]}]};
  },
 
  /* Isolationswiderstand bewerten */
@@ -8498,7 +8501,7 @@ function istEintippbar(schritt){
   return !!zahlTeile(roh);
 }
 /* Welche Tastatur das Handy zeigen soll. Stehen Buchstaben in der erwarteten
-   Antwort — „Kreuzreim", „8x + 14", „42 cm" —, braucht man die normale
+   Antwort — „Kreuzreim“, „8x + 14“, „42 cm“ —, braucht man die normale
    Tastatur. Nur bei reinen Zahlen ist der Zahlenblock richtig. */
 function tastaturArt(erwartet){
   const roh = String(erwartet).replace(/<[^>]+>/g, "").trim();
@@ -8524,9 +8527,9 @@ function eingabePasst(eingabe, richtigText){
     return Number(m[0].replace(/\.(?=\d{3}\b)/g, "").replace(",", "."));
   };
   /* Der lockere Zahlenvergleich gilt nur für reine Zahlen, notfalls mit
-     Einheit dahinter („42 cm", „70 %"). Steht ein Buchstabe mitten in der
-     Antwort — „8x + 14", „x = -1" —, muss sie genau stimmen. Sonst würde
-     dort schon das Eintippen von „8" als richtig durchgehen. */
+     Einheit dahinter („42 cm“, „70 %“). Steht ein Buchstabe mitten in der
+     Antwort — „8x + 14“, „x = -1“ —, muss sie genau stimmen. Sonst würde
+     dort schon das Eintippen von „8“ als richtig durchgehen. */
   const zahlMitEinheit = /^-?[\d.,]+(%|€|°|[a-zäöüß]{1,4}[²³]?)?$/;
   if (!zahlMitEinheit.test(b)) return false;
   const za = zahl(a), zb = zahl(b);
@@ -8967,6 +8970,363 @@ Object.assign(AUFGABEN, {
  }
 ]
 
+,
+
+"Aktiv und Passiv":[
+
+ /* Aktivsatz ins Passiv setzen */
+ () => {
+   const f = pick([
+     {akt:"Der Monteur prüft die Anlage.",     pass:"wird",  rest:"vom Monteur geprüft", subj:"Die Anlage", part:"geprüft", taeter:"Der Monteur"},
+     {akt:"Die Firma repariert den Motor.",    pass:"wird",  rest:"von der Firma repariert", subj:"Der Motor", part:"repariert", taeter:"Die Firma"},
+     {akt:"Der Meister unterschreibt das Protokoll.", pass:"wird", rest:"vom Meister unterschrieben", subj:"Das Protokoll", part:"unterschrieben", taeter:"Der Meister"},
+     {akt:"Die Auszubildende misst die Spannung.", pass:"wird", rest:"von der Auszubildenden gemessen", subj:"Die Spannung", part:"gemessen", taeter:"Die Auszubildende"},
+     {akt:"Der Kunde bezahlt die Rechnung.",   pass:"wird",  rest:"vom Kunden bezahlt", subj:"Die Rechnung", part:"bezahlt", taeter:"Der Kunde"},
+     {akt:"Der Techniker tauscht die Sicherung.", pass:"wird", rest:"vom Techniker getauscht", subj:"Die Sicherung", part:"getauscht", taeter:"Der Techniker"}
+   ]);
+   const w = f;
+   return {
+    typ:"text",
+    text:`Aktiv: <b>${w.akt}</b><br>Passiv: ${w.subj} <span class='luecke'>___</span> ${w.rest}.`,
+    loesung: w.pass,
+    schluss:"Im Passiv rückt das in den Mittelpunkt, was mit einer Sache geschieht. Wer es tut, kann genannt werden — muss aber nicht.",
+    schritte:[
+     {frage:"Was wird im <b>Aktivsatz</b> zum Subjekt gemacht?",
+      tipp:"Frag: Wer oder was tut etwas?",
+      tipp2:`Im Aktivsatz ist „${w.taeter}“ das Subjekt — die handelnde Person.`,
+      optionen:[R(`${w.taeter} — wer handelt`, "Richtig. Im Aktiv steht der Täter vorn."),
+                F(`${w.subj} — woran gehandelt wird`, "Das rückt erst im Passiv nach vorn."),
+                F("Beide gleichzeitig", "Ein Satz hat nur ein Subjekt.")]},
+     {frage:"Was passiert beim Umbau ins <b>Passiv</b>?",
+      tipp:"Schau, was im Passivsatz vorn steht.",
+      tipp2:`Aus dem Objekt „${w.subj.toLowerCase()}“ wird das Subjekt, der Täter wandert nach hinten mit „von“.`,
+      optionen:[R("Das Objekt wird zum Subjekt, der Täter rückt nach hinten", "Richtig — genau das ist die Umformung."),
+                F("Nur die Zeitform ändert sich", "Die Zeitform bleibt gleich, die Rollen tauschen."),
+                F("Der Täter fällt immer weg", "Er darf wegfallen, muss aber nicht — mit „von“ bleibt er im Satz.")]},
+     {frage:`Welches <b>Hilfsverb</b> braucht das Passiv?`,
+      tippAntwort: w.pass,
+      tipp:"Es ist nicht „haben“ und nicht „sein“.",
+      tipp2:`Das Vorgangspassiv wird mit „werden“ gebildet: ${w.subj} <b>${w.pass}</b> ${w.rest}.`,
+      optionen:[R(`${w.pass}`, "Richtig — „werden“ plus Partizip II ergibt das Vorgangspassiv."),
+                F("hat", "Mit „haben“ entsteht das Perfekt, kein Passiv."),
+                F("ist", `Mit „sein“ entstünde das Zustandspassiv: ${w.subj.toLowerCase()} <i>ist</i> ${w.part} — das beschreibt einen Zustand, keinen Vorgang.`)]}]};
+ },
+
+ /* Vorgangs- oder Zustandspassiv? */
+ () => {
+   const f = pick([
+     {satz:"Die Tür wird geschlossen.", art:"Vorgangspassiv", hilf:"wird", was:"gerade passiert etwas"},
+     {satz:"Die Tür ist geschlossen.",  art:"Zustandspassiv", hilf:"ist",  was:"es ist bereits fertig"},
+     {satz:"Der Zähler wird abgelesen.", art:"Vorgangspassiv", hilf:"wird", was:"gerade passiert etwas"},
+     {satz:"Der Zähler ist abgelesen.",  art:"Zustandspassiv", hilf:"ist",  was:"es ist bereits fertig"},
+     {satz:"Die Leitung wird verlegt.",  art:"Vorgangspassiv", hilf:"wird", was:"gerade passiert etwas"},
+     {satz:"Die Leitung ist verlegt.",   art:"Zustandspassiv", hilf:"ist",  was:"es ist bereits fertig"}
+   ]);
+   const vorgang = f.art === "Vorgangspassiv";
+   return {
+    typ:"text",
+    text:`<b>${f.satz}</b><br>Wie heißt diese Form? Schreib <span class='luecke'>Vorgangspassiv</span> oder <span class='luecke'>Zustandspassiv</span>.`,
+    loesung: f.art,
+    schluss:"„wird“ heißt: Es läuft gerade. „ist“ heißt: Es ist erledigt. Ein einziges Wort entscheidet, ob eine Anlage gerade abgeschaltet wird oder schon abgeschaltet ist.",
+    schritte:[
+     {frage:"Welches <b>Hilfsverb</b> steht im Satz?",
+      tipp:"Schau auf das gebeugte Verb.",
+      tipp2:`Im Satz steht „${f.hilf}“.`,
+      optionen:[R(`${f.hilf}`, "Richtig."),
+                F(`${vorgang ? "ist" : "wird"}`, "Das steht in der anderen Form."),
+                F("hat", "„haben“ bildet das Perfekt, kein Passiv.")]},
+     {frage:`Beschreibt der Satz einen <b>Vorgang</b> oder einen <b>Zustand</b>?`,
+      tippAntwort: f.art,
+      tipp:"„wird“ zeigt einen Vorgang, „ist“ ein fertiges Ergebnis.",
+      tipp2:`Hier ${f.was} — also ${f.art}.`,
+      optionen:[R(f.art, `Richtig — ${f.was}.`),
+                F(vorgang ? "Zustandspassiv" : "Vorgangspassiv", `Das wäre mit „${vorgang ? "ist" : "wird"}“ der Fall.`),
+                F("Aktiv", "Im Aktiv stünde da, wer handelt.")]}]};
+ }
+],
+
+"Berichten":[
+
+ /* Welche W-Frage fehlt? */
+ () => {
+   const f = pick([
+     {text:"Am Montag kam es in der Werkhalle zu einem Kurzschluss.", da:["Wann","Wo","Was"], fehlt:"Warum", erg:"Ursache war eine beschädigte Leitung."},
+     {text:"Gegen 8 Uhr stürzte ein Mitarbeiter in der Lagerhalle von der Leiter.", da:["Wann","Wo","Was","Wer"], fehlt:"Warum", erg:"Die Leiter war nicht gesichert."},
+     {text:"In der Werkstatt fiel gestern die Beleuchtung aus, weil ein Automat ausgelöst hatte.", da:["Wo","Wann","Was","Warum"], fehlt:"Wer", erg:"Der Hausmeister meldete den Ausfall."},
+     {text:"Ein Auszubildender bemerkte den Rauch und schlug Alarm, weil ein Motor überhitzt war.", da:["Wer","Was","Warum"], fehlt:"Wann", erg:"Das war am Dienstagmorgen."}
+   ]);
+   return {
+    typ:"text",
+    text:`Ein Bericht beginnt so:<br><i>„${f.text}“</i><br>Welche <b>W-Frage</b> ist noch unbeantwortet? Schreib nur das Fragewort.`,
+    loesung: f.fehlt,
+    schluss:"Ein Bericht ist erst vollständig, wenn alle W-Fragen beantwortet sind. Was fehlt, muss der Leser raten — und genau das soll ein Bericht verhindern.",
+    schritte:[
+     {frage:"Welche W-Fragen gehören in einen Bericht?",
+      tipp:"Es sind sechs.",
+      tipp2:"Wer, was, wann, wo, wie, warum — dazu je nach Fall die Folgen.",
+      optionen:[R("Wer, was, wann, wo, wie, warum", "Richtig — das ist das Gerüst jedes Berichts."),
+                F("Wer, wie, wieso, weshalb, warum", "Wieso, weshalb und warum fragen alle dasselbe."),
+                F("Wann und wo reichen aus", "Dann wüsste niemand, was überhaupt passiert ist.")]},
+     {frage:`Welche Fragen beantwortet der Satz schon?`,
+      tipp:"Geh die W-Fragen der Reihe nach durch und such die Antwort im Satz.",
+      tipp2:`Beantwortet sind: ${f.da.join(", ")}.`,
+      optionen:[R(f.da.join(", "), "Richtig."),
+                F(f.da.concat(f.fehlt).join(", "), `„${f.fehlt}“ steht gerade nicht im Satz.`),
+                F(f.da.slice(0, 1).join(", "), "Da steht mehr im Satz.")]},
+     {frage:`Was fehlt also noch?`,
+      tippAntwort: f.fehlt,
+      tipp:"Vergleiche die sechs Fragen mit dem, was schon dasteht.",
+      tipp2:`Es fehlt „${f.fehlt}“ — zum Beispiel: ${f.erg}`,
+      optionen:[R(f.fehlt, `Richtig. Zum Beispiel: ${f.erg}`),
+                F(f.da[0], "Das steht schon im Satz."),
+                F("Nichts", "Eine Frage ist noch offen.")]}]};
+ },
+
+ /* Gehört der Satz in einen Bericht? */
+ () => {
+   const f = pick([
+     {satz:"Der Mitarbeiter verließ um 14:20 Uhr die Halle.", ok:true,  grund:"sachlich, mit genauer Zeitangabe"},
+     {satz:"Das war natürlich wieder mal typisch für ihn.", ok:false, grund:"eine Wertung — die hat im Bericht nichts zu suchen"},
+     {satz:"Gegen 9 Uhr löste der Fehlerstrom-Schutzschalter aus.", ok:true, grund:"sachlich und nachprüfbar"},
+     {satz:"Ich fand die ganze Sache ziemlich gruselig.", ok:false, grund:"ein persönliches Gefühl, kein Sachverhalt"},
+     {satz:"„Mir ist das Werkzeug einfach runtergefallen“, sagte er.", ok:false, grund:"wörtliche Rede — im Bericht wird zusammengefasst, nicht zitiert"},
+     {satz:"Die Feuerwehr traf um 10:05 Uhr ein.", ok:true, grund:"sachlich, mit Uhrzeit"},
+     {satz:"Zum Glück ist niemandem etwas passiert.", ok:false, grund:"„zum Glück“ ist eine Wertung"},
+     {satz:"Der Schaden wurde auf 2400 Euro geschätzt.", ok:true, grund:"eine nachprüfbare Angabe"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>Gehört dieser Satz so in einen Bericht? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.ok ? "ja" : "nein",
+    schluss:"Ein Bericht bleibt sachlich: Präteritum, keine Wertung, keine wörtliche Rede, keine Spannung. Wer spannend erzählen will, schreibt eine Erzählung.",
+    schritte:[
+     {frage:"Woran erkennt man einen guten Berichtssatz?",
+      tipp:"Ein Bericht soll informieren, nicht unterhalten.",
+      tipp2:"Er ist sachlich, nachprüfbar und ohne persönliche Wertung.",
+      optionen:[R("Er ist sachlich und nachprüfbar, ohne Wertung", "Richtig."),
+                F("Er ist möglichst spannend geschrieben", "Spannung gehört in die Erzählung, nicht in den Bericht."),
+                F("Er enthält viele wörtliche Reden", "Im Bericht wird zusammengefasst statt zitiert.")]},
+     {frage:"Und dieser Satz?",
+      tippAntwort: f.ok ? "ja" : "nein",
+      tipp:"Steht da ein nachprüfbarer Sachverhalt oder eine Meinung?",
+      tipp2:`Der Satz ist ${f.grund}.`,
+      optionen:[R(f.ok ? "ja" : "nein", `Richtig — ${f.grund}.`),
+                F(f.ok ? "nein" : "ja", `Schau noch einmal hin: ${f.grund}.`),
+                F("kommt darauf an", "Hier ist es eindeutig.")]}]};
+ }
+],
+
+"Erzählen":[
+
+ /* Welcher Satz ist anschaulicher? */
+ () => {
+   const f = pick([
+     {blass:"Er ging schnell zur Tür.",        stark:"Er hastete zur Tür.",        was:"ein starkes Verb statt Verb plus Adverb"},
+     {blass:"Sie sagte laut etwas.",           stark:"Sie brüllte.",               was:"ein starkes Verb statt einer Umschreibung"},
+     {blass:"Es war sehr dunkel.",             stark:"Kein Lichtstrahl drang durch die Ritzen.", was:"ein Bild statt eines allgemeinen Wortes"},
+     {blass:"Der Hund machte Geräusche.",      stark:"Der Hund knurrte.",          was:"ein genaues Wort statt eines vagen"},
+     {blass:"Sie hatte große Angst.",          stark:"Ihre Hände zitterten, der Atem stockte.", was:"zeigen statt behaupten"},
+     {blass:"Er lief sehr schnell weg.",       stark:"Er rannte davon.",           was:"ein starkes Verb statt „sehr“ plus Adverb"}
+   ]);
+   return {
+    typ:"text",
+    text:`Welcher Satz ist <b>anschaulicher</b>?<br>A: <i>„${f.blass}“</i><br>B: <i>„${f.stark}“</i><br>Schreib <span class='luecke'>A</span> oder <span class='luecke'>B</span>.`,
+    loesung: "B",
+    schluss:"Anschaulich schreiben heißt: zeigen statt behaupten. Nicht „sie hatte Angst“ — sondern was man sehen würde, wenn man dabei wäre.",
+    schritte:[
+     {frage:"Was macht eine Erzählung lebendig?",
+      tipp:"Denk daran, was du beim Lesen vor dir siehst.",
+      tipp2:"Genaue, starke Verben und Bilder, die man sich vorstellen kann.",
+      optionen:[R("Starke Verben und anschauliche Bilder", "Richtig."),
+                F("Möglichst viele „sehr“ und „ganz“", "Verstärkungswörter machen einen schwachen Ausdruck nicht stark."),
+                F("Möglichst lange Sätze", "Die Länge sagt nichts über die Wirkung.")]},
+     {frage:"Was ist an B besser?",
+      tippAntwort: "B",
+      tipp:"Vergleiche, welcher Satz ein genaueres Bild erzeugt.",
+      tipp2:`In B steht ${f.was}.`,
+      optionen:[R("B", `Richtig — dort steht ${f.was}.`),
+                F("A", "A bleibt allgemein; man sieht nichts vor sich."),
+                F("Beide gleich", "Der Unterschied ist deutlich.")]}]};
+ },
+
+ /* Zeitform der Erzählung */
+ () => {
+   const f = pick([
+     {satz:"Plötzlich ___ die Tür auf.", falsch:"geht", richtig:"ging", grund:"gehen"},
+     {satz:"Er ___ den Schlüssel um und trat ein.", falsch:"dreht", richtig:"drehte", grund:"drehen"},
+     {satz:"Draußen ___ es zu regnen.", falsch:"beginnt", richtig:"begann", grund:"beginnen"},
+     {satz:"Sie ___ sich langsam um.", falsch:"dreht", richtig:"drehte", grund:"drehen"},
+     {satz:"Der Wind ___ die Blätter über den Hof.", falsch:"treibt", richtig:"trieb", grund:"treiben"}
+   ]);
+   return {
+    typ:"text",
+    text:`In einer Erzählung: <i>„${f.satz.replace("___", "<span class='luecke'>___</span>")}“</i><br>Setz das Verb <b>${f.grund}</b> in die richtige Zeitform ein.`,
+    loesung: f.richtig,
+    schluss:"Erzählt wird im Präteritum. Nur die wörtliche Rede darin steht so, wie jemand wirklich spricht.",
+    schritte:[
+     {frage:"In welcher <b>Zeitform</b> wird erzählt?",
+      tipp:"Es ist die Zeitform, die man in Büchern liest, aber selten spricht.",
+      tipp2:"Erzählt wird im Präteritum — der geschriebenen Vergangenheit.",
+      optionen:[R("Präteritum", "Richtig."),
+                F("Präsens", "Präsens gehört in die Inhaltsangabe, nicht in die Erzählung."),
+                F("Perfekt", "Perfekt benutzt man beim Sprechen, nicht beim Erzählen im Text.")]},
+     {frage:`Wie heißt <b>${f.grund}</b> im Präteritum?`,
+      tippAntwort: f.richtig,
+      tipp:"Erste Person Einzahl oder dritte Person Einzahl, Vergangenheit.",
+      tipp2:`Aus „${f.falsch}“ wird „${f.richtig}“.`,
+      optionen:[R(f.richtig, "Richtig."),
+                F(f.falsch, "Das ist Präsens — es klingt, als passiere es gerade jetzt."),
+                F(`ist ge${f.grund.replace(/e?n$/, "")}t`, "Das wäre Perfekt, und es ist außerdem falsch gebildet.")]}]};
+ }
+],
+
+"Inhaltsangabe":[
+
+ /* Gehört der Satz in eine Inhaltsangabe? */
+ () => {
+   const f = pick([
+     {satz:"Der Junge verlässt heimlich das Haus.", ok:true,  grund:"Präsens, sachlich, gibt Handlung wieder"},
+     {satz:"Der Junge verließ heimlich das Haus.", ok:false, grund:"Präteritum — die Inhaltsangabe steht im Präsens"},
+     {satz:"Ich fand die Stelle richtig spannend.", ok:false, grund:"eine eigene Meinung — die gehört nicht hinein"},
+     {satz:"Die Mutter bemerkt sein Fehlen erst am Morgen.", ok:true, grund:"Präsens und sachlich"},
+     {satz:"„Wo warst du?“, ruft die Mutter.", ok:false, grund:"wörtliche Rede — in der Inhaltsangabe wird zusammengefasst"},
+     {satz:"Am Ende versöhnen sich die beiden.", ok:true, grund:"Präsens, fasst das Ende zusammen"},
+     {satz:"Was dann passiert, verrate ich nicht.", ok:false, grund:"Spannung aufbauen ist nicht die Aufgabe einer Inhaltsangabe"},
+     {satz:"Der Text stammt aus dem Jahr 1987.", ok:true, grund:"gehört in den Einleitungssatz"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>Gehört dieser Satz so in eine Inhaltsangabe? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.ok ? "ja" : "nein",
+    schluss:"Eine Inhaltsangabe steht im Präsens, ist sachlich, verrät auch das Ende und kommt ohne Zitate und ohne eigene Meinung aus.",
+    schritte:[
+     {frage:"Welche <b>Zeitform</b> gehört in eine Inhaltsangabe?",
+      tipp:"Es ist nicht die Zeitform der Erzählung.",
+      tipp2:"Immer Präsens — auch wenn die Geschichte in der Vergangenheit spielt.",
+      optionen:[R("Präsens", "Richtig."),
+                F("Präteritum", "Das ist die Zeitform der Erzählung selbst."),
+                F("Je nachdem, wann die Handlung spielt", "Nein — die Inhaltsangabe steht immer im Präsens.")]},
+     {frage:"Und dieser Satz?",
+      tippAntwort: f.ok ? "ja" : "nein",
+      tipp:"Prüf Zeitform, Sachlichkeit und ob zitiert wird.",
+      tipp2:`Der Satz ist ${f.grund}.`,
+      optionen:[R(f.ok ? "ja" : "nein", `Richtig — ${f.grund}.`),
+                F(f.ok ? "nein" : "ja", `Schau noch einmal hin: ${f.grund}.`),
+                F("nur im Schlussteil", "Die Regeln gelten für die ganze Inhaltsangabe.")]}]};
+ },
+
+ /* Der Einleitungssatz */
+ () => {
+   const f = pick([
+     {fehlt:"Erscheinungsjahr", satz:"In der Kurzgeschichte „Das Brot“ von Wolfgang Borchert geht es um ein Ehepaar in der Nachkriegszeit.", teile:["Textart","Titel","Autor","Thema"]},
+     {fehlt:"Autor",           satz:"Die Kurzgeschichte „Das Brot“ aus dem Jahr 1946 handelt von einem Ehepaar in der Nachkriegszeit.", teile:["Textart","Titel","Erscheinungsjahr","Thema"]},
+     {fehlt:"Thema",           satz:"Die Kurzgeschichte „Das Brot“ von Wolfgang Borchert erschien 1946.", teile:["Textart","Titel","Autor","Erscheinungsjahr"]},
+     {fehlt:"Textart",         satz:"„Das Brot“ von Wolfgang Borchert aus dem Jahr 1946 handelt von einem Ehepaar in der Nachkriegszeit.", teile:["Titel","Autor","Erscheinungsjahr","Thema"]}
+   ]);
+   return {
+    typ:"text",
+    text:`Einleitungssatz einer Inhaltsangabe:<br><i>„${f.satz}“</i><br>Welche der fünf Pflichtangaben <b>fehlt</b>? Schreib nur das Wort.`,
+    loesung: f.fehlt,
+    schluss:"Der Einleitungssatz nennt fünf Dinge: Textart, Titel, Autor, Erscheinungsjahr und Thema. Merkhilfe: TATTE.",
+    schritte:[
+     {frage:"Was gehört in den Einleitungssatz?",
+      tipp:"Es sind fünf Angaben.",
+      tipp2:"Textart, Titel, Autor, Erscheinungsjahr, Thema — kurz TATTE.",
+      optionen:[R("Textart, Titel, Autor, Erscheinungsjahr, Thema", "Richtig — die Merkhilfe dafür ist TATTE."),
+                F("Nur Titel und Autor", "Damit weiß der Leser noch nicht, worum es geht."),
+                F("Eine Einschätzung des Textes", "Eine Wertung gehört nicht in die Inhaltsangabe.")]},
+     {frage:"Welche Angaben stehen schon im Satz?",
+      tipp:"Geh die fünf Punkte der Reihe nach durch.",
+      tipp2:`Vorhanden sind: ${f.teile.join(", ")}.`,
+      optionen:[R(f.teile.join(", "), "Richtig."),
+                F(f.teile.concat(f.fehlt).join(", "), `„${f.fehlt}“ steht gerade nicht da.`),
+                F(f.teile.slice(0, 2).join(", "), "Da steht mehr im Satz.")]},
+     {frage:"Was fehlt also?",
+      tippAntwort: f.fehlt,
+      tipp:"Vergleiche die fünf Pflichtangaben mit dem Satz.",
+      tipp2:`Es fehlt: ${f.fehlt}.`,
+      optionen:[R(f.fehlt, "Richtig."),
+                F(f.teile[0], "Das steht schon im Satz."),
+                F("Nichts", "Eine Angabe fehlt.")]}]};
+ }
+],
+
+"Argumentieren":[
+
+ /* Welcher Teil des Arguments fehlt? */
+ () => {
+   const f = pick([
+     {text:"Schulen sollten später anfangen. Jugendliche brauchen morgens mehr Schlaf.",
+      hat:["These","Begründung"], fehlt:"Beispiel",
+      erg:"Eine Studie der Universität München zeigte, dass Schüler nach 9 Uhr deutlich bessere Ergebnisse erzielten."},
+     {text:"Jugendliche brauchen morgens mehr Schlaf. Eine Studie zeigt, dass sie nach 9 Uhr besser abschneiden.",
+      hat:["Begründung","Beispiel"], fehlt:"These",
+      erg:"Deshalb sollten Schulen später anfangen."},
+     {text:"Handys sollten im Unterricht verboten sein. In unserer Klasse haben letztes Jahr drei Schüler während der Arbeit gespickt.",
+      hat:["These","Beispiel"], fehlt:"Begründung",
+      erg:"Sie lenken vom Unterricht ab und verleiten zum Schummeln."},
+     {text:"Der Betrieb sollte Werkzeug stellen. Wer eigenes Werkzeug mitbringt, haftet bei Schäden selbst.",
+      hat:["These","Begründung"], fehlt:"Beispiel",
+      erg:"Ein Kollege musste letztes Jahr eine kaputte Bohrmaschine aus eigener Tasche ersetzen."}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.text}“</i><br>Ein vollständiges Argument hat drei Teile. Welcher <b>fehlt</b> hier? Schreib nur das Wort.`,
+    loesung: f.fehlt,
+    schluss:"Ein Argument ohne Beispiel bleibt Behauptung gegen Behauptung. Erst das Beispiel macht es überprüfbar.",
+    schritte:[
+     {frage:"Aus welchen drei Teilen besteht ein Argument?",
+      tipp:"Behauptung, Warum, und dann etwas Konkretes.",
+      tipp2:"These, Begründung, Beispiel — kurz: Was behaupte ich, warum, und woran sieht man das?",
+      optionen:[R("These, Begründung, Beispiel", "Richtig."),
+                F("Einleitung, Hauptteil, Schluss", "Das ist der Aufbau eines Aufsatzes, nicht eines Arguments."),
+                F("Pro, Contra, Fazit", "Das ist der Aufbau einer Erörterung.")]},
+     {frage:"Welche Teile stehen schon da?",
+      tipp:"Lies den Text und ordne jeden Satz einem Teil zu.",
+      tipp2:`Vorhanden sind: ${f.hat.join(" und ")}.`,
+      optionen:[R(f.hat.join(" und "), "Richtig."),
+                F(f.hat.concat(f.fehlt).join(", "), `${f.fehlt} steht gerade nicht da.`),
+                F(f.hat[0], "Da steht mehr als ein Teil.")]},
+     {frage:"Was fehlt also?",
+      tippAntwort: f.fehlt,
+      tipp:"Vergleiche die drei Teile mit dem, was dasteht.",
+      tipp2:`Es fehlt das ${f.fehlt}. Zum Beispiel: ${f.erg}`,
+      optionen:[R(f.fehlt, `Richtig. Zum Beispiel: ${f.erg}`),
+                F(f.hat[0], "Das steht schon da."),
+                F("Nichts", "Ein Teil fehlt.")]}]};
+ },
+
+ /* Argument oder bloße Behauptung? */
+ () => {
+   const f = pick([
+     {satz:"Das ist einfach so, das weiß doch jeder.", ok:false, grund:"eine Behauptung ohne jede Begründung"},
+     {satz:"Späterer Schulbeginn hilft, weil Jugendliche einen verschobenen Schlafrhythmus haben.", ok:true, grund:"eine These mit Begründung"},
+     {satz:"Wer das anders sieht, hat keine Ahnung.", ok:false, grund:"ein Angriff auf die Person statt auf die Sache"},
+     {satz:"Der Betrieb spart Kosten, denn eine Wartung ist billiger als ein Ausfall.", ok:true, grund:"eine These mit Begründung"},
+     {satz:"Alle meine Freunde finden das auch.", ok:false, grund:"viele Meinungen sind noch kein Argument"},
+     {satz:"Elektroautos sind leiser, weil ihnen der Verbrennungsmotor fehlt.", ok:true, grund:"eine These mit Begründung"}
+   ]);
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>Ist das ein <b>Argument</b>? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.ok ? "ja" : "nein",
+    schluss:"Ein Argument begründet. Wer sich auf „das weiß doch jeder“ oder auf die Person des Gegners beruft, argumentiert nicht — er behauptet nur lauter.",
+    schritte:[
+     {frage:"Woran erkennst du ein Argument?",
+      tipp:"Achte auf ein „weil“, „denn“ oder „da“.",
+      tipp2:"Es enthält eine Begründung, nicht nur eine Behauptung.",
+      optionen:[R("Es begründet die Behauptung", "Richtig."),
+                F("Es klingt überzeugt", "Überzeugtheit ist keine Begründung."),
+                F("Viele Leute sind derselben Meinung", "Wie viele etwas glauben, sagt nichts darüber, ob es stimmt.")]},
+     {frage:"Und dieser Satz?",
+      tippAntwort: f.ok ? "ja" : "nein",
+      tipp:"Steht dort ein Grund oder nur eine Behauptung?",
+      tipp2:`Der Satz ist ${f.grund}.`,
+      optionen:[R(f.ok ? "ja" : "nein", `Richtig — ${f.grund}.`),
+                F(f.ok ? "nein" : "ja", `Schau noch einmal hin: ${f.grund}.`),
+                F("teilweise", "Entweder es wird begründet oder nicht.")]}]};
+ }
+]
 });
 /* ---------- Erklärungen ----------
    Aufbau: worum · einfach (von ganz vorn) · begriffe (Wörter, die man kennen muss)
@@ -8975,6 +9335,574 @@ Object.assign(AUFGABEN, {
 const SVG_STIL = `style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto"`;
 
 const ERKLAERUNGEN = {
+
+"Aktiv und Passiv": {
+  worum:"Aktiv sagt, wer etwas tut. Passiv sagt, was mit etwas geschieht. Dieselbe Sache, zwei Blickwinkel.",
+  wozu:[
+    "In Bedienungsanleitungen, Prüfprotokollen und Normen steht fast alles im Passiv: „Die Anlage wird freigeschaltet.“ Wer den Unterschied kennt, merkt auch, wo jemand absichtlich verschweigt, wer verantwortlich ist.",
+    "Im Berichtsheft und in der Dokumentation ist das Passiv die übliche Form. Es rückt die Arbeit in den Mittelpunkt statt die Person."
+  ],
+  rezept:[
+    "Such im Aktivsatz das Objekt — frag: Wen oder was?",
+    "Mach dieses Objekt zum Subjekt des Passivsatzes.",
+    "Setz das Verb ins Partizip II: prüfen wird zu geprüft.",
+    "Stell „werden“ in der passenden Person und Zeit davor.",
+    "Den ursprünglichen Täter hängst du mit „von“ hinten an — oder lässt ihn weg.",
+    "Für einen fertigen Zustand nimm „sein“ statt „werden“."
+  ],
+  fehler:[
+    ["Vorgangs- und Zustandspassiv verwechselt", "„Die Anlage wird abgeschaltet“ heißt: Es passiert gerade. „Die Anlage ist abgeschaltet“ heißt: Es ist erledigt. Bei den fünf Sicherheitsregeln ist das ein Unterschied ums Leben."],
+    ["Passiv mit Perfekt verwechselt", "„Er hat geprüft“ ist Perfekt im Aktiv. „Es wird geprüft“ ist Passiv. Beide haben ein Partizip, aber ein anderes Hilfsverb."],
+    ["Den Täter zwanghaft weggelassen", "Das Passiv erlaubt es, den Täter wegzulassen — es zwingt aber nicht dazu. Mit „von“ bleibt er im Satz."],
+    ["Passiv gebildet, wo es keins gibt", "Verben ohne Objekt lassen sich nicht so umbauen. „Er schläft“ hat kein Passiv."]
+  ],
+  einfach:[
+    "Im Aktiv steht vorn, wer handelt: Der Monteur prüft die Anlage.",
+    "Im Passiv steht vorn, woran gehandelt wird: Die Anlage wird geprüft.",
+    "Beim Umbau tauschen die beiden die Plätze. Aus dem Objekt wird das Subjekt.",
+    "Der Täter kann mit „von“ hinten stehen bleiben: Die Anlage wird vom Monteur geprüft.",
+    "Er darf aber auch ganz wegfallen — das ist der häufigste Grund, warum jemand das Passiv wählt.",
+    "Gebildet wird das Passiv mit „werden“ und dem Partizip II: wird geprüft, wurde geprüft, ist geprüft worden.",
+    "Das nennt man Vorgangspassiv: Es beschreibt, dass gerade etwas geschieht.",
+    "Mit „sein“ statt „werden“ entsteht das Zustandspassiv: Die Anlage ist geprüft. Das beschreibt ein Ergebnis.",
+    "Der Unterschied ist wichtig: „wird abgeschaltet“ heißt, es läuft gerade. „ist abgeschaltet“ heißt, es ist fertig.",
+    "Das Passiv ist nicht besser oder schlechter als das Aktiv. Es lenkt nur den Blick auf etwas anderes."
+  ],
+  begriffe:[
+    ["Aktiv","Tatform — wer handelt, steht vorn."],
+    ["Passiv","Leideform — was geschieht, steht vorn."],
+    ["Vorgangspassiv","Mit „werden“: Es passiert gerade."],
+    ["Zustandspassiv","Mit „sein“: Es ist bereits erledigt."],
+    ["Partizip II","Die Form, die auch im Perfekt steht: geprüft, gemessen, getauscht."],
+    ["Täterangabe","Der ursprünglich Handelnde, angehängt mit „von“."]
+  ],
+  tabelle:{
+    titel:"Dieselbe Aussage in beiden Formen",
+    kopf:["Aktiv","Vorgangspassiv","Zustandspassiv"],
+    zeilen:[
+      ["Der Monteur prüft die Anlage.","Die Anlage wird geprüft.","Die Anlage ist geprüft."],
+      ["Er schaltet den Strom ab.","Der Strom wird abgeschaltet.","Der Strom ist abgeschaltet."],
+      ["Sie misst die Spannung.","Die Spannung wird gemessen.","Die Spannung ist gemessen."],
+      ["Der Meister unterschreibt.","Es wird unterschrieben.","Es ist unterschrieben."],
+      ["Man verlegt die Leitung.","Die Leitung wird verlegt.","Die Leitung ist verlegt."]
+    ],
+    fuss:"Die mittlere Spalte beschreibt einen Vorgang, die rechte ein Ergebnis. Genau daran hängt bei den Sicherheitsregeln alles."
+  },
+  regeln:[
+    "Aktiv: wer handelt, steht vorn. Passiv: woran gehandelt wird, steht vorn.",
+    "Objekt des Aktivsatzes wird Subjekt des Passivsatzes.",
+    "Vorgangspassiv: werden + Partizip II.",
+    "Zustandspassiv: sein + Partizip II.",
+    "Der Täter kann mit „von“ genannt werden — er muss nicht.",
+    "Ohne Objekt gibt es kein Passiv."
+  ],
+  beispiel:{aufgabe:"Setz ins Passiv: „Die Auszubildende tauscht die Sicherung.“",
+    schritte:["Objekt suchen: die Sicherung","Es wird zum Subjekt: Die Sicherung …","Verb ins Partizip II: getauscht","werden davor, Täter mit „von“ hinten"],
+    ergebnis:"Die Sicherung wird von der Auszubildenden getauscht."},
+  spiel:{
+    titel:"Umbauen und zurück",
+    hinweis:"Wähl einen Satz und schieb durch die drei Formen. Achte darauf, was mit dem Täter passiert.",
+    regler:[
+      {id:"s", name:"Satz", von:0, bis:3, schritt:1, start:0},
+      {id:"f", name:"Form", von:0, bis:2, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["Der Monteur prüft die Anlage.", "Die Anlage wird vom Monteur geprüft.", "Die Anlage ist geprüft.", "Der Monteur", "die Anlage"],
+        ["Sie schaltet den Strom ab.", "Der Strom wird von ihr abgeschaltet.", "Der Strom ist abgeschaltet.", "Sie", "den Strom"],
+        ["Der Kunde bezahlt die Rechnung.", "Die Rechnung wird vom Kunden bezahlt.", "Die Rechnung ist bezahlt.", "Der Kunde", "die Rechnung"],
+        ["Wir verlegen die Leitung.", "Die Leitung wird von uns verlegt.", "Die Leitung ist verlegt.", "Wir", "die Leitung"]
+      ];
+      const NAMEN = ["Aktiv", "Vorgangspassiv", "Zustandspassiv"];
+      const WAS = ["Wer handelt, steht vorn.", "Was geschieht, steht vorn — es läuft gerade.", "Das Ergebnis steht vorn — es ist fertig."];
+      const s = S[w.s];
+      return {
+        werte:[
+          {name:"Form", text:NAMEN[w.f]},
+          {name:"So heißt es", text:"<b>" + s[w.f] + "</b>"},
+          {name:"Vorn steht", text: w.f === 0 ? s[3] + " (der Täter)" : s[4].charAt(0).toUpperCase() + s[4].slice(1) + " (die Sache)"},
+          {name:"Was das aussagt", text:WAS[w.f]}
+        ],
+        satz: w.f === 2
+          ? "Mit „ist“ steht da ein <b>Ergebnis</b>. Bei den fünf Sicherheitsregeln ist genau das der Unterschied: „wird freigeschaltet“ heißt, es läuft noch."
+          : w.f === 1 ? "Mit „wird“ steht da ein <b>Vorgang</b>. Der Täter darf hier auch ganz wegfallen."
+          : "Im Aktiv ist immer klar, wer verantwortlich ist. Genau deshalb wird in Vorschriften oft das Passiv gewählt."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Aktiv und Passiv tauschen die Plätze von Täter und Sache">
+    <text x="200" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Aktiv</text>
+    <rect x="24" y="30" width="130" height="34" rx="6" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+    <text x="89" y="52" text-anchor="middle" font-size="12" fill="currentColor">Der Monteur</text>
+    <text x="172" y="52" text-anchor="middle" font-size="12" fill="currentColor">prüft</text>
+    <rect x="200" y="30" width="130" height="34" rx="6" fill="#3b82f6" fill-opacity=".28" stroke="#3b82f6" stroke-width="2"/>
+    <text x="265" y="52" text-anchor="middle" font-size="12" fill="currentColor">die Anlage</text>
+    <text x="89" y="78" text-anchor="middle" font-size="10" fill="currentColor">Subjekt</text>
+    <text x="265" y="78" text-anchor="middle" font-size="10" fill="currentColor">Objekt</text>
+    <path d="M89 86C89 108 265 108 265 128" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <path d="M265 122l-5 8h10Z" fill="currentColor" transform="rotate(180 265 126)"/>
+    <path d="M265 86C265 108 89 108 89 128" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <text x="200" y="112" text-anchor="middle" font-size="10" fill="currentColor">tauschen die Plätze</text>
+    <text x="200" y="146" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Passiv</text>
+    <rect x="24" y="154" width="130" height="30" rx="6" fill="#3b82f6" fill-opacity=".28" stroke="#3b82f6" stroke-width="2"/>
+    <text x="89" y="174" text-anchor="middle" font-size="12" fill="currentColor">Die Anlage</text>
+    <text x="186" y="174" text-anchor="middle" font-size="12" fill="currentColor">wird</text>
+    <rect x="228" y="154" width="148" height="30" rx="6" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="302" y="174" text-anchor="middle" font-size="11" fill="currentColor">(vom Monteur) geprüft</text>
+  </svg>`
+},
+
+"Berichten": {
+  worum:"Ein Bericht sagt sachlich, was passiert ist. Keine Spannung, keine Meinung — nur nachprüfbare Tatsachen.",
+  wozu:[
+    "Nach jedem Unfall, jeder Störung und jedem Schaden wird ein Bericht verlangt. Er ist die Grundlage dafür, was die Versicherung zahlt und was der Betrieb ändert.",
+    "Auch das Berichtsheft in der Ausbildung ist genau das: sachlich aufschreiben, was gemacht wurde. Wer das kann, spart sich jede Woche eine Stunde Grübeln."
+  ],
+  rezept:[
+    "Sammle zuerst die Fakten — noch ohne Sätze zu bauen.",
+    "Geh die sechs W-Fragen durch: wer, was, wann, wo, wie, warum.",
+    "Schreib den ersten Satz so, dass er das Wichtigste schon enthält.",
+    "Erzähl die Ereignisse in der Reihenfolge, in der sie geschehen sind.",
+    "Bleib im Präteritum und in der dritten Person.",
+    "Streich zum Schluss alles, was wertet, ausschmückt oder spannend machen soll."
+  ],
+  fehler:[
+    ["Wertungen eingebaut", "„Zum Glück“, „leider“ und „typischerweise“ haben im Bericht nichts zu suchen. Sie sagen etwas über den Schreiber, nicht über das Ereignis."],
+    ["Wörtliche Rede benutzt", "Im Bericht wird zusammengefasst, nicht zitiert. Aus „Ich habe nichts gesehen“, sagte er, wird: Er gab an, nichts gesehen zu haben."],
+    ["Spannung aufgebaut", "Ein Bericht ist keine Erzählung. Das Wichtigste steht vorn, nicht am Ende."],
+    ["Eine W-Frage vergessen", "Meist fehlt das Warum. Dann steht zwar da, was passiert ist, aber niemand kann etwas daraus lernen."]
+  ],
+  einfach:[
+    "Ein Bericht informiert. Er soll nicht unterhalten und nicht überzeugen.",
+    "Er beantwortet sechs Fragen: Wer? Was? Wann? Wo? Wie? Warum?",
+    "Manchmal kommt eine siebte dazu: Welche Folgen hatte es?",
+    "Geschrieben wird im Präteritum: „Der Automat löste aus“, nicht „löst aus“.",
+    "Und in der dritten Person — auch wenn du selbst dabei warst.",
+    "Die Reihenfolge ist die zeitliche: erst das, was zuerst passiert ist.",
+    "Der erste Satz enthält schon das Wichtigste. Wer nur ihn liest, weiß Bescheid.",
+    "Keine wörtliche Rede. Was jemand gesagt hat, wird zusammengefasst — am besten im Konjunktiv I.",
+    "Keine Wertung. Weder „zum Glück“ noch „leider“ noch „unglaublich“.",
+    "Prüf am Ende: Könnte jemand, der nicht dabei war, aus deinem Text den Hergang rekonstruieren?"
+  ],
+  begriffe:[
+    ["W-Fragen","Wer, was, wann, wo, wie, warum — das Gerüst des Berichts."],
+    ["Sachlichkeit","Nur Nachprüfbares, keine Meinung."],
+    ["Präteritum","Die Zeitform des Berichts."],
+    ["Chronologie","Die zeitliche Reihenfolge der Ereignisse."],
+    ["Unfallbericht","Bericht über einen Schaden oder Unfall, mit Folgen und Maßnahmen."]
+  ],
+  tabelle:{
+    titel:"Bericht oder Erzählung?",
+    kopf:["","Bericht","Erzählung"],
+    zeilen:[
+      ["Zweck","informieren","unterhalten"],
+      ["Zeitform","Präteritum","Präteritum"],
+      ["Wichtigstes steht","am Anfang","am Ende"],
+      ["Wertungen","nein","ja"],
+      ["Wörtliche Rede","nein","ja"],
+      ["Spannungsbogen","nein","ja"],
+      ["Ausschmückungen","nein","ja"],
+      ["Perspektive","dritte Person","frei"]
+    ],
+    fuss:"Beide stehen im Präteritum — das ist die einzige Gemeinsamkeit. Sonst ist fast alles verschieden."
+  },
+  regeln:[
+    "Sechs W-Fragen beantworten: wer, was, wann, wo, wie, warum.",
+    "Präteritum, dritte Person.",
+    "Zeitliche Reihenfolge einhalten.",
+    "Das Wichtigste steht im ersten Satz.",
+    "Keine Wertung, keine wörtliche Rede, keine Spannung.",
+    "Am Ende prüfen: Ist der Hergang ohne Rückfragen verständlich?"
+  ],
+  beispiel:{aufgabe:"Aus einer Notiz einen Berichtsanfang machen: Montag, Werkhalle, Kurzschluss, beschädigte Leitung",
+    schritte:["Wann: am Montag","Wo: in der Werkhalle","Was: Kurzschluss","Warum: beschädigte Leitung"],
+    ergebnis:"Am Montag kam es in der Werkhalle zu einem Kurzschluss, weil eine Leitung beschädigt war."},
+  spiel:{
+    titel:"W-Fragen abhaken",
+    hinweis:"Schalte die Angaben zu und sieh, wie der Bericht vollständig wird.",
+    regler:[
+      {id:"n", name:"Wie viele W-Fragen beantwortet?", von:1, bis:6, schritt:1, start:3}
+    ],
+    ausgabe:(w) => {
+      const W = [
+        ["Was", "kam es zu einem Kurzschluss"],
+        ["Wo", "in der Werkhalle"],
+        ["Wann", "am Montag gegen 9 Uhr"],
+        ["Wer", "Der Hausmeister bemerkte ihn"],
+        ["Warum", "weil eine Leitung beschädigt war"],
+        ["Wie", "Der Automat löste sofort aus"]
+      ];
+      const da = W.slice(0, w.n), weg = W.slice(w.n);
+      const satz = w.n >= 3
+        ? `${da[2] ? da[2][1].charAt(0).toUpperCase() + da[2][1].slice(1) : "Es"} ${da[1] ? da[1][1] : ""} ${da[0][1]}` +
+          (da[4] ? ", " + da[4][1] : "") + "."
+        : "…" + da.map(x => x[1]).join(", ") + "…";
+      return {
+        werte:[
+          {name:"Beantwortet", text: da.map(x => "✓ " + x[0]).join("  ")},
+          {name:"Fehlt noch", text: weg.length ? weg.map(x => "· " + x[0]).join("  ") : "nichts"},
+          {name:"So liest sich der Bericht", text:"<i>" + satz.replace(/\s+/g, " ") + "</i>"}
+        ],
+        satz: weg.length === 0
+          ? "Alle sechs beantwortet — der Bericht ist vollständig. Wer ihn liest, muss nichts nachfragen."
+          : `Noch ${z(weg.length)} ${weg.length === 1 ? "Frage ist" : "Fragen sind"} offen: <b>${weg.map(x => x[0]).join(", ")}</b>. Was fehlt, muss der Leser raten — und genau das soll ein Bericht verhindern.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Die sechs W-Fragen eines Berichts">
+    ${[["Wer?","welche Person"],["Was?","was geschah"],["Wann?","Datum, Uhrzeit"],
+       ["Wo?","genauer Ort"],["Wie?","Hergang"],["Warum?","Ursache"]]
+      .map((f, i) => {
+        const x = 24 + (i % 3) * 122, y = 24 + Math.floor(i / 3) * 66;
+        return `<rect x="${x}" y="${y}" width="110" height="52" rx="8" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="1.8"/>
+          <text x="${x + 55}" y="${y + 24}" text-anchor="middle" font-size="14" font-weight="800" fill="currentColor">${f[0]}</text>
+          <text x="${x + 55}" y="${y + 41}" text-anchor="middle" font-size="10" fill="currentColor">${f[1]}</text>`;
+      }).join("")}
+    <text x="200" y="164" text-anchor="middle" font-size="11" fill="currentColor">Fehlt eine Antwort, ist der Bericht unvollständig.</text>
+  </svg>`
+},
+
+"Erzählen": {
+  worum:"Erzählen heißt zeigen statt behaupten. Nicht „sie hatte Angst“ — sondern das, was man gesehen hätte, wenn man dabei gewesen wäre.",
+  wozu:[
+    "Erzählen ist die Grundlage für alles Weitere im Fach. Wer einen Spannungsbogen bauen kann, versteht später auch, wie ein Autor das macht — und kann es in der Interpretation benennen.",
+    "Auch außerhalb der Schule zählt es: Wer eine Geschichte so erzählen kann, dass andere zuhören, hat es leichter — im Vorstellungsgespräch genauso wie am Küchentisch."
+  ],
+  rezept:[
+    "Überleg dir zuerst den Höhepunkt — auf ihn läuft alles zu.",
+    "Bau die Einleitung kurz: Wer, wo, wann. Nicht mehr als nötig.",
+    "Steigere den Hauptteil Schritt für Schritt bis zum Höhepunkt.",
+    "Am Höhepunkt langsamer werden: Hier gehören Einzelheiten hin, keine Zusammenfassung.",
+    "Danach schnell zum Schluss — ein langes Nachspiel verdirbt die Wirkung.",
+    "Zum Schluss überarbeiten: schwache Verben ersetzen, „sehr“ und „ganz“ streichen."
+  ],
+  fehler:[
+    ["Behauptet statt gezeigt", "„Er hatte Angst“ ist eine Behauptung. „Seine Hände zitterten, der Atem stockte“ zeigt es — und wirkt viel stärker."],
+    ["Zeitform gewechselt", "Erzählt wird im Präteritum. Nur was jemand sagt, steht so da, wie er es spricht."],
+    ["Höhepunkt in einem Satz abgehandelt", "Wenn der spannendste Moment schneller vorbei ist als die Einleitung, war die ganze Vorbereitung umsonst."],
+    ["Zu viele Verstärkungswörter", "„Sehr schnell“, „ganz doll“, „total laut“ — ein starkes Verb wirkt besser als jede Verstärkung: rannte, hämmerte, brüllte."]
+  ],
+  einfach:[
+    "Eine Erzählung hat drei Teile: Einleitung, Hauptteil, Schluss.",
+    "Die Einleitung sagt kurz, wer beteiligt ist, wo und wann es passiert.",
+    "Der Hauptteil steigert sich bis zum Höhepunkt — dem spannendsten Moment.",
+    "Der Schluss kommt danach schnell. Ein langes Nachspiel nimmt die Spannung wieder heraus.",
+    "Erzählt wird im Präteritum: „Plötzlich ging die Tür auf.“",
+    "Nur in der wörtlichen Rede sprechen die Figuren so, wie man wirklich spricht.",
+    "Am Höhepunkt wird ausführlich erzählt. Was unwichtig ist, wird übersprungen.",
+    "Anschaulich schreiben heißt: genaue Verben nehmen. Nicht „ging schnell“, sondern „hastete“.",
+    "Und: zeigen statt behaupten. Statt „sie war wütend“ lieber, was sie tat.",
+    "Verstärkungswörter wie „sehr“ und „ganz“ machen einen schwachen Ausdruck nicht stark. Ersetze lieber das Verb."
+  ],
+  begriffe:[
+    ["Spannungsbogen","Der Aufbau von der Einleitung über den Höhepunkt zum Schluss."],
+    ["Höhepunkt","Der spannendste Moment — hier wird am ausführlichsten erzählt."],
+    ["Erzählzeit","Das Präteritum."],
+    ["Anschaulichkeit","Genaue Verben und Bilder statt allgemeiner Wörter."],
+    ["Zeitraffung","Unwichtiges wird in einem Satz übersprungen."],
+    ["Zeitdehnung","Wichtiges wird ausführlich erzählt."]
+  ],
+  tabelle:{
+    titel:"Blass und anschaulich",
+    kopf:["Blass","Anschaulich"],
+    zeilen:[
+      ["Er ging schnell.","Er hastete."],
+      ["Sie sagte laut etwas.","Sie brüllte."],
+      ["Es war sehr dunkel.","Kein Lichtstrahl drang durch die Ritzen."],
+      ["Sie hatte große Angst.","Ihre Hände zitterten, der Atem stockte."],
+      ["Der Hund machte Geräusche.","Der Hund knurrte."],
+      ["Er war sehr müde.","Ihm fielen die Augen zu."],
+      ["Das Essen war gut.","Er schob sich die dritte Portion auf den Teller."]
+    ],
+    fuss:"Rechts steht nie ein zusätzliches Verstärkungswort — nur ein genaueres Verb oder ein Bild."
+  },
+  regeln:[
+    "Einleitung, Hauptteil mit Höhepunkt, kurzer Schluss.",
+    "Erzählt wird im Präteritum.",
+    "Am Höhepunkt ausführlich, dazwischen raffen.",
+    "Zeigen statt behaupten.",
+    "Starke Verben statt Verb plus Verstärkung.",
+    "Wörtliche Rede lebendig, aber sparsam einsetzen."
+  ],
+  beispiel:{aufgabe:"Mach den Satz anschaulicher: „Er war sehr aufgeregt und ging schnell zur Tür.“",
+    schritte:["„sehr aufgeregt“ zeigen statt behaupten","„ging schnell“ durch ein starkes Verb ersetzen"],
+    ergebnis:"Sein Herz hämmerte, als er zur Tür hastete."},
+  spiel:{
+    titel:"Spannungsbogen ziehen",
+    hinweis:"Verschieb den Höhepunkt und sieh, wie sich die Erzählung anfühlt.",
+    regler:[
+      {id:"h", name:"Höhepunkt liegt bei", einheit:"%", von:10, bis:95, schritt:5, start:75}
+    ],
+    ausgabe:(w) => {
+      const hx = 24 + (w.h / 100) * 330;
+      const punkte = [];
+      for (let i = 0; i <= 40; i++){
+        const t = i / 40;
+        const p = w.h / 100;
+        /* vor dem Höhepunkt steigend, danach steil abfallend */
+        const y = t <= p ? Math.pow(t / Math.max(p, 0.01), 1.6)
+                         : 1 - Math.pow((t - p) / Math.max(1 - p, 0.01), 0.7) * 0.85;
+        punkte.push(`${(24 + t * 330).toFixed(1)},${(96 - y * 72).toFixed(1)}`);
+      }
+      const urteil = w.h < 35 ? "Der Höhepunkt kommt zu früh — es bleibt danach zu viel Text ohne Spannung."
+        : w.h > 90 ? "Der Höhepunkt kommt sehr spät. Für den Schluss bleibt kaum Platz."
+        : "Guter Aufbau: lange Steigerung, Höhepunkt gegen Ende, danach schnell zum Schluss.";
+      return {
+        bild:`<svg viewBox="0 0 380 116" ${SVG_STIL} role="img" aria-label="Spannungskurve mit verschiebbarem Höhepunkt">
+          <line x1="24" y1="98" x2="366" y2="98" stroke="currentColor" stroke-width="1.2"/>
+          <polyline points="${punkte.join(" ")}" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+          <line x1="${hx.toFixed(1)}" y1="18" x2="${hx.toFixed(1)}" y2="98" stroke="#b3382f" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="${hx.toFixed(1)}" y="14" text-anchor="middle" font-size="9" fill="currentColor">Höhepunkt</text>
+          <text x="24" y="112" font-size="9" fill="currentColor">Einleitung</text>
+          <text x="366" y="112" text-anchor="end" font-size="9" fill="currentColor">Schluss</text>
+        </svg>`,
+        werte:[
+          {name:"Höhepunkt bei", text:z(w.h) + " % der Erzählung"},
+          {name:"Steigerung davor", text:z(w.h) + " %"},
+          {name:"Schluss danach", text:z(100 - w.h) + " %"}
+        ],
+        satz: urteil
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Spannungsbogen einer Erzählung">
+    <line x1="24" y1="130" x2="376" y2="130" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M30 126C120 122 210 96 288 34" fill="none" stroke="#10a37f" stroke-width="3"/>
+    <path d="M288 34C316 60 340 108 370 126" fill="none" stroke="#10a37f" stroke-width="3"/>
+    <circle cx="288" cy="34" r="6" fill="#b3382f"/>
+    <text x="288" y="24" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">Höhepunkt</text>
+    <text x="60" y="148" text-anchor="middle" font-size="11" fill="currentColor">Einleitung</text>
+    <text x="190" y="148" text-anchor="middle" font-size="11" fill="currentColor">Hauptteil — steigern</text>
+    <text x="350" y="148" text-anchor="middle" font-size="11" fill="currentColor">Schluss</text>
+  </svg>`
+},
+
+"Inhaltsangabe": {
+  worum:"Eine Inhaltsangabe fasst zusammen, was in einem Text geschieht — im Präsens, sachlich, ohne Zitate und ohne eigene Meinung.",
+  wozu:[
+    "In fast jeder Deutscharbeit ab Klasse 7 steht eine Inhaltsangabe. Sie ist außerdem der erste Teil jeder Interpretation und jeder Textanalyse — wer sie nicht kann, kommt bei allem Weiteren nicht voran.",
+    "Auch im Betrieb ist Zusammenfassen eine Alltagsfähigkeit: eine Störungsmeldung auf drei Sätze bringen, ohne dass etwas Wichtiges verlorengeht."
+  ],
+  rezept:[
+    "Text zweimal lesen — beim zweiten Mal Sinnabschnitte markieren.",
+    "Zu jedem Abschnitt einen Satz notieren: Was geschieht hier?",
+    "Einleitungssatz bauen: Textart, Titel, Autor, Erscheinungsjahr, Thema.",
+    "Die Notizen zu einem Fließtext im Präsens verbinden.",
+    "Auch das Ende verraten — eine Inhaltsangabe ist keine Werbung.",
+    "Zum Schluss streichen: Zitate, Einzelheiten, Wertungen, alles Ausschmückende."
+  ],
+  fehler:[
+    ["Im Präteritum geschrieben", "Die Inhaltsangabe steht immer im Präsens, auch wenn die Geschichte in der Vergangenheit spielt."],
+    ["Spannung aufgebaut", "„Was dann geschieht, sei hier nicht verraten“ — doch, genau das gehört hinein. Eine Inhaltsangabe verrät das Ende."],
+    ["Zitiert", "Wörtliche Rede und Zitate gehören in die Analyse, nicht in die Zusammenfassung. Alles wird in eigenen Worten wiedergegeben."],
+    ["Eigene Meinung eingebaut", "„Besonders schön ist die Stelle, an der …“ ist eine Wertung. Sie gehört in die Interpretation, nicht in die Inhaltsangabe."]
+  ],
+  einfach:[
+    "Eine Inhaltsangabe sagt kurz, worum es in einem Text geht.",
+    "Sie steht im Präsens — auch wenn die Geschichte längst vorbei ist.",
+    "Sie beginnt mit einem Einleitungssatz, der fünf Dinge nennt.",
+    "Diese fünf sind: Textart, Titel, Autor, Erscheinungsjahr und Thema. Merkhilfe: TATTE.",
+    "Danach folgt der Inhalt in der Reihenfolge, in der er im Text steht.",
+    "Geschrieben wird sachlich, in eigenen Worten und ohne Zitate.",
+    "Auch das Ende wird verraten. Eine Inhaltsangabe soll informieren, nicht neugierig machen.",
+    "Einzelheiten fallen weg. Es zählt nur, was für den Handlungsverlauf wichtig ist.",
+    "Keine eigene Meinung. Ob dir der Text gefällt, gehört nicht hinein.",
+    "Als Faustregel: Eine Inhaltsangabe ist etwa ein Drittel bis ein Fünftel so lang wie der Text."
+  ],
+  begriffe:[
+    ["Einleitungssatz","Der erste Satz mit Textart, Titel, Autor, Jahr und Thema."],
+    ["TATTE","Merkhilfe für die fünf Angaben des Einleitungssatzes."],
+    ["Sinnabschnitt","Ein Textstück, das inhaltlich zusammengehört."],
+    ["Präsens","Die Zeitform der Inhaltsangabe."],
+    ["Kernaussage","Das, worauf der Text hinauswill."]
+  ],
+  tabelle:{
+    titel:"Gehört hinein — gehört nicht hinein",
+    kopf:["Gehört hinein","Gehört nicht hinein"],
+    zeilen:[
+      ["Präsens","Präteritum"],
+      ["Eigene Worte","Zitate aus dem Text"],
+      ["Der Handlungsverlauf","Nebensächliche Einzelheiten"],
+      ["Auch das Ende","Spannung, Andeutungen"],
+      ["Sachlicher Ton","Eigene Meinung und Wertung"],
+      ["Einleitungssatz mit TATTE","Ein Einstieg wie in der Erzählung"],
+      ["Indirekte Wiedergabe","Wörtliche Rede"]
+    ],
+    fuss:"Die linke Spalte ist die Inhaltsangabe, die rechte gehört in die Erzählung oder in die Interpretation."
+  },
+  regeln:[
+    "Immer im Präsens.",
+    "Einleitungssatz mit Textart, Titel, Autor, Erscheinungsjahr, Thema.",
+    "In eigenen Worten, keine Zitate.",
+    "Sachlich, ohne eigene Meinung.",
+    "Auch das Ende nennen.",
+    "Nur das Wichtige — Einzelheiten weglassen."
+  ],
+  beispiel:{aufgabe:"Schreib den Einleitungssatz zu Wolfgang Borcherts Kurzgeschichte „Das Brot“ von 1946.",
+    schritte:["Textart: Kurzgeschichte","Titel: „Das Brot“","Autor: Wolfgang Borchert","Jahr: 1946","Thema: ein Ehepaar in der Nachkriegszeit"],
+    ergebnis:"Die Kurzgeschichte „Das Brot“ von Wolfgang Borchert aus dem Jahr 1946 handelt von einem Ehepaar in der Nachkriegszeit."},
+  spiel:{
+    titel:"Einleitungssatz zusammensetzen",
+    hinweis:"Schalte die fünf Pflichtangaben nacheinander zu und sieh, wie der Satz vollständig wird.",
+    regler:[
+      {id:"n", name:"Wie viele Angaben?", von:0, bis:5, schritt:1, start:5}
+    ],
+    ausgabe:(w) => {
+      const T = [
+        ["Textart", "Die Kurzgeschichte"],
+        ["Titel", "„Das Brot“"],
+        ["Autor", "von Wolfgang Borchert"],
+        ["Erscheinungsjahr", "aus dem Jahr 1946"],
+        ["Thema", "handelt von einem Ehepaar in der Nachkriegszeit"]
+      ];
+      const da = T.slice(0, w.n), weg = T.slice(w.n);
+      const satz = w.n === 0 ? "—" : da.map(x => x[1]).join(" ") + (w.n === 5 ? "." : " …");
+      return {
+        werte:[
+          {name:"Enthalten", text: da.length ? da.map(x => "✓ " + x[0]).join("  ") : "noch nichts"},
+          {name:"Fehlt", text: weg.length ? weg.map(x => "· " + x[0]).join("  ") : "nichts"},
+          {name:"Der Satz", text:"<i>" + satz + "</i>"}
+        ],
+        satz: weg.length === 0
+          ? "Alle fünf drin — <b>T</b>extart, <b>T</b>itel, <b>A</b>utor, <b>T</b>itel… die Merkhilfe heißt <b>TATTE</b>: Textart, Autor, Titel, Thema, Erscheinungsjahr."
+          : `Es fehlen noch: <b>${weg.map(x => x[0]).join(", ")}</b>. Ohne sie weiß der Leser nicht, worüber du überhaupt schreibst.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Die fünf Angaben des Einleitungssatzes">
+    ${[["T","Textart","Kurzgeschichte"],["A","Autor","Borchert"],["T","Titel","„Das Brot“"],
+       ["T","Thema","Ehepaar, Nachkriegszeit"],["E","Erscheinungsjahr","1946"]]
+      .map((f, i) => {
+        const y = 14 + i * 29;
+        return `<rect x="24" y="${y}" width="352" height="25" rx="6" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="1.4"/>
+          <text x="40" y="${y + 17}" font-size="14" font-weight="900" fill="#10a37f">${f[0]}</text>
+          <text x="62" y="${y + 17}" font-size="11" font-weight="700" fill="currentColor">${f[1]}</text>
+          <text x="368" y="${y + 17}" text-anchor="end" font-size="10" fill="currentColor">${f[2]}</text>`;
+      }).join("")}
+    <text x="200" y="160" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">TATTE — alle fünf gehören in den ersten Satz.</text>
+  </svg>`
+},
+
+"Argumentieren": {
+  worum:"Ein Argument besteht aus drei Teilen: These, Begründung, Beispiel. Fehlt einer, bleibt es eine Behauptung.",
+  wozu:[
+    "Ob im Betriebsrat, im Bewerbungsgespräch oder beim Streit mit dem Vermieter — wer begründen kann, kommt weiter als der, der lauter wird. Das ist eine Fähigkeit fürs Leben, nicht nur für die Klausur.",
+    "In der Berufsschule und in jeder Prüfung wird verlangt, eine Entscheidung zu begründen. Die Struktur These–Begründung–Beispiel passt dafür immer."
+  ],
+  rezept:[
+    "Formulier die These in einem einzigen Satz — was genau behauptest du?",
+    "Begründe sie: Warum ist das so? Hier gehört ein „weil“ hin.",
+    "Belege sie mit einem Beispiel, einer Zahl oder einer Erfahrung.",
+    "Prüf, ob dein Beispiel wirklich zur Begründung passt.",
+    "Denk an den Einwand: Was würde jemand entgegnen?",
+    "Ordne mehrere Argumente steigernd an — das stärkste kommt zum Schluss."
+  ],
+  fehler:[
+    ["Nur behauptet", "„Das ist einfach so“ und „das weiß doch jeder“ sind keine Begründungen. Ein Argument sagt warum."],
+    ["Die Person angegriffen statt die Sache", "„Wer das glaubt, hat keine Ahnung“ ist kein Argument, sondern eine Beleidigung. Es schwächt die eigene Position."],
+    ["Mehrheit als Beweis genommen", "Dass viele etwas glauben, sagt nichts darüber, ob es stimmt. Auch nicht, wenn alle Freunde dazugehören."],
+    ["Das stärkste Argument zuerst gebracht", "Danach fällt alles ab. Steigernd anordnen: das Beste kommt zuletzt, weil es hängen bleibt."]
+  ],
+  einfach:[
+    "Argumentieren heißt: eine Meinung so begründen, dass andere sie nachvollziehen können.",
+    "Ein vollständiges Argument hat drei Teile.",
+    "Erstens die These — das, was du behauptest.",
+    "Zweitens die Begründung — das Warum. Hier steht meist ein „weil“ oder „denn“.",
+    "Drittens das Beispiel — etwas Konkretes, an dem man es sehen kann.",
+    "Beispiel: „Schulen sollten später anfangen“ ist die These.",
+    "„Weil Jugendliche einen verschobenen Schlafrhythmus haben“ ist die Begründung.",
+    "„Eine Studie zeigte, dass Schüler nach 9 Uhr besser abschneiden“ ist das Beispiel.",
+    "Ohne Beispiel steht Behauptung gegen Behauptung. Das Beispiel macht das Argument überprüfbar.",
+    "Hast du mehrere Argumente, ordne sie steigernd: das stärkste zuletzt, weil es am besten hängen bleibt."
+  ],
+  begriffe:[
+    ["These","Die Behauptung, um die es geht."],
+    ["Begründung","Das Warum — der eigentliche Kern."],
+    ["Beispiel","Der Beleg, an dem man es überprüfen kann."],
+    ["Steigernde Anordnung","Das stärkste Argument kommt zuletzt."],
+    ["Gegenargument","Der Einwand der anderen Seite."],
+    ["Scheinargument","Eine Behauptung, die nur wie ein Argument aussieht."]
+  ],
+  tabelle:{
+    titel:"Argument oder Scheinargument?",
+    kopf:["Satz","Bewertung"],
+    zeilen:[
+      ["Späterer Schulbeginn hilft, weil Jugendliche später müde werden.","Argument — es wird begründet"],
+      ["Das ist einfach so, das weiß doch jeder.","Scheinargument — keine Begründung"],
+      ["Alle meine Freunde finden das auch.","Scheinargument — Mehrheit ist kein Beweis"],
+      ["Wer das anders sieht, hat keine Ahnung.","Scheinargument — Angriff auf die Person"],
+      ["Wartung ist billiger als ein Ausfall, das zeigt die Kostenrechnung.","Argument — mit Beleg"],
+      ["Das war schon immer so.","Scheinargument — Alter macht nichts richtig"]
+    ],
+    fuss:"Scheinargumente erkennt man daran, dass sich das „weil“ nicht sinnvoll ergänzen lässt."
+  },
+  regeln:[
+    "These, Begründung, Beispiel — alle drei gehören dazu.",
+    "Die Begründung antwortet auf „warum“.",
+    "Das Beispiel macht das Argument überprüfbar.",
+    "Steigernd anordnen: das stärkste Argument zuletzt.",
+    "Nie die Person angreifen, immer die Sache.",
+    "Mehrheit, Gewohnheit und Lautstärke sind keine Argumente."
+  ],
+  beispiel:{aufgabe:"Bau ein vollständiges Argument zu: „Im Betrieb sollte es feste Pausenzeiten geben.“",
+    schritte:["These: Es sollte feste Pausenzeiten geben.","Begründung: weil ungeplante Pausen den Arbeitsfluss stören","Beispiel: In unserer Abteilung stand die Maschine dreimal still, weil zwei Kollegen gleichzeitig weg waren."],
+    ergebnis:"These + Begründung + Beispiel — erst zusammen überzeugt es."},
+  spiel:{
+    titel:"Argument zusammenbauen",
+    hinweis:"Schalte die drei Teile nacheinander zu und achte darauf, wie überzeugend es wird.",
+    regler:[
+      {id:"t", name:"Thema", von:0, bis:2, schritt:1, start:0},
+      {id:"n", name:"Wie viele Teile?", von:1, bis:3, schritt:1, start:1}
+    ],
+    ausgabe:(w) => {
+      const A = [
+        ["Schulen sollten später anfangen.",
+         "weil Jugendliche einen verschobenen Schlafrhythmus haben",
+         "Eine Studie der Universität München zeigte, dass Schüler nach 9 Uhr deutlich bessere Ergebnisse erzielten."],
+        ["Der Betrieb sollte Werkzeug stellen.",
+         "weil bei eigenem Werkzeug jeder selbst für Schäden haftet",
+         "Ein Kollege musste letztes Jahr eine kaputte Bohrmaschine aus eigener Tasche ersetzen."],
+        ["Wartung sollte fest geplant werden.",
+         "weil ein ungeplanter Ausfall teurer ist als jede Wartung",
+         "Der Stillstand im März kostete 14 Stunden — die Wartung hätte zwei gedauert."]
+      ];
+      const NAMEN = ["These", "Begründung", "Beispiel"];
+      const a = A[w.t];
+      const teile = a.slice(0, w.n);
+      const text = teile.length === 1 ? teile[0]
+        : teile.length === 2 ? teile[0].replace(/\.$/, "") + ", " + teile[1] + "."
+        : teile[0].replace(/\.$/, "") + ", " + teile[1] + ". " + teile[2];
+      const stark = ["Behauptung — noch nicht überprüfbar",
+                     "schon ein Argument, aber ohne Beleg",
+                     "vollständiges Argument"][w.n - 1];
+      return {
+        werte:[
+          {name:"Enthalten", text: NAMEN.slice(0, w.n).map(x => "✓ " + x).join("  ")},
+          {name:"Fehlt", text: w.n < 3 ? NAMEN.slice(w.n).map(x => "· " + x).join("  ") : "nichts"},
+          {name:"So klingt es", text:"<i>" + text + "</i>"},
+          {name:"Bewertung", text:"<b>" + stark + "</b>"}
+        ],
+        satz: w.n === 1 ? "Eine These allein ist nur eine Behauptung. Jeder kann das Gegenteil behaupten — dann steht es 1:1."
+          : w.n === 2 ? "Mit der Begründung ist es ein Argument. Was fehlt, ist der Beleg: Woran sieht man das?"
+          : "Jetzt ist es überprüfbar. Das Beispiel ist der Teil, den man nicht einfach bestreiten kann."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Die drei Teile eines Arguments">
+    ${[["These","Was ich behaupte","#10a37f"],
+       ["Begründung","Warum das so ist — „weil …“","#3b82f6"],
+       ["Beispiel","Woran man es sieht","#f59e0b"]]
+      .map((s, i) => {
+        const y = 16 + i * 50;
+        return `<rect x="24" y="${y}" width="352" height="38" rx="8" fill="${s[2]}" fill-opacity=".2" stroke="${s[2]}" stroke-width="2"/>
+          <text x="42" y="${y + 17}" font-size="13" font-weight="800" fill="currentColor">${s[0]}</text>
+          <text x="42" y="${y + 32}" font-size="11" fill="currentColor">${s[1]}</text>` +
+          (i < 2 ? `<path d="M200 ${y + 38}v10" stroke="currentColor" stroke-width="1.4"/><path d="M195 ${y + 44}l5 6 5-6" fill="currentColor"/>` : "");
+      }).join("")}
+    <text x="200" y="170" text-anchor="middle" font-size="11" fill="currentColor">Fehlt einer der drei, bleibt es eine Behauptung.</text>
+  </svg>`
+},
+
 
 "Diode und Gleichrichter": {
   worum:"Eine Diode lässt Strom nur in eine Richtung durch. Aus dieser einen Eigenschaft wird alles gebaut, was aus Wechselspannung Gleichspannung macht.",
@@ -9542,20 +10470,20 @@ const ERKLAERUNGEN = {
     "Mach die Probe: Setz eine leichte Zahl ein und prüfe, ob das Ergebnis zum Text passt."
   ],
   fehler:[
-    ["Reihenfolge aus dem Satz verdreht", "„Um 3 vermehrt und dann verdoppelt\" ist 2 · (x + 3), nicht 2 · x + 3. Die Klammer hält fest, was zuerst dran ist."],
+    ["Reihenfolge aus dem Satz verdreht", "„Um 3 vermehrt und dann verdoppelt\“ ist 2 · (x + 3), nicht 2 · x + 3. Die Klammer hält fest, was zuerst dran ist."],
     ["Festen und veränderlichen Teil vertauscht", "Die Anfahrt fällt einmal an, der Stundensatz je Stunde. 45 + 60 · t ist etwas anderes als 45 · t + 60."],
-    ["Klammer weggelassen", "„Die Summe halbieren\" heißt (a + b) : 2. Ohne Klammer wird nur b halbiert."],
-    ["Weniger und geteilt verwechselt", "„Um 4 kleiner\" ist x − 4. „Viermal kleiner\" ist x : 4. Das sind zwei verschiedene Rechnungen."]
+    ["Klammer weggelassen", "„Die Summe halbieren\“ heißt (a + b) : 2. Ohne Klammer wird nur b halbiert."],
+    ["Weniger und geteilt verwechselt", "„Um 4 kleiner\“ ist x − 4. „Viermal kleiner\“ ist x : 4. Das sind zwei verschiedene Rechnungen."]
   ],
   einfach:[
     "Ein Term ist eine Rechnung, in der mindestens ein Buchstabe steht: 3 · x + 5.",
     "Der Buchstabe ist ein Platzhalter für eine Zahl, die noch nicht feststeht.",
     "Setzt du eine Zahl ein, kannst du ausrechnen: für x = 4 wird aus 3 · x + 5 die Rechnung 3 · 4 + 5 = 17.",
     "Einen Term aufzustellen heißt, einen Satz in eine Rechnung zu übersetzen.",
-    "„Eine Zahl wird verdoppelt\" wird zu 2 · x. „Und dann um 5 vermehrt\" wird zu 2 · x + 5.",
-    "Achte genau auf die Reihenfolge. „Erst um 5 vermehrt, dann verdoppelt\" ist 2 · (x + 5) — mit Klammer.",
+    "„Eine Zahl wird verdoppelt\“ wird zu 2 · x. „Und dann um 5 vermehrt\“ wird zu 2 · x + 5.",
+    "Achte genau auf die Reihenfolge. „Erst um 5 vermehrt, dann verdoppelt\“ ist 2 · (x + 5) — mit Klammer.",
     "Die Klammer sagt: Das passiert zuerst. Ohne sie stimmt die Reihenfolge nicht.",
-    "Typische Wörter: „mehr als\" heißt plus, „weniger als\" heißt minus, „mal so viel\" heißt malnehmen, „geteilt\" oder „pro\" heißt teilen.",
+    "Typische Wörter: „mehr als\“ heißt plus, „weniger als\“ heißt minus, „mal so viel\“ heißt malnehmen, „geteilt\“ oder „pro\“ heißt teilen.",
     "Aus dem Betrieb: Eine Grundgebühr fällt einmal an, ein Stundensatz für jede Stunde. Das ergibt den Term Grundgebühr + Stundensatz · t.",
     "Prüf deinen Term immer mit einer einfachen Zahl nach — zum Beispiel mit 1 oder 2."
   ],
@@ -9587,7 +10515,7 @@ const ERKLAERUNGEN = {
     "Die Reihenfolge im Satz ist die Reihenfolge im Term.",
     "Was zuerst passiert, kommt in die Klammer.",
     "Fester Anteil wird addiert, veränderlicher Anteil malgenommen.",
-    "„Pro\" und „je\" heißen malnehmen mit der Anzahl.",
+    "„Pro\“ und „je\“ heißen malnehmen mit der Anzahl.",
     "Probe mit einer einfachen Zahl machen."
   ],
   beispiel:{aufgabe:"Ein Betrieb rechnet 50 € Anfahrt und 60 € je Stunde. Stell den Term auf und berechne 4 Stunden.",
@@ -9653,7 +10581,7 @@ const ERKLAERUNGEN = {
     ["Bei Rabatt den Rabattbetrag als Preis genommen", "20 % von 80 € sind 16 €. Zu zahlen sind aber 64 €, nicht 16 €."]
   ],
   einfach:[
-    "Prozent heißt „von hundert\". 20 % sind 20 von 100, also ein Fünftel.",
+    "Prozent heißt „von hundert\“. 20 % sind 20 von 100, also ein Fünftel.",
     "Bei einer Veränderung gibt es immer drei Werte: den alten, den neuen und den Unterschied.",
     "Der alte Wert ist der Grundwert. Er entspricht 100 %.",
     "Steigt ein Preis um 20 %, kommen 20 % des alten Preises dazu: aus 50 € werden 50 + 10 = 60 €.",
@@ -9752,7 +10680,7 @@ const ERKLAERUNGEN = {
     "Rechne erst danach — Unterschied, Anteil oder Mittelwert."
   ],
   fehler:[
-    ["Einheit weggelassen", "„450\" ist keine Antwort. 450 kWh, 450 € und 450 h sind völlig verschiedene Dinge."],
+    ["Einheit weggelassen", "„450\“ ist keine Antwort. 450 kWh, 450 € und 450 h sind völlig verschiedene Dinge."],
     ["Achsenanfang übersehen", "Beginnt die y-Achse bei 400 statt bei 0, wirkt ein Unterschied von 20 wie eine Verdopplung. Immer auf den Nullpunkt schauen."],
     ["Säulenhöhe geschätzt statt abgelesen", "Zwischen den Strichen liegen feste Schritte. Zähl die Kästchen, statt nach Gefühl zu raten."],
     ["Beim Kreisdiagramm den Anteil für die Menge gehalten", "30 % sind erst dann kWh, wenn du sie mit dem Gesamtverbrauch verrechnest."]
@@ -18356,7 +19284,7 @@ function setSterne(n){
   document.querySelectorAll(".stern").forEach((el, i) => el.classList.toggle("an", i < n));
 }
 
-/* Gemeinsames Einfügen in die Tabelle „meldungen" (nur einfügen, kein Zurücklesen) */
+/* Gemeinsames Einfügen in die Tabelle „meldungen“ (nur einfügen, kein Zurücklesen) */
 async function meldungInsert(bereich, nachricht, email){
   return await db.from("meldungen").insert({
     bereich: bereich,
@@ -18591,7 +19519,7 @@ function meldenHtml(){
       <p class="ueberschrift">So funktioniert es</p>
       <ol class="schritte">
         <li><b>Thema wählen</b><span>Fach antippen, Klasse wählen, Thema aussuchen.</span></li>
-        <li><b>Du wirst hingeführt, nicht bedient</b><span>Du bekommst nie die fertige Lösung — nur kleine Fragen. Auch bei „Ich weiß nicht weiter" kommt zuerst nur ein Hinweis.</span></li>
+        <li><b>Du wirst hingeführt, nicht bedient</b><span>Du bekommst nie die fertige Lösung — nur kleine Fragen. Auch bei „Ich weiß nicht weiter“ kommt zuerst nur ein Hinweis.</span></li>
         <li><b>Es kommt von allein wieder</b><span>Was du nicht konntest, legt dir die App später erneut vor — bis es wirklich sitzt.</span></li>
       </ol>
       ${navLink("/faq", "zeigeSeite('faq')", "Häufige Fragen ansehen", "btn ghost full", "margin-top:14px")}
@@ -18600,9 +19528,9 @@ function meldenHtml(){
       <p class="ueberschrift">Bei Problemen — was tun?</p>
       <p class="small soft" style="margin:0 0 8px">Tipp auf eine Frage, dann klappt die Antwort auf.</p>
       <details class="klapp"><summary>Ich komme bei einer Aufgabe nicht weiter</summary>
-        <p>Tippe auf „Ich weiß nicht weiter" — du bekommst einen Hinweis, nicht die Lösung. Nach mehreren Versuchen wird dir die Erklärung zum Thema angeboten.</p></details>
+        <p>Tippe auf „Ich weiß nicht weiter“ — du bekommst einen Hinweis, nicht die Lösung. Nach mehreren Versuchen wird dir die Erklärung zum Thema angeboten.</p></details>
       <details class="klapp"><summary>Ich verstehe die Erklärung nicht</summary>
-        <p>Öffne beim Thema das „?" für die Erklärung von vorn. Hilft das nicht, schreib uns unten — wir erklären es dir.</p></details>
+        <p>Öffne beim Thema das „?“ für die Erklärung von vorn. Hilft das nicht, schreib uns unten — wir erklären es dir.</p></details>
       <details class="klapp"><summary>Eine Aufgabe ist falsch oder unklar</summary>
         <p>Bitte melde sie über <b>Feedback</b> — am besten mit Fach, Klasse und Thema. So können wir sie schnell korrigieren.</p></details>
       <details class="klapp"><summary>Etwas lädt nicht oder funktioniert nicht</summary>
@@ -18610,7 +19538,7 @@ function meldenHtml(){
       <details class="klapp"><summary>Mein Fortschritt wird nicht gespeichert</summary>
         <p>Gespeichert wird nur mit Konto. Ohne Anmeldung (als Gast) geht der Fortschritt verloren — leg dir ein kostenloses Konto an.</p></details>
       <details class="klapp"><summary>Ich habe mein Passwort vergessen</summary>
-        <p>Auf der Anmelde-Seite auf „Passwort vergessen?" tippen — du bekommst eine E-Mail, über die du ein neues Passwort setzen kannst.</p></details>
+        <p>Auf der Anmelde-Seite auf „Passwort vergessen?“ tippen — du bekommst eine E-Mail, über die du ein neues Passwort setzen kannst.</p></details>
     </div>
     <div class="card">
       <p class="ueberschrift">Support anschreiben</p>
@@ -19005,8 +19933,8 @@ function kopfleisteHtml(){
       <div class="kopfrechts">
         ${benutzer && aktivitaet.geladen ? `<a class="serie serie--mini" href="/serie" onclick="return navKlick(event, zeigeSerie)" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></a>` : ""}
         ${/* Zwei Knöpfe statt einem, solange niemand angemeldet ist.
-              „Üben" allein wäre zu wenig: Wer nur übt, legt sich nie ein Konto an
-              und verliert seinen Fortschritt. „Anmelden" allein war aber auch
+              „Üben“ allein wäre zu wenig: Wer nur übt, legt sich nie ein Konto an
+              und verliert seinen Fortschritt. „Anmelden“ allein war aber auch
               falsch — dann springt ab, wer erst einmal schauen will. Deshalb steht
               beides dauerhaft in der Leiste: Üben grün als Hauptweg, Anmelden
               daneben als deutlich sichtbarer zweiter Knopf. */
@@ -19565,7 +20493,7 @@ async function ladeAktivitaet(){
 
     /* Beste Serie: Sie bleibt stehen, auch wenn die aktuelle abreißt. Bei null
        anzufangen fühlt sich für den, der sich sowieso für schlecht hält, wie ein
-       Beweis an. „Beste Serie: 11 Tage" bleibt dagegen eine Tatsache. */
+       Beweis an. „Beste Serie: 11 Tage“ bleibt dagegen eine Tatsache. */
     const alsZahl = (t) => { const [d, m, j] = t.split("."); return Date.UTC(+j, +m - 1, +d) / 86400000; };
     const sortiert = [...tage].map(alsZahl).sort((a, b) => a - b);
     let beste = 0, lauf = 0;
