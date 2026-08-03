@@ -529,6 +529,32 @@
   .rezept li::before{content:counter(rez);position:absolute;left:0;top:0;
     width:29px;height:29px;border-radius:9px;background:var(--ac-soft);color:var(--ac-dark);
     font-size:14.5px;font-weight:800;display:grid;place-items:center}
+  /* Zum Ausprobieren: Regler und mitlaufende Ausgabe */
+  .spielkarte{border-left:4px solid var(--ac)}
+  .spielkarte .ueberschrift svg{width:1.05em;height:1.05em;vertical-align:-.15em;margin-right:5px}
+  .reglerfeld{display:grid;gap:18px;margin-bottom:20px}
+  .reglerkopf{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    margin-bottom:7px;cursor:pointer}
+  .reglername{font-size:15.5px;font-weight:600}
+  .reglerwert{font-size:16px;font-weight:800;color:var(--ac-dark);font-variant-numeric:tabular-nums}
+  input.regler{-webkit-appearance:none;appearance:none;width:100%;height:34px;background:none;
+    display:block;cursor:pointer}
+  input.regler::-webkit-slider-runnable-track{height:8px;border-radius:5px;background:var(--line)}
+  input.regler::-moz-range-track{height:8px;border-radius:5px;background:var(--line)}
+  input.regler::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:30px;height:30px;border-radius:50%;background:var(--ac);border:3px solid var(--card);
+    box-shadow:0 2px 8px rgba(0,0,0,.28);margin-top:-11px}
+  input.regler::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--ac);
+    border:3px solid var(--card);box-shadow:0 2px 8px rgba(0,0,0,.28)}
+  input.regler:focus-visible{outline:3px solid var(--ac);outline-offset:4px;border-radius:8px}
+  .spielwerte{display:grid;gap:0;margin-top:6px;border-top:1px solid var(--line)}
+  .spielwerte div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    padding:11px 0;border-bottom:1px solid var(--line)}
+  .spielwerte span{font-size:15.5px;color:var(--soft)}
+  .spielwerte b{font-size:19px;color:var(--ac-dark);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .spielsatz{margin:14px 0 0;font-size:15px;line-height:1.6;color:var(--ink);
+    background:var(--ac-soft);border-radius:12px;padding:12px 14px}
+
   /* Typische Fehler */
   .fehlerkarte{border-left:4px solid var(--red)}
   .fallen{display:grid;gap:0}
@@ -1194,12 +1220,18 @@ const KATALOG = {
   mathe: {
     name:"Mathe", bereich:"Schule", stufen:[5,6,7,8,9,10], stufenwort:"Klasse",
     themen:{
-      5:["Natürliche Zahlen","Grundrechenarten","Größen und Einheiten","Flächen und Umfang","Symmetrie"],
-      6:["Brüche","Dezimalzahlen","Teilbarkeit","Dreisatz","Winkel messen"],
-      7:["Gleichungen umstellen","Prozent und Zinsen","Zuordnungen","Dreiecke","Wahrscheinlichkeit"],
-      8:["Terme umformen","Binomische Formeln","Lineare Funktionen","Kreis","Gleichungssysteme"],
-      9:["Quadratische Gleichungen","Satz des Pythagoras","Potenzen und Wurzeln","Körper berechnen","Strahlensätze"],
-      10:["Quadratische Funktionen","Trigonometrie","Exponentielles Wachstum","Kugel und Kegel","Statistik"]
+      5:["Natürliche Zahlen","Grundrechenarten","Größen und Einheiten","Flächen und Umfang","Symmetrie",
+         "Überschlagen und Schätzen","Diagramme lesen","Rechnen mit Zeit"],
+      6:["Brüche","Dezimalzahlen","Teilbarkeit","Dreisatz","Winkel messen",
+         "Negative Zahlen","Maßstab","Rechnen mit Klammern"],
+      7:["Gleichungen umstellen","Prozent und Zinsen","Zuordnungen","Dreiecke","Wahrscheinlichkeit",
+         "Terme aufstellen","Prozentuale Veränderung","Zufall und Häufigkeit"],
+      8:["Terme umformen","Binomische Formeln","Lineare Funktionen","Kreis","Gleichungssysteme",
+         "Formeln umstellen","Zehnerpotenzen","Funktionen im Schaubild"],
+      9:["Quadratische Gleichungen","Satz des Pythagoras","Potenzen und Wurzeln","Körper berechnen","Strahlensätze",
+         "Ähnlichkeit","Vierecke und Vielecke","Zinseszins"],
+      10:["Quadratische Funktionen","Trigonometrie","Exponentielles Wachstum","Kugel und Kegel","Statistik",
+          "Logarithmus","Sinuskurve","Kredite und Raten"]
     }
   },
   deutsch: {
@@ -7061,6 +7093,509 @@ const AUFGABEN = {
                 F(`${eur(netto)}`, "Das ist der Nettobetrag ohne Steuer."),
                 F(`${eur(mwst)}`, "Das ist nur die Steuer.")]}]};
  }
+],
+
+"Überschlagen und Schätzen":[
+
+ /* Überschlag einer Multiplikation */
+ () => {
+   /* Runden beide Zahlen kräftig in dieselbe Richtung, liegt der Überschlag
+      weit daneben (25 · 25 wird zu 30 · 30 = 900 statt 625). Als Kontrolle
+      taugt er dann nicht mehr — deshalb nur Zahlen ziehen, bei denen der
+      Überschlag höchstens 15 % vom genauen Wert abweicht. */
+   let a, b, ra, rb;
+   do {
+     a = rnd(31, 89); b = rnd(31, 89);
+     ra = Math.round(a / 10) * 10; rb = Math.round(b / 10) * 10;
+   } while (Math.abs(ra * rb - a * b) / (a * b) > 0.15);
+   const grob = ra * rb, genau = a * b;
+   return {
+    typ:"formel",
+    text:`Überschlag im Kopf: <b>${z(a)} · ${z(b)}</b><br>Runde beide Zahlen auf Zehner und rechne. Was kommt heraus?`,
+    loesung: z(grob),
+    schluss:"Ein Überschlag ist keine Schlamperei, sondern eine Kontrolle. Er sagt dir in Sekunden, ob dein genaues Ergebnis überhaupt stimmen kann.",
+    schritte:[
+     {frage:`Auf welchen <b>Zehner</b> rundest du ${z(a)}?`,
+      tipp:"Schau auf die Einerstelle: unter 5 abrunden, ab 5 aufrunden.",
+      tipp2:`Die Einerstelle von ${z(a)} ist ${z(a % 10)} — also ${a % 10 >= 5 ? "aufrunden" : "abrunden"}.`,
+      optionen:[R(`${z(ra)}`, "Richtig."),
+                F(`${z(ra + (a % 10 >= 5 ? -10 : 10))}`, "In die andere Richtung gerundet."),
+                F(`${z(a)}`, "Beim Überschlag wird gerundet, sonst bringt er nichts.")]},
+     {frage:`Und ${z(b)}?`,
+      tipp:"Dieselbe Regel: unter 5 ab, ab 5 auf.",
+      tipp2:`Die Einerstelle von ${z(b)} ist ${z(b % 10)} — also ${b % 10 >= 5 ? "aufrunden" : "abrunden"}.`,
+      optionen:[R(`${z(rb)}`, "Richtig."),
+                F(`${z(rb + (b % 10 >= 5 ? -10 : 10))}`, "In die andere Richtung gerundet."),
+                F(`${z(b)}`, "Auch die zweite Zahl wird gerundet.")]},
+     {frage:`Was ergibt <b>${z(ra)} · ${z(rb)}</b>?`,
+      tippAntwort: z(grob),
+      tipp:"Die Nullen erst weglassen, dann wieder anhängen.",
+      tipp2:`${z(ra / 10)} · ${z(rb / 10)} = ${z(ra * rb / 100)}, dann zwei Nullen dran.`,
+      optionen:[R(`${z(grob)}`, `Richtig. Genau wären es ${z(genau)} — nah genug für eine Kontrolle.`),
+                F(`${z(ra * rb / 10)}`, "Eine Null zu wenig."),
+                F(`${z(ra + rb)}`, "Hier wird malgenommen, nicht addiert.")]}]};
+ },
+
+ /* Passt das Ergebnis überhaupt? */
+ () => {
+   const preis = pick([1.95, 2.49, 3.99, 4.95, 7.49, 12.99]);
+   const stueck = pick([3, 4, 6, 8, 12]);
+   const genau = Math.round(preis * stueck * 100) / 100;
+   const grob = Math.round(preis) * stueck;
+   return {
+    typ:"formel",
+    text:`${z(stueck)} Stück zu je ${eur(preis)}.<br>Überschlag mit gerundeten Preisen: Was kommt ungefähr heraus, in Euro?`,
+    loesung: z(grob),
+    schluss:"An der Kasse rechnet niemand aufs Cent. Der Überschlag reicht, um zu merken, ob etwas nicht stimmt.",
+    schritte:[
+     {frage:`Auf welchen vollen Euro rundest du <b>${eur(preis)}</b>?`,
+      tipp:"Schau auf die Cent: unter 50 ab, ab 50 auf.",
+      tipp2:`${eur(preis)} liegt ${preis - Math.floor(preis) >= 0.5 ? "über" : "unter"} der Hälfte — also ${Math.round(preis) > Math.floor(preis) ? "auf" : "ab"}runden auf ${z(Math.round(preis))} €.`,
+      optionen:[R(`${z(Math.round(preis))} €`, "Richtig."),
+                F(`${z(Math.round(preis) === Math.floor(preis) ? Math.floor(preis) + 1 : Math.floor(preis))} €`, "In die andere Richtung gerundet."),
+                F(`${eur(preis)}`, "Beim Überschlag wird gerundet.")]},
+     {frage:"Warum überhaupt <b>überschlagen</b>?",
+      tipp:"Es geht nicht um den genauen Betrag.",
+      tipp2:"Ein Überschlag ist eine schnelle Kontrolle: Liegt das genaue Ergebnis in derselben Größenordnung, hast du dich wahrscheinlich nicht vertan.",
+      optionen:[R("Um zu prüfen, ob das genaue Ergebnis passen kann", "Richtig — ein Überschlag ist eine Kontrolle."),
+                F("Weil genaues Rechnen verboten ist", "Natürlich nicht. Der Überschlag kommt zusätzlich."),
+                F("Weil das Ergebnis sonst falsch wäre", "Das genaue Ergebnis ist richtig — der Überschlag prüft es nur.")]},
+     {frage:`Was ergibt <b>${z(Math.round(preis))} € · ${z(stueck)}</b>?`,
+      tippAntwort: z(grob),
+      tipp:"Gerundeten Preis mal Stückzahl.",
+      tipp2:`Rechne ${z(Math.round(preis))} · ${z(stueck)}.`,
+      optionen:[R(`${z(grob)} €`, `Richtig. Genau sind es ${eur(genau)} — der Überschlag liegt nah dran.`),
+                F(`${z(stueck)} €`, "Das ist die Stückzahl."),
+                F(`${z(Math.round(preis))} €`, "Das ist der Preis für ein Stück.")]}]};
+ },
+
+ /* Größenordnung prüfen */
+ () => {
+   const faelle = [
+     {frage:"Ein Auto fährt 2 Stunden mit 80 km/h. Wie weit kommt es?", gut:"160 km", schlecht:"1600 km", warum:"1600 km wären quer durch Europa — in zwei Stunden unmöglich."},
+     {frage:"Eine Lampe mit 10 W brennt 10 Stunden. Wie viel Energie?", gut:"0,1 kWh", schlecht:"100 kWh", warum:"100 kWh sind der Wochenverbrauch eines Haushalts — nicht der einer kleinen Lampe."},
+     {frage:"Ein Zimmer ist 4 m mal 5 m groß. Wie viel Fläche?", gut:"20 m²", schlecht:"200 m²", warum:"200 m² wären ein großes Haus, kein Zimmer."},
+     {frage:"Ein Akku mit 3 Ah liefert 0,5 A. Wie lange hält er?", gut:"6 Stunden", schlecht:"60 Stunden", warum:"60 Stunden wären zweieinhalb Tage — dafür ist der Akku zu klein."}
+   ];
+   const f = pick(faelle);
+   return {
+    typ:"text",
+    text:`„${f.frage}“<br>Zwei Ergebnisse stehen zur Auswahl. Welches kann nicht stimmen?`,
+    loesung: f.schlecht,
+    schluss:"Bevor du ein Ergebnis abgibst, halt kurz inne: Passt die Größenordnung zur Wirklichkeit?",
+    schritte:[
+     {frage:"Was solltest du <b>zuerst</b> tun, bevor du rechnest?",
+      tipp:"Es hilft, eine Vorstellung zu haben, was herauskommen müsste.",
+      tipp2:"Schätz die Größenordnung ab. Dann merkst du sofort, wenn das gerechnete Ergebnis um den Faktor 10 danebenliegt.",
+      optionen:[R("Grob abschätzen, was herauskommen müsste", "Richtig — dann fällt ein Rechenfehler sofort auf."),
+                F("Sofort in den Taschenrechner tippen", "Der Taschenrechner rechnet auch Unsinn brav aus."),
+                F("Die Einheit weglassen", "Gerade die Einheit hilft beim Einordnen.")]},
+     {frage:"Welches Ergebnis <b>kann nicht stimmen</b>?",
+      tipp:"Denk an etwas, das du aus dem Alltag kennst.",
+      tipp2: f.warum,
+      optionen: zieheVerschiedene([
+        R(f.schlecht, f.warum),
+        F(f.gut, "Das passt zur Größenordnung."),
+        F("Beide sind möglich", "Nein — eines der beiden ist um den Faktor 10 daneben.")], 3)},
+     {frage:"Was hättest du daran <b>gemerkt</b>?",
+      tipp:"Es geht um einen bestimmten Faktor.",
+      tipp2:"Ein Ergebnis, das zehnmal oder hundertmal zu groß ist, deutet fast immer auf einen Fehler bei Komma oder Einheit hin.",
+      optionen:[R("Dass es um den Faktor 10 danebenliegt", "Richtig — meist steckt ein Komma- oder Einheitenfehler dahinter."),
+                F("Gar nichts, das sieht man nicht", "Doch — genau dafür ist der Überschlag da."),
+                F("Dass die Formel falsch war", "Die Formel kann stimmen und das Ergebnis trotzdem um den Faktor 10 danebenliegen.")]}]};
+ }
+],
+
+"Negative Zahlen":[
+
+ /* Addieren und Subtrahieren mit Vorzeichen */
+ () => {
+   let a, b;
+   do { a = rnd(-15, 15); b = rnd(-15, 15); } while (a === 0 || b === 0 || a + b === 0);
+   const erg = a + b;
+   return {
+    typ:"formel",
+    text:`Rechne: <b>${z(a)} + (${z(b)})</b><br>Was kommt heraus?`,
+    loesung: z(erg),
+    schluss:"Denk an den Zahlenstrahl: Plus geht nach rechts, Minus nach links. Mehr steckt nicht dahinter.",
+    schritte:[
+     {frage:`Wo startest du auf dem <b>Zahlenstrahl</b>?`,
+      tipp:"Bei der ersten Zahl.",
+      tipp2:`Die erste Zahl ist ${z(a)}. Dort setzt du den Finger an.`,
+      optionen:[R(`Bei ${z(a)}`, "Richtig."),
+                F(`Bei ${z(b)}`, "Das ist die zweite Zahl — sie sagt, wie weit du gehst."),
+                F("Bei 0", "Bei null zu starten wäre nur richtig, wenn die erste Zahl 0 wäre.")]},
+     {frage:`In welche <b>Richtung</b> gehst du bei ${b < 0 ? `(${z(b)})` : z(b)}?`,
+      tipp:"Ein positiver Wert geht nach rechts, ein negativer nach links.",
+      tipp2:`${z(b)} ist ${b < 0 ? "negativ, du gehst also nach links" : "positiv, du gehst also nach rechts"}.`,
+      optionen:[R(b < 0 ? `${z(Math.abs(b))} nach links` : `${z(b)} nach rechts`, "Richtig."),
+                F(b < 0 ? `${z(Math.abs(b))} nach rechts` : `${z(b)} nach links`, "Andersherum — das Vorzeichen gibt die Richtung an."),
+                F("Gar nicht, die Zahlen werden nur zusammengeschrieben", "Es wird wirklich gerechnet.")]},
+     {frage:`Wo kommst du an?`,
+      tippAntwort: z(erg),
+      tipp:"Zähl vom Startpunkt aus in die richtige Richtung.",
+      tipp2:`Von ${z(a)} aus ${b < 0 ? z(Math.abs(b)) + " nach links" : z(b) + " nach rechts"}.`,
+      optionen:[R(`${z(erg)}`, "Richtig."),
+                F(`${z(a - b)}`, "Da hast du die Richtung verdreht."),
+                F(`${z(-erg)}`, "Das Vorzeichen des Ergebnisses stimmt nicht.")]}]};
+ },
+
+ /* Multiplizieren mit Vorzeichen */
+ () => {
+   const a = pick([-12, -9, -7, -6, -4, -3, 3, 4, 6, 7, 8]);
+   const b = pick([-11, -8, -5, -3, -2, 2, 5, 6, 9]);
+   const erg = a * b;
+   const beide = (a < 0) === (b < 0);
+   return {
+    typ:"formel",
+    text:`Rechne: <b>${z(a)} · ${z(b)}</b><br>Was kommt heraus?`,
+    loesung: z(erg),
+    schluss:"Gleiche Vorzeichen ergeben plus, verschiedene ergeben minus. Das gilt beim Malnehmen und beim Teilen gleichermaßen.",
+    schritte:[
+     {frage:"Wie viele der beiden Zahlen sind <b>negativ</b>?",
+      tipp:"Schau auf die Vorzeichen.",
+      tipp2:`${z(a)} ist ${a < 0 ? "negativ" : "positiv"}, ${z(b)} ist ${b < 0 ? "negativ" : "positiv"}.`,
+      optionen: (() => {
+        const anzahl = (a < 0 ? 1 : 0) + (b < 0 ? 1 : 0);
+        const andere = [0, 1, 2].filter(x => x !== anzahl);
+        return zieheVerschiedene([
+          R(`${z(anzahl)}`, "Richtig."),
+          F(`${z(andere[0])}`, "Zähl die Minuszeichen noch einmal."),
+          F(`${z(andere[1])}`, "Zähl die Minuszeichen noch einmal.")], 3);
+      })()},
+     {frage:"Welches <b>Vorzeichen</b> hat das Ergebnis?",
+      tipp:"Gleiche Vorzeichen ergeben plus, verschiedene ergeben minus.",
+      tipp2: beide ? "Beide haben dasselbe Vorzeichen — das Ergebnis wird positiv."
+                   : "Die Vorzeichen sind verschieden — das Ergebnis wird negativ.",
+      optionen:[R(beide ? "Positiv" : "Negativ", beide ? "Richtig — gleiche Vorzeichen ergeben plus." : "Richtig — verschiedene Vorzeichen ergeben minus."),
+                F(beide ? "Negativ" : "Positiv", "Prüf die Vorzeichenregel noch einmal."),
+                F("Das hängt von der Größe der Zahlen ab", "Nein, nur von den Vorzeichen.")]},
+     {frage:`Was ergibt <b>${z(Math.abs(a))} · ${z(Math.abs(b))}</b> mit dem richtigen Vorzeichen?`,
+      tippAntwort: z(erg),
+      tipp:"Erst die Beträge malnehmen, dann das Vorzeichen davorsetzen.",
+      tipp2:`${z(Math.abs(a))} · ${z(Math.abs(b))} = ${z(Math.abs(erg))}, und das Ergebnis ist ${beide ? "positiv" : "negativ"}.`,
+      optionen:[R(`${z(erg)}`, "Richtig."),
+                F(`${z(-erg)}`, "Das Vorzeichen stimmt nicht."),
+                F(`${z(a + b)}`, "Hier wird malgenommen, nicht addiert.")]}]};
+ }
+],
+
+"Maßstab":[
+
+ /* Von der Karte in die Wirklichkeit */
+ () => {
+   const m = pick([100, 200, 500, 1000, 2500, 25000]);
+   const cm = pick([2, 3, 4, 5, 8, 12]);
+   const meter = Math.round(cm * m / 100 * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Auf einem Plan im Maßstab <b>1 : ${z(m)}</b> ist eine Strecke ${z(cm)} cm lang.<br>Wie lang ist sie in Wirklichkeit, in Metern?`,
+    loesung: z(meter),
+    schluss:"1 : 100 heißt: Was auf dem Plan 1 cm misst, ist in Wirklichkeit 100 cm — also 1 m.",
+    schritte:[
+     {frage:`Was bedeutet <b>1 : ${z(m)}</b>?`,
+      tipp:"Die erste Zahl ist der Plan, die zweite die Wirklichkeit.",
+      tipp2:`Eine Einheit auf dem Plan entspricht ${z(m)} Einheiten in Wirklichkeit. Aus 1 cm werden ${z(m)} cm.`,
+      optionen:[R(`1 cm auf dem Plan sind ${z(m)} cm in Wirklichkeit`, "Richtig."),
+                F(`${z(m)} cm auf dem Plan sind 1 cm in Wirklichkeit`, "Vertauscht — dann wäre der Plan größer als die Wirklichkeit."),
+                F(`Der Plan ist ${z(m)} cm groß`, "Die Zahl sagt nichts über die Größe des Papiers.")]},
+     {frage:`Wie viele <b>Zentimeter</b> sind das in Wirklichkeit?`,
+      tipp:"Planlänge mal Maßstabszahl.",
+      tipp2:`Rechne ${z(cm)} · ${z(m)}.`,
+      optionen:[R(`${z(cm * m)} cm`, "Richtig."),
+                F(`${z(Math.round(cm / m * 10000) / 10000)} cm`, "Hier wird malgenommen — die Wirklichkeit ist größer als der Plan."),
+                F(`${z(cm)} cm`, "Das ist die Länge auf dem Plan.")]},
+     {frage:`Wie viele <b>Meter</b> sind ${z(cm * m)} cm?`,
+      tippAntwort: z(meter),
+      tipp:"100 cm sind 1 m.",
+      tipp2:`Teile durch 100: ${z(cm * m)} : 100.`,
+      optionen:[R(`${z(meter)} m`, "Richtig."),
+                F(`${z(cm * m)} m`, "Da fehlt die Umrechnung von Zentimeter in Meter."),
+                F(`${z(Math.round(cm * m / 1000 * 1000) / 1000)} m`, "Du hast durch 1000 geteilt — das wären Kilometer aus Metern.")]}]};
+ },
+
+ /* Von der Wirklichkeit auf den Plan */
+ () => {
+   const m = pick([50, 100, 200, 500]);
+   const meter = pick([5, 8, 12, 20, 25, 40]);
+   const cm = Math.round(meter * 100 / m * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Wand ist ${z(meter)} m lang. Der Plan hat den Maßstab <b>1 : ${z(m)}</b>.<br>Wie lang wird sie auf dem Plan, in Zentimetern?`,
+    loesung: z(cm),
+    schluss:"Von der Wirklichkeit auf den Plan wird geteilt — der Plan ist ja kleiner.",
+    schritte:[
+     {frage:`Wie viele <b>Zentimeter</b> sind ${z(meter)} m?`,
+      tipp:"1 m sind 100 cm.",
+      tipp2:`Rechne ${z(meter)} · 100.`,
+      optionen:[R(`${z(meter * 100)} cm`, "Richtig."),
+                F(`${z(meter / 100)} cm`, "Zentimeter sind kleiner als Meter — die Zahl muss größer werden."),
+                F(`${z(meter)} cm`, "Das wären hundertmal zu wenig.")]},
+     {frage:"Musst du jetzt <b>mal</b> oder <b>geteilt</b> rechnen?",
+      tipp:"Der Plan ist kleiner als die Wirklichkeit.",
+      tipp2:`Von der Wirklichkeit auf den Plan wird durch die Maßstabszahl geteilt, hier durch ${z(m)}.`,
+      optionen:[R(`Geteilt durch ${z(m)}`, "Richtig — auf dem Plan wird alles kleiner."),
+                F(`Mal ${z(m)}`, "Dann würde der Plan größer als die Wirklichkeit."),
+                F("Weder noch", "Ohne den Maßstab kommst du nicht zur Planlänge.")]},
+     {frage:`Was ergibt <b>${z(meter * 100)} : ${z(m)}</b>?`,
+      tippAntwort: z(cm),
+      tipp:"Wirkliche Länge in cm durch die Maßstabszahl.",
+      tipp2:`Rechne ${z(meter * 100)} : ${z(m)}.`,
+      optionen:[R(`${z(cm)} cm`, "Richtig."),
+                F(`${z(meter * 100 * m)} cm`, "Hier wird geteilt, nicht malgenommen."),
+                F(`${z(meter)} cm`, "Das ist die Länge in Metern, nicht auf dem Plan.")]}]};
+ }
+],
+
+"Formeln umstellen":[
+
+ /* Technische Formel nach einer Größe umstellen */
+ () => {
+   const FORMELN = [
+     {f:"U = R · I", nach:"R", erg:"R = U : I", falsch1:"R = U · I", falsch2:"R = I : U",
+      wie:"Beide Seiten durch I teilen", was:"den Widerstand aus Spannung und Strom"},
+     {f:"P = U · I", nach:"I", erg:"I = P : U", falsch1:"I = P · U", falsch2:"I = U : P",
+      wie:"Beide Seiten durch U teilen", was:"den Strom vom Typenschild"},
+     {f:"W = P · t", nach:"t", erg:"t = W : P", falsch1:"t = W · P", falsch2:"t = P : W",
+      wie:"Beide Seiten durch P teilen", was:"die Laufzeit aus Energie und Leistung"},
+     {f:"Q = C · U", nach:"C", erg:"C = Q : U", falsch1:"C = Q · U", falsch2:"C = U : Q",
+      wie:"Beide Seiten durch U teilen", was:"die Kapazität aus Ladung und Spannung"},
+     {f:"s = v · t", nach:"v", erg:"v = s : t", falsch1:"v = s · t", falsch2:"v = t : s",
+      wie:"Beide Seiten durch t teilen", was:"die Geschwindigkeit aus Weg und Zeit"}
+   ];
+   const f = pick(FORMELN);
+   return {
+    typ:"text",
+    text:`Stell die Formel <b>${f.f}</b> nach <b>${f.nach}</b> um.<br>Wie lautet sie dann?`,
+    loesung: f.erg,
+    schluss:"Umstellen heißt: dieselbe Rechnung auf beiden Seiten. Dann bleibt die Gleichung wahr.",
+    schritte:[
+     {frage:"Welche <b>Grundregel</b> gilt beim Umstellen?",
+      tipp:"Denk an eine Waage.",
+      tipp2:"Was du auf einer Seite tust, musst du auch auf der anderen tun. Nur dann bleibt die Waage im Gleichgewicht.",
+      optionen:[R("Beide Seiten gleich behandeln", "Richtig — sonst stimmt die Gleichung nicht mehr."),
+                F("Nur die Seite ändern, auf der die Unbekannte steht", "Dann wäre die Gleichung nicht mehr wahr."),
+                F("Die Buchstaben einfach umsortieren", "Umstellen ist Rechnen, kein Umsortieren.")]},
+     {frage:`Was musst du tun, damit <b>${f.nach}</b> allein steht?`,
+      tipp:"Die Größe, die daneben steht, muss weg.",
+      tipp2: f.wie + ".",
+      optionen: zieheVerschiedene([
+        R(f.wie, "Richtig."),
+        F(f.wie.replace(/durch (\w+) teilen/, "mit $1 malnehmen"), "Malnehmen macht es nicht besser — die störende Größe bleibt stehen."),
+        F("Beide Seiten quadrieren", "Das hilft nur bei Wurzeln, hier nicht.")], 3)},
+     {frage:"Wie lautet die <b>umgestellte Formel</b>?",
+      tippAntwort: f.erg,
+      tipp:"Schreib sie ganz hin, mit dem Gleichheitszeichen.",
+      tipp2:`Nach dem Umstellen steht ${f.nach} allein. Damit rechnest du ${f.was} aus.`,
+      optionen: zieheVerschiedene([
+        R(f.erg, `Richtig. Damit rechnest du ${f.was} aus.`),
+        F(f.falsch1, "Malgenommen statt geteilt — dann wird das Ergebnis größer statt kleiner."),
+        F(f.falsch2, "Vertauscht: Zähler und Nenner stehen falsch herum.")], 3)}]};
+ },
+
+ /* Umstellen und gleich einsetzen */
+ () => {
+   const FAELLE = [
+     {f:"P = U · I", nach:"I", a:"P", av:2300, ae:"W", b:"U", bv:230, be:"V", erg:10, ee:"A", erg2:"I = P : U"},
+     {f:"U = R · I", nach:"R", a:"U", av:12, ae:"V", b:"I", bv:0.5, be:"A", erg:24, ee:"Ω", erg2:"R = U : I"},
+     {f:"W = P · t", nach:"t", a:"W", av:600, ae:"Wh", b:"P", bv:100, be:"W", erg:6, ee:"h", erg2:"t = W : P"},
+     {f:"s = v · t", nach:"t", a:"s", av:180, ae:"km", b:"v", bv:60, be:"km/h", erg:3, ee:"h", erg2:"t = s : v"},
+     {f:"Q = C · U", nach:"C", a:"Q", av:240, ae:"µC", b:"U", bv:12, be:"V", erg:20, ee:"µF", erg2:"C = Q : U"}
+   ];
+   const f = pick(FAELLE);
+   return {
+    typ:"formel",
+    text:`Gegeben: ${f.a} = ${z(f.av)} ${f.ae} und ${f.b} = ${z(f.bv)} ${f.be}.<br>Stell <b>${f.f}</b> nach ${f.nach} um und rechne aus. Ergebnis in ${f.ee}?`,
+    loesung: z(f.erg),
+    schluss:"Erst umstellen, dann einsetzen. Wer zuerst Zahlen einsetzt, verrechnet sich häufiger.",
+    schritte:[
+     {frage:`Wie lautet <b>${f.f}</b> nach ${f.nach} umgestellt?`,
+      tipp:`Teile beide Seiten durch ${f.b}.`,
+      tipp2:`Damit ${f.nach} allein steht, muss ${f.b} auf die andere Seite — durch Teilen.`,
+      optionen: zieheVerschiedene([
+        R(f.erg2, "Richtig."),
+        F(f.erg2.replace(" : ", " · "), "Malgenommen statt geteilt."),
+        F(f.erg2.split(" = ")[0] + " = " + f.erg2.split(" = ")[1].split(" : ").reverse().join(" : "), "Zähler und Nenner sind vertauscht.")], 3)},
+     {frage:"Was setzt du <b>zuerst</b> ein?",
+      tipp:"Die Reihenfolge ist wichtig für saubere Rechnungen.",
+      tipp2:"Erst die Formel fertig umstellen, dann die Zahlen einsetzen. So bleibt der Rechenweg übersichtlich.",
+      optionen:[R("Erst umstellen, dann die Zahlen", "Richtig — so bleibt es übersichtlich."),
+                F("Erst die Zahlen, dann umstellen", "Das geht auch, führt aber öfter zu Fehlern."),
+                F("Beides gleichzeitig", "Das ist die sicherste Art, sich zu verrechnen.")]},
+     {frage:`Was ergibt <b>${z(f.av)} : ${z(f.bv)}</b>?`,
+      tippAntwort: z(f.erg),
+      tipp:"Jetzt nur noch die beiden Zahlen teilen.",
+      tipp2:`Rechne ${z(f.av)} : ${z(f.bv)}.`,
+      optionen:[R(`${z(f.erg)} ${f.ee}`, "Richtig."),
+                F(`${z(Math.round(f.av * f.bv * 100) / 100)} ${f.ee}`, "Hier wird geteilt, nicht malgenommen."),
+                F(`${z(Math.round(f.bv / f.av * 10000) / 10000)} ${f.ee}`, "Verkehrt herum geteilt.")]}]};
+ }
+],
+
+"Zehnerpotenzen":[
+
+ /* Große Zahl in Zehnerpotenz */
+ () => {
+   const z1 = pick([1.5, 2.2, 3.6, 4.7, 5, 8.2, 9.1]);
+   const e = pick([3, 4, 5, 6, 8]);
+   const wert = z1 * Math.pow(10, e);
+   return {
+    typ:"formel",
+    text:`Schreib <b>${z(wert)}</b> als Zehnerpotenz in der Form ${z(z1)} · 10 hoch etwas.<br>Wie groß ist die Hochzahl?`,
+    loesung: z(e),
+    schluss:"Die Hochzahl zählt, um wie viele Stellen das Komma wandert. Nichts weiter.",
+    schritte:[
+     {frage:"Wohin gehört das <b>Komma</b> bei der Zehnerpotenz?",
+      tipp:"Vor dem Komma soll genau eine Ziffer stehen.",
+      tipp2:`Aus ${z(wert)} wird ${z(z1)} — genau eine Ziffer vor dem Komma. Das nennt man wissenschaftliche Schreibweise.`,
+      optionen:[R("Hinter die erste Ziffer", `Richtig — daraus wird ${z(z1)}.`),
+                F("Ganz nach vorn", "Dann stünde eine Null vor dem Komma — das ist nicht üblich."),
+                F("Ganz nach hinten", "Dann hättest du die ursprüngliche Zahl.")]},
+     {frage:"Wie viele <b>Stellen</b> wandert das Komma?",
+      tipp:"Zähl von der ursprünglichen Kommastelle bis zur neuen.",
+      tipp2:`Von ${z(wert)} zu ${z(z1)} sind es ${z(e)} Stellen nach links.`,
+      optionen:[R(`${z(e)}`, "Richtig."),
+                F(`${z(e + 1)}`, "Eine Stelle zu viel gezählt."),
+                F(`${z(Math.max(1, e - 1))}`, "Eine Stelle zu wenig gezählt.")]},
+     {frage:"Wie groß ist die <b>Hochzahl</b>?",
+      tippAntwort: z(e),
+      tipp:"Bei großen Zahlen ist sie positiv und so groß wie die Zahl der Stellen.",
+      tipp2:`${z(wert)} = ${z(z1)} · 10 hoch ${z(e)}.`,
+      optionen:[R(`${z(e)}`, "Richtig."),
+                F(`${z(-e)}`, "Negativ wäre sie bei sehr kleinen Zahlen."),
+                F(`${z(z1)}`, "Das ist die Zahl vor dem Mal, nicht die Hochzahl.")]}]};
+ },
+
+ /* Kleine Zahl in Zehnerpotenz */
+ () => {
+   const z1 = pick([1.2, 2.7, 3.3, 4.7, 6.8, 9]);
+   const e = pick([3, 4, 6, 9]);
+   const wert = z1 / Math.pow(10, e);
+   const namen = {3:"Milli", 4:"", 6:"Mikro", 9:"Nano"};
+   return {
+    typ:"formel",
+    text:`Die Zahl <b>${z(z1)} · 10 hoch −${z(e)}</b> soll ausgeschrieben werden.<br>Wie viele Nullen stehen zwischen dem Komma und der ersten Ziffer?`,
+    loesung: z(e - 1),
+    schluss:"Negative Hochzahlen bedeuten kleine Zahlen. −3 ist Milli, −6 ist Mikro, −9 ist Nano — genau die Vorsätze aus der Elektrotechnik.",
+    schritte:[
+     {frage:"Was bedeutet eine <b>negative</b> Hochzahl?",
+      tipp:"Vergleich mit der positiven Hochzahl.",
+      tipp2:"10 hoch −3 ist dasselbe wie 1 geteilt durch 1000. Negative Hochzahl heißt also: sehr kleine Zahl.",
+      optionen:[R("Die Zahl wird sehr klein", "Richtig — es wird geteilt statt malgenommen."),
+                F("Die Zahl wird negativ", "Nein, die Zahl bleibt positiv, sie wird nur klein."),
+                F("Die Zahl wird sehr groß", "Das gilt für positive Hochzahlen.")]},
+     {frage:"In welche Richtung wandert das <b>Komma</b>?",
+      tipp:"Kleine Zahl heißt: nach links.",
+      tipp2:`Bei 10 hoch −${z(e)} wandert das Komma ${z(e)} Stellen nach links.`,
+      optionen:[R(`${z(e)} Stellen nach links`, "Richtig."),
+                F(`${z(e)} Stellen nach rechts`, "Nach rechts würde die Zahl größer."),
+                F("Gar nicht", "Die Hochzahl gibt genau an, wie weit es wandert.")]},
+     {frage:"Wie viele <b>Nullen</b> stehen dann zwischen Komma und erster Ziffer?",
+      tippAntwort: z(e - 1),
+      tipp:"Eine Stelle wird von der Ziffer selbst belegt.",
+      tipp2:`Bei 10 hoch −${z(e)} sind es ${z(e - 1)} Nullen, danach kommt die ${z(Math.floor(z1))}.`,
+      optionen:[R(`${z(e - 1)}`, `Richtig: ${z(wert)}.`),
+                F(`${z(e)}`, "Eine zu viel — die erste Ziffer belegt schon eine Stelle."),
+                F(`${z(Math.max(0, e - 2))}`, "Eine zu wenig.")]}]};
+ },
+
+ /* Rechnen mit Zehnerpotenzen */
+ () => {
+   const a = pick([2, 3, 4, 5]), b = pick([2, 3, 6]);
+   const ea = pick([3, 4, 6]), eb = pick([2, 3, 5]);
+   const erg = ea + eb;
+   return {
+    typ:"formel",
+    text:`Rechne: <b>(${z(a)} · 10 hoch ${z(ea)}) · (${z(b)} · 10 hoch ${z(eb)})</b><br>Wie groß ist die Hochzahl im Ergebnis?`,
+    loesung: z(erg),
+    schluss:"Beim Malnehmen werden die Hochzahlen addiert, beim Teilen subtrahiert. Das spart eine Menge Nullen.",
+    schritte:[
+     {frage:"Was passiert mit den <b>Vorzahlen</b>?",
+      tipp:"Die beiden Zahlen vor dem Mal.",
+      tipp2:`Sie werden ganz normal malgenommen: ${z(a)} · ${z(b)} = ${z(a * b)}.`,
+      optionen:[R(`Sie werden malgenommen: ${z(a * b)}`, "Richtig."),
+                F(`Sie werden addiert: ${z(a + b)}`, "Addiert wird nur bei den Hochzahlen."),
+                F("Sie bleiben stehen", "Sie müssen verrechnet werden.")]},
+     {frage:"Was passiert mit den <b>Hochzahlen</b>?",
+      tipp:"Beim Malnehmen gleicher Basen gilt eine feste Regel.",
+      tipp2:"Bei gleicher Basis werden die Hochzahlen addiert. Die Basis ist hier beide Male 10.",
+      optionen:[R("Sie werden addiert", "Richtig — bei gleicher Basis."),
+                F("Sie werden malgenommen", "Das gilt nur bei einer Potenz einer Potenz."),
+                F("Sie bleiben, wie sie sind", "Dann stimmte die Größenordnung nicht mehr.")]},
+     {frage:`Was ergibt <b>${z(ea)} + ${z(eb)}</b>?`,
+      tippAntwort: z(erg),
+      tipp:"Einfach die beiden Hochzahlen zusammenzählen.",
+      tipp2:`Rechne ${z(ea)} + ${z(eb)}.`,
+      optionen:[R(`${z(erg)}`, `Richtig — das Ergebnis ist ${z(a * b)} · 10 hoch ${z(erg)}.`),
+                F(`${z(ea * eb)}`, "Hier wird addiert, nicht malgenommen."),
+                F(`${z(Math.abs(ea - eb))}`, "Abgezogen wird nur beim Teilen.")]}]};
+ }
+],
+
+"Logarithmus":[
+
+ /* Logarithmus als Umkehrung der Potenz */
+ () => {
+   const basis = pick([2, 10]);
+   const e = basis === 2 ? pick([2, 3, 4, 5, 6, 8, 10]) : pick([1, 2, 3, 4, 5, 6]);
+   const wert = Math.pow(basis, e);
+   return {
+    typ:"formel",
+    text:`Wie oft muss man <b>${z(basis)}</b> mit sich selbst malnehmen, um <b>${z(wert)}</b> zu bekommen?<br>(Das ist der Logarithmus von ${z(wert)} zur Basis ${z(basis)}.)`,
+    loesung: z(e),
+    schluss:"Der Logarithmus fragt nach der Hochzahl. Mehr ist es nicht.",
+    schritte:[
+     {frage:"Was fragt ein <b>Logarithmus</b> überhaupt?",
+      tipp:"Er ist die Umkehrung des Potenzierens.",
+      tipp2:"Beim Potenzieren fragst du: Was kommt heraus? Beim Logarithmus fragst du: Welche Hochzahl war das?",
+      optionen:[R("Nach der Hochzahl", "Richtig — er ist die Umkehrung der Potenz."),
+                F("Nach der Basis", "Die Basis ist meist gegeben, hier die " + z(basis) + "."),
+                F("Nach dem Ergebnis", "Das Ergebnis steht schon da.")]},
+     {frage:`Wie oft passt <b>${z(basis)}</b> als Faktor in ${z(wert)}?`,
+      tipp:`Fang an: ${z(basis)}, dann ${z(basis * basis)}, dann ${z(basis * basis * basis)} …`,
+      tipp2:`Zähl mit, bis du bei ${z(wert)} bist. Es sind ${z(e)} Faktoren.`,
+      optionen:[R(`${z(e)}-mal`, "Richtig."),
+                F(`${z(e + 1)}-mal`, `Das wäre schon ${z(wert * basis)}.`),
+                F(`${z(Math.max(1, e - 1))}-mal`, `Das wären erst ${z(wert / basis)}.`)]},
+     {frage:`Wie groß ist der <b>Logarithmus</b> also?`,
+      tippAntwort: z(e),
+      tipp:"Es ist genau die Zahl der Faktoren.",
+      tipp2:`${z(basis)} hoch ${z(e)} ergibt ${z(wert)}. Also ist der Logarithmus ${z(e)}.`,
+      optionen:[R(`${z(e)}`, "Richtig."),
+                F(`${z(wert)}`, "Das ist die Zahl, deren Logarithmus gesucht war."),
+                F(`${z(basis)}`, "Das ist die Basis.")]}]};
+ },
+
+ /* Dezibel */
+ () => {
+   const faelle = [{v:10, db:10}, {v:100, db:20}, {v:1000, db:30}, {v:10000, db:40}, {v:100000, db:50}];
+   const f = pick(faelle);
+   return {
+    typ:"formel",
+    text:`Eine Leistung wird auf das <b>${z(f.v)}-fache</b> verstärkt.<br>Wie viele Dezibel sind das? (10 · log der Verstärkung)`,
+    loesung: z(f.db),
+    schluss:"Dezibel machen aus riesigen Verhältnissen handliche Zahlen. Das Zehnfache sind 10 dB, das Hundertfache 20 dB.",
+    schritte:[
+     {frage:"Warum rechnet man in <b>Dezibel</b>?",
+      tipp:"Denk an sehr große und sehr kleine Verhältnisse.",
+      tipp2:"Verstärkungen reichen vom Zehnfachen bis zum Millionenfachen. Mit dem Logarithmus werden daraus Zahlen zwischen 10 und 60.",
+      optionen:[R("Weil große Verhältnisse dann handliche Zahlen werden", "Richtig."),
+                F("Weil es genauer ist", "Genauer wird es nicht, nur übersichtlicher."),
+                F("Weil man dann nicht rechnen muss", "Gerechnet wird trotzdem, nur mit kleineren Zahlen.")]},
+     {frage:`Wie groß ist der <b>Logarithmus</b> von ${z(f.v)} zur Basis 10?`,
+      tipp:"Zähl die Nullen.",
+      tipp2:`${z(f.v)} ist eine 1 mit ${z(f.db / 10)} Nullen. Der Zehnerlogarithmus ist also ${z(f.db / 10)}.`,
+      optionen:[R(`${z(f.db / 10)}`, "Richtig — bei Zehnerpotenzen zählst du einfach die Nullen."),
+                F(`${z(f.v)}`, "Das ist die Zahl selbst."),
+                F(`${z(f.db)}`, "Das ist schon das Ergebnis in Dezibel.")]},
+     {frage:`Was ergibt <b>10 · ${z(f.db / 10)}</b>?`,
+      tippAntwort: z(f.db),
+      tipp:"Der Logarithmus wird mit 10 malgenommen.",
+      tipp2:`Rechne 10 · ${z(f.db / 10)}.`,
+      optionen:[R(`${z(f.db)} dB`, "Richtig."),
+                F(`${z(f.db / 10)} dB`, "Der Faktor 10 fehlt."),
+                F(`${z(f.v)} dB`, "Das ist die Verstärkung, nicht der Dezibelwert.")]}]};
+ }
 ]
 
 };
@@ -7162,8 +7697,13 @@ function istEintippbar(schritt){
    Antwort — „Kreuzreim", „8x + 14", „42 cm" —, braucht man die normale
    Tastatur. Nur bei reinen Zahlen ist der Zahlenblock richtig. */
 function tastaturArt(erwartet){
-  const roh = String(erwartet).replace(/<[^>]+>/g, "");
-  return /[A-Za-zÄÖÜäöüßµ]/.test(roh) ? "text" : "decimal";
+  const roh = String(erwartet).replace(/<[^>]+>/g, "").trim();
+  if (/[A-Za-zÄÖÜäöüßµ]/.test(roh)) return "text";
+  /* Der Zifferblock hat auf vielen Handys kein Minuszeichen. Ist eine negative
+     Antwort erwartet, muss deshalb die normale Tastatur kommen — sonst lässt
+     sich die Lösung gar nicht eintippen. */
+  if (/^[-−–]/.test(roh)) return "text";
+  return "decimal";
 }
 /* Vergleicht eine eingetippte Antwort mit der richtigen — großzügig bei Schreibweise. */
 function eingabePasst(eingabe, richtigText){
@@ -8280,6 +8820,40 @@ const ERKLAERUNGEN = {
     ["Mit dem Prozentsatz statt der Kommazahl gerechnet", "20 % sind 0,2. Wer mit 20 malnimmt, liegt um den Faktor 100 daneben."],
     ["Bei Zinsen die Zeit vergessen", "Zinsen für drei Monate sind nicht dasselbe wie Jahreszinsen. Der Zeitfaktor gehört in die Rechnung."]
   ],
+  spiel:{
+    titel:"Zinsen über die Jahre",
+    hinweis:"Schieb die Jahre nach rechts. Beim Zinseszins wächst es nicht gleichmäßig, sondern immer schneller.",
+    regler:[
+      {id:"k", name:"Startkapital", einheit:"€", von:100, bis:10000, schritt:100, start:1000},
+      {id:"p", name:"Zinssatz je Jahr", einheit:"%", von:0.5, bis:12, schritt:0.5, start:3},
+      {id:"j", name:"Jahre", einheit:"", von:1, bis:30, schritt:1, start:10}
+    ],
+    ausgabe:(w) => {
+      const einfach = w.k + w.k * w.p / 100 * w.j;
+      const zins = w.k * Math.pow(1 + w.p / 100, w.j);
+      const punkte = [];
+      for (let n = 0; n <= 30; n++){
+        const x = 30 + n * (340 / 30);
+        const hoch = w.k * Math.pow(1 + w.p / 100, n * w.j / 30);
+        const max = w.k * Math.pow(1 + w.p / 100, w.j) || 1;
+        punkte.push((n ? "L" : "M") + Math.round(x) + " " + Math.round(140 - 110 * (hoch - w.k) / Math.max(1, max - w.k)));
+      }
+      return {
+        bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Wie das Kapital über die Jahre wächst">
+          <path d="M30 140h340M30 140V16" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
+          <path d="${punkte.join("")}" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+          <text x="200" y="156" text-anchor="middle" font-size="11" fill="currentColor">${z(w.j)} Jahre</text>
+        </svg>`,
+        werte:[
+          {name:"Ohne Zinseszins", text: eur(Math.round(einfach * 100) / 100)},
+          {name:"Mit Zinseszins", text: eur(Math.round(zins * 100) / 100)},
+          {name:"Unterschied", text: eur(Math.round((zins - einfach) * 100) / 100)}
+        ],
+        satz: w.j >= 20 ? "Über zwanzig Jahre macht der Zinseszins den größten Teil aus — bei Krediten genauso wie beim Sparen."
+             : "Zieh die Jahre nach rechts und beobachte, wie der Unterschied zwischen beiden Zeilen wächst."
+      };
+    }
+  },
   einfach:[
     "Stell dir vor, alles wird in 100 gleiche Teile zerlegt. Ein Prozent ist genau eines dieser 100 Teile.",
     "25 % heißt also: 25 von 100 Teilen. Das ist dasselbe wie ein Viertel.",
@@ -9020,6 +9594,39 @@ const ERKLAERUNGEN = {
     ["Steigung und Achsenabschnitt verwechselt", "In y = 2x + 3 ist 2 die Steigung und 3 der Startwert."],
     ["Punktprobe nur mit einer Koordinate", "Ein Punkt liegt nur dann auf der Geraden, wenn beide Koordinaten passen."]
   ],
+  spiel:{
+    titel:"Steigung und Startwert verschieben",
+    hinweis:"m kippt die Gerade, b schiebt sie nach oben und unten.",
+    regler:[
+      {id:"m", name:"Steigung m", einheit:"", von:-3, bis:3, schritt:0.25, start:1},
+      {id:"b", name:"Startwert b", einheit:"", von:-5, bis:5, schritt:0.5, start:2}
+    ],
+    ausgabe:(w) => {
+      const mx = 200, my = 84, sk = 14;
+      const y = (x) => my - (w.m * x + w.b) * sk;
+      const p1 = {x: mx - 170, y: y(-170 / sk)}, p2 = {x: mx + 170, y: y(170 / sk)};
+      const vz = w.b < 0 ? "− " + z(Math.abs(w.b)) : "+ " + z(w.b);
+      return {
+        bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Gerade mit einstellbarer Steigung und Startwert">
+          <path d="M30 84h340M200 8v152" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
+          <clipPath id="feld"><rect x="30" y="8" width="340" height="152"/></clipPath>
+          <g clip-path="url(#feld)">
+            <path d="M${p1.x} ${Math.round(p1.y * 10) / 10}L${p2.x} ${Math.round(p2.y * 10) / 10}"
+                  stroke="#10a37f" stroke-width="2.5" fill="none"/>
+            <circle cx="200" cy="${Math.round(y(0) * 10) / 10}" r="5" fill="#10a37f"/>
+          </g>
+          <text x="200" y="166" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">y = ${z(w.m)}x ${vz}</text>
+        </svg>`,
+        werte:[
+          {name:"Schnittpunkt mit der y-Achse", text: "(0 | " + z(w.b) + ")"},
+          {name:"y bei x = 4", text: z(Math.round((w.m * 4 + w.b) * 100) / 100)}
+        ],
+        satz: w.m === 0 ? "Steigung 0: Die Gerade ist waagerecht — y ändert sich gar nicht mehr."
+             : w.m < 0 ? "Negative Steigung: Die Gerade fällt. Je größer x, desto kleiner y."
+             : "Die Steigung sagt, wie viel y größer wird, wenn x um 1 wächst."
+      };
+    }
+  },
   einfach:[
     "y = mx + b. Mehr steckt nicht dahinter. Das m ist die Steigung, das b der Startwert auf der y-Achse.",
     "Die Steigung sagt: gehe ich einen Schritt nach rechts, wie viel geht es dann nach oben? Bei m = 3 geht es drei nach oben.",
@@ -9134,6 +9741,35 @@ const ERKLAERUNGEN = {
     ["Wurzel vergessen", "a² + b² ergibt c², nicht c. Der letzte Schritt ist die Wurzel."],
     ["Ohne rechten Winkel angewendet", "In einem beliebigen Dreieck gilt der Satz nicht."]
   ],
+  spiel:{
+    titel:"Zieh an den Katheten",
+    hinweis:"Die Hypotenuse rechnet sich von selbst mit — und ist immer die längste Seite.",
+    regler:[
+      {id:"a", name:"Kathete a", einheit:"cm", von:1, bis:12, schritt:0.5, start:3},
+      {id:"b", name:"Kathete b", einheit:"cm", von:1, bis:12, schritt:0.5, start:4}
+    ],
+    ausgabe:(w) => {
+      const c = Math.sqrt(w.a * w.a + w.b * w.b);
+      const sk = 10, ax = 60, ay = 148;
+      const bx = ax + w.b * sk, by = ay - w.a * sk;
+      return {
+        bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Rechtwinkliges Dreieck mit einstellbaren Katheten">
+          <path d="M${ax} ${ay}H${bx}V${by}Z" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M${bx - 12} ${ay}v-12h12" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <text x="${(ax + bx) / 2}" y="${ay + 16}" text-anchor="middle" font-size="12" fill="currentColor">b = ${z(w.b)}</text>
+          <text x="${bx + 14}" y="${(ay + by) / 2}" font-size="12" fill="currentColor">a = ${z(w.a)}</text>
+          <text x="${(ax + bx) / 2 - 26}" y="${(ay + by) / 2 - 6}" font-size="12" font-weight="700" fill="#10a37f">c</text>
+        </svg>`,
+        werte:[
+          {name:"a² + b²", text: z(Math.round((w.a * w.a + w.b * w.b) * 100) / 100)},
+          {name:"Hypotenuse c", text: z(Math.round(c * 1000) / 1000) + " cm"}
+        ],
+        satz: (Math.abs(c - Math.round(c)) < 1e-9)
+          ? `${z(w.a)}, ${z(w.b)} und ${z(c)} — das ist ein Tripel mit glatten Zahlen. Damit reißt man auf der Baustelle rechte Winkel an.`
+          : "Die Hypotenuse ist immer länger als jede Kathete, aber kürzer als beide zusammen."
+      };
+    }
+  },
   einfach:[
     "Die Formel a² + b² = c² gilt nur, wenn im Dreieck ein rechter Winkel steckt. Sonst stimmt sie nicht.",
     "Die beiden Seiten, die den rechten Winkel bilden, heißen Katheten. Die Seite gegenüber heißt Hypotenuse — sie ist immer die längste.",
@@ -9949,6 +10585,34 @@ const ERKLAERUNGEN = {
     ["Einheit vergessen", "„12“ ist keine Antwort. 12 V, 12 A und 12 Ω sind drei völlig verschiedene Dinge."],
     ["Ergebnis nicht auf Plausibilität geprüft", "Ein Widerstand von 0,002 Ω oder ein Strom von 5000 A in einer Steuerung sind fast immer ein Rechenfehler."]
   ],
+  spiel:{
+    titel:"Zieh an den Reglern — was macht der Strom?",
+    hinweis:"Spannung und Widerstand kannst du einstellen. Der Strom ergibt sich daraus von allein.",
+    regler:[
+      {id:"u", name:"Spannung U", einheit:"V", von:1, bis:24, schritt:0.5, start:12},
+      {id:"r", name:"Widerstand R", einheit:"Ω", von:1, bis:60, schritt:1, start:20}
+    ],
+    ausgabe:(w) => {
+      const i = w.u / w.r, p = w.u * i;
+      const anteil = Math.min(1, i / 8);
+      return {
+        bild:`<svg viewBox="0 0 400 92" ${SVG_STIL} role="img" aria-label="Balken für die Stromstärke">
+          <rect x="20" y="30" width="360" height="26" rx="13" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"/>
+          <rect x="20" y="30" width="${Math.max(3, 360 * anteil)}" height="26" rx="13" fill="#10a37f"/>
+          <text x="20" y="78" font-size="11" fill="currentColor">0 A</text>
+          <text x="380" y="78" text-anchor="end" font-size="11" fill="currentColor">8 A</text>
+          <text x="200" y="78" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Strom</text>
+        </svg>`,
+        werte:[
+          {name:"Strom I = U : R", text: z(Math.round(i * 1000) / 1000) + " A"},
+          {name:"Leistung P = U · I", text: z(Math.round(p * 100) / 100) + " W"}
+        ],
+        satz: i >= 5 ? "Wenig Widerstand, viel Strom — so wird ein Kurzschluss gefährlich."
+             : i <= 0.3 ? "Viel Widerstand bremst den Strom fast auf null."
+             : "Verdoppelst du die Spannung, verdoppelt sich der Strom. Verdoppelst du den Widerstand, halbiert er sich."
+      };
+    }
+  },
   einfach:[
     "Stell dir Strom wie Wasser in einem Rohr vor. Die Spannung ist der Druck, der das Wasser schiebt. Der Strom ist die Menge, die durchfließt. Der Widerstand ist eine Engstelle im Rohr.",
     "Mehr Druck heißt mehr Wasser: Wird die Spannung größer, wird auch der Strom größer.",
@@ -10001,6 +10665,29 @@ const ERKLAERUNGEN = {
     ["Stunden am Tag mit Gesamtstunden verwechselt", "3 Stunden am Tag über 30 Tage sind 90 Betriebsstunden, nicht 3 und nicht 30."],
     ["Bei Drehstrom einfach P = U · I gerechnet", "Beim Drehstrommotor gilt P = √3 · U · I · cos φ. Die einfache Formel gilt nur für Gleichstrom und für ohmsche Wechselstromverbraucher."]
   ],
+  spiel:{
+    titel:"Was kostet dieses Gerät?",
+    hinweis:"Stell Leistung, Laufzeit und Strompreis ein und sieh, was am Jahresende dabei herauskommt.",
+    regler:[
+      {id:"p", name:"Leistung", einheit:"W", von:5, bis:3000, schritt:5, start:100},
+      {id:"h", name:"Stunden am Tag", einheit:"h", von:0.5, bis:24, schritt:0.5, start:4},
+      {id:"pr", name:"Preis je kWh", einheit:"€", von:0.2, bis:0.6, schritt:0.01, start:0.35}
+    ],
+    ausgabe:(w) => {
+      const kwhTag = w.p / 1000 * w.h;
+      const kwhJahr = kwhTag * 365;
+      const jahr = kwhJahr * w.pr;
+      return {
+        werte:[
+          {name:"Verbrauch am Tag", text: z(Math.round(kwhTag * 1000) / 1000) + " kWh"},
+          {name:"Verbrauch im Jahr", text: z(Math.round(kwhJahr * 10) / 10) + " kWh"},
+          {name:"Kosten im Jahr", text: eur(Math.round(jahr * 100) / 100)}
+        ],
+        satz: jahr >= 200 ? "Über 200 € im Jahr — bei so einem Gerät lohnt sich der Blick aufs Typenschild."
+             : "Schieb die Leistung einmal ganz nach rechts. Kleine Zahlen auf dem Typenschild machen einen großen Unterschied."
+      };
+    }
+  },
   einfach:[
     "Ein Wasserkocher mit 2000 W ist stark, eine Lampe mit 10 W ist schwach. Diese Zahl ist die Leistung P, gemessen in Watt.",
     "Die Leistung entsteht aus Spannung und Strom zusammen: P = U · I.",
@@ -10063,6 +10750,36 @@ const ERKLAERUNGEN = {
     ["Für die Teilspannung mit dem Gesamtwiderstand gerechnet", "U1 = I · R1, nicht I · R gesamt. Für jedes Bauteil zählt nur sein eigener Widerstand."],
     ["Probe weggelassen", "Die Maschenregel kostet zehn Sekunden und findet fast jeden Rechenfehler."]
   ],
+  spiel:{
+    titel:"Zwei Widerstände in Reihe an 12 V",
+    hinweis:"Verstell die beiden Widerstände und beobachte, wie sich die Spannung auf sie aufteilt.",
+    regler:[
+      {id:"r1", name:"R1", einheit:"Ω", von:1, bis:100, schritt:1, start:10},
+      {id:"r2", name:"R2", einheit:"Ω", von:1, bis:100, schritt:1, start:20}
+    ],
+    ausgabe:(w) => {
+      const u = 12, rg = w.r1 + w.r2, i = u / rg, u1 = i * w.r1, u2 = i * w.r2;
+      const b1 = 360 * (w.r1 / rg);
+      return {
+        bild:`<svg viewBox="0 0 400 98" ${SVG_STIL} role="img" aria-label="Wie sich 12 Volt auf die beiden Widerstände aufteilen">
+          <rect x="20" y="26" width="${Math.max(2, b1)}" height="30" rx="8" fill="#10a37f" fill-opacity=".75"/>
+          <rect x="${20 + Math.max(2, b1)}" y="26" width="${Math.max(2, 360 - b1)}" height="30" rx="8" fill="#10a37f" fill-opacity=".3"/>
+          <rect x="20" y="26" width="360" height="30" rx="8" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"/>
+          <text x="${20 + Math.max(24, b1 / 2)}" y="46" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">U1</text>
+          <text x="${380 - Math.max(24, (360 - b1) / 2)}" y="46" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">U2</text>
+          <text x="200" y="84" text-anchor="middle" font-size="12" fill="currentColor">zusammen immer 12 V</text>
+        </svg>`,
+        werte:[
+          {name:"Gesamtwiderstand", text: z(rg) + " Ω"},
+          {name:"Strom (überall gleich)", text: z(Math.round(i * 1000) / 1000) + " A"},
+          {name:"Spannung an R1", text: z(Math.round(u1 * 100) / 100) + " V"},
+          {name:"Spannung an R2", text: z(Math.round(u2 * 100) / 100) + " V"}
+        ],
+        satz: w.r1 === w.r2 ? "Gleich große Widerstände teilen die Spannung genau in der Mitte."
+             : "Der größere Widerstand bekommt die größere Spannung — und beide zusammen ergeben immer 12 V."
+      };
+    }
+  },
   einfach:[
     "Reihenschaltung heißt: Es gibt nur einen einzigen Weg für den Strom. Alle Bauteile liegen hintereinander wie Perlen auf einer Schnur.",
     "Weil es nur einen Weg gibt, fließt überall derselbe Strom. Was durch das erste Bauteil geht, geht auch durch das letzte.",
@@ -10128,6 +10845,28 @@ const ERKLAERUNGEN = {
     ["Die Spannung aufgeteilt", "An jedem Zweig liegt die volle Spannung. Aufgeteilt wird nur der Strom."],
     ["Ergebnis nicht geprüft", "Kommt ein Gesamtwiderstand heraus, der größer ist als der kleinste Einzelwiderstand, ist die Rechnung falsch — ohne Ausnahme."]
   ],
+  spiel:{
+    titel:"Zwei Widerstände parallel an 12 V",
+    hinweis:"Beide hängen an derselben Spannung. Schau, was mit dem Gesamtwiderstand passiert.",
+    regler:[
+      {id:"r1", name:"R1", einheit:"Ω", von:2, bis:100, schritt:1, start:20},
+      {id:"r2", name:"R2", einheit:"Ω", von:2, bis:100, schritt:1, start:30}
+    ],
+    ausgabe:(w) => {
+      const u = 12, rg = w.r1 * w.r2 / (w.r1 + w.r2);
+      const i1 = u / w.r1, i2 = u / w.r2, ig = i1 + i2;
+      const klein = Math.min(w.r1, w.r2);
+      return {
+        werte:[
+          {name:"Gesamtwiderstand", text: z(Math.round(rg * 100) / 100) + " Ω"},
+          {name:"Strom durch R1", text: z(Math.round(i1 * 1000) / 1000) + " A"},
+          {name:"Strom durch R2", text: z(Math.round(i2 * 1000) / 1000) + " A"},
+          {name:"Gesamtstrom", text: z(Math.round(ig * 1000) / 1000) + " A"}
+        ],
+        satz: `Der Gesamtwiderstand liegt bei ${z(Math.round(rg * 100) / 100)} Ω — kleiner als der kleinere der beiden (${z(klein)} Ω). Das ist parallel immer so.`
+      };
+    }
+  },
   einfach:[
     "Parallelschaltung heißt: Jedes Bauteil hängt direkt an denselben zwei Anschlüssen. Der Strom hat mehrere Wege zur Auswahl.",
     "Weil oben und unten derselbe Anschluss ist, liegt an jedem Zweig dieselbe Spannung an.",
@@ -10193,6 +10932,32 @@ const ERKLAERUNGEN = {
     ["Belastung übersehen", "Sobald am Abgriff ein Verbraucher hängt, stimmt die einfache Formel nicht mehr. Der Verbraucher liegt parallel zu R2 und zieht die Spannung herunter."],
     ["Ergebnis größer als die Quellenspannung", "Das kann nie sein. Kommt so etwas heraus, ist der Bruch verkehrt herum."]
   ],
+  spiel:{
+    titel:"Spannungsteiler zum Einstellen",
+    hinweis:"Nur das Verhältnis der beiden Widerstände zählt — probier es aus.",
+    regler:[
+      {id:"u", name:"Eingangsspannung", einheit:"V", von:3, bis:24, schritt:1, start:12},
+      {id:"r1", name:"R1 (oben)", einheit:"Ω", von:100, bis:2000, schritt:100, start:1000},
+      {id:"r2", name:"R2 (unten)", einheit:"Ω", von:100, bis:2000, schritt:100, start:2000}
+    ],
+    ausgabe:(w) => {
+      const rg = w.r1 + w.r2, u2 = w.u * w.r2 / rg, u1 = w.u - u2;
+      const anteil = w.r2 / rg;
+      return {
+        bild:`<svg viewBox="0 0 400 96" ${SVG_STIL} role="img" aria-label="Anteil der abgegriffenen Spannung">
+          <rect x="20" y="26" width="360" height="30" rx="8" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"/>
+          <rect x="20" y="26" width="${Math.max(2, 360 * anteil)}" height="30" rx="8" fill="#10a37f"/>
+          <text x="200" y="80" text-anchor="middle" font-size="12" fill="currentColor">Anteil, der an R2 abfällt</text>
+        </svg>`,
+        werte:[
+          {name:"Spannung an R1", text: z(Math.round(u1 * 100) / 100) + " V"},
+          {name:"Abgegriffen an R2", text: z(Math.round(u2 * 100) / 100) + " V"},
+          {name:"Verhältnis R2 zu gesamt", text: z(Math.round(anteil * 1000) / 1000)}
+        ],
+        satz: "Stell R1 und R2 auf das Doppelte — die abgegriffene Spannung bleibt gleich. Nur das Verhältnis zählt."
+      };
+    }
+  },
   einfach:[
     "Manchmal hast du 12 V, brauchst aber nur 4 V. Dann nimmst du einen Spannungsteiler.",
     "Er besteht einfach aus zwei Widerständen in Reihe. Die Spannung wird zwischen ihnen abgegriffen.",
@@ -10257,6 +11022,34 @@ const ERKLAERUNGEN = {
     ["Kehrwert vergessen", "f = 1 : T, nicht f = T. Das klingt banal, passiert unter Zeitdruck aber ständig."],
     ["Auf dem Oszilloskop nur eine halbe Periode gemessen", "Eine Periode ist erst voll, wenn die Kurve wieder genauso verläuft wie am Anfang — hoch, runter und zurück."]
   ],
+  spiel:{
+    titel:"Dreh an der Frequenz",
+    hinweis:"Die Kurve zeigt immer denselben Ausschnitt von 40 Millisekunden. Je höher die Frequenz, desto mehr Schwingungen passen hinein.",
+    regler:[{id:"f", name:"Frequenz f", einheit:"Hz", von:10, bis:300, schritt:5, start:50}],
+    ausgabe:(w) => {
+      const t = 1000 / w.f;
+      let d = "";
+      for (let n = 0; n <= 120; n++){
+        const x = 24 + n * (352 / 120);
+        const y = 62 - 34 * Math.sin(2 * Math.PI * w.f * (n / 120 * 0.04));
+        d += (n ? "L" : "M") + Math.round(x * 10) / 10 + " " + Math.round(y * 10) / 10;
+      }
+      return {
+        bild:`<svg viewBox="0 0 400 116" ${SVG_STIL} role="img" aria-label="Sinuskurve über 40 Millisekunden bei der eingestellten Frequenz">
+          <path d="M24 62h352" stroke="currentColor" stroke-width="1.5" opacity=".45"/>
+          <path d="${d}" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+          <text x="24" y="108" font-size="11" fill="currentColor">0 ms</text>
+          <text x="376" y="108" text-anchor="end" font-size="11" fill="currentColor">40 ms</text>
+        </svg>`,
+        werte:[
+          {name:"Periodendauer T = 1 : f", text: z(Math.round(t * 1000) / 1000) + " ms"},
+          {name:"Schwingungen in 40 ms", text: z(Math.round(w.f * 0.04 * 100) / 100)}
+        ],
+        satz: w.f === 50 ? "50 Hz ist unsere Netzfrequenz — eine Periode dauert genau 20 ms."
+             : "Doppelte Frequenz heißt halbe Periodendauer. Die beiden sind Kehrwerte voneinander."
+      };
+    }
+  },
   einfach:[
     "Wechselspannung geht immer wieder auf und ab. Ein kompletter Durchgang — hoch, runter, wieder am Anfang — heißt eine Periode.",
     "Die Periodendauer T sagt, wie lange ein solcher Durchgang dauert. Gemessen in Sekunden oder Millisekunden.",
@@ -11622,6 +12415,29 @@ const ERKLAERUNGEN = {
     ["Zu früh gerundet", "Wer mit 3,14 statt der π-Taste rechnet und mehrfach rundet, weicht am Ende sichtbar ab."],
     ["Beim doppelten Radius die doppelte Fläche erwartet", "Doppelter Radius heißt vierfache Fläche — wegen des Quadrats."]
   ],
+  spiel:{
+    titel:"Zieh den Radius größer",
+    hinweis:"Achte darauf, wie unterschiedlich schnell Umfang und Fläche wachsen.",
+    regler:[{id:"r", name:"Radius r", einheit:"cm", von:1, bis:20, schritt:0.5, start:5}],
+    ausgabe:(w) => {
+      const u = 2 * Math.PI * w.r, a = Math.PI * w.r * w.r;
+      const px = 8 + w.r * 3.6;
+      return {
+        bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Kreis mit einstellbarem Radius">
+          <circle cx="200" cy="84" r="${px}" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2.5"/>
+          <path d="M200 84h${px}" stroke="currentColor" stroke-width="2"/>
+          <circle cx="200" cy="84" r="3" fill="currentColor"/>
+          <text x="${200 + px / 2}" y="76" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">r</text>
+          <text x="200" y="160" text-anchor="middle" font-size="12" fill="currentColor">Radius ${z(w.r)} cm</text>
+        </svg>`,
+        werte:[
+          {name:"Umfang u = 2 · π · r", text: z(Math.round(u * 100) / 100) + " cm"},
+          {name:"Fläche A = π · r²", text: z(Math.round(a * 100) / 100) + " cm²"}
+        ],
+        satz: "Stell den Radius auf 5, dann auf 10. Der Umfang verdoppelt sich, die Fläche wird viermal so groß — wegen des Quadrats."
+      };
+    }
+  },
   einfach:[
     "Alle Punkte eines Kreises haben denselben Abstand vom Mittelpunkt. Dieser Abstand heißt Radius r.",
     "Der Durchmesser d geht quer durch den Mittelpunkt, von Rand zu Rand. Er ist doppelt so lang wie der Radius: d = 2 · r.",
@@ -12342,6 +13158,25 @@ const ERKLAERUNGEN = {
     "Drosseln, Schütze, Motorwicklungen und Transformatoren sind alles Spulen. Wenn ein Schütz beim Abschalten Funken zieht, steckt genau dieser Effekt dahinter.",
     "In Filtern und Netzteilen bestimmt der Blindwiderstand, welche Frequenzen durchkommen. Und bei der Blindleistungskompensation rechnest du damit gegen die Kondensatoren auf."
   ],
+  spiel:{
+    titel:"Spule bei verschiedenen Frequenzen",
+    hinweis:"Die Spule bremst umso stärker, je schneller sich der Strom ändert. Probier es aus.",
+    regler:[
+      {id:"f", name:"Frequenz f", einheit:"Hz", von:0, bis:1000, schritt:10, start:50},
+      {id:"l", name:"Induktivität L", einheit:"mH", von:1, bis:500, schritt:1, start:100}
+    ],
+    ausgabe:(w) => {
+      const xl = 2 * Math.PI * w.f * w.l / 1000;
+      return {
+        werte:[
+          {name:"Blindwiderstand X L", text: z(Math.round(xl * 100) / 100) + " Ω"},
+          {name:"Strom bei 230 V", text: xl < 0.01 ? "sehr groß" : z(Math.round(230 / xl * 100) / 100) + " A"}
+        ],
+        satz: w.f === 0 ? "Bei 0 Hz — also Gleichstrom — bremst die Spule gar nicht. Übrig bleibt nur der Drahtwiderstand."
+             : "Zieh die Frequenz nach rechts: X L wächst mit. Beim Kondensator ist es genau umgekehrt."
+      };
+    }
+  },
   einfach:[
     "Fließt Strom durch eine Spule, entsteht ein Magnetfeld. Ändert sich der Strom, ändert sich das Feld.",
     "Ein sich änderndes Magnetfeld erzeugt in derselben Spule wieder eine Spannung — und die wirkt der Änderung entgegen. Das nennt man Selbstinduktion.",
@@ -12416,6 +13251,24 @@ const ERKLAERUNGEN = {
     "Entstörkondensatoren, Anlaufkondensatoren am Wechselstrommotor, Kompensationsanlagen im Betrieb: Überall wird mit dem kapazitiven Blindwiderstand gerechnet.",
     "Auch bei der Fehlersuche wichtig: Ein Koppelkondensator, der Gleichspannung durchlässt, ist defekt. Ein intakter darf das nicht."
   ],
+  spiel:{
+    titel:"Kondensator bei verschiedenen Frequenzen",
+    hinweis:"Zieh die Frequenz nach rechts und vergleich das Ergebnis mit dem der Spule.",
+    regler:[
+      {id:"f", name:"Frequenz f", einheit:"Hz", von:5, bis:1000, schritt:5, start:50},
+      {id:"c", name:"Kapazität C", einheit:"µF", von:1, bis:200, schritt:1, start:10}
+    ],
+    ausgabe:(w) => {
+      const xc = 1 / (2 * Math.PI * w.f * w.c / 1e6);
+      return {
+        werte:[
+          {name:"Blindwiderstand X C", text: z(Math.round(xc * 100) / 100) + " Ω"},
+          {name:"Strom bei 230 V", text: z(Math.round(230 / xc * 1000) / 1000) + " A"}
+        ],
+        satz: "Höhere Frequenz heißt kleinerer Widerstand — genau andersherum als bei der Spule. Bei Gleichstrom, also 0 Hz, wäre er unendlich."
+      };
+    }
+  },
   einfach:[
     "Ein Kondensator besteht aus zwei Platten mit einem Isolator dazwischen. Strom fließt nie wirklich hindurch.",
     "Trotzdem fließt beim Laden und Entladen Strom im Kreis — die Ladung wird von einer Platte zur anderen umgeschichtet.",
@@ -12805,11 +13658,612 @@ const ERKLAERUNGEN = {
     <text x="298" y="126" text-anchor="middle" font-size="10" fill="currentColor">+ 19 % MwSt</text>
     <text x="200" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Die Mehrwertsteuer kommt zuletzt — und gehört dem Finanzamt</text>
   </svg>`
+},
+
+"Überschlagen und Schätzen": {
+  worum:"Bevor du genau rechnest, schätzt du grob ab, was herauskommen müsste. So merkst du sofort, wenn das Ergebnis nicht stimmen kann.",
+  wozu:[
+    "Der Taschenrechner rechnet auch Unsinn brav aus. Wer sich vertippt, merkt es nur, wenn er vorher eine Vorstellung vom Ergebnis hatte.",
+    "Im Betrieb und im Laden brauchst du das täglich: Materialbedarf abschätzen, prüfen ob eine Rechnung stimmen kann, im Kopf überschlagen, ob eine Sicherung reicht."
+  ],
+  rezept:[
+    "Runde jede Zahl auf eine glatte Größe — Zehner, Hunderter oder einen vollen Euro.",
+    "Rechne mit den gerundeten Zahlen im Kopf.",
+    "Merk dir dieses grobe Ergebnis.",
+    "Rechne jetzt genau, mit Papier oder Rechner.",
+    "Vergleich beide: Liegen sie in derselben Größenordnung, ist alles gut.",
+    "Weichen sie um den Faktor 10 ab, such den Fehler — meist Komma oder Einheit."
+  ],
+  fehler:[
+    ["Gar nicht überschlagen", "Wer nur den Rechner benutzt, merkt einen Tippfehler nie. Der Überschlag kostet fünf Sekunden."],
+    ["Zu genau überschlagen", "Ein Überschlag darf grob sein. Wer 47 · 63 als 47 · 60 rechnet, hat nichts gewonnen — runde beide Zahlen."],
+    ["Überschlag für das Ergebnis gehalten", "Er ersetzt die genaue Rechnung nicht. Er prüft sie nur."],
+    ["Größenordnung nicht hinterfragt", "Ein Zimmer mit 200 m² oder ein Akku, der 60 Stunden hält — beides fällt sofort auf, wenn man kurz nachdenkt."]
+  ],
+  einfach:[
+    "Überschlagen heißt: absichtlich ungenau rechnen, um schnell eine Hausnummer zu haben.",
+    "Dazu rundest du alle Zahlen auf etwas Glattes. Aus 47 wird 50, aus 3,99 € werden 4 €.",
+    "Dann rechnest du im Kopf. Das geht mit glatten Zahlen viel leichter.",
+    "Das Ergebnis ist nicht genau, aber es sagt dir die Größenordnung.",
+    "Jetzt rechnest du genau. Und vergleichst.",
+    "Kommen 2900 heraus und dein Überschlag sagte 3000 — passt. Kommen 290 heraus, hast du irgendwo eine Null verloren.",
+    "Genau diese Kontrolle rettet in Klassenarbeiten und in der Prüfung die meisten Punkte.",
+    "Beim Schätzen von Größen hilft es, Vergleichsgrößen im Kopf zu haben: Eine Zimmertür ist 2 m hoch, eine Schrittlänge etwa 75 cm, eine Tafel Schokolade 100 g."
+  ],
+  begriffe:[
+    ["Überschlag","Eine grobe Rechnung mit gerundeten Zahlen."],
+    ["Größenordnung","Ob etwas bei 10, bei 100 oder bei 1000 liegt."],
+    ["Plausibilität","Ob ein Ergebnis überhaupt sein kann."]
+  ],
+  tabelle:{
+    titel:"Vergleichsgrößen zum Schätzen",
+    kopf:["Größe","Ungefähr","Wofür nützlich"],
+    zeilen:[
+      ["Zimmertür","2 m hoch, 0,9 m breit","Höhen und Breiten abschätzen"],
+      ["Ein Schritt","0,75 m","Längen abgehen"],
+      ["Tafel Schokolade","100 g","Massen einschätzen"],
+      ["Wasserflasche","1,5 l","Volumen einschätzen"],
+      ["Steckdosenstromkreis","16 A","Ströme einordnen"],
+      ["Haushalt im Jahr","rund 3000 kWh","Verbräuche einordnen"]
+    ],
+    fuss:"Solche Anker im Kopf zu haben ist beim Schätzen mehr wert als jede Formel."
+  },
+  regeln:[
+    "Erst runden, dann im Kopf rechnen.",
+    "Beide Zahlen runden, nicht nur eine.",
+    "Der Überschlag ersetzt die genaue Rechnung nicht — er prüft sie.",
+    "Weicht das genaue Ergebnis um den Faktor 10 ab, steckt fast immer ein Komma- oder Einheitenfehler dahinter.",
+    "Beim Schätzen von Größen mit bekannten Vergleichsgrößen arbeiten."
+  ],
+  beispiel:{aufgabe:"Überschlag für 47 · 63",
+    schritte:["47 wird zu 50","63 wird zu 60","50 · 60 = 3000"],
+    ergebnis:"rund 3000 — genau sind es 2961, also passt es"},
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Überschlag und genaue Rechnung im Vergleich">
+    <rect x="20" y="30" width="160" height="60" rx="12" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="2"/>
+    <text x="100" y="54" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">50 · 60</text>
+    <text x="100" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">3000</text>
+    <text x="100" y="108" text-anchor="middle" font-size="11" fill="currentColor">Überschlag</text>
+    <rect x="220" y="30" width="160" height="60" rx="12" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="300" y="54" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">47 · 63</text>
+    <text x="300" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">2961</text>
+    <text x="300" y="108" text-anchor="middle" font-size="11" fill="currentColor">genau</text>
+    <path d="M184 60h32" stroke="#10a37f" stroke-width="2"/>
+    <path d="M212 55l8 5-8 5" fill="#10a37f"/>
+    <text x="200" y="140" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Gleiche Größenordnung — die Rechnung stimmt</text>
+  </svg>`
+},
+
+"Negative Zahlen": {
+  worum:"Unter null geht es weiter. Auf dem Zahlenstrahl links von der Null liegen die negativen Zahlen — und mit denen rechnet man genauso.",
+  wozu:[
+    "Temperaturen unter null, Kontostände im Minus, Höhen unter dem Meeresspiegel: Negative Zahlen begegnen dir überall.",
+    "In der Elektrotechnik brauchst du sie für Potenziale, für Spannungen mit unterschiedlicher Polarität und für jede Rechnung, bei der eine Größe in beide Richtungen gehen kann."
+  ],
+  rezept:[
+    "Zeichne oder denk dir einen Zahlenstrahl: null in der Mitte, links negativ, rechts positiv.",
+    "Beim Addieren: Setz den Finger auf die erste Zahl.",
+    "Ist die zweite Zahl positiv, geh nach rechts. Ist sie negativ, geh nach links.",
+    "Beim Malnehmen und Teilen zählst du die Minuszeichen: gerade Anzahl heißt plus, ungerade heißt minus.",
+    "Rechne dann mit den Beträgen und setz das Vorzeichen davor.",
+    "Probe: Passt das Vorzeichen zum gesunden Menschenverstand?"
+  ],
+  fehler:[
+    ["Minus und Rechenzeichen verwechselt", "In 5 − (−3) ist das erste Minus ein Rechenzeichen, das zweite ein Vorzeichen. Das Ergebnis ist 8, nicht 2."],
+    ["Vorzeichen beim Addieren verloren", "Die Beträge einfach zusammenzuzählen ist falsch, wenn die Vorzeichen verschieden sind."],
+    ["Vorzeichenregel nur beim Malnehmen angewendet", "Beim Teilen gilt sie genauso: minus geteilt durch minus ergibt plus."],
+    ["Bei mehreren Minuszeichen den Überblick verloren", "Zähl sie einfach. Gerade Anzahl heißt plus, ungerade heißt minus."]
+  ],
+  einfach:[
+    "Der Zahlenstrahl hört bei null nicht auf. Links davon geht es weiter: −1, −2, −3.",
+    "Eine negative Zahl ist kleiner als null. −5 ist kleiner als −2, auch wenn die 5 größer aussieht als die 2.",
+    "Beim Addieren hilft der Zahlenstrahl: Plus heißt nach rechts, Minus heißt nach links.",
+    "5 + (−3) heißt also: bei 5 starten, 3 nach links gehen. Ergebnis: 2.",
+    "5 − (−3) heißt: bei 5 starten und 3 nach links zurücknehmen — also nach rechts gehen. Ergebnis: 8.",
+    "Merksatz: Minus und Minus ergibt zusammen ein Plus.",
+    "Beim Malnehmen und Teilen zählst du die Minuszeichen. Zwei Minuszeichen ergeben plus, eines ergibt minus.",
+    "(−3) · (−4) = 12, aber (−3) · 4 = −12.",
+    "Das gilt genauso beim Teilen: (−12) : (−4) = 3."
+  ],
+  begriffe:[
+    ["Vorzeichen","Das Plus oder Minus direkt vor einer Zahl."],
+    ["Betrag","Die Zahl ohne Vorzeichen. Der Betrag von −7 ist 7."],
+    ["Zahlenstrahl","Die Linie, auf der alle Zahlen der Größe nach liegen."],
+    ["Gegenzahl","Dieselbe Zahl mit umgekehrtem Vorzeichen: die Gegenzahl von 5 ist −5."]
+  ],
+  tabelle:{
+    titel:"Die Vorzeichenregeln",
+    kopf:["Rechnung","Regel","Beispiel"],
+    zeilen:[
+      ["plus mit plus","bleibt plus","5 + 3 = 8"],
+      ["plus mit minus","wird minus","5 + (−3) = 2"],
+      ["minus mit minus","wird plus","5 − (−3) = 8"],
+      ["mal: gleiche Vorzeichen","plus","(−3) · (−4) = 12"],
+      ["mal: verschiedene Vorzeichen","minus","(−3) · 4 = −12"],
+      ["geteilt: gleiche Vorzeichen","plus","(−12) : (−4) = 3"],
+      ["geteilt: verschiedene Vorzeichen","minus","12 : (−4) = −3"]
+    ],
+    fuss:"Beim Malnehmen und Teilen genügt es, die Minuszeichen zu zählen: gerade Anzahl heißt plus, ungerade heißt minus."
+  },
+  regeln:[
+    "Links von der null wird es kleiner: −5 < −2 < 0 < 2.",
+    "Plus geht nach rechts, Minus nach links.",
+    "Minus und Minus ergibt Plus.",
+    "Beim Malnehmen und Teilen: gleiche Vorzeichen ergeben plus, verschiedene minus.",
+    "Der Betrag ist die Zahl ohne Vorzeichen.",
+    "Erst die Beträge rechnen, dann das Vorzeichen davorsetzen."
+  ],
+  beispiel:{aufgabe:"Rechne 5 − (−3) und (−4) · (−6)",
+    schritte:["5 − (−3): Minus und Minus ergibt Plus, also 5 + 3","(−4) · (−6): zwei Minuszeichen, also positiv","4 · 6 = 24"],
+    ergebnis:"8 und 24"},
+  bild:`<svg viewBox="0 0 400 140" ${SVG_STIL} role="img" aria-label="Zahlenstrahl mit negativen und positiven Zahlen">
+    <path d="M20 70h360" stroke="currentColor" stroke-width="2"/>
+    <path d="M28 64l-9 6 9 6M372 64l9 6-9 6" fill="none" stroke="currentColor" stroke-width="2"/>
+    <g stroke="currentColor" stroke-width="1.5">
+      <path d="M60 62v16M110 62v16M160 62v16M210 58v22M260 62v16M310 62v16M350 62v16"/>
+    </g>
+    <g font-size="12" fill="currentColor" text-anchor="middle">
+      <text x="60" y="96">−6</text><text x="110" y="96">−4</text><text x="160" y="96">−2</text>
+      <text x="210" y="98" font-weight="700">0</text>
+      <text x="260" y="96">2</text><text x="310" y="96">4</text><text x="350" y="96">6</text>
+    </g>
+    <path d="M130 40h70" stroke="#10a37f" stroke-width="2"/>
+    <path d="M136 35l-8 5 8 5" fill="#10a37f"/>
+    <text x="118" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#10a37f">minus</text>
+    <path d="M220 40h70" stroke="#10a37f" stroke-width="2"/>
+    <path d="M284 35l8 5-8 5" fill="#10a37f"/>
+    <text x="304" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#10a37f">plus</text>
+    <text x="200" y="126" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Plus geht nach rechts, Minus nach links</text>
+  </svg>`,
+  spiel:{
+    titel:"Schieb die beiden Zahlen",
+    hinweis:"Achte darauf, wie sich das Vorzeichen des Ergebnisses ändert, wenn du eine Zahl unter null ziehst.",
+    regler:[
+      {id:"a", name:"erste Zahl", einheit:"", von:-10, bis:10, schritt:1, start:5},
+      {id:"b", name:"zweite Zahl", einheit:"", von:-10, bis:10, schritt:1, start:-3}
+    ],
+    ausgabe:(w) => {
+      const minus = (w.a < 0 ? 1 : 0) + (w.b < 0 ? 1 : 0);
+      return {
+        werte:[
+          {name:"Summe a + b", text: z(w.a + w.b)},
+          {name:"Differenz a − b", text: z(w.a - w.b)},
+          {name:"Produkt a · b", text: z(w.a * w.b)}
+        ],
+        satz: minus === 1 ? "Genau ein Minuszeichen — das Produkt wird negativ."
+             : minus === 2 ? "Zwei Minuszeichen — das Produkt wird positiv."
+             : "Keine negative Zahl dabei. Zieh eine der beiden unter null und schau, was mit dem Produkt passiert."
+      };
+    }
+  }
+},
+
+"Maßstab": {
+  worum:"Ein Maßstab sagt, um welchen Faktor eine Zeichnung kleiner ist als die Wirklichkeit — oder größer.",
+  wozu:[
+    "Jeder Bauplan, jeder Schaltplan und jede Landkarte hat einen Maßstab. Ohne ihn kannst du aus der Zeichnung keine wirkliche Länge ablesen.",
+    "Im Betrieb misst du Strecken auf dem Plan ab und rechnest sie hoch, um Material zu bestellen — Kabellänge, Kanal, Rohr."
+  ],
+  rezept:[
+    "Lies den Maßstab: Die erste Zahl ist der Plan, die zweite die Wirklichkeit.",
+    "Kläre die Richtung: vom Plan in die Wirklichkeit oder umgekehrt?",
+    "Vom Plan in die Wirklichkeit: mit der Maßstabszahl malnehmen.",
+    "Von der Wirklichkeit auf den Plan: durch die Maßstabszahl teilen.",
+    "Rechne zum Schluss auf eine sinnvolle Einheit um — meist Meter.",
+    "Prüf die Größenordnung: Ein Zimmer ist keine 200 m lang."
+  ],
+  fehler:[
+    ["Richtung verwechselt", "Vom Plan in die Wirklichkeit wird malgenommen. Wer teilt, bekommt Millimeter statt Meter."],
+    ["Einheit vergessen umzurechnen", "Aus 5 cm im Maßstab 1 : 100 werden 500 cm — also 5 m, nicht 500 m."],
+    ["Bei Flächen mit demselben Faktor gerechnet", "Im Maßstab 1 : 100 ist eine Fläche in Wirklichkeit 10 000-mal so groß, nicht 100-mal."],
+    ["Verkleinerung und Vergrößerung verwechselt", "1 : 100 verkleinert, 100 : 1 vergrößert. Bei Bauteilzeichnungen kommt beides vor."]
+  ],
+  einfach:[
+    "Ein Maßstab wird als Verhältnis geschrieben, zum Beispiel 1 : 100.",
+    "Die erste Zahl steht für den Plan, die zweite für die Wirklichkeit.",
+    "1 : 100 heißt also: Was auf dem Plan 1 cm misst, ist in Wirklichkeit 100 cm — also 1 m.",
+    "Vom Plan in die Wirklichkeit rechnest du mal. Von der Wirklichkeit auf den Plan rechnest du geteilt.",
+    "Beispiel: 4 cm auf einem Plan 1 : 50 sind 4 · 50 = 200 cm, also 2 m.",
+    "Umgekehrt: Eine 12 m lange Wand wird auf einem Plan 1 : 100 genau 12 cm lang.",
+    "Achte auf die Einheiten. Rechne erst mit dem Maßstab, dann rechne die Einheit um.",
+    "Bei Flächen musst du aufpassen: Im Maßstab 1 : 100 ist eine wirkliche Fläche 100 · 100 = 10 000-mal so groß wie auf dem Plan.",
+    "Es gibt auch Vergrößerungen, etwa 10 : 1 für kleine Bauteile. Dann ist die Zeichnung größer als das Original."
+  ],
+  begriffe:[
+    ["Maßstab","Das Verhältnis von Planlänge zu wirklicher Länge."],
+    ["Verkleinerung","Maßstab mit einer 1 vorn, zum Beispiel 1 : 50."],
+    ["Vergrößerung","Maßstab mit einer 1 hinten, zum Beispiel 10 : 1."],
+    ["Maßstabszahl","Die Zahl, mit der gerechnet wird — bei 1 : 50 die 50."]
+  ],
+  tabelle:{
+    titel:"Übliche Maßstäbe",
+    kopf:["Maßstab","1 cm auf dem Plan","Wofür"],
+    zeilen:[
+      ["1 : 10","10 cm","Bauteile, Details"],
+      ["1 : 20","20 cm","Möbel, Einbauten"],
+      ["1 : 50","50 cm","Wohnungsgrundriss"],
+      ["1 : 100","1 m","Gebäudeplan"],
+      ["1 : 500","5 m","Lageplan"],
+      ["1 : 25 000","250 m","Wanderkarte"],
+      ["10 : 1","1 mm","Vergrößerung kleiner Bauteile"]
+    ],
+    fuss:"Bei Flächen zählt der Faktor doppelt: Im Maßstab 1 : 100 entspricht 1 cm² auf dem Plan 10 000 cm², also 1 m² in Wirklichkeit."
+  },
+  regeln:[
+    "Erste Zahl = Plan, zweite Zahl = Wirklichkeit.",
+    "Vom Plan in die Wirklichkeit: mal der Maßstabszahl.",
+    "Von der Wirklichkeit auf den Plan: geteilt durch die Maßstabszahl.",
+    "1 : 100 heißt 1 cm auf dem Plan ist 1 m in Wirklichkeit.",
+    "Bei Flächen zählt der Faktor doppelt, bei Volumen dreifach.",
+    "Nach dem Rechnen auf eine sinnvolle Einheit umstellen."
+  ],
+  beispiel:{aufgabe:"5 cm auf einem Plan im Maßstab 1 : 200 — wie lang in Wirklichkeit?",
+    schritte:["Vom Plan in die Wirklichkeit → malnehmen","5 · 200 = 1000 cm","1000 cm = 10 m"],
+    ergebnis:"10 m"},
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Plan und Wirklichkeit im Maßstab 1 zu 100">
+    <rect x="26" y="40" width="56" height="40" rx="5" fill="#10a37f" fill-opacity=".25" stroke="#10a37f" stroke-width="2"/>
+    <text x="54" y="102" text-anchor="middle" font-size="12" fill="currentColor">Plan</text>
+    <text x="54" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">4 cm</text>
+    <path d="M92 60h44" stroke="#10a37f" stroke-width="2"/>
+    <path d="M130 55l8 5-8 5" fill="#10a37f"/>
+    <text x="114" y="48" text-anchor="middle" font-size="10" fill="currentColor">· 100</text>
+    <rect x="150" y="26" width="224" height="68" rx="6" fill="#10a37f" fill-opacity=".12" stroke="#10a37f" stroke-width="2"/>
+    <text x="262" y="102" text-anchor="middle" font-size="12" fill="currentColor">Wirklichkeit</text>
+    <text x="262" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">400 cm = 4 m</text>
+    <text x="200" y="146" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Maßstab 1 : 100</text>
+  </svg>`
+},
+
+"Formeln umstellen": {
+  worum:"Jede Formel lässt sich nach jeder ihrer Größen auflösen. Das ist dieselbe Rechnung wie bei einer Gleichung — nur mit Buchstaben statt Zahlen.",
+  wozu:[
+    "Auf dem Typenschild steht die Leistung, gesucht ist der Strom. Im Tabellenbuch steht eine Formel, gebraucht wird sie andersherum. Ohne Umstellen kommst du in der Elektrotechnik keinen Schritt weit.",
+    "In der Prüfung ist fast jede Rechenaufgabe eine Umstellaufgabe: Die Formel steht in der Formelsammlung, die gesuchte Größe steht aber nicht allein."
+  ],
+  rezept:[
+    "Schreib die Formel hin und kreis die gesuchte Größe ein.",
+    "Schau, was neben ihr steht und wie es mit ihr verbunden ist — mal, geteilt, plus oder minus.",
+    "Mach die Verbindung rückgängig, und zwar auf beiden Seiten gleich.",
+    "Steht die Größe im Nenner, multiplizier zuerst beide Seiten damit.",
+    "Wiederhol das, bis die gesuchte Größe allein steht.",
+    "Erst dann die Zahlen einsetzen — nicht vorher."
+  ],
+  fehler:[
+    ["Nur eine Seite verändert", "Die Gleichung ist eine Waage. Was links passiert, muss auch rechts passieren."],
+    ["Mal und geteilt verwechselt", "Steht die störende Größe als Faktor daneben, wird geteilt. Steht sie im Nenner, wird multipliziert."],
+    ["Zu früh Zahlen eingesetzt", "Erst umstellen, dann einsetzen. Sonst schleppst du Zahlen durch mehrere Schritte und verrechnest dich."],
+    ["Einheiten nicht mitgedacht", "Wenn am Ende Volt durch Ampere steht, muss Ohm herauskommen. Passt die Einheit nicht, ist die Umstellung falsch."]
+  ],
+  einfach:[
+    "Eine Formel ist eine Gleichung mit Buchstaben. U = R · I heißt: links und rechts steht dasselbe.",
+    "Umstellen heißt: so umformen, dass die gesuchte Größe allein auf einer Seite steht.",
+    "Die einzige Regel dabei: Was du auf der einen Seite tust, musst du auch auf der anderen tun.",
+    "Steht die störende Größe als Faktor daneben, teilst du beide Seiten durch sie.",
+    "Aus U = R · I wird durch Teilen durch I: U : I = R. Also R = U : I.",
+    "Steht die gesuchte Größe im Nenner, holst du sie zuerst nach oben, indem du beide Seiten damit malnimmst.",
+    "Bei I = U : R zum Beispiel: erst beide Seiten mal R, dann steht I · R = U.",
+    "Eine gute Kontrolle sind die Einheiten. Volt geteilt durch Ampere ergibt Ohm — das passt zu R.",
+    "Und der gesunde Menschenverstand: Wenn du R vergrößerst, muss I kleiner werden. Zeigt deine umgestellte Formel das Gegenteil, hast du dich vertan."
+  ],
+  begriffe:[
+    ["Umstellen","Eine Formel so umformen, dass eine bestimmte Größe allein steht."],
+    ["Äquivalenzumformung","Eine Umformung, die auf beiden Seiten gleich ausgeführt wird."],
+    ["Nenner","Was unter dem Bruchstrich steht."],
+    ["Formelsammlung","Das Heft mit den Formeln — dort stehen sie meist nur in einer Form."]
+  ],
+  tabelle:{
+    titel:"Die wichtigsten Formeln in allen Formen",
+    kopf:["Formel","nach der ersten Größe","nach der zweiten"],
+    zeilen:[
+      ["U = R · I","R = U : I","I = U : R"],
+      ["P = U · I","U = P : I","I = P : U"],
+      ["W = P · t","P = W : t","t = W : P"],
+      ["Q = C · U","C = Q : U","U = Q : C"],
+      ["s = v · t","v = s : t","t = s : v"],
+      ["A = l · b","l = A : b","b = A : l"]
+    ],
+    fuss:"Das Muster ist immer dasselbe: Steht die gesuchte Größe als Faktor auf der rechten Seite, teilt man die linke Seite durch den anderen Faktor."
+  },
+  regeln:[
+    "Was du links tust, musst du auch rechts tun.",
+    "Faktor daneben → beide Seiten durch ihn teilen.",
+    "Größe im Nenner → beide Seiten damit malnehmen.",
+    "Plus daneben → auf beiden Seiten abziehen. Minus → auf beiden Seiten addieren.",
+    "Erst vollständig umstellen, dann die Zahlen einsetzen.",
+    "Einheitenprobe: Passt die Einheit des Ergebnisses zur gesuchten Größe?",
+    "Plausibilitätsprobe: Geht das Ergebnis in die erwartete Richtung?"
+  ],
+  beispiel:{aufgabe:"P = U · I nach I umstellen und mit P = 2300 W, U = 230 V ausrechnen",
+    schritte:["Beide Seiten durch U teilen","P : U = I, also I = P : U","I = 2300 W : 230 V","Einheitenprobe: Watt durch Volt ergibt Ampere ✓"],
+    ergebnis:"I = 10 A"},
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Gleichung als Waage: beide Seiten gleich behandeln">
+    <path d="M200 30v72" stroke="currentColor" stroke-width="3"/>
+    <path d="M70 44h260" stroke="currentColor" stroke-width="3"/>
+    <path d="M172 118h56l-28-16z" fill="currentColor"/>
+    <path d="M70 44v20M330 44v20" stroke="currentColor" stroke-width="2"/>
+    <rect x="26" y="64" width="88" height="34" rx="8" fill="#10a37f" fill-opacity=".25" stroke="#10a37f" stroke-width="2"/>
+    <text x="70" y="87" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">P</text>
+    <rect x="286" y="64" width="88" height="34" rx="8" fill="#10a37f" fill-opacity=".25" stroke="#10a37f" stroke-width="2"/>
+    <text x="330" y="87" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">U · I</text>
+    <text x="70" y="24" text-anchor="middle" font-size="11" fill="#10a37f">: U</text>
+    <text x="330" y="24" text-anchor="middle" font-size="11" fill="#10a37f">: U</text>
+    <text x="200" y="146" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Beide Seiten durch U — dann bleibt I allein</text>
+    <text x="200" y="166" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">I = P : U</text>
+  </svg>`,
+  spiel:{
+    titel:"Dieselbe Formel, drei Ansichten",
+    hinweis:"Stell zwei der drei Größen ein — die dritte ergibt sich. So siehst du, dass alle drei Formen dieselbe Aussage sind.",
+    regler:[
+      {id:"u", name:"Spannung U", einheit:"V", von:1, bis:230, schritt:1, start:230},
+      {id:"i", name:"Strom I", einheit:"A", von:0.1, bis:16, schritt:0.1, start:10}
+    ],
+    ausgabe:(w) => {
+      const r = w.u / w.i, p = w.u * w.i;
+      return {
+        werte:[
+          {name:"R = U : I", text: z(Math.round(r * 100) / 100) + " Ω"},
+          {name:"P = U · I", text: z(Math.round(p * 10) / 10) + " W"},
+          {name:"Probe: R · I", text: z(Math.round(r * w.i * 100) / 100) + " V"}
+        ],
+        satz: "Die letzte Zeile ist die Probe: R · I muss wieder die eingestellte Spannung ergeben. Genau das heißt „richtig umgestellt“."
+      };
+    }
+  }
+},
+
+"Zehnerpotenzen": {
+  worum:"Sehr große und sehr kleine Zahlen schreibt man als Zehnerpotenz. Die Hochzahl sagt, wie weit das Komma wandert.",
+  wozu:[
+    "In der Elektrotechnik sind Zehnerpotenzen und Vorsätze dasselbe: kilo ist 10 hoch 3, milli ist 10 hoch −3, mikro ist 10 hoch −6. Wer das eine kann, kann das andere.",
+    "Der Taschenrechner zeigt Ergebnisse oft als 4.7E-6 an. Ohne Zehnerpotenzen kannst du diese Anzeige nicht lesen."
+  ],
+  rezept:[
+    "Setz das Komma so, dass genau eine Ziffer davor steht.",
+    "Zähl, um wie viele Stellen du das Komma verschoben hast.",
+    "Nach links verschoben heißt positive Hochzahl, nach rechts negative.",
+    "Schreib die Zahl als Vorzahl mal 10 hoch dieser Zahl.",
+    "Beim Malnehmen zweier Zehnerpotenzen: Vorzahlen malnehmen, Hochzahlen addieren.",
+    "Beim Teilen: Vorzahlen teilen, Hochzahlen subtrahieren."
+  ],
+  fehler:[
+    ["Richtung der Hochzahl verwechselt", "Große Zahlen haben positive Hochzahlen, kleine negative. 0,0047 ist 4,7 · 10 hoch −3, nicht hoch 3."],
+    ["Hochzahlen malgenommen statt addiert", "Beim Malnehmen zweier Potenzen mit gleicher Basis werden die Hochzahlen addiert."],
+    ["Vorzahl größer als 10 gelassen", "In der wissenschaftlichen Schreibweise steht genau eine Ziffer vor dem Komma. 47 · 10³ schreibt man als 4,7 · 10⁴."],
+    ["Nullen falsch gezählt", "Bei 10 hoch −6 stehen fünf Nullen zwischen Komma und erster Ziffer, nicht sechs. Die Ziffer belegt schon eine Stelle."]
+  ],
+  einfach:[
+    "10 hoch 3 bedeutet 10 · 10 · 10, also 1000. Die Hochzahl sagt, wie viele Nullen dahinter stehen.",
+    "Damit kannst du große Zahlen kurz schreiben: 4 700 000 wird zu 4,7 · 10 hoch 6.",
+    "Die Regel ist einfach: Setz das Komma hinter die erste Ziffer und zähl, wie weit du es verschoben hast.",
+    "Negative Hochzahlen bedeuten kleine Zahlen. 10 hoch −3 ist 1 : 1000, also 0,001.",
+    "0,000047 wird damit zu 4,7 · 10 hoch −5.",
+    "Genau das sind die Vorsätze aus der Elektrotechnik: kilo ist 10 hoch 3, milli 10 hoch −3, mikro 10 hoch −6, nano 10 hoch −9.",
+    "Beim Rechnen wird es bequem: Beim Malnehmen addierst du die Hochzahlen, beim Teilen ziehst du sie ab.",
+    "(2 · 10³) · (3 · 10⁴) ist also 6 · 10⁷. Vorzahlen mal, Hochzahlen plus.",
+    "Der Taschenrechner schreibt das oft als 6E7 oder 6e7. Das E steht für „mal zehn hoch“."
+  ],
+  begriffe:[
+    ["Zehnerpotenz","Eine Zahl der Form 10 hoch n."],
+    ["Vorzahl","Die Zahl vor dem Malzeichen, zwischen 1 und 10."],
+    ["Wissenschaftliche Schreibweise","Genau eine Ziffer vor dem Komma, dann die Zehnerpotenz."],
+    ["Exponent","Ein anderes Wort für die Hochzahl."]
+  ],
+  tabelle:{
+    titel:"Zehnerpotenzen und Vorsätze",
+    kopf:["Zehnerpotenz","Zahl","Vorsatz"],
+    zeilen:[
+      ["10⁹","1 000 000 000","Giga (G)"],
+      ["10⁶","1 000 000","Mega (M)"],
+      ["10³","1 000","Kilo (k)"],
+      ["10⁰","1","—"],
+      ["10⁻³","0,001","Milli (m)"],
+      ["10⁻⁶","0,000 001","Mikro (µ)"],
+      ["10⁻⁹","0,000 000 001","Nano (n)"],
+      ["10⁻¹²","0,000 000 000 001","Piko (p)"]
+    ],
+    fuss:"Die rechte Spalte kennst du schon aus der Elektrotechnik. Zehnerpotenzen und Vorsätze sind dasselbe in zwei Schreibweisen."
+  },
+  regeln:[
+    "10 hoch n = eine 1 mit n Nullen.",
+    "10 hoch −n = 1 geteilt durch 10 hoch n.",
+    "Wissenschaftliche Schreibweise: genau eine Ziffer vor dem Komma.",
+    "Komma nach links → positive Hochzahl. Komma nach rechts → negative.",
+    "Malnehmen: Vorzahlen mal, Hochzahlen plus.",
+    "Teilen: Vorzahlen geteilt, Hochzahlen minus.",
+    "kilo = 10³, milli = 10⁻³, mikro = 10⁻⁶, nano = 10⁻⁹"
+  ],
+  beispiel:{aufgabe:"Schreib 0,000 047 als Zehnerpotenz",
+    schritte:["Komma hinter die erste Ziffer: 4,7","Verschoben um 5 Stellen nach rechts","Nach rechts heißt negative Hochzahl"],
+    ergebnis:"4,7 · 10⁻⁵ — in der Elektrotechnik also 47 µ"},
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Das Komma wandert je nach Hochzahl nach links oder rechts">
+    <text x="200" y="46" text-anchor="middle" font-size="19" font-weight="700" fill="currentColor">4 7 0 0 0 0 0</text>
+    <path d="M110 60h180" stroke="#10a37f" stroke-width="2"/>
+    <path d="M282 55l9 5-9 5" fill="#10a37f"/>
+    <text x="200" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#10a37f">6 Stellen</text>
+    <text x="200" y="112" text-anchor="middle" font-size="19" font-weight="700" fill="currentColor">4,7 · 10⁶</text>
+    <text x="200" y="142" text-anchor="middle" font-size="12" fill="currentColor">Die Hochzahl zählt nur, wie weit das Komma wandert</text>
+  </svg>`,
+  spiel:{
+    titel:"Zieh die Hochzahl",
+    hinweis:"Schieb den Regler von ganz links nach ganz rechts und schau, wie aus Nano ein Giga wird.",
+    regler:[
+      {id:"v", name:"Vorzahl", einheit:"", von:1, bis:9.9, schritt:0.1, start:4.7},
+      {id:"e", name:"Hochzahl", einheit:"", von:-9, bis:9, schritt:1, start:3}
+    ],
+    ausgabe:(w) => {
+      const vorsaetze = {9:"Giga (G)", 6:"Mega (M)", 3:"Kilo (k)", 0:"—", "-3":"Milli (m)", "-6":"Mikro (µ)", "-9":"Nano (n)"};
+      const wert = w.v * Math.pow(10, w.e);
+      const lang = w.e >= 0 ? wert.toLocaleString("de-DE", {maximumFractionDigits: 6})
+                            : wert.toFixed(Math.min(12, Math.abs(w.e) + 1));
+      return {
+        werte:[
+          {name:"ausgeschrieben", text: lang},
+          {name:"Vorsatz", text: vorsaetze[String(w.e)] || "kein eigener Vorsatz"}
+        ],
+        satz: w.e >= 0 ? "Positive Hochzahl: Das Komma wandert nach rechts, die Zahl wird groß."
+                       : "Negative Hochzahl: Das Komma wandert nach links, die Zahl wird klein."
+      };
+    }
+  }
+},
+
+"Logarithmus": {
+  worum:"Der Logarithmus fragt nach der Hochzahl: Wie oft muss ich eine Zahl mit sich selbst malnehmen, um auf ein bestimmtes Ergebnis zu kommen?",
+  wozu:[
+    "Dezibel sind Logarithmen. Verstärkung, Dämpfung und Schallpegel werden alle so angegeben — ohne Logarithmus kannst du kein Datenblatt lesen.",
+    "Auch wenn du wissen willst, wie lange etwas bei festem Prozentsatz bis zu einem Ziel braucht, brauchst du den Logarithmus. Bei Krediten und beim Sparen ist das genau die Frage."
+  ],
+  rezept:[
+    "Kläre die Basis: 10 beim Zehnerlogarithmus, 2 in der Digitaltechnik, e beim natürlichen Logarithmus.",
+    "Frag dich: Wie oft muss die Basis mit sich selbst malgenommen werden?",
+    "Bei glatten Zehnerpotenzen kannst du einfach die Nullen zählen.",
+    "Sonst nimm die log-Taste am Taschenrechner.",
+    "Für Dezibel: 10 · log der Leistungsverstärkung.",
+    "Probe: Nimm die Basis hoch dein Ergebnis — es muss die Ausgangszahl herauskommen."
+  ],
+  fehler:[
+    ["Logarithmus mit Division verwechselt", "log von 1000 ist 3, nicht 100. Gefragt ist die Hochzahl, nicht das Ergebnis einer Teilung."],
+    ["Basis nicht beachtet", "log zur Basis 10 von 8 ist 0,9. log zur Basis 2 von 8 ist 3. Die Basis entscheidet."],
+    ["Bei Dezibel den Faktor 10 vergessen", "Bei Leistungen gilt 10 · log. Beim Hundertfachen sind das 20 dB, nicht 2."],
+    ["Logarithmus von null oder negativen Zahlen gesucht", "Den gibt es nicht. Keine Potenz einer positiven Basis wird null oder negativ."]
+  ],
+  einfach:[
+    "Beim Potenzieren fragst du: 10 hoch 3 — was kommt heraus? Antwort: 1000.",
+    "Beim Logarithmus fragst du andersherum: 1000 — welche Hochzahl war das? Antwort: 3.",
+    "Der Logarithmus ist also die Umkehrung des Potenzierens, so wie Teilen die Umkehrung des Malnehmens ist.",
+    "Man schreibt log 1000 = 3, wenn die Basis 10 ist. Bei Zehnerpotenzen kannst du einfach die Nullen zählen.",
+    "In der Digitaltechnik rechnet man zur Basis 2. Der Logarithmus von 8 zur Basis 2 ist 3, weil 2 · 2 · 2 = 8.",
+    "Nützlich wird es bei sehr großen Verhältnissen. Eine Verstärkung vom Zehnfachen bis zum Millionenfachen wird zu Zahlen zwischen 10 und 60.",
+    "Genau das sind Dezibel: 10 · log der Leistungsverstärkung. Das Zehnfache sind 10 dB, das Hundertfache 20 dB, das Tausendfache 30 dB.",
+    "Praktisch daran: Aus Malnehmen wird Addieren. Zwei Verstärkerstufen mit je 20 dB ergeben zusammen 40 dB — statt 100 · 100 = 10 000.",
+    "Der Logarithmus einer Zahl kleiner als 1 ist negativ. log 0,1 ist −1, weil 10 hoch −1 gleich 0,1 ist."
+  ],
+  begriffe:[
+    ["Logarithmus","Die Hochzahl, mit der man die Basis potenzieren muss."],
+    ["Basis","Die Zahl, die potenziert wird — meist 10 oder 2."],
+    ["Dezibel (dB)","Ein logarithmisches Maß für Verhältnisse."],
+    ["Zehnerlogarithmus","Der Logarithmus zur Basis 10, auf dem Rechner die Taste log."]
+  ],
+  tabelle:{
+    titel:"Zehnerlogarithmus und Dezibel",
+    kopf:["Verhältnis","log","dB (Leistung)"],
+    zeilen:[
+      ["1","0","0 dB"],
+      ["2","0,3","3 dB"],
+      ["10","1","10 dB"],
+      ["100","2","20 dB"],
+      ["1 000","3","30 dB"],
+      ["1 000 000","6","60 dB"],
+      ["0,1","−1","−10 dB"],
+      ["0,5","−0,3","−3 dB"]
+    ],
+    fuss:"Merk dir die 3 dB: Sie bedeuten ungefähr das Doppelte. −3 dB bedeuten ungefähr die Hälfte. Damit kommst du im Datenblatt schon weit."
+  },
+  regeln:[
+    "log ist die Umkehrung der Potenz: aus 10³ = 1000 wird log 1000 = 3.",
+    "Bei Zehnerpotenzen einfach die Nullen zählen.",
+    "log 1 = 0, immer und bei jeder Basis.",
+    "Zahlen unter 1 haben einen negativen Logarithmus.",
+    "Dezibel bei Leistungen: 10 · log der Verstärkung.",
+    "3 dB entsprechen etwa dem Doppelten, −3 dB etwa der Hälfte.",
+    "Aus Malnehmen wird Addieren: Stufen in dB werden zusammengezählt.",
+    "Den Logarithmus von 0 oder negativen Zahlen gibt es nicht."
+  ],
+  beispiel:{aufgabe:"Ein Verstärker macht aus 1 W 100 W. Wie viele dB?",
+    schritte:["Verstärkung: 100 : 1 = 100","log 100 = 2 (eine 1 mit zwei Nullen)","10 · 2"],
+    ergebnis:"20 dB"},
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Aus großen Verhältnissen werden durch den Logarithmus kleine Zahlen">
+    <g font-size="12" fill="currentColor" text-anchor="end">
+      <text x="150" y="40">10</text><text x="150" y="68">100</text>
+      <text x="150" y="96">1 000</text><text x="150" y="124">1 000 000</text>
+    </g>
+    <g stroke="#10a37f" stroke-width="2">
+      <path d="M162 36h56M162 64h56M162 92h56M162 120h56"/>
+    </g>
+    <g fill="#10a37f"><path d="M212 31l9 5-9 5M212 59l9 5-9 5M212 87l9 5-9 5M212 115l9 5-9 5"/></g>
+    <g font-size="14" font-weight="700" fill="currentColor">
+      <text x="234" y="40">10 dB</text><text x="234" y="68">20 dB</text>
+      <text x="234" y="96">30 dB</text><text x="234" y="124">60 dB</text>
+    </g>
+    <text x="200" y="154" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Riesige Verhältnisse werden zu handlichen Zahlen</text>
+  </svg>`
 }
 
 };
 
 function hatErklaerung(thema){ return !!ERKLAERUNGEN[thema]; }
+
+/* ---------- Zum Ausprobieren ----------
+   Manche Erklärungen haben ein kleines Modell zum Schieben: Man zieht an
+   einem Regler und sieht sofort, was mit den anderen Größen passiert.
+   Genau das kann ein Text nicht — und ein Chat auch nicht.
+
+   Aufbau in der Erklärung:
+     spiel:{ titel, hinweis,
+             regler:[{id, name, einheit, von, bis, schritt, start}],
+             ausgabe:(werte) => ({bild, werte:[{name,text}], satz}) }            */
+let spielStand = {};
+function spielAufbauen(e){
+  spielStand = {};
+  if (e && e.spiel) (e.spiel.regler || []).forEach(r => spielStand[r.id] = r.start);
+}
+function reglerText(r){
+  const w = spielStand[r.id];
+  return z(w) + (r.einheit ? " " + r.einheit : "");
+}
+function spielAusgabeHtml(e){
+  let a;
+  try { a = e.spiel.ausgabe(spielStand); }
+  catch (fehler){ return `<p class="small soft">Diese Einstellung lässt sich nicht berechnen.</p>`; }
+  return `${a.bild || ""}
+    <div class="spielwerte">${(a.werte || []).map(w =>
+      `<div><span>${w.name}</span><b>${w.text}</b></div>`).join("")}</div>
+    ${a.satz ? `<p class="spielsatz">${a.satz}</p>` : ""}`;
+}
+function spielHtml(e){
+  const s = e.spiel;
+  return `<div class="card spielkarte">
+    <p class="ueberschrift"><span aria-hidden="true">${SYM.pfeil}</span> ${s.titel || "Zum Ausprobieren"}</p>
+    <p class="small soft" style="margin:0 0 16px">${s.hinweis || "Zieh an den Reglern und schau, was sich mitverändert."}</p>
+    <div class="reglerfeld">
+      ${(s.regler || []).map(r => `
+        <div class="reglerzeile">
+          <label class="reglerkopf" for="rg-${r.id}">
+            <span class="reglername">${r.name}</span>
+            <span class="reglerwert" id="rw-${r.id}">${reglerText(r)}</span>
+          </label>
+          <input class="regler" type="range" id="rg-${r.id}"
+                 min="${r.von}" max="${r.bis}" step="${r.schritt}" value="${spielStand[r.id]}"
+                 oninput="spielZug('${r.id}', this.value)">
+        </div>`).join("")}
+    </div>
+    <div id="spielAusgabe" aria-live="polite">${spielAusgabeHtml(e)}</div>
+    <button class="btn ghost full" style="margin-top:14px" onclick="spielZuruecksetzen()">Auf Anfang zurück</button>
+  </div>`;
+}
+/* Nur die Ausgabe neu zeichnen — sonst verliert der Regler beim Ziehen den Griff */
+function spielZug(id, wert){
+  const e = ERKLAERUNGEN[aktuellName];
+  if (!e || !e.spiel) return;
+  spielStand[id] = Number(wert);
+  const r = (e.spiel.regler || []).find(x => x.id === id);
+  const anzeige = document.getElementById("rw-" + id);
+  if (r && anzeige) anzeige.textContent = reglerText(r);
+  const aus = document.getElementById("spielAusgabe");
+  if (aus) aus.innerHTML = spielAusgabeHtml(e);
+}
+function spielZuruecksetzen(){
+  const e = ERKLAERUNGEN[aktuellName];
+  if (!e || !e.spiel) return;
+  spielAufbauen(e);
+  (e.spiel.regler || []).forEach(r => {
+    const schieber = document.getElementById("rg-" + r.id);
+    const anzeige = document.getElementById("rw-" + r.id);
+    if (schieber) schieber.value = r.start;
+    if (anzeige) anzeige.textContent = reglerText(r);
+  });
+  const aus = document.getElementById("spielAusgabe");
+  if (aus) aus.innerHTML = spielAusgabeHtml(e);
+}
 /* Tabellen in Erklärungen: {titel, kopf:[…], zeilen:[[…]], fuss}. Auf dem Handy
    darf die Tabelle für sich scrollen — die Seite selbst bleibt ruhig. */
 function tabelleHtml(t){
@@ -15451,6 +16905,7 @@ function naechsteVariante(){ starte(aktuellName, variante + 1); }
 let vorErklaerung = "start";
 function zeigeErklaerung(thema){
   if (thema) aktuellName = thema;
+  spielAufbauen(ERKLAERUNGEN[thema || aktuellName]);
   vorErklaerung = ansicht;
   ansicht = "erklaerung"; render();
 }
@@ -16125,6 +17580,8 @@ function render(gewaehlt){
   /* ---- Erklärung ---- */
   if (ansicht === "erklaerung"){
     const e = ERKLAERUNGEN[aktuellName];
+    /* Startwerte setzen, falls die Seite direkt aufgerufen wurde */
+    if (e && e.spiel && !Object.keys(spielStand).length) spielAufbauen(e);
     if (!e){
       el.innerHTML = `<div class="card"><h2>Für dieses Thema gibt es noch keine Erklärung</h2>
         ${navLink(pfadFuer(vorErklaerung === "erklaerung" ? "start" : vorErklaerung, fach, klasse), "zurueckVonErklaerung()", "Zurück", "btn full", "margin-top:12px")}</div>`;
@@ -16150,6 +17607,7 @@ function render(gewaehlt){
         ${(Array.isArray(e.wozu) ? e.wozu : [e.wozu]).map(t => `<p class="einfachtext">${t}</p>`).join("")}
       </div>` : ""}
       ${e.bild ? `<div class="card"><p class="ueberschrift">Zum Anschauen</p>${e.bild}</div>` : ""}
+      ${e.spiel ? spielHtml(e) : ""}
       ${e.tabelle ? `<div class="card">
         <p class="ueberschrift">${e.tabelle.titel || "Zum Nachschlagen"}</p>
         ${tabelleHtml(e.tabelle)}

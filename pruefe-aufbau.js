@@ -106,6 +106,61 @@ for (const thema of Object.keys(AUFGABEN)) {
   if (!Array.isArray(e.rezept) || e.rezept.length < 3)
     probleme.push(`${thema} (Erklärung): „rezept" fehlt oder hat weniger als drei Schritte`);
 
+  /* Ausprobier-Feld: an den Rändern und in der Mitte durchrechnen. Ein Regler,
+     der bei irgendeiner Stellung NaN oder Unendlich liefert, ist schlimmer als
+     gar keiner — dann steht auf dem Schirm Unsinn. */
+  if (e.spiel){
+    const sp = e.spiel;
+    if (!Array.isArray(sp.regler) || !sp.regler.length)
+      probleme.push(`${thema} (Ausprobieren): keine Regler`);
+    else if (typeof sp.ausgabe !== "function")
+      probleme.push(`${thema} (Ausprobieren): „ausgabe" ist keine Funktion`);
+    else {
+      sp.regler.forEach(r => {
+        if (!(r.von < r.bis)) probleme.push(`${thema} (Ausprobieren): Regler ${r.id} hat keinen Bereich`);
+        if (!(r.schritt > 0)) probleme.push(`${thema} (Ausprobieren): Regler ${r.id} ohne Schrittweite`);
+        if (r.start < r.von || r.start > r.bis)
+          probleme.push(`${thema} (Ausprobieren): Startwert von ${r.id} liegt außerhalb`);
+      });
+      /* jede Reglerstellung einzeln bis an beide Enden ziehen */
+      const stellungen = [];
+      const basis = {}; sp.regler.forEach(r => basis[r.id] = r.start);
+      stellungen.push({...basis});
+      sp.regler.forEach(r => {
+        const mitte = r.von + Math.round((r.bis - r.von) / 2 / r.schritt) * r.schritt;
+        [r.von, mitte, r.bis].forEach(v => stellungen.push({...basis, [r.id]: v}));
+      });
+      /* dazu alle Regler gemeinsam ganz links und ganz rechts */
+      const links = {}, rechts = {};
+      sp.regler.forEach(r => { links[r.id] = r.von; rechts[r.id] = r.bis; });
+      stellungen.push(links, rechts);
+
+      for (const stellung of stellungen){
+        let a;
+        try { a = sp.ausgabe(stellung); }
+        catch (fehler){
+          probleme.push(`${thema} (Ausprobieren): stürzt ab bei ${JSON.stringify(stellung)} — ${fehler.message}`);
+          break;
+        }
+        if (!a || !Array.isArray(a.werte) || !a.werte.length){
+          probleme.push(`${thema} (Ausprobieren): liefert keine Werte bei ${JSON.stringify(stellung)}`); break;
+        }
+        const schlecht = a.werte.find(w => !w.name || !nackt(w.text) ||
+          /NaN|Infinity|undefined/.test(String(w.text)));
+        if (schlecht){
+          probleme.push(`${thema} (Ausprobieren): „${schlecht.name}" ergibt „${schlecht.text}" bei ${JSON.stringify(stellung)}`);
+          break;
+        }
+        if (a.bild && /NaN|Infinity|undefined/.test(a.bild)){
+          probleme.push(`${thema} (Ausprobieren): Zeichnung enthält NaN bei ${JSON.stringify(stellung)}`); break;
+        }
+        if (a.satz && /NaN|Infinity|undefined/.test(a.satz)){
+          probleme.push(`${thema} (Ausprobieren): Satz enthält NaN bei ${JSON.stringify(stellung)}`); break;
+        }
+      }
+    }
+  }
+
   if (!Array.isArray(e.fehler) || e.fehler.length < 3)
     probleme.push(`${thema} (Erklärung): „fehler" fehlt oder nennt weniger als drei Fallen`);
   else e.fehler.forEach((f, i) => {

@@ -1437,11 +1437,135 @@ const elektroProben3 = {
   }
 };
 
+/* ------------------------------------------------------------ MATHE III */
+
+const matheProben3 = {
+
+  "Überschlagen und Schätzen": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const mal = t.match(/([\d.,]+) · ([\d.,]+)/);
+    if (mal) {                                                       // Überschlag einer Multiplikation
+      const x = dz(mal[1]), y = dz(mal[2]);
+      const rx = Math.round(x / 10) * 10, ry = Math.round(y / 10) * 10;
+      const fehl = stimmt(rx * ry, l);
+      if (fehl) return fehl;
+      /* der Überschlag muss auch wirklich nah am genauen Wert liegen */
+      const ab = Math.abs(rx * ry - x * y) / (x * y);
+      return ab < 0.35 ? null : `der Überschlag weicht um ${Math.round(ab * 100)} % ab — das taugt nicht als Kontrolle`;
+    }
+    const stueck = dz((t.match(/^([\d.,]+) Stück/) || [])[1]);
+    if (isFinite(stueck)) {                                          // Überschlag an der Kasse
+      const preis = groesse(t, "€");
+      if (preis === null) return "Preis nicht lesbar: " + t;
+      return stimmt(Math.round(preis) * stueck, l);
+    }
+    /* Größenordnung: die Lösung muss eine der beiden angebotenen Zahlen sein */
+    const angeboten = a.schritte.map(s => (s.optionen || []).map(o => roh(o.t))).flat();
+    return angeboten.includes(roh(a.loesung)) ? null
+      : `die Lösung „${roh(a.loesung)}“ steht in keinem Schritt zur Auswahl`;
+  },
+
+  "Negative Zahlen": (a) => {
+    const t = vorne(a), l = loes(a);
+    const plus = t.match(/(-?[\d.,]+) \+ \((-?[\d.,]+)\)/);
+    if (plus) {                                                      // Addieren
+      const x = dz(plus[1]), y = dz(plus[2]);
+      if (x === 0 || y === 0) return "eine der Zahlen ist null — dann ist nichts zu üben";
+      return stimmt(x + y, l);
+    }
+    const mal = t.match(/(-?[\d.,]+) · (-?[\d.,]+)/);                // Multiplizieren
+    if (!mal) return "konnte die Rechnung nicht lesen: " + t;
+    const x = dz(mal[1]), y = dz(mal[2]);
+    const soll = x * y;
+    /* Vorzeichenregel unabhängig nachprüfen */
+    const negativ = (x < 0) !== (y < 0);
+    if ((soll < 0) !== negativ) return "das Vorzeichen passt nicht zur Vorzeichenregel";
+    return stimmt(soll, l);
+  },
+
+  "Maßstab": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const m = dz((t.match(/1 : ([\d.,]+)/) || [])[1]);
+    if (!isFinite(m) || m <= 0) return "Maßstab nicht lesbar: " + t;
+    const cm = groesse(t, "cm");
+    if (cm !== null) {                                               // Plan -> Wirklichkeit
+      if (!/Metern/.test(f)) return "die Frage passt nicht zum Aufgabentyp: " + f;
+      return stimmt(Math.round(cm * m / 100 * 100) / 100, l, 1e-6);
+    }
+    const meter = groesse(t, "m");                                   // Wirklichkeit -> Plan
+    if (meter === null) return "keine Länge gefunden: " + t;
+    const soll = Math.round(meter * 100 / m * 100) / 100;
+    if (soll >= meter * 100) return "auf dem Plan muss die Strecke kürzer sein als in Wirklichkeit";
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Formeln umstellen": (a) => {
+    const t = roh(a.text);
+    /* Umgestellte Formel: gegen eine eigene Tabelle prüfen */
+    const TABELLE = {
+      "U = R · I|R":"R = U : I", "U = R · I|I":"I = U : R",
+      "P = U · I|I":"I = P : U", "P = U · I|U":"U = P : I",
+      "W = P · t|t":"t = W : P",  "W = P · t|P":"P = W : t",
+      "Q = C · U|C":"C = Q : U",  "Q = C · U|U":"U = Q : C",
+      "s = v · t|v":"v = s : t",  "s = v · t|t":"t = s : v"
+    };
+    const um = t.match(/Formel ([A-Za-z] = [A-Za-z] · [A-Za-z]) nach ([A-Za-z]) um/);
+    if (um) {
+      const soll = TABELLE[um[1] + "|" + um[2]];
+      if (!soll) return `für ${um[1]} nach ${um[2]} ist keine Umstellung hinterlegt`;
+      return roh(a.loesung).trim() === soll ? null
+        : `richtig wäre „${soll}“, angegeben ist „${roh(a.loesung).trim()}“`;
+    }
+    /* Umstellen und einsetzen: die beiden Zahlen aus der Angabe teilen */
+    const zahlen = (t.match(/= ([\d.,]+) /g) || []).map(s => dz(s.replace(/[=\s]/g, "")));
+    if (zahlen.length < 2) return "konnte die beiden Angaben nicht lesen: " + t;
+    return stimmt(Math.round(zahlen[0] / zahlen[1] * 1e6) / 1e6, loes(a), 1e-3);
+  },
+
+  "Zehnerpotenzen": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const produkt = t.match(/\(([\d.,]+) · 10 hoch ([\d.,]+)\) · \(([\d.,]+) · 10 hoch ([\d.,]+)\)/);
+    if (produkt) return stimmt(dz(produkt[2]) + dz(produkt[4]), l);   // Hochzahlen addieren
+    const klein = t.match(/([\d.,]+) · 10 hoch -([\d.,]+)/);   /* roh() normiert das Minuszeichen */
+    if (klein) {                                                     // Nullen bei kleiner Zahl
+      const e = dz(klein[2]);
+      if (e < 1) return "bei einer Hochzahl unter 1 gibt es keine Nullen zu zählen";
+      return stimmt(e - 1, l);
+    }
+    const gross = t.match(/Schreib ([\d.,]+) als Zehnerpotenz in der Form ([\d.,]+)/);
+    if (!gross) return "konnte die Aufgabe nicht einordnen: " + t;
+    const wert = dz(gross[1]), vor = dz(gross[2]);
+    if (!(vor >= 1 && vor < 10)) return `die Vorzahl ${vor} liegt nicht zwischen 1 und 10`;
+    const e = Math.round(Math.log10(wert / vor));
+    if (Math.abs(vor * Math.pow(10, e) - wert) > Math.abs(wert) * 1e-9)
+      return `${vor} · 10 hoch ${e} ergibt nicht ${wert}`;
+    return stimmt(e, l);
+  },
+
+  "Logarithmus": (a) => {
+    const t = vorne(a), l = loes(a);
+    const db = t.match(/das ([\d.,]+)-fache/);
+    if (db) {                                                        // Dezibel
+      const v = dz(db[1]);
+      if (v <= 0) return "eine Verstärkung muss größer als null sein";
+      return stimmt(Math.round(10 * Math.log10(v) * 100) / 100, l, 1e-6);
+    }
+    const m = t.match(/muss man ([\d.,]+) mit sich selbst malnehmen, um ([\d.,]+)/);
+    if (!m) return "konnte Basis oder Zahl nicht lesen: " + t;
+    const basis = dz(m[1]), wert = dz(m[2]);
+    if (basis <= 1) return "die Basis muss größer als 1 sein";
+    const e = Math.log(wert) / Math.log(basis);
+    if (Math.abs(e - Math.round(e)) > 1e-9)
+      return `${basis} hoch einer ganzen Zahl ergibt nicht ${wert}`;
+    return stimmt(Math.round(e), l);
+  }
+};
+
 /* --------------------------------------------------------------- LAUF */
 const NICHT_PRUEFBAR = {
 };
 
-const proben = { ...matheProben, ...matheProben2, ...deutschProben,
+const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...deutschProben,
                  ...elektroProben, ...elektroProben2, ...elektroProben3 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
