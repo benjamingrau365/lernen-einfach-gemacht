@@ -4,9 +4,10 @@
   "description": "Endlich kapiert — Mathe, Deutsch, Englisch und Elektroniker für Betriebstechnik. Nie die Lösung, nur Fragen, die hinführen.",
   "scripts": {
     "bauen": "node seiten-bauen.js",
-    "pruefen": "node pruefe-ausliefern.js && node pruefe-seite.js && node pruefe-aufbau.js && node pruefe-inhalt.js && node pruefe-quellen.js",
+    "pruefen": "node pruefe-ausliefern.js && node pruefe-seite.js && node pruefe-vokabeln.js && node pruefe-aufbau.js && node pruefe-inhalt.js && node pruefe-quellen.js",
     "pruefe:seite": "node pruefe-seite.js",
     "pruefe:ausliefern": "node pruefe-ausliefern.js",
+    "pruefe:vokabeln": "node pruefe-vokabeln.js",
     "pruefe:aufbau": "node pruefe-aufbau.js",
     "pruefe:inhalt": "node pruefe-inhalt.js",
     "pruefe:quellen": "node pruefe-quellen.js"
