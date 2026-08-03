@@ -94,6 +94,26 @@ for (const thema of Object.keys(AUFGABEN)) {
   if (!Array.isArray(e.regeln) || !e.regeln.length) probleme.push(`${thema} (Erklärung): „regeln" fehlen`);
   if (!e.beispiel || !e.beispiel.aufgabe || !e.beispiel.ergebnis)
     probleme.push(`${thema} (Erklärung): Beispiel unvollständig`);
+
+  /* Seit der Überarbeitung gehören drei Abschnitte fest dazu: wozu man das
+     braucht, wie man vorgeht und woran die meisten scheitern. Eine Erklärung
+     ohne diese drei hilft dem nicht weiter, der ganz am Anfang steht. */
+  const wozu = Array.isArray(e.wozu) ? e.wozu : (e.wozu ? [e.wozu] : []);
+  if (!wozu.length) probleme.push(`${thema} (Erklärung): „wozu" fehlt — der Praxisbezug`);
+  else if (wozu.some(t => nackt(t).length < 40))
+    probleme.push(`${thema} (Erklärung): „wozu" ist zu knapp, um etwas zu erklären`);
+
+  if (!Array.isArray(e.rezept) || e.rezept.length < 3)
+    probleme.push(`${thema} (Erklärung): „rezept" fehlt oder hat weniger als drei Schritte`);
+
+  if (!Array.isArray(e.fehler) || e.fehler.length < 3)
+    probleme.push(`${thema} (Erklärung): „fehler" fehlt oder nennt weniger als drei Fallen`);
+  else e.fehler.forEach((f, i) => {
+    if (!Array.isArray(f) || f.length !== 2 || !nackt(f[0]) || !nackt(f[1]))
+      probleme.push(`${thema} (Erklärung): Falle ${i + 1} braucht Titel und Erläuterung`);
+    else if (nackt(f[1]).length < 30)
+      probleme.push(`${thema} (Erklärung): Falle „${nackt(f[0])}" wird nicht erklärt`);
+  });
 }
 
 /* Abdeckung je Klasse */

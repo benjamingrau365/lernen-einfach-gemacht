@@ -518,6 +518,25 @@
   .lerntabelle tbody th{font-weight:700;color:var(--ac-dark)}
   .lerntabelle tbody tr:last-child th,.lerntabelle tbody tr:last-child td{border-bottom:none}
   .lerntabelle tbody tr:nth-child(even){background:var(--bg)}
+
+  /* „Wozu brauchst du das?" — der Praxisbezug, farblich abgesetzt */
+  .wozukarte{border-left:4px solid var(--ac)}
+  .wozukarte .ueberschrift svg{width:1.05em;height:1.05em;vertical-align:-.15em;margin-right:5px}
+  /* Schritt-für-Schritt-Rezept */
+  .rezept{margin:0;padding:0;list-style:none;counter-reset:rez}
+  .rezept li{counter-increment:rez;position:relative;padding:0 0 14px 44px;font-size:16.5px;line-height:1.6}
+  .rezept li:last-child{padding-bottom:0}
+  .rezept li::before{content:counter(rez);position:absolute;left:0;top:0;
+    width:29px;height:29px;border-radius:9px;background:var(--ac-soft);color:var(--ac-dark);
+    font-size:14.5px;font-weight:800;display:grid;place-items:center}
+  /* Typische Fehler */
+  .fehlerkarte{border-left:4px solid var(--red)}
+  .fallen{display:grid;gap:0}
+  .falle{padding:12px 0;border-bottom:1px solid var(--line)}
+  .falle:last-child{border-bottom:none}
+  .falle b{display:block;font-size:16.5px}
+  .falle b::before{content:"✗";color:var(--red);font-weight:800;margin-right:8px}
+  .falle span{display:block;font-size:16px;color:var(--soft);margin-top:2px}
   .feedback.hilfe{background:var(--amber-soft);color:var(--amber)}
   .optionen3{display:grid;gap:10px}
   .option{width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);
@@ -6900,6 +6919,23 @@ const ERKLAERUNGEN = {
 
 "Natürliche Zahlen": {
   worum:"Wo eine Ziffer in einer Zahl steht, entscheidet darüber, wie viel sie wert ist.",
+  wozu:[
+    "Runden brauchst du überall dort, wo eine genaue Zahl niemanden interessiert: Einwohnerzahlen, Preise im Kopf überschlagen, Materialmengen abschätzen.",
+    "Und den Stellenwert brauchst du für alles, was danach kommt — schriftliches Rechnen, Dezimalzahlen, Einheiten umrechnen. Wer hier unsicher ist, stolpert später ständig."
+  ],
+  rezept:[
+    "Schreib die Zahl hin und markiere die Stelle, auf die gerundet werden soll.",
+    "Schau auf die eine Ziffer rechts daneben — nur auf diese.",
+    "Ist sie 0 bis 4, bleibt die Rundungsstelle stehen. Ist sie 5 bis 9, wird sie um eins größer.",
+    "Alles rechts von der Rundungsstelle wird zu Null.",
+    "Prüf: Das Ergebnis muss so viele Nullen am Ende haben, wie die Rundungsstelle vorgibt."
+  ],
+  fehler:[
+    ["Alle Ziffern rechts angeschaut", "Bei 3.847 auf Hunderter runden entscheidet nur die 4, nicht die 47. Die 4 ist kleiner als 5, also wird abgerundet."],
+    ["Von rechts nach links durchgerundet", "Erst 7 → 8 → 9 und dann aufrunden ist falsch. Es wird immer in einem Schritt gerundet."],
+    ["Die Nullen weggelassen", "Aus 3.847 wird 3.800, nicht 38. Die Stellen bleiben erhalten, sie werden nur zu Null."],
+    ["Rundungsstelle verzählt", "Von rechts: Einer, Zehner, Hunderter, Tausender. Leg den Finger auf und zähl nach."]
+  ],
   einfach:[
     "Eine Zahl schreiben wir aus Ziffern zusammen: 0, 1, 2, 3 und so weiter. In der Zahl 347 stecken drei Ziffern.",
     "Jede Ziffer hat einen Platz. Ganz rechts stehen die Einer. Links daneben die Zehner. Dann die Hunderter, dann die Tausender.",
@@ -6944,6 +6980,23 @@ const ERKLAERUNGEN = {
 
 "Grundrechenarten": {
   worum:"Wenn in einer Aufgabe mehrere Rechenzeichen stehen, gibt es eine feste Reihenfolge — nicht einfach von links nach rechts.",
+  wozu:[
+    "Punkt vor Strich entscheidet, ob dein Kassenzettel stimmt: 3 Brötchen zu 60 Cent plus ein Kaffee für 2 € sind 3 · 0,60 + 2, nicht (3 + 2) · 0,60.",
+    "Jeder Taschenrechner und jedes Tabellenprogramm rechnet nach diesen Regeln. Wer sie nicht kennt, tippt falsch ein und merkt es nicht."
+  ],
+  rezept:[
+    "Schau die ganze Aufgabe an, bevor du losrechnest.",
+    "Gibt es Klammern? Die zuerst — und darin gilt wieder dieselbe Reihenfolge.",
+    "Dann alle Punktrechnungen: mal und geteilt, von links nach rechts.",
+    "Zum Schluss die Strichrechnungen: plus und minus, von links nach rechts.",
+    "Schreib jeden Zwischenschritt auf. Im Kopf verrutscht die Reihenfolge am schnellsten."
+  ],
+  fehler:[
+    ["Einfach von links nach rechts gerechnet", "12 + 4 · 5 ergibt 32, nicht 80. Der Punkt kommt zuerst, egal wo er steht."],
+    ["Bei Minus und Geteilt die Richtung vertauscht", "20 − 5 − 3 sind 12, nicht 18. Bei gleichrangigen Rechenarten wird von links nach rechts gearbeitet."],
+    ["Klammer vergessen aufzulösen", "Was in der Klammer steht, muss vollständig ausgerechnet sein, bevor es weitergeht."],
+    ["Vorzeichen beim Auflösen verloren", "Vor einer Klammer mit Minus drehen sich innen alle Vorzeichen um: 10 − (3 + 2) = 10 − 3 − 2."]
+  ],
   einfach:[
     "Es gibt vier Grundrechenarten: plus, minus, mal und geteilt.",
     "Plus und minus nennt man Strichrechnung, weil ihre Zeichen aus Strichen bestehen: + und −.",
@@ -6975,6 +7028,23 @@ const ERKLAERUNGEN = {
 
 "Größen und Einheiten": {
   worum:"Dieselbe Menge kann man mit verschiedenen Einheiten aufschreiben. Umrechnen heißt: Menge gleich, Einheit anders.",
+  wozu:[
+    "Beim Einkaufen, Kochen, Basteln und auf jeder Baustelle: 250 g Mehl, 1,5 m Leiste, 0,75 l Saft. Wer Einheiten sicher umrechnet, verschätzt sich nicht.",
+    "In Physik und Technik ist es die Grundlage überhaupt. Fast jeder Rechenfehler dort ist in Wahrheit ein Einheitenfehler."
+  ],
+  rezept:[
+    "Schreib beide Einheiten hin: die gegebene und die gesuchte.",
+    "Such den Umrechnungsfaktor — bei Längen meist 10, 100 oder 1000.",
+    "Frag dich: Wird die Zahl größer oder kleiner?",
+    "Kleinere Einheit heißt größere Zahl. Größere Einheit heißt kleinere Zahl.",
+    "Rechne und prüf die Größenordnung: 3 km dürfen nicht 30 m ergeben."
+  ],
+  fehler:[
+    ["In die falsche Richtung gerechnet", "Von Meter nach Zentimeter wird malgenommen, nicht geteilt. Zentimeter sind kleiner, also braucht es mehr davon."],
+    ["Bei Flächen mit demselben Faktor gerechnet", "1 m sind 100 cm, aber 1 m² sind 10.000 cm². Bei Flächen zählt der Faktor doppelt, bei Volumen dreifach."],
+    ["Zeit dezimal gerechnet", "1,5 Stunden sind 90 Minuten, nicht 150. Bei der Zeit gilt 60, nicht 100."],
+    ["Einheit im Ergebnis vergessen", "Eine Zahl ohne Einheit ist bei Größen keine Antwort."]
+  ],
   einfach:[
     "Eine Größe ist etwas, das man messen kann: eine Länge, ein Gewicht, eine Zeit.",
     "Damit andere verstehen, wie viel gemeint ist, schreibt man eine Einheit dahinter: 5 Meter, 3 Kilogramm, 20 Minuten.",
@@ -7019,6 +7089,23 @@ const ERKLAERUNGEN = {
 
 "Flächen und Umfang": {
   worum:"Umfang ist der Weg außen herum. Flächeninhalt ist der Platz innen drin. Zwei verschiedene Dinge, die oft verwechselt werden.",
+  wozu:[
+    "Wie viel Laminat brauche ich, wie viele Meter Fußleiste, wie viel Farbe für die Wand? Das eine ist die Fläche, das andere der Umfang — und die Verwechslung kostet richtig Geld.",
+    "Auch beim Zuschneiden von Blech, Holz oder Kabelkanal rechnest du genau so."
+  ],
+  rezept:[
+    "Kläre zuerst: Geht es um den Rand (Umfang) oder um die Fläche innen?",
+    "Zeichne die Figur und schreib alle Maße dran.",
+    "Bring alle Maße auf dieselbe Einheit.",
+    "Umfang: alle Seiten zusammenzählen. Fläche: Länge mal Breite.",
+    "Prüf die Einheit: Umfang in cm, Fläche in cm². Passt sie nicht, hast du die falsche Formel benutzt."
+  ],
+  fehler:[
+    ["Umfang und Fläche verwechselt", "Die Einheit verrät es: cm ist Umfang, cm² ist Fläche. Wer Farbe kaufen will, braucht die Fläche."],
+    ["Einheiten gemischt", "80 cm mal 2 m ergibt nicht 160. Erst beides in Meter oder beides in Zentimeter."],
+    ["Bei zusammengesetzten Figuren die innere Kante mitgezählt", "Setzt du zwei Rechtecke zusammen, verschwindet die gemeinsame Kante aus dem Umfang."],
+    ["Beim Quadrat nur zwei Seiten gerechnet", "Der Umfang eines Quadrats ist 4 · a, nicht 2 · a."]
+  ],
   einfach:[
     "Stell dir ein Fußballfeld vor. Wenn du einmal ganz außen an der Linie entlangläufst, ist der Weg, den du zurücklegst, der Umfang.",
     "Der Rasen, auf dem gespielt wird — also die ganze Fläche innerhalb der Linien — ist der Flächeninhalt.",
@@ -7055,6 +7142,23 @@ const ERKLAERUNGEN = {
 
 "Symmetrie": {
   worum:"Eine Figur ist symmetrisch, wenn man sie an einer Linie falten kann und beide Hälften genau aufeinanderliegen.",
+  wozu:[
+    "Symmetrie steckt in Verkehrsschildern, Logos, Fliesenmustern und Bauteilen. Wer sie erkennt, muss nur die Hälfte zeichnen oder messen.",
+    "In der Technik spart Symmetrie Arbeit: Ein symmetrisches Werkstück lässt sich spiegeln statt neu zu konstruieren."
+  ],
+  rezept:[
+    "Such eine Linie, an der du die Figur falten könntest.",
+    "Prüf Punkt für Punkt: Liegt zu jedem Punkt links ein gleich weit entfernter Punkt rechts?",
+    "Miss die Abstände zur Achse — sie müssen auf beiden Seiten gleich sein.",
+    "Prüf auch die anderen Richtungen: senkrecht, waagerecht, schräg.",
+    "Zähl am Ende, wie viele Achsen du gefunden hast."
+  ],
+  fehler:[
+    ["Nur die senkrechte Achse gesucht", "Ein Quadrat hat vier Achsen: zwei gerade und zwei diagonale."],
+    ["Ähnlich mit symmetrisch verwechselt", "Bei Achsensymmetrie muss jeder Punkt exakt gespiegelt liegen, nicht nur ungefähr."],
+    ["Punktsymmetrie übersehen", "Manche Figuren haben keine Spiegelachse, sehen aber nach einer halben Drehung gleich aus — das ist Punktsymmetrie."],
+    ["Die Achse falsch gelegt", "Die Spiegelachse geht immer durch die Figur, nicht daneben vorbei."]
+  ],
   einfach:[
     "Nimm ein Blatt Papier und male eine Figur darauf. Jetzt falte das Blatt einmal in der Mitte.",
     "Wenn beide Hälften der Figur genau übereinanderliegen — kein Stück ragt heraus — dann war die Faltlinie eine Symmetrieachse.",
@@ -7086,6 +7190,23 @@ const ERKLAERUNGEN = {
 
 "Brüche": {
   worum:"Ein Bruch beschreibt Teile eines Ganzen — zum Beispiel drei Viertel einer Pizza.",
+  wozu:[
+    "Rezepte, Werkzeuggrößen in Zoll, Anteile im Alltag: dreiviertel Stunde, ein halber Liter, ein Drittel vom Kuchen. Brüche verschwinden nicht, nur weil man sie unangenehm findet.",
+    "Und für alles Weitere in Mathe sind sie die Grundlage — Prozentrechnung, Gleichungen und Funktionen bestehen aus Brüchen."
+  ],
+  rezept:[
+    "Schau die Nenner an. Sind sie gleich?",
+    "Wenn nicht: gemeinsamen Nenner suchen — das kleinste gemeinsame Vielfache.",
+    "Beide Brüche erweitern: Zähler und Nenner mit derselben Zahl malnehmen.",
+    "Jetzt die Zähler addieren oder subtrahieren, der Nenner bleibt stehen.",
+    "Zum Schluss kürzen, so weit es geht."
+  ],
+  fehler:[
+    ["Nenner mit addiert", "1/2 + 1/3 ist nicht 2/5. Nur die Zähler werden addiert, und das erst bei gleichem Nenner."],
+    ["Nur den Zähler erweitert", "Beim Erweitern werden Zähler und Nenner mit derselben Zahl malgenommen. Sonst ändert sich der Wert."],
+    ["Beim Multiplizieren gleichnamig gemacht", "Malnehmen geht direkt: Zähler mal Zähler, Nenner mal Nenner. Gleichnamig machen braucht man nur bei plus und minus."],
+    ["Nicht gekürzt", "6/8 ist richtig, aber 3/4 ist die Antwort, die erwartet wird."]
+  ],
   einfach:[
     "Stell dir eine Pizza vor. Du schneidest sie in vier gleich große Stücke.",
     "Nimmst du drei davon, hast du drei Viertel. Man schreibt das als 3/4.",
@@ -7138,6 +7259,23 @@ const ERKLAERUNGEN = {
 
 "Dezimalzahlen": {
   worum:"Eine Dezimalzahl ist eine Zahl mit Komma. Hinter dem Komma geht das Zerteilen weiter.",
+  wozu:[
+    "Jeder Preis, jede Messung, jede Anzeige am Messgerät ist eine Dezimalzahl. Schriftlich addieren und subtrahieren brauchst du, sobald der Taschenrechner nicht danebenliegt.",
+    "Auch beim Kontrollieren von Rechnungen und Angeboten ist sicheres Kommarechnen Gold wert."
+  ],
+  rezept:[
+    "Schreib die Zahlen so untereinander, dass Komma unter Komma steht.",
+    "Füll fehlende Stellen mit Nullen auf, damit alle gleich lang sind.",
+    "Rechne wie bei ganzen Zahlen, von rechts nach links.",
+    "Setz das Komma im Ergebnis genau unter die anderen Kommas.",
+    "Überschlag zur Probe: 12,4 + 3,7 muss ungefähr 16 ergeben."
+  ],
+  fehler:[
+    ["Rechtsbündig statt am Komma ausgerichtet", "12,5 und 3,75 untereinander: Das Komma zählt, nicht die letzte Ziffer."],
+    ["Beim Multiplizieren das Komma falsch gesetzt", "Zähl die Nachkommastellen beider Zahlen zusammen — so viele hat das Ergebnis."],
+    ["Nullen am Ende für wichtig gehalten", "3,50 und 3,5 sind dieselbe Zahl. Beim Untereinanderschreiben helfen die Nullen trotzdem."],
+    ["Überschlag weggelassen", "Ein grober Überschlag findet fast jeden Kommafehler in Sekunden."]
+  ],
   einfach:[
     "Vor dem Komma stehen ganze Stücke, hinter dem Komma die angefangenen.",
     "2,5 Liter heißt: zwei ganze Liter und ein halber.",
@@ -7176,6 +7314,24 @@ const ERKLAERUNGEN = {
 
 "Teilbarkeit": {
   worum:"Teilbar heißt: Die Division geht ohne Rest auf. Dafür gibt es kurze Prüfregeln, mit denen du nicht rechnen musst.",
+  wozu:[
+    "Wenn du etwas gerecht aufteilen willst — 24 Stühle auf Tische, 36 Kekse auf Kinder —, brauchst du Teiler. Beim Kürzen von Brüchen brauchst du sie ebenfalls ständig.",
+    "Auch Verpackungsgrößen und Taktzeiten in der Fertigung sind reine Teilbarkeitsfragen."
+  ],
+  rezept:[
+    "Schau dir die Zahl an und geh die Regeln der Reihe nach durch.",
+    "Durch 2: endet sie auf einer geraden Ziffer?",
+    "Durch 3: ist die Quersumme durch 3 teilbar?",
+    "Durch 5: endet sie auf 0 oder 5? Durch 10: endet sie auf 0?",
+    "Durch 9: ist die Quersumme durch 9 teilbar?",
+    "Für den größten gemeinsamen Teiler beide Zahlen in Primfaktoren zerlegen."
+  ],
+  fehler:[
+    ["Quersumme falsch gebildet", "Bei 342 ist die Quersumme 3 + 4 + 2 = 9, nicht 342 durch irgendetwas."],
+    ["Regel für 4 mit der für 2 verwechselt", "Durch 4 teilbar ist eine Zahl, wenn die letzten beiden Ziffern durch 4 teilbar sind."],
+    ["ggT und kgV vertauscht", "Der ggT ist der größte gemeinsame Teiler — er ist immer kleiner oder gleich der kleineren Zahl. Das kgV ist größer oder gleich der größeren."],
+    ["Die 1 vergessen", "Jede Zahl ist durch 1 teilbar und durch sich selbst. Beide gehören in die Teilerliste."]
+  ],
   einfach:[
     "12 Bonbons kannst du gerecht an 3 Kinder verteilen: jedes bekommt 4, nichts bleibt übrig. Also ist 12 durch 3 teilbar.",
     "13 Bonbons gehen nicht auf: eines bleibt liegen. Das übrig gebliebene Stück nennt man Rest.",
@@ -7221,6 +7377,23 @@ const ERKLAERUNGEN = {
 
 "Dreisatz": {
   worum:"Du kennst den Wert für eine Menge und willst ihn für eine andere Menge wissen. Der Weg führt immer über ein einzelnes Stück.",
+  wozu:[
+    "Der Dreisatz ist die meistgebrauchte Rechnung im Alltag: Preise vergleichen, Rezepte umrechnen, Sprit für eine längere Strecke abschätzen, Mischungsverhältnisse ansetzen.",
+    "Im Beruf rechnest du damit Material, Zeiten und Kosten hoch — ganz gleich in welcher Branche."
+  ],
+  rezept:[
+    "Schreib die gegebenen Werte als Paar auf, sauber untereinander.",
+    "Entscheide: Wird beides größer (proportional) oder das eine kleiner (antiproportional)?",
+    "Proportional: erst auf eine Einheit herunterteilen, dann hochmultiplizieren.",
+    "Antiproportional: erst mit der alten Zahl malnehmen, dann durch die neue teilen.",
+    "Prüf am Schluss mit dem gesunden Menschenverstand, ob das Ergebnis in die richtige Richtung geht."
+  ],
+  fehler:[
+    ["Art der Zuordnung nicht geprüft", "Wer antiproportional wie proportional rechnet, rechnet sauber das Falsche aus."],
+    ["Zwischenschritt gerundet", "Runde erst am Ende. Sonst schleicht sich der Fehler in beide Schritte ein."],
+    ["Die Paare vertauscht", "Schreib immer gleiche Größen untereinander: Stück unter Stück, Euro unter Euro."],
+    ["Ergebnis nicht überschlagen", "Wenn 5 Hefte 10 € kosten, können 8 Hefte nicht 4 € kosten. Ein kurzer Blick fängt das ab."]
+  ],
   einfach:[
     "Drei Hefte kosten 4,50 €. Wie viel kosten sieben? Direkt kann man das nicht sehen.",
     "Der Trick: Rechne zuerst aus, was ein einziges Heft kostet. Dazu teilst du durch 3.",
@@ -7262,6 +7435,23 @@ const ERKLAERUNGEN = {
 
 "Winkel messen": {
   worum:"Ein Winkel misst, wie weit zwei Linien auseinandergehen. Gemessen wird in Grad.",
+  wozu:[
+    "Beim Zuschneiden, beim Anzeichnen, beim Aufbau von Regalen und beim Verlegen von Kabelkanälen misst du Winkel. Ein falsch abgelesener Winkel ruiniert das Werkstück.",
+    "In der Technik brauchst du Winkel für Steigungen, Schrägen und für alles, was mit Sinus und Kosinus zu tun hat."
+  ],
+  rezept:[
+    "Leg den Mittelpunkt des Geodreiecks genau auf den Scheitelpunkt.",
+    "Leg die Nulllinie exakt auf einen Schenkel.",
+    "Lies dort ab, wo der zweite Schenkel die Skala schneidet.",
+    "Achte auf die zwei Zahlenreihen: Nimm die, die bei deinem Schenkel bei 0 anfängt.",
+    "Prüf mit dem Auge: Ein spitzer Winkel muss unter 90° liegen, ein stumpfer darüber."
+  ],
+  fehler:[
+    ["Die falsche Skala abgelesen", "Das Geodreieck hat zwei Zahlenreihen. Wer 130° statt 50° abliest, hat die falsche genommen."],
+    ["Scheitelpunkt daneben gelegt", "Der Mittelpunkt des Geodreiecks muss genau auf der Ecke liegen, sonst stimmt gar nichts."],
+    ["Schenkel zu kurz gezeichnet", "Reicht der Schenkel nicht bis zur Skala, verlängere ihn mit dem Lineal — nicht schätzen."],
+    ["Winkelart nicht geprüft", "Ein sichtbar stumpfer Winkel kann nicht 40° sein. Das Auge ist eine gute Kontrolle."]
+  ],
   einfach:[
     "Zwei Linien treffen sich in einem Punkt. Wie weit sie auseinandergehen, ist der Winkel.",
     "Gemessen wird in Grad, geschrieben mit einem kleinen Kreis: 90°.",
@@ -7301,6 +7491,23 @@ const ERKLAERUNGEN = {
 
 "Gleichungen umstellen": {
   worum:"In einer Gleichung versteckt sich eine unbekannte Zahl hinter dem x. Deine Aufgabe ist, sie freizulegen.",
+  wozu:[
+    "Jede Formel, die du in Physik, Technik oder Wirtschaft benutzt, musst du irgendwann umstellen. U = R · I nach R aufzulösen ist genau dasselbe Handwerk wie 3x + 5 = 20 zu lösen.",
+    "Auch im Alltag: Wenn du weißt, was etwas kosten darf, und ausrechnen willst, wie viel du davon kaufen kannst, stellst du eine Gleichung um."
+  ],
+  rezept:[
+    "Schreib die Gleichung ab und markiere, was du suchst.",
+    "Bring alle Glieder mit der Unbekannten auf eine Seite, alle Zahlen auf die andere.",
+    "Was du auf einer Seite tust, musst du auch auf der anderen tun — immer beide Seiten.",
+    "Löse zuletzt die Zahl vor der Unbekannten auf, durch Teilen.",
+    "Mach die Probe: Setz dein Ergebnis in die ursprüngliche Gleichung ein."
+  ],
+  fehler:[
+    ["Nur eine Seite verändert", "Die Waage kippt sonst. Jeder Schritt gilt für links und rechts."],
+    ["Vorzeichen beim Rüberholen vergessen", "Aus +5 links wird −5 rechts. Wer das Vorzeichen mitnimmt, rechnet falsch."],
+    ["Zu früh geteilt", "Erst alles sortieren, dann durch die Zahl vor der Unbekannten teilen. Sonst wird es unnötig kompliziert."],
+    ["Probe weggelassen", "Die Probe dauert zehn Sekunden und findet praktisch jeden Fehler."]
+  ],
   einfach:[
     "Denk an eine Waage, die im Gleichgewicht ist. Links liegt genauso viel wie rechts. Das Gleichheitszeichen ist die Mitte der Waage.",
     "In 3x + 5 = 20 heißt das: Wenn du eine bestimmte Zahl dreimal nimmst und 5 dazuzählst, kommst du auf 20. Welche Zahl ist das?",
@@ -7338,6 +7545,24 @@ const ERKLAERUNGEN = {
 
 "Prozent und Zinsen": {
   worum:"Prozent heißt „von hundert“. Damit kann man Anteile vergleichen, egal wie groß das Ganze ist.",
+  wozu:[
+    "Rabatte, Mehrwertsteuer, Lohnerhöhung, Kredite, Handyvertrag: Prozentrechnung entscheidet darüber, ob dich jemand über den Tisch zieht.",
+    "Bei Zinsen wird es ernst — wer den Unterschied zwischen 3 % und 12 % effektiv nicht ausrechnen kann, unterschreibt schnell etwas Teures."
+  ],
+  rezept:[
+    "Bestimme die drei Größen: Grundwert (das Ganze), Prozentsatz und Prozentwert (der Anteil).",
+    "Markiere klar, welche zwei gegeben sind und welche gesucht ist.",
+    "Prozentwert = Grundwert · Prozentsatz : 100.",
+    "Grundwert = Prozentwert · 100 : Prozentsatz.",
+    "Bei Zinsen zusätzlich die Zeit: Für Monate mit Monate durch 12 malnehmen.",
+    "Überschlag: 10 % sind ein Zehntel, 25 % ein Viertel, 50 % die Hälfte."
+  ],
+  fehler:[
+    ["Grundwert falsch gewählt", "Bei „20 % Rabatt“ ist der Grundwert der alte Preis, nicht der neue. Das ist der häufigste Fehler überhaupt."],
+    ["Prozente addiert", "Erst 10 % Aufschlag, dann 10 % Rabatt ergibt nicht wieder den Ausgangswert, sondern 99 %."],
+    ["Mit dem Prozentsatz statt der Kommazahl gerechnet", "20 % sind 0,2. Wer mit 20 malnimmt, liegt um den Faktor 100 daneben."],
+    ["Bei Zinsen die Zeit vergessen", "Zinsen für drei Monate sind nicht dasselbe wie Jahreszinsen. Der Zeitfaktor gehört in die Rechnung."]
+  ],
   einfach:[
     "Stell dir vor, alles wird in 100 gleiche Teile zerlegt. Ein Prozent ist genau eines dieser 100 Teile.",
     "25 % heißt also: 25 von 100 Teilen. Das ist dasselbe wie ein Viertel.",
@@ -7377,6 +7602,23 @@ const ERKLAERUNGEN = {
 
 "das oder dass": {
   worum:"Zwei Wörter, die gleich klingen, aber verschiedene Aufgaben haben. Es gibt einen Test, der immer funktioniert.",
+  wozu:[
+    "Das ist der Klassiker unter den Rechtschreibfehlern und fällt in jeder Bewerbung auf. Dabei gibt es eine Regel, die fast immer funktioniert.",
+    "Wer sie einmal sicher hat, macht diesen Fehler nie wieder — er kostet keine Denkzeit mehr."
+  ],
+  rezept:[
+    "Setz probeweise „dieses“, „jenes“ oder „welches“ ein.",
+    "Passt eines davon, schreibst du „das“ mit einem s.",
+    "Passt keines, ist es die Konjunktion „dass“ mit Doppel-s.",
+    "Zweiter Test: Kannst du das Wort weglassen und der Satz bleibt sinnvoll? Dann meist „das“.",
+    "Merk dir: Vor „dass“ steht fast immer ein Komma, weil ein Nebensatz beginnt."
+  ],
+  fehler:[
+    ["Nach dem Klang entschieden", "Beide klingen gleich. Nur die Ersatzprobe hilft."],
+    ["Bei „so dass“ falsch getrennt", "Richtig ist „sodass“ oder „so dass“ — in beiden Fällen mit Doppel-s."],
+    ["Komma vor dass vergessen", "„dass“ leitet einen Nebensatz ein. Davor steht ein Komma."],
+    ["Bei „das, das“ unsicher geworden", "„Das Buch, das ich lese“ — beide Male mit einem s, weil beide durch „welches“ ersetzbar sind."]
+  ],
   einfach:[
     "„das“ mit einem s gehört zu einem Nomen. Es steht davor oder ersetzt es: das Buch — ich nehme das.",
     "„dass“ mit zwei s verbindet zwei Satzteile. Es leitet einen Nebensatz ein: Ich hoffe, dass du kommst.",
@@ -7420,6 +7662,24 @@ const ERKLAERUNGEN = {
 
 "Kommas bei Nebensätzen": {
   worum:"Zwischen Hauptsatz und Nebensatz steht immer ein Komma. Du musst nur erkennen, wo der eine aufhört.",
+  wozu:[
+    "Kommafehler bei Nebensätzen sind der häufigste Zeichensetzungsfehler überhaupt. In längeren Texten entscheiden sie über Lesbarkeit.",
+    "Wer die Regel beherrscht, schreibt automatisch klarere Sätze — weil er merkt, wo ein Nebensatz anfängt und aufhört."
+  ],
+  rezept:[
+    "Such die gebeugten Verbformen. Jede gehört zu einem eigenen Satz.",
+    "Steht ein Verb am Ende seines Satzteils, ist es ein Nebensatz.",
+    "Such das einleitende Wort: weil, dass, obwohl, wenn, der, die, das, welcher.",
+    "Setz vor diesem Wort ein Komma.",
+    "Steht der Nebensatz mitten im Hauptsatz, kommt auch dahinter ein Komma.",
+    "Probe: Der Hauptsatz muss allein weiterhin ein vollständiger Satz sein."
+  ],
+  fehler:[
+    ["Nur ein Komma bei eingeschobenem Nebensatz", "Ein Einschub braucht Kommas auf beiden Seiten."],
+    ["Komma nach „und“ vor dem Nebensatz vergessen", "„Er kam, und als er sah, was los war, ging er“ — jeder Nebensatz wird eingeschlossen."],
+    ["Verbstellung nicht geprüft", "Im Nebensatz steht das gebeugte Verb am Ende. Das ist das sicherste Erkennungszeichen."],
+    ["Relativsatz nicht als Nebensatz erkannt", "„Der Mann, der dort steht“ — auch das ist ein Nebensatz mit Komma."]
+  ],
   einfach:[
     "Ein Hauptsatz kann allein stehen: „Ich rufe dich an.“ Das ergibt für sich Sinn.",
     "Ein Nebensatz kann das nicht: „wenn ich zu Hause bin“ — allein klingt das unfertig.",
@@ -7458,6 +7718,24 @@ const ERKLAERUNGEN = {
 
 "Nominalisierung": {
   worum:"Manchmal wird aus einem Verb oder Adjektiv ein Nomen. Dann wird es großgeschrieben.",
+  wozu:[
+    "Nominalisierungen sind eine der häufigsten Fallen bei der Großschreibung. Wer sie erkennt, macht in diesem Bereich fast keine Fehler mehr.",
+    "In Sachtexten und Fachtexten wird viel nominalisiert. Wer das durchschaut, versteht solche Texte leichter — und kann sie selbst schreiben."
+  ],
+  rezept:[
+    "Frag dich, ob ein Verb oder Adjektiv hier wie ein Nomen benutzt wird.",
+    "Signal 1: Ein Artikel steht davor — das Laufen, beim Essen, zum Schwimmen.",
+    "Signal 2: Ein Adjektiv oder Pronomen gehört dazu — das schnelle Laufen, sein Kommen.",
+    "Signal 3: Eine Mengenangabe steht davor — viel Neues, nichts Gutes.",
+    "Wenn eines dieser Signale da ist: großschreiben.",
+    "Probe: Lässt sich „das“ davorsetzen, ist es nominalisiert."
+  ],
+  fehler:[
+    ["Verschmolzenen Artikel übersehen", "In „beim“, „zum“, „im“ und „ans“ steckt ein Artikel. Also großschreiben."],
+    ["Adjektiv nach Mengenangabe klein gelassen", "„etwas Schönes“, „viel Gutes“, „nichts Besonderes“ — alle groß."],
+    ["Auch ohne Signal großgeschrieben", "„Er kann gut schwimmen“ — hier ist schwimmen ein normales Verb, also klein."],
+    ["Feste Wendungen falsch behandelt", "In „recht haben“ oder „pleite gehen“ wird klein geschrieben, obwohl es nach Nomen aussieht."]
+  ],
   einfach:[
     "„laufen“ ist ein Verb — ein Tuwort. Verben schreibt man klein.",
     "Aber: „Das Laufen macht Spaß.“ Hier ist aus dem Tuwort eine Sache geworden, über die man spricht.",
@@ -7496,6 +7774,24 @@ const ERKLAERUNGEN = {
 
 "Wortarten erkennen": {
   worum:"Jedes Wort im Deutschen gehört zu einer Gruppe — je nachdem, welche Aufgabe es im Satz hat.",
+  wozu:[
+    "Wortarten sind die Grundlage für Rechtschreibung und Kommasetzung. Ob ein Wort großgeschrieben wird, hängt fast immer davon ab, welche Wortart es ist.",
+    "Auch beim Lernen einer Fremdsprache brauchst du sie ständig — Vokabelhefte und Grammatiken sind danach geordnet."
+  ],
+  rezept:[
+    "Lies den ganzen Satz, nicht nur das Wort. Dieselbe Buchstabenfolge kann verschiedene Wortarten sein.",
+    "Frag: Kann ich der, die oder das davorsetzen? Dann ist es ein Nomen.",
+    "Frag: Kann ich es beugen — ich laufe, du läufst? Dann ist es ein Verb.",
+    "Frag: Beschreibt es, wie etwas ist, und lässt es sich steigern? Dann ist es ein Adjektiv.",
+    "Steht es statt eines Nomens (er, sie, dieses)? Dann ist es ein Pronomen.",
+    "Probe: Ersetz das Wort durch ein anderes derselben Art. Klingt der Satz noch richtig, stimmt deine Zuordnung."
+  ],
+  fehler:[
+    ["Nur auf das Wort geschaut", "„Das Laufen“ ist ein Nomen, „er läuft“ ein Verb. Erst der Satz entscheidet."],
+    ["Adjektiv und Adverb verwechselt", "Ein Adjektiv beschreibt ein Nomen (das schnelle Auto), ein Adverb das Verb oder den ganzen Satz (er fährt schnell)."],
+    ["Artikel für ein Nomen gehalten", "Der, die, das sind Begleiter, keine Nomen."],
+    ["Bei zusammengesetzten Formen nur ein Teil bestimmt", "„ist gelaufen“ ist eine Verbform aus zwei Teilen, nicht ein Verb und ein Adjektiv."]
+  ],
   einfach:[
     "Wörter haben verschiedene Jobs. Manche benennen etwas, manche sagen, was passiert, manche beschreiben.",
     "Nomen benennen Dinge, Lebewesen oder Begriffe: Hund, Tisch, Freude. Sie haben einen Artikel und werden großgeschrieben.",
@@ -7542,6 +7838,24 @@ const ERKLAERUNGEN = {
 
 "Satzglieder bestimmen": {
   worum:"Ein Satz besteht aus Bausteinen. Man findet sie, indem man passende Fragen an den Satz stellt.",
+  wozu:[
+    "Wer Satzglieder erkennt, setzt Kommas sicherer und schreibt klarere Sätze. Auch beim Umstellen von Sätzen — für Betonung oder Abwechslung — brauchst du sie.",
+    "Im Deutschunterricht und in Fremdsprachen ist die Frage „Wer? Was? Wen? Wem?“ die Grundlage jeder Satzanalyse."
+  ],
+  rezept:[
+    "Such zuerst das Prädikat: die gebeugte Verbform. Das ist der Anker im Satz.",
+    "Frag „Wer oder was?“ vor dem Prädikat — die Antwort ist das Subjekt.",
+    "Frag „Wen oder was?“ — das ist das Akkusativobjekt.",
+    "Frag „Wem?“ — das ist das Dativobjekt.",
+    "Alles, was Ort, Zeit, Art oder Grund angibt, ist eine adverbiale Bestimmung.",
+    "Verschiebeprobe: Ein Satzglied lässt sich immer als Ganzes an den Satzanfang stellen."
+  ],
+  fehler:[
+    ["Ein Satzglied auseinandergerissen", "„Der alte Mann“ ist ein einziges Satzglied. Bei der Verschiebeprobe wandert es komplett."],
+    ["Subjekt mit dem ersten Wort verwechselt", "„Gestern kaufte der Junge ein Buch“ — Subjekt ist der Junge, nicht gestern."],
+    ["Nach dem falschen Fall gefragt", "„Wem?“ führt zum Dativ, „Wen oder was?“ zum Akkusativ. Die Frage entscheidet."],
+    ["Bei mehrteiligem Prädikat nur einen Teil gefunden", "„hat gelesen“ gehört zusammen, auch wenn die Teile im Satz weit auseinanderstehen."]
+  ],
   einfach:[
     "Ein Satzglied ist ein Baustein des Satzes — nicht unbedingt nur ein Wort. „Der nette Lehrer“ ist ein einziges Satzglied.",
     "Der wichtigste Baustein ist das Prädikat. Das ist das Verb, es sagt, was geschieht. Damit fängst du immer an.",
@@ -7588,6 +7902,24 @@ const ERKLAERUNGEN = {
 
 "Groß- und Kleinschreibung": {
   worum:"Im Deutschen werden Nomen großgeschrieben. Der Rest folgt wenigen Regeln.",
+  wozu:[
+    "Es ist der sichtbarste Teil der Rechtschreibung. In Bewerbungen und E-Mails fällt jeder Fehler sofort auf und wirkt unangenehm.",
+    "Und es ist lernbar: Fast alles läuft über zwei, drei Signale, die man im Satz erkennen kann."
+  ],
+  rezept:[
+    "Prüf zuerst: Steht ein Artikel davor — der, die, das, ein, eine? Dann groß.",
+    "Prüf: Steht ein Adjektiv davor, das dazugehört? Dann groß.",
+    "Prüf: Steht eine Mengenangabe davor — viel, wenig, alles, etwas, nichts? Dann groß.",
+    "Prüf: Ist es eine Zeitangabe wie heute Abend, gestern Morgen? Dann groß.",
+    "Satzanfänge und Eigennamen immer groß.",
+    "Im Zweifel die Artikelprobe: Lässt sich „das“ davorsetzen, ist es ein Nomen."
+  ],
+  fehler:[
+    ["Nomen ohne Artikel klein geschrieben", "„Beim Laufen“ ist ein Nomen — der Artikel steckt in „beim“."],
+    ["Adjektiv nach Mengenangabe klein gelassen", "„etwas Schönes“, „nichts Neues“, „viel Gutes“ — alle groß."],
+    ["Tageszeiten nach Zeitangabe klein", "„heute Abend“, „morgen Mittag“ — die Tageszeit wird großgeschrieben."],
+    ["Höflichkeitsform verwechselt", "Das höfliche „Sie“ wird großgeschrieben, das vertraute „du“ darf klein bleiben."]
+  ],
   einfach:[
     "Das Deutsche ist damit fast allein auf der Welt: Bei uns werden alle Nomen großgeschrieben, nicht nur Namen.",
     "Ein Nomen erkennst du am Artikel davor: der Tisch, die Freude, ein Fahrrad.",
@@ -7619,6 +7951,24 @@ const ERKLAERUNGEN = {
 
 "Wörtliche Rede": {
   worum:"Wenn du aufschreibst, was jemand wörtlich gesagt hat, kommt das in Anführungszeichen — mit festen Regeln für die Satzzeichen.",
+  wozu:[
+    "In Erzählungen, Berichten und Protokollen musst du wiedergeben, was jemand gesagt hat. Die Zeichensetzung dabei ist eine der häufigsten Fehlerquellen in Klassenarbeiten.",
+    "Auch beruflich: In Gesprächsnotizen und Protokollen wird wörtliche Rede korrekt gekennzeichnet."
+  ],
+  rezept:[
+    "Setz die wörtliche Rede in Anführungszeichen — unten am Anfang, oben am Ende.",
+    "Steht der Begleitsatz vorn, kommt ein Doppelpunkt davor.",
+    "Steht er hinten, kommt hinter die wörtliche Rede ein Komma — außer bei Frage- oder Ausrufezeichen.",
+    "Der Punkt am Ende der wörtlichen Rede fällt weg, wenn ein Begleitsatz folgt.",
+    "Steht der Begleitsatz in der Mitte, wird die Rede geteilt und mit Kommas eingeschlossen.",
+    "Lies den Satz laut. Wo du eine Pause machst, gehört meist ein Zeichen hin."
+  ],
+  fehler:[
+    ["Punkt vor dem Begleitsatz stehen gelassen", "Richtig ist: „Ich komme“, sagte er. Nicht: „Ich komme.“, sagte er."],
+    ["Frage- oder Ausrufezeichen weggelassen", "Sie bleiben immer erhalten: „Kommst du?“, fragte sie."],
+    ["Doppelpunkt und Komma vertauscht", "Vorangestellter Begleitsatz bekommt einen Doppelpunkt, nachgestellter ein Komma."],
+    ["Anführungszeichen falsch herum", "Im Deutschen unten öffnen, oben schließen."]
+  ],
   einfach:[
     "Wörtliche Rede heißt: Du schreibst genau die Worte auf, die jemand gesagt hat.",
     "Diese Worte kommen in Anführungszeichen: „Ich komme gleich.“",
@@ -7652,6 +8002,24 @@ const ERKLAERUNGEN = {
 
 "Zeitformen": {
   worum:"Zeitformen zeigen, wann etwas passiert: jetzt, früher oder später.",
+  wozu:[
+    "Beim Erzählen brauchst du das Präteritum, beim Berichten das Perfekt, beim Vorausschauen das Futur. Wer die Zeiten mischt, verwirrt den Leser.",
+    "In Bewerbungen und Lebensläufen entscheidet die richtige Zeitform darüber, ob etwas abgeschlossen oder noch aktuell wirkt."
+  ],
+  rezept:[
+    "Kläre zuerst: Wann passiert es — jetzt, früher oder später?",
+    "Präsens für Gegenwart und für allgemeine Aussagen.",
+    "Präteritum für Erzähltes in der Vergangenheit, vor allem schriftlich.",
+    "Perfekt für Vergangenes mit Bezug zur Gegenwart, vor allem gesprochen.",
+    "Plusquamperfekt für das, was noch früher passiert ist als das Erzählte.",
+    "Bleib in einem Text bei einer Grundzeit und wechsle nur mit Absicht."
+  ],
+  fehler:[
+    ["Zeiten im selben Absatz gemischt", "Wer zwischen Präteritum und Perfekt hin- und herspringt, macht den Text unruhig."],
+    ["Hilfsverb falsch gewählt", "„Ich habe gelaufen“ ist falsch — bei Bewegungsverben heißt es „ich bin gelaufen“."],
+    ["Partizip falsch gebildet", "Bei starken Verben ändert sich der Stamm: gehen, ging, gegangen — nicht „gegeht“."],
+    ["Plusquamperfekt vergessen", "Wenn etwas vor dem Erzählten liegt, braucht es diese Zeit. Sonst wirkt die Reihenfolge falsch."]
+  ],
   einfach:[
     "Ein Verb ist ein Tuwort: gehen, lesen, sein. Es verändert seine Form, je nachdem wann etwas passiert.",
     "Diese verschiedenen Formen heißen Zeitformen.",
@@ -7705,6 +8073,23 @@ const ERKLAERUNGEN = {
 
 "Kommas bei Aufzählungen": {
   worum:"Bei Aufzählungen trennt ein Komma die Glieder — mit einer wichtigen Ausnahme.",
+  wozu:[
+    "Aufzählungen kommen in jedem Text vor — in Einkaufslisten genauso wie in Berichten und Anleitungen. Ein falsches Komma ändert den Sinn.",
+    "In technischen Beschreibungen ist Genauigkeit hier besonders wichtig: Was gehört zusammen, was ist getrennt?"
+  ],
+  rezept:[
+    "Such alle gleichrangigen Teile der Aufzählung.",
+    "Setz zwischen sie jeweils ein Komma.",
+    "Vor „und“ und „oder“ steht in einer einfachen Aufzählung kein Komma.",
+    "Prüf, ob die Teile wirklich gleichrangig sind — sonst ist es keine Aufzählung.",
+    "Lies laut: Wo du beim Sprechen eine kurze Pause machst, steht meist ein Komma."
+  ],
+  fehler:[
+    ["Komma vor „und“ gesetzt", "Bei einer einfachen Aufzählung steht dort keines: Äpfel, Birnen und Bananen."],
+    ["Zwei zusammengehörende Adjektive getrennt", "„ein alter roter Wagen“ hat kein Komma, weil die Adjektive nicht gleichrangig sind."],
+    ["Aufzählung mit Satzreihe verwechselt", "Zwei vollständige Hauptsätze werden anders behandelt als eine Aufzählung von Wörtern."],
+    ["Letztes Komma vergessen", "Vor einem nachgestellten Zusatz gehört wieder ein Komma."]
+  ],
   einfach:[
     "Eine Aufzählung ist, wenn du mehrere Dinge hintereinander nennst: Äpfel, Birnen und Bananen.",
     "Damit man beim Lesen weiß, wo ein Ding aufhört und das nächste anfängt, setzt man Kommas dazwischen.",
@@ -7734,6 +8119,24 @@ const ERKLAERUNGEN = {
 
 "Adjektive steigern": {
   worum:"Adjektive kann man vergleichen. Dafür gibt es drei Stufen.",
+  wozu:[
+    "Vergleiche brauchst du ständig: schneller, größer, am günstigsten. In Beschreibungen und Bewertungen sind Steigerungsformen unverzichtbar.",
+    "In Bewerbungen und Angeboten machen sie den Unterschied zwischen „gut“ und „am besten geeignet“."
+  ],
+  rezept:[
+    "Grundform bestimmen: schnell.",
+    "Erste Steigerung mit -er: schneller.",
+    "Zweite Steigerung mit am ... -sten: am schnellsten.",
+    "Prüf auf Umlaut: bei alt, groß, jung und einigen anderen wird aus a ein ä.",
+    "Denk an die unregelmäßigen: gut, besser, am besten. Viel, mehr, am meisten.",
+    "Beim Vergleich „als“ benutzen, nicht „wie“ — größer als, nicht größer wie."
+  ],
+  fehler:[
+    ["Doppelte Steigerung", "„am schnellsten“ ist richtig, „am allerschnellsten“ Umgangssprache, „mehr schneller“ falsch."],
+    ["„wie“ statt „als“ beim Vergleich", "Bei Ungleichheit heißt es „größer als“. „So groß wie“ gilt nur bei Gleichheit."],
+    ["Absolute Adjektive gesteigert", "„tot“, „einzig“ oder „optimal“ lassen sich sachlich nicht steigern."],
+    ["Unregelmäßige Formen regelmäßig gebildet", "„guter, am gutesten“ gibt es nicht. Es heißt besser, am besten."]
+  ],
   einfach:[
     "Ein Adjektiv beschreibt, wie etwas ist: schnell, groß, gut.",
     "Wenn du zwei Dinge vergleichst, brauchst du eine gesteigerte Form: Das Auto ist schneller als das Fahrrad.",
@@ -7773,6 +8176,23 @@ const ERKLAERUNGEN = {
 },
 "Terme umformen": {
   worum:"Ein Term ist eine Rechnung mit Buchstaben. Umformen heißt: kürzer schreiben, ohne den Wert zu verändern.",
+  wozu:[
+    "Terme umformen ist das Handwerkszeug für alles, was danach kommt: Gleichungen lösen, Formeln umstellen, Funktionen untersuchen. Ohne das geht in Mathe ab Klasse 8 nichts mehr.",
+    "Auch praktisch nützlich: Ein zusammengefasster Term ist kürzer zu rechnen und leichter zu kontrollieren."
+  ],
+  rezept:[
+    "Schau, ob Klammern da sind. Die zuerst auflösen.",
+    "Vor einer Klammer mit Minus drehen sich innen alle Vorzeichen um.",
+    "Beim Ausmultiplizieren geht der Faktor auf jedes Glied in der Klammer.",
+    "Jetzt gleichartige Glieder zusammenfassen — nur x zu x, nur Zahlen zu Zahlen.",
+    "Probe: Setz eine beliebige Zahl für x ein, in den alten und in den neuen Term. Beide müssen dasselbe ergeben."
+  ],
+  fehler:[
+    ["Ungleichartige Glieder zusammengefasst", "3x + 4 ist nicht 7x. Ein x und eine reine Zahl lassen sich nicht addieren."],
+    ["Minus vor der Klammer nicht verteilt", "10 − (3x + 2) ergibt 10 − 3x − 2, nicht 10 − 3x + 2."],
+    ["Faktor nur auf das erste Glied", "2 · (x + 5) ergibt 2x + 10, nicht 2x + 5."],
+    ["Probe weggelassen", "Eine Zahl einsetzen dauert Sekunden und findet fast jeden Vorzeichenfehler."]
+  ],
   einfach:[
     "Ein x ist einfach eine Zahl, die man noch nicht kennt. Rechnen darf man damit trotzdem.",
     "3x heißt „drei Stück x“. Genauso wie drei Äpfel. Und drei Äpfel plus zwei Äpfel sind fünf Äpfel — also 3x + 2x = 5x.",
@@ -7808,6 +8228,24 @@ const ERKLAERUNGEN = {
 
 "Binomische Formeln": {
   worum:"Drei Formeln, die einem das Ausmultiplizieren zweier gleicher Klammern abnehmen.",
+  wozu:[
+    "Sie sparen dir beim Ausmultiplizieren Zeit und beim Faktorisieren überhaupt erst den Weg. In quadratischen Gleichungen und beim Kürzen von Brüchen brauchst du sie ständig.",
+    "Auch im Kopfrechnen praktisch: 99² sind (100 − 1)² = 10000 − 200 + 1 = 9801."
+  ],
+  rezept:[
+    "Schau, welche Form vorliegt: Plus in der Klammer, Minus in der Klammer, oder plus mal minus.",
+    "Erste Formel: (a + b)² = a² + 2ab + b².",
+    "Zweite Formel: (a − b)² = a² − 2ab + b².",
+    "Dritte Formel: (a + b) · (a − b) = a² − b².",
+    "Bestimme a und b sauber, samt Vorzeichen und Zahlen davor.",
+    "Probe durch normales Ausmultiplizieren, wenn du unsicher bist."
+  ],
+  fehler:[
+    ["Das mittlere Glied vergessen", "(a + b)² ist nicht a² + b². Der Term 2ab gehört dazu — das ist der klassische Anfängerfehler."],
+    ["Bei der zweiten Formel das Vorzeichen von b² gedreht", "(a − b)² endet auf +b², nicht auf −b². Ein Quadrat ist nie negativ."],
+    ["Den Faktor nicht mit quadriert", "(3x)² ist 9x², nicht 3x². Beim Quadrieren wird alles in der Klammer quadriert — die Zahl davor genauso wie das x."],
+    ["Dritte Formel mit den anderen verwechselt", "Nur bei plus mal minus fällt das mittlere Glied weg."]
+  ],
   einfach:[
     "(a + b)² sieht so aus, als wäre es a² + b². Das ist der häufigste Fehler in der ganzen Mittelstufe.",
     "Denn (a + b)² heißt: (a + b) · (a + b). Und beim Ausmultiplizieren trifft jeder Teil der ersten Klammer jeden Teil der zweiten — das sind vier Produkte, nicht zwei.",
@@ -7847,6 +8285,24 @@ const ERKLAERUNGEN = {
 
 "Lineare Funktionen": {
   worum:"Eine lineare Funktion ist eine Gerade. Zwei Zahlen beschreiben sie vollständig: wie steil sie ist und wo sie startet.",
+  wozu:[
+    "Alles, was gleichmäßig wächst, ist eine lineare Funktion: Handytarif mit Grundgebühr, Taxipreis, Lohn nach Stunden, Wasserstand beim Befüllen.",
+    "Aus zwei Messwerten die Steigung zu berechnen ist eine der meistgebrauchten Rechnungen in Technik und Wirtschaft."
+  ],
+  rezept:[
+    "Bring die Gleichung in die Form y = m · x + b.",
+    "m ist die Steigung: Wie viel ändert sich y, wenn x um 1 wächst?",
+    "b ist der y-Achsenabschnitt: der Startwert bei x = 0.",
+    "Aus zwei Punkten: m = (y2 − y1) : (x2 − x1).",
+    "Zum Zeichnen: bei b starten, dann mit der Steigung ein Steigungsdreieck abtragen.",
+    "Punktprobe: x einsetzen und schauen, ob das passende y herauskommt."
+  ],
+  fehler:[
+    ["Steigung verkehrt herum gerechnet", "Oben gehört die Differenz der y-Werte, unten die der x-Werte."],
+    ["Bei negativen Werten die Vorzeichen verloren", "Aus y2 − y1 = 3 − (−2) wird 5, nicht 1."],
+    ["Steigung und Achsenabschnitt verwechselt", "In y = 2x + 3 ist 2 die Steigung und 3 der Startwert."],
+    ["Punktprobe nur mit einer Koordinate", "Ein Punkt liegt nur dann auf der Geraden, wenn beide Koordinaten passen."]
+  ],
   einfach:[
     "y = mx + b. Mehr steckt nicht dahinter. Das m ist die Steigung, das b der Startwert auf der y-Achse.",
     "Die Steigung sagt: gehe ich einen Schritt nach rechts, wie viel geht es dann nach oben? Bei m = 3 geht es drei nach oben.",
@@ -7889,6 +8345,24 @@ const ERKLAERUNGEN = {
 
 "Quadratische Gleichungen": {
   worum:"Gleichungen, in denen ein x² vorkommt. Sie haben meist zwei Lösungen statt einer.",
+  wozu:[
+    "Wurfbahnen, Bremswege, Flächenaufgaben mit unbekannter Seitenlänge, Gewinnmaxima: Sobald ein x² auftaucht, brauchst du diese Lösungswege.",
+    "In der Technik stecken quadratische Zusammenhänge überall — Leistung wächst mit dem Quadrat des Stroms, Fläche mit dem Quadrat der Länge."
+  ],
+  rezept:[
+    "Bring die Gleichung auf Null: alles auf eine Seite, sodass rechts 0 steht.",
+    "Prüf, ob du ausklammern kannst — das ist der schnellste Weg.",
+    "Sonst in die Normalform x² + px + q = 0 bringen, notfalls durch den Faktor vor x² teilen.",
+    "p-q-Formel anwenden oder quadratische Ergänzung.",
+    "Diskriminante prüfen: negativ heißt keine Lösung, null heißt eine, positiv heißt zwei.",
+    "Beide Lösungen einsetzen und prüfen."
+  ],
+  fehler:[
+    ["Nicht auf Null gebracht", "Die Formeln gelten nur, wenn rechts eine 0 steht."],
+    ["Nur eine Lösung angegeben", "Meistens gibt es zwei. Das Vorzeichen vor der Wurzel bedeutet plus und minus."],
+    ["Vor dem Anwenden nicht normiert", "Steht eine Zahl vor x², muss erst die ganze Gleichung durch sie geteilt werden."],
+    ["Negative Diskriminante ignoriert", "Unter der Wurzel darf nichts Negatives stehen. Dann gibt es im reellen Bereich keine Lösung."]
+  ],
   einfach:[
     "Bei 2x = 6 gibt es genau eine Lösung. Bei x² = 9 gibt es zwei: 3 und −3, denn beide ergeben quadriert 9.",
     "Deshalb liefert die p-q-Formel auch immer zwei Werte — einmal mit Plus, einmal mit Minus vor der Wurzel.",
@@ -7926,6 +8400,23 @@ const ERKLAERUNGEN = {
 
 "Satz des Pythagoras": {
   worum:"In jedem rechtwinkligen Dreieck hängen die drei Seitenlängen fest zusammen. Kennt man zwei, kann man die dritte ausrechnen.",
+  wozu:[
+    "Rechtwinkligkeit prüfen, Diagonalen berechnen, Kabellängen über Eck bestimmen, Dachschrägen ausrechnen: Der Satz des Pythagoras ist die meistgebrauchte Formel am Bau.",
+    "Der 3-4-5-Trick zum Anreißen eines rechten Winkels beruht direkt darauf — jeder Maurer nutzt ihn."
+  ],
+  rezept:[
+    "Prüf zuerst, ob das Dreieck wirklich rechtwinklig ist. Sonst gilt der Satz nicht.",
+    "Bestimme die Hypotenuse: die längste Seite, gegenüber dem rechten Winkel.",
+    "Für die Hypotenuse: c² = a² + b², dann Wurzel ziehen.",
+    "Für eine Kathete: a² = c² − b², dann Wurzel ziehen.",
+    "Prüf: Die Hypotenuse muss länger sein als jede Kathete."
+  ],
+  fehler:[
+    ["Hypotenuse verwechselt", "Sie liegt immer gegenüber dem rechten Winkel und ist die längste Seite."],
+    ["Bei der Kathete addiert statt subtrahiert", "Ist die Hypotenuse gegeben, wird abgezogen. Sonst käme eine Kathete länger heraus als die Hypotenuse."],
+    ["Wurzel vergessen", "a² + b² ergibt c², nicht c. Der letzte Schritt ist die Wurzel."],
+    ["Ohne rechten Winkel angewendet", "In einem beliebigen Dreieck gilt der Satz nicht."]
+  ],
   einfach:[
     "Die Formel a² + b² = c² gilt nur, wenn im Dreieck ein rechter Winkel steckt. Sonst stimmt sie nicht.",
     "Die beiden Seiten, die den rechten Winkel bilden, heißen Katheten. Die Seite gegenüber heißt Hypotenuse — sie ist immer die längste.",
@@ -7962,6 +8453,24 @@ const ERKLAERUNGEN = {
 
 "Potenzen und Wurzeln": {
   worum:"Eine Potenz ist eine Kurzschreibweise für wiederholtes Malnehmen. Die Wurzel macht das rückgängig.",
+  wozu:[
+    "Große und kleine Zahlen kurz schreiben: 3 · 10⁸ m/s statt 300000000. In Technik und Naturwissenschaft ist das der Normalfall.",
+    "Auch Zinseszins, Flächen- und Volumenrechnung und alles, was sich verdoppelt, arbeitet mit Potenzen."
+  ],
+  rezept:[
+    "Kläre, ob die Basen gleich sind. Nur dann gelten die einfachen Regeln.",
+    "Malnehmen bei gleicher Basis: Hochzahlen addieren.",
+    "Teilen bei gleicher Basis: Hochzahlen subtrahieren.",
+    "Potenz einer Potenz: Hochzahlen malnehmen.",
+    "Wurzel ziehen heißt: Welche Zahl mit sich selbst malgenommen ergibt das?",
+    "Probe durch Ausschreiben, wenn du unsicher bist: a³ ist a · a · a."
+  ],
+  fehler:[
+    ["Basen addiert", "2³ · 2⁴ ist 2⁷, nicht 4⁷. Die Basis bleibt stehen, nur die Hochzahlen werden addiert."],
+    ["Bei verschiedenen Basen die Regeln angewendet", "2³ · 3³ lässt sich nicht über die Hochzahlen zusammenfassen, sondern nur über die Basen: (2 · 3)³."],
+    ["Hochzahl mit Faktor verwechselt", "2³ ist 8, nicht 6. Die Hochzahl sagt, wie oft die Basis mit sich selbst malgenommen wird."],
+    ["Wurzel aus einer Summe gezogen", "√(a² + b²) ist nicht a + b. Das lässt sich nicht auseinanderziehen."]
+  ],
   einfach:[
     "a⁵ heißt: a mal a mal a mal a mal a. Die Hochzahl sagt nur, wie oft.",
     "Deshalb ist a³ · a² = a⁵ — man hängt drei Stück und zwei Stück aneinander, macht fünf. Die Hochzahlen werden addiert.",
@@ -7995,6 +8504,24 @@ const ERKLAERUNGEN = {
 
 "Quadratische Funktionen": {
   worum:"Der Graph einer quadratischen Funktion ist eine Parabel. Ihre Gleichung verrät, wo sie liegt und wie sie aussieht.",
+  wozu:[
+    "Jede Wurfbahn, jeder Bremsweg, jede Parabolantenne folgt einer quadratischen Funktion. Auch Gewinn- und Kostenkurven in der Wirtschaft sehen so aus.",
+    "Der Scheitelpunkt ist dabei die interessanteste Stelle: höchster Punkt, tiefster Punkt, größter Gewinn."
+  ],
+  rezept:[
+    "Bring die Funktion in eine der beiden Formen: Normalform y = ax² + bx + c oder Scheitelform y = a(x − d)² + e.",
+    "Das Vorzeichen von a sagt, ob die Parabel nach oben oder unten geöffnet ist.",
+    "Der Betrag von a sagt, wie schmal oder breit sie ist.",
+    "In der Scheitelform liest du den Scheitel direkt ab: S(d | e).",
+    "Für die Nullstellen y = 0 setzen und die quadratische Gleichung lösen.",
+    "Skizziere die Parabel grob und prüf, ob deine Werte dazu passen."
+  ],
+  fehler:[
+    ["Vorzeichen im Scheitel verdreht", "Bei y = (x − 3)² liegt der Scheitel bei x = +3, nicht bei −3."],
+    ["Nur eine Nullstelle angegeben", "Eine nach oben geöffnete Parabel, die die x-Achse schneidet, hat zwei Nullstellen."],
+    ["Öffnung falsch bestimmt", "Negatives a heißt nach unten geöffnet. Dann gibt es einen Hochpunkt, keinen Tiefpunkt."],
+    ["Scheitel aus der Normalform abgelesen", "In y = ax² + bx + c steht der Scheitel nicht direkt. Erst umformen oder mit d = −b : (2a) rechnen."]
+  ],
   einfach:[
     "Die einfachste Parabel ist y = x². Sie ist nach oben geöffnet und hat ihren tiefsten Punkt im Ursprung.",
     "Steht vor dem x² ein Minus, kippt die Parabel und ist nach unten geöffnet.",
@@ -8033,6 +8560,24 @@ const ERKLAERUNGEN = {
 
 "Trigonometrie": {
   worum:"Sinus, Kosinus und Tangens verbinden Winkel mit Seitenlängen. Damit kann man Seiten berechnen, die man nicht messen kann.",
+  wozu:[
+    "Steigungen, Dachneigungen, Schrägen, Kräfte in Fachwerken: Sobald ein Winkel im Spiel ist und du eine Länge brauchst, kommen Sinus, Kosinus und Tangens ins Spiel.",
+    "In der Elektrotechnik steckt derselbe Sinus in jeder Wechselspannung — und der Kosinus im cos φ."
+  ],
+  rezept:[
+    "Zeichne das rechtwinklige Dreieck und markiere den Winkel, um den es geht.",
+    "Beschrifte die Seiten von diesem Winkel aus: Gegenkathete, Ankathete, Hypotenuse.",
+    "Wähl die Funktion nach dem, was gegeben und gesucht ist: Sinus = Gegenkathete : Hypotenuse, Kosinus = Ankathete : Hypotenuse, Tangens = Gegenkathete : Ankathete.",
+    "Stell nach der gesuchten Größe um.",
+    "Für einen gesuchten Winkel die Umkehrfunktion benutzen.",
+    "Prüf, ob der Taschenrechner auf Grad steht, nicht auf Bogenmaß."
+  ],
+  fehler:[
+    ["Gegen- und Ankathete verwechselt", "Sie hängen davon ab, von welchem Winkel aus du schaust. Immer neu zuordnen."],
+    ["Taschenrechner im falschen Modus", "Steht er auf RAD statt DEG, kommen völlig falsche Werte heraus. Zur Kontrolle: sin 30° muss 0,5 ergeben."],
+    ["Umkehrfunktion vergessen", "Ist der Winkel gesucht, brauchst du sin⁻¹, cos⁻¹ oder tan⁻¹."],
+    ["Ohne rechten Winkel angewendet", "Die drei Grundfunktionen gelten nur im rechtwinkligen Dreieck."]
+  ],
   einfach:[
     "Im rechtwinkligen Dreieck hat jede Seite einen Namen — aber der hängt davon ab, welchen Winkel du gerade anschaust.",
     "Die Seite gegenüber dem Winkel heißt Gegenkathete. Die Seite, die am Winkel anliegt, heißt Ankathete. Die längste bleibt immer die Hypotenuse.",
@@ -8069,6 +8614,23 @@ const ERKLAERUNGEN = {
 
 "Exponentielles Wachstum": {
   worum:"Wachstum, bei dem immer derselbe Prozentsatz dazukommt — nicht derselbe Betrag. Deshalb wird es immer schneller.",
+  wozu:[
+    "Zinseszins, Bevölkerungswachstum, Ausbreitung von Krankheiten, Abkühlung, radioaktiver Zerfall: Alles, was sich um einen festen Prozentsatz ändert, wächst oder fällt exponentiell.",
+    "Wer den Unterschied zu linearem Wachstum versteht, durchschaut auch Kreditangebote und Sparpläne."
+  ],
+  rezept:[
+    "Bestimme den Startwert — der Zustand bei null Zeiteinheiten.",
+    "Bestimme den Wachstumsfaktor: bei +5 % ist er 1,05, bei −5 % ist er 0,95.",
+    "Formel: Endwert = Startwert · Faktor hoch Anzahl der Zeitschritte.",
+    "Achte darauf, dass Faktor und Zeitschritt zusammenpassen — Jahresfaktor zu Jahren.",
+    "Prüf die Richtung: Faktor über 1 heißt Wachstum, unter 1 heißt Abnahme."
+  ],
+  fehler:[
+    ["Prozente addiert statt den Faktor potenziert", "Dreimal 10 % Wachstum sind nicht 30 %, sondern 33,1 %. Der Zinseszins kommt dazu."],
+    ["Faktor falsch gebildet", "Bei einer Abnahme um 20 % ist der Faktor 0,8, nicht −0,2."],
+    ["Linear und exponentiell verwechselt", "Linear heißt: immer derselbe Betrag dazu. Exponentiell heißt: immer derselbe Prozentsatz."],
+    ["Zeiteinheiten nicht angepasst", "Ein Monatszinssatz darf nicht mit der Zahl der Jahre potenziert werden."]
+  ],
   einfach:[
     "Bei gleichmäßigem Wachstum kommt jedes Jahr derselbe Betrag dazu: 100, 200, 300, 400.",
     "Bei exponentiellem Wachstum kommt jedes Jahr derselbe Anteil dazu. Und weil der Betrag schon gewachsen ist, wird der Zuwachs jedes Jahr größer.",
@@ -8104,6 +8666,24 @@ const ERKLAERUNGEN = {
 
 "Konjunktiv": {
   worum:"Eine Verbform, mit der man zeigt: Das sind nicht meine Worte, ich gebe nur wieder, was jemand gesagt hat.",
+  wozu:[
+    "In Berichten und Zeitungsartikeln gibst du wieder, was jemand gesagt hat — dafür brauchst du den Konjunktiv I. Damit machst du deutlich, dass es nicht deine eigene Aussage ist.",
+    "Der Konjunktiv II ist die Höflichkeitsform: „Könnten Sie bitte …“ klingt anders als „Können Sie …“."
+  ],
+  rezept:[
+    "Kläre, was du ausdrücken willst: fremde Aussage wiedergeben oder etwas Gedachtes formulieren.",
+    "Für die indirekte Rede den Konjunktiv I nehmen: er sagt, er sei müde.",
+    "Gebildet wird er aus dem Verbstamm plus -e: er gehe, er habe, er komme.",
+    "Klingt der Konjunktiv I wie der Indikativ, weich auf den Konjunktiv II aus: sie hätten statt sie haben.",
+    "Für Wünsche und Unwirkliches den Konjunktiv II: wenn ich Zeit hätte.",
+    "Vermeide „würde“, wo eine echte Form existiert: ginge statt würde gehen."
+  ],
+  fehler:[
+    ["Indikativ in der indirekten Rede benutzt", "„Er sagt, er ist krank“ wirkt wie deine eigene Feststellung. Richtig: er sei krank."],
+    ["Konjunktiv I und II verwechselt", "Konjunktiv I für die indirekte Rede, Konjunktiv II für Unwirkliches und Höflichkeit."],
+    ["Überall „würde“ eingesetzt", "„Wenn ich Zeit hätte“ ist besser als „wenn ich Zeit haben würde“."],
+    ["Bei gleicher Form nicht ausgewichen", "Klingt der Konjunktiv I wie der Indikativ, nimm den Konjunktiv II — sonst erkennt niemand die indirekte Rede."]
+  ],
   einfach:[
     "Wenn eine Zeitung schreibt „Der Minister sagt, er hat nichts gewusst“, klingt es, als würde die Zeitung das bestätigen.",
     "Schreibt sie „Der Minister sagt, er habe nichts gewusst“, ist klar: Das behauptet er, nicht die Zeitung.",
@@ -8142,6 +8722,24 @@ const ERKLAERUNGEN = {
 
 "Satzreihe und Satzgefüge": {
   worum:"Zwei Arten, Sätze zu verbinden — je nachdem, ob die Teile gleichrangig sind oder einer vom anderen abhängt.",
+  wozu:[
+    "Wer den Unterschied kennt, setzt Kommas richtig und kann seinen Stil steuern: Kurze Hauptsätze wirken sachlich, Satzgefüge zeigen Zusammenhänge.",
+    "In Erörterungen und Berichten brauchst du Satzgefüge, um Begründungen und Bedingungen sauber auszudrücken."
+  ],
+  rezept:[
+    "Zähl die gebeugten Verbformen — so viele Teilsätze gibt es.",
+    "Prüf jeden Teilsatz: Könnte er allein stehen? Dann ist es ein Hauptsatz.",
+    "Zwei oder mehr Hauptsätze nebeneinander sind eine Satzreihe.",
+    "Ein Hauptsatz mit mindestens einem Nebensatz ist ein Satzgefüge.",
+    "Achte auf die Verbstellung: Im Nebensatz steht das Verb am Ende.",
+    "Setz die Kommas: zwischen Hauptsätzen und um jeden Nebensatz."
+  ],
+  fehler:[
+    ["Nebensatz für Hauptsatz gehalten", "Ein Nebensatz kann nicht allein stehen. „Weil es regnete“ ist kein vollständiger Satz."],
+    ["Komma zwischen Hauptsätzen vergessen", "Auch mit „und“ verbundene Hauptsätze dürfen ein Komma bekommen, wenn es der Klarheit dient."],
+    ["Verbstellung nicht beachtet", "Sie ist das sicherste Erkennungszeichen: Verb am Ende bedeutet Nebensatz."],
+    ["Teilsätze nicht gezählt", "Wer die gebeugten Verben nicht zählt, übersieht einen Teilsatz und damit ein Komma."]
+  ],
   einfach:[
     "Eine Satzreihe verbindet zwei Hauptsätze. Beide könnten auch allein stehen: „Ich räume auf, und meine Schwester kocht.“",
     "Ein Satzgefüge hat einen Hauptsatz und einen Nebensatz. Der Nebensatz kann nicht allein stehen: „weil ich krank bin“ ergibt für sich keinen Sinn.",
@@ -8188,6 +8786,24 @@ const ERKLAERUNGEN = {
 
 "Kommas bei Infinitivgruppen": {
   worum:"Wann vor einer Wortgruppe mit „zu“ ein Komma stehen muss — und wann man es sich aussuchen darf.",
+  wozu:[
+    "Infinitivgruppen mit „zu“ kommen in fast jedem längeren Satz vor. Die Kommaregel dazu ist einfacher, als die meisten denken.",
+    "In Anleitungen und Anschreiben schreibst du viel mit „um … zu“ — genau dort greift die Regel."
+  ],
+  rezept:[
+    "Such die Wortgruppe mit „zu“ plus Grundform des Verbs.",
+    "Prüf, ob eines dieser Wörter davorsteht: um, ohne, statt, anstatt, außer, als.",
+    "Wenn ja: Komma ist Pflicht.",
+    "Prüf, ob ein Hinweiswort im Hauptsatz steht — es, daran, darauf, damit.",
+    "Wenn ja: Komma ist Pflicht.",
+    "Sonst darfst du ein Komma setzen, wenn es das Lesen erleichtert."
+  ],
+  fehler:[
+    ["Bei „um … zu“ das Komma vergessen", "Hier ist es Pflicht: Er kam, um zu helfen."],
+    ["Überall ein Komma gesetzt", "Bei einer kurzen Infinitivgruppe ohne Signalwort ist es freigestellt: Er versuchte zu schlafen."],
+    ["Hinweiswort übersehen", "„Er denkt nicht daran, zu gehen“ — das „daran“ macht das Komma zur Pflicht."],
+    ["Infinitivgruppe mit Nebensatz verwechselt", "Eine Infinitivgruppe hat kein eigenes Subjekt und keine gebeugte Verbform."]
+  ],
   einfach:[
     "Eine Infinitivgruppe ist eine Wortgruppe mit „zu“ und der Grundform eines Verbs: „um pünktlich zu sein“.",
     "Anders als ein Nebensatz hat sie kein eigenes Subjekt — es steht kein „ich“, „er“ oder „sie“ darin.",
@@ -8220,6 +8836,24 @@ const ERKLAERUNGEN = {
 
 "Stilmittel erkennen": {
   worum:"Sprachliche Kniffe, mit denen Texte Bilder erzeugen oder Wirkung verstärken.",
+  wozu:[
+    "In der Gedichtanalyse und der Textinterpretation musst du Stilmittel benennen und ihre Wirkung erklären. Das Benennen allein reicht nie.",
+    "Auch praktisch: Werbung und Reden arbeiten mit denselben Mitteln. Wer sie erkennt, durchschaut, wie manipuliert wird."
+  ],
+  rezept:[
+    "Lies den Text langsam und markiere alles, was auffällt.",
+    "Frag bei Wiederholungen: Was wird wiederholt — Laute, Wörter, Satzanfänge?",
+    "Frag bei Bildern: Wird etwas verglichen? Mit „wie“ ist es ein Vergleich, ohne „wie“ eine Metapher.",
+    "Frag bei Gegensätzen: Stehen zwei Gegenteile nebeneinander? Das ist eine Antithese.",
+    "Benenne das Stilmittel mit dem Fachbegriff.",
+    "Erklär die Wirkung: Was bewirkt es beim Leser? Ohne diesen Schritt gibt es keine Punkte."
+  ],
+  fehler:[
+    ["Nur benannt, nicht gedeutet", "„Hier ist eine Metapher“ ist keine Analyse. Die Wirkung gehört dazu."],
+    ["Vergleich und Metapher verwechselt", "Mit „wie“ ist es ein Vergleich. Ohne „wie“ eine Metapher."],
+    ["Stilmittel hineingelesen", "Nicht jede Wiederholung ist Absicht. Im Zweifel nur benennen, was klar erkennbar ist."],
+    ["Fachbegriff falsch geschrieben", "Anapher, Alliteration, Personifikation — die Schreibweise gehört zur Leistung."]
+  ],
   einfach:[
     "Ein Stilmittel zu benennen ist nur die halbe Arbeit. In der Deutung zählt immer: Welche Wirkung hat es?",
     "Die schnellste Weiche ist das Wörtchen „wie“. Steht es da, ist es ein Vergleich: „stark wie ein Bär“.",
@@ -8268,6 +8902,24 @@ const ERKLAERUNGEN = {
 
 "Gedichte deuten": {
   worum:"Wie ein Gedicht gebaut ist — Reim und Form sagen etwas über seine Wirkung.",
+  wozu:[
+    "Gedichtanalysen kommen in jeder Oberstufe und in vielen Abschlussprüfungen vor. Der Aufbau ist immer derselbe — wer ihn kennt, kann jedes Gedicht angehen.",
+    "Und darüber hinaus: Genau lesen und begründen, was man behauptet, ist eine Fähigkeit, die weit über den Deutschunterricht hinaus nützt."
+  ],
+  rezept:[
+    "Lies das Gedicht zweimal, das zweite Mal laut.",
+    "Zähl die Strophen und Verse, bestimm das Reimschema.",
+    "Bestimm das Metrum, indem du betonte und unbetonte Silben markierst.",
+    "Fass den Inhalt jeder Strophe in einem Satz zusammen.",
+    "Such Stilmittel und notiere ihre Wirkung.",
+    "Formuliere eine Deutung — und belege jede Aussage mit einer Zeile aus dem Text."
+  ],
+  fehler:[
+    ["Nacherzählt statt gedeutet", "Der Inhalt ist nur die Grundlage. Gefragt ist, was das Gedicht ausdrückt und wie."],
+    ["Ohne Belege behauptet", "Jede Deutung braucht eine Textstelle mit Versangabe."],
+    ["Lyrisches Ich mit dem Autor gleichgesetzt", "Das lyrische Ich ist eine Rolle im Text, nicht der Dichter selbst."],
+    ["Form und Inhalt getrennt betrachtet", "Interessant wird es erst, wenn du zeigst, wie die Form den Inhalt unterstützt."]
+  ],
   einfach:[
     "Für das Reimschema schaut man nur auf das letzte Wort jeder Zeile. Der Inhalt spielt dabei keine Rolle.",
     "Reimen sich benachbarte Zeilen (1 mit 2, 3 mit 4), ist es ein Paarreim: aabb.",
@@ -8316,6 +8968,24 @@ const ERKLAERUNGEN = {
 
 "Fremdwörter": {
   worum:"Wörter aus anderen Sprachen. Wer ihre Bausteine kennt, kann ihre Bedeutung selbst erschließen.",
+  wozu:[
+    "In Sachtexten, Nachrichten und Fachtexten stehen ständig Fremdwörter. Wer ihre Herkunft kennt, kann sich viele davon selbst erschließen.",
+    "Auch in der Berufsschule hilft es: Viele Fachbegriffe sind aus dem Lateinischen oder Griechischen gebaut."
+  ],
+  rezept:[
+    "Zerleg das Wort in seine Teile: Vorsilbe, Stamm, Endung.",
+    "Prüf, ob du eine bekannte Vorsilbe erkennst — inter, trans, prä, anti, mono.",
+    "Prüf den Stamm auf Verwandtschaft mit Wörtern, die du kennst.",
+    "Setz die Bedeutungen zusammen und prüf, ob es im Satz Sinn ergibt.",
+    "Erst wenn das nicht reicht: nachschlagen.",
+    "Merk dir die Bausteine, nicht nur das einzelne Wort — sie kommen wieder."
+  ],
+  fehler:[
+    ["Nach Klang geraten", "Ähnlich klingende Wörter können völlig Verschiedenes bedeuten."],
+    ["Nur im Wörterbuch nachgeschlagen", "Wer die Bausteine lernt, erschließt sich beim nächsten Mal zehn weitere Wörter selbst."],
+    ["Fremdwörter unnötig benutzt", "Ein deutsches Wort ist oft klarer. Fremdwörter nur, wenn sie genauer sind."],
+    ["Endung nicht angepasst", "Fremdwörter werden im Deutschen gebeugt. Auch die Mehrzahlbildung ist oft eigen."]
+  ],
   einfach:[
     "Die meisten Fremdwörter im Deutschen stammen aus dem Lateinischen oder Griechischen.",
     "Sie sind oft aus zwei Bausteinen zusammengesetzt. Kennt man die, versteht man das Wort — auch wenn man es nie gehört hat.",
@@ -8351,6 +9021,24 @@ const ERKLAERUNGEN = {
 
 "Rede und Rhetorik": {
   worum:"Wie Reden gebaut sind, um zu überzeugen — und woran man das erkennt.",
+  wozu:[
+    "Referate, Bewerbungsgespräche, Diskussionen im Betrieb: Überall musst du überzeugen. Rhetorik ist erlernbares Handwerk, kein Talent.",
+    "Und andersherum: Wer die Mittel kennt, merkt, wenn eine Rede mehr Wirkung als Inhalt hat."
+  ],
+  rezept:[
+    "Kläre Ziel und Publikum, bevor du das erste Wort schreibst.",
+    "Bau die Rede in drei Teile: Einstieg, Hauptteil, Schluss.",
+    "Nimm einen Einstieg, der Aufmerksamkeit holt — Frage, Zahl, kurze Geschichte.",
+    "Bring im Hauptteil höchstens drei Kernaussagen, jede mit Beleg.",
+    "Setz gezielt ein oder zwei Stilmittel ein, nicht mehr.",
+    "Schließ mit einer klaren Aufforderung oder einem Satz, der hängen bleibt."
+  ],
+  fehler:[
+    ["Zu viele Kernaussagen", "Mehr als drei merkt sich niemand. Lieber weniger und dafür belegt."],
+    ["Stilmittel gehäuft", "Wer in jedem Satz eine Metapher unterbringt, wirkt aufgesetzt statt überzeugend."],
+    ["Ohne Publikum gedacht", "Dieselbe Rede wirkt vor Mitschülern und vor Fachleuten völlig verschieden."],
+    ["Schluss weggelassen", "Ein Vortrag, der einfach aufhört, verpufft. Der letzte Satz bleibt am längsten hängen."]
+  ],
   einfach:[
     "Eine Rede will nicht nur informieren, sondern überzeugen und zum Handeln bewegen. Deshalb ist sie sorgfältig gebaut.",
     "Eine rhetorische Frage ist eine Frage, auf die keine Antwort erwartet wird. Die Zuhörer sollen selbst auf die gewünschte Antwort kommen.",
@@ -8393,6 +9081,24 @@ const ERKLAERUNGEN = {
 
 "Sprachwandel": {
   worum:"Sprache verändert sich ständig. Das ist kein Verfall, sondern ein Zeichen, dass sie lebendig ist.",
+  wozu:[
+    "Sprache verändert sich ständig, und über diese Veränderung wird viel gestritten. Wer die Mechanismen kennt, kann sachlich mitreden statt nur zu schimpfen.",
+    "In Erörterungen zum Thema Sprache ist das ein häufiges Prüfungsthema."
+  ],
+  rezept:[
+    "Kläre, worum es geht: neue Wörter, geänderte Bedeutungen oder geänderte Grammatik.",
+    "Such Beispiele aus dem eigenen Alltag.",
+    "Frag nach dem Grund: neue Technik, Kontakt zu anderen Sprachen, Bequemlichkeit im Sprechen.",
+    "Ordne ein, ob die Veränderung neu ist oder schon lange läuft.",
+    "Wäg beide Seiten ab, bevor du bewertest.",
+    "Belege deine Aussagen mit konkreten Wörtern, nicht mit Eindrücken."
+  ],
+  fehler:[
+    ["Jede Veränderung als Verfall gedeutet", "Sprache hat sich immer verändert. Das allein ist kein Werturteil."],
+    ["Nur über Anglizismen gesprochen", "Sprachwandel betrifft auch Grammatik, Aussprache und Bedeutungen."],
+    ["Behauptungen ohne Beispiele", "Eine Erörterung lebt von konkreten Wörtern und Belegen."],
+    ["Gesprochene und geschriebene Sprache vermischt", "Was im Gespräch üblich ist, muss im geschriebenen Text nicht falsch oder richtig sein."]
+  ],
   einfach:[
     "Wörter bekommen mit der Zeit andere Bedeutungen. „Weib“ war früher ein ganz normales Wort für Frau — heute klingt es abwertend.",
     "Manche Wörter meinen weniger als früher: „Hochzeit“ hieß einmal jedes hohe Fest, heute nur noch die Vermählung.",
@@ -8440,6 +9146,24 @@ const ERKLAERUNGEN = {
 
 "Literaturepochen": {
   worum:"Texte aus derselben Zeit ähneln sich, weil sie auf dieselbe Welt antworten. Diese Zeitabschnitte nennt man Epochen.",
+  wozu:[
+    "In Interpretationen sollst du einen Text einordnen. Wer die Epochen und ihre Leitgedanken kennt, versteht schneller, worauf ein Text hinauswill.",
+    "Epochen erklären auch, warum Menschen zu einer Zeit so und nicht anders geschrieben haben — das macht Geschichte greifbar."
+  ],
+  rezept:[
+    "Lies den Text und such nach Leitbegriffen: Vernunft, Gefühl, Maß, Sehnsucht, Zerrissenheit.",
+    "Achte auf die Form: streng geregelt oder frei?",
+    "Achte auf das Menschenbild: Steht der Verstand im Mittelpunkt oder das Empfinden?",
+    "Ordne grob zeitlich ein: 18. Jahrhundert, Wende zum 19., Anfang des 20.",
+    "Vergleich mit den bekannten Merkmalen der Epochen.",
+    "Belege deine Einordnung mit einer Textstelle — die Jahreszahl allein reicht nicht."
+  ],
+  fehler:[
+    ["Nur nach der Jahreszahl eingeordnet", "Epochen überlappen sich. Entscheidend ist die Haltung im Text."],
+    ["Klassik und Romantik verwechselt", "Klassik steht für Maß und Harmonie, Romantik für Sehnsucht und Nacht."],
+    ["Autor mit der Epoche gleichgesetzt", "Goethe hat in mehreren Epochen geschrieben — Sturm und Drang und Klassik."],
+    ["Merkmale ungeprüft übernommen", "Nicht jedes Gedicht einer Epoche zeigt alle typischen Merkmale."]
+  ],
   einfach:[
     "Epochen sind keine Schubladen mit festen Wänden — sie überschneiden sich und gehen ineinander über.",
     "Wichtiger als Jahreszahlen ist, woran man eine Epoche erkennt: an ihren Themen und ihrer Haltung.",
@@ -8491,6 +9215,23 @@ const ERKLAERUNGEN = {
 
 "Ohmsches Gesetz": {
   worum:"Spannung, Strom und Widerstand hängen fest zusammen. Kennst du zwei davon, kannst du das dritte ausrechnen.",
+  wozu:[
+    "Du brauchst es an jedem Arbeitstag: beim Auslegen eines Vorwiderstands für eine Meldeleuchte, beim Prüfen, ob ein Bauteil noch heil ist, und immer dann, wenn du am Messgerät ablesen willst, ob der Strom zum Widerstand passt.",
+    "In der Prüfung ist es die Grundlage für fast jede Rechenaufgabe. Leistung, Spannungsteiler, Leitungsberechnung und Schutzmaßnahmen bauen alle darauf auf."
+  ],
+  rezept:[
+    "Schreib auf, was gegeben ist — mit Formelzeichen: U in Volt, I in Ampere, R in Ohm.",
+    "Rechne alles auf Grundeinheiten um. Aus 4,7 kΩ werden 4700 Ω, aus 250 mA werden 0,25 A.",
+    "Deck im Formeldreieck die gesuchte Größe zu. Was stehen bleibt, ist deine Rechnung.",
+    "Rechne aus und schreib die Einheit dazu.",
+    "Mach die Probe: Setz dein Ergebnis in U = R · I ein. Kommt die gegebene Größe heraus, stimmt es."
+  ],
+  fehler:[
+    ["Milli und Kilo nicht umgerechnet", "250 mA sind nicht 250 A. Wer die Vorsätze stehen lässt, liegt um den Faktor 1000 daneben — der mit Abstand häufigste Fehler."],
+    ["Formel falsch herum umgestellt", "R = I : U statt R = U : I. Merk dir: Die Spannung steht im Dreieck oben, also immer im Zähler."],
+    ["Einheit vergessen", "„12“ ist keine Antwort. 12 V, 12 A und 12 Ω sind drei völlig verschiedene Dinge."],
+    ["Ergebnis nicht auf Plausibilität geprüft", "Ein Widerstand von 0,002 Ω oder ein Strom von 5000 A in einer Steuerung sind fast immer ein Rechenfehler."]
+  ],
   einfach:[
     "Stell dir Strom wie Wasser in einem Rohr vor. Die Spannung ist der Druck, der das Wasser schiebt. Der Strom ist die Menge, die durchfließt. Der Widerstand ist eine Engstelle im Rohr.",
     "Mehr Druck heißt mehr Wasser: Wird die Spannung größer, wird auch der Strom größer.",
@@ -8526,6 +9267,23 @@ const ERKLAERUNGEN = {
 
 "Elektrische Leistung und Arbeit": {
   worum:"Leistung sagt, wie viel Strom ein Gerät in jedem Moment umsetzt. Arbeit sagt, wie viel es über die Zeit verbraucht.",
+  wozu:[
+    "Auf jedem Typenschild stehen Leistung und Spannung. Den Strom rechnest du dir daraus aus — und daran entscheidet sich, welche Sicherung und welcher Leitungsquerschnitt hinkommen.",
+    "Die Arbeit in Kilowattstunden ist das, was der Kunde bezahlt. Wer den Verbrauch einer Anlage abschätzen soll, rechnet genau so."
+  ],
+  rezept:[
+    "Kläre zuerst, ob nach Leistung (Watt) oder nach Arbeit (Kilowattstunden) gefragt ist. Das ist der häufigste Stolperstein.",
+    "Für die Leistung: P = U · I, beide Werte in Grundeinheiten.",
+    "Für die Arbeit: erst Watt durch 1000 in Kilowatt umrechnen.",
+    "Dann mit den Betriebsstunden malnehmen — nicht mit den Tagen.",
+    "Für Kosten am Ende mit dem Preis je Kilowattstunde malnehmen."
+  ],
+  fehler:[
+    ["Watt und Wattstunde verwechselt", "Watt sagt, wie stark ein Gerät ist. Wattstunde sagt, wie viel es verbraucht hat. Ein 2000-W-Wasserkocher verbraucht in drei Minuten weniger als eine 10-W-Lampe über die Nacht."],
+    ["Mit Watt statt Kilowatt in die kWh-Rechnung", "Dann ist das Ergebnis tausendmal zu groß. Erst durch 1000 teilen, dann mit den Stunden malnehmen."],
+    ["Stunden am Tag mit Gesamtstunden verwechselt", "3 Stunden am Tag über 30 Tage sind 90 Betriebsstunden, nicht 3 und nicht 30."],
+    ["Bei Drehstrom einfach P = U · I gerechnet", "Beim Drehstrommotor gilt P = √3 · U · I · cos φ. Die einfache Formel gilt nur für Gleichstrom und für ohmsche Wechselstromverbraucher."]
+  ],
   einfach:[
     "Ein Wasserkocher mit 2000 W ist stark, eine Lampe mit 10 W ist schwach. Diese Zahl ist die Leistung P, gemessen in Watt.",
     "Die Leistung entsteht aus Spannung und Strom zusammen: P = U · I.",
@@ -8571,6 +9329,23 @@ const ERKLAERUNGEN = {
 
 "Reihenschaltung": {
   worum:"Liegen Bauteile hintereinander, fließt überall derselbe Strom — und die Spannung teilt sich auf.",
+  wozu:[
+    "Reihenschaltungen findest du überall dort, wo etwas nur zusammen funktionieren darf: Not-Aus-Kette, Türkontakte an einer Schutztür, Thermokontakte im Motor. Fällt ein Glied aus, ist der Kreis offen — und genau das ist gewollt.",
+    "Beim Fehlersuchen ist die Reihenschaltung dein bester Freund: Die Teilspannungen verraten dir sofort, wo es hakt."
+  ],
+  rezept:[
+    "Prüf zuerst, ob wirklich nur ein Strompfad da ist. Dann liegt eine Reihenschaltung vor.",
+    "Rechne den Gesamtwiderstand aus: einfach alle addieren.",
+    "Rechne den Strom: I = U : R gesamt. Dieser Strom fließt durch jedes Bauteil.",
+    "Rechne jede Teilspannung einzeln: U1 = I · R1 und so weiter.",
+    "Mach die Probe: Alle Teilspannungen zusammen müssen die Quellenspannung ergeben."
+  ],
+  fehler:[
+    ["Die Spannung gleichmäßig aufgeteilt", "Nur bei gleich großen Widerständen fällt überall gleich viel ab. Sonst bekommt der größere Widerstand mehr."],
+    ["Den Strom aufgeteilt", "In der Reihe teilt sich der Strom nie. Es gibt nur einen Weg, also überall dieselbe Stromstärke."],
+    ["Für die Teilspannung mit dem Gesamtwiderstand gerechnet", "U1 = I · R1, nicht I · R gesamt. Für jedes Bauteil zählt nur sein eigener Widerstand."],
+    ["Probe weggelassen", "Die Maschenregel kostet zehn Sekunden und findet fast jeden Rechenfehler."]
+  ],
   einfach:[
     "Reihenschaltung heißt: Es gibt nur einen einzigen Weg für den Strom. Alle Bauteile liegen hintereinander wie Perlen auf einer Schnur.",
     "Weil es nur einen Weg gibt, fließt überall derselbe Strom. Was durch das erste Bauteil geht, geht auch durch das letzte.",
@@ -8619,6 +9394,23 @@ const ERKLAERUNGEN = {
 
 "Parallelschaltung": {
   worum:"Liegen Bauteile nebeneinander an denselben zwei Punkten, haben sie alle dieselbe Spannung — und der Strom teilt sich auf.",
+  wozu:[
+    "Jede Steckdose in der Wohnung hängt parallel. Genau deshalb bekommt jedes Gerät volle 230 V, und wenn eines ausgeht, laufen die anderen weiter.",
+    "Wenn du wissen willst, ob ein Stromkreis überlastet ist, addierst du die Zweigströme. Genau das macht die Rechnung hier."
+  ],
+  rezept:[
+    "Prüf, ob alle Bauteile an denselben zwei Punkten hängen. Dann ist es eine Parallelschaltung.",
+    "Notier dir: Die Spannung ist an jedem Zweig gleich.",
+    "Bei zwei Widerständen: R = (R1 · R2) : (R1 + R2). Bei mehr als zweien mit den Kehrwerten rechnen.",
+    "Für die Zweigströme jeden Zweig einzeln mit I = U : R rechnen.",
+    "Probe: Der Gesamtwiderstand muss kleiner sein als der kleinste einzelne. Sonst hast du dich verrechnet."
+  ],
+  fehler:[
+    ["Die Widerstände addiert", "Das gilt nur in der Reihe. Parallel wird der Gesamtwiderstand kleiner, nicht größer."],
+    ["Am Ende den Kehrwert vergessen", "Bei der Formel 1 : R = 1 : R1 + 1 : R2 hast du zuerst 1 : R heraus, nicht R. Der letzte Schritt ist noch einmal der Kehrwert."],
+    ["Die Spannung aufgeteilt", "An jedem Zweig liegt die volle Spannung. Aufgeteilt wird nur der Strom."],
+    ["Ergebnis nicht geprüft", "Kommt ein Gesamtwiderstand heraus, der größer ist als der kleinste Einzelwiderstand, ist die Rechnung falsch — ohne Ausnahme."]
+  ],
   einfach:[
     "Parallelschaltung heißt: Jedes Bauteil hängt direkt an denselben zwei Anschlüssen. Der Strom hat mehrere Wege zur Auswahl.",
     "Weil oben und unten derselbe Anschluss ist, liegt an jedem Zweig dieselbe Spannung an.",
@@ -8667,6 +9459,23 @@ const ERKLAERUNGEN = {
 
 "Spannungsteiler": {
   worum:"Zwei Widerstände in Reihe teilen eine Spannung auf — im selben Verhältnis, in dem sie selbst stehen.",
+  wozu:[
+    "Aus einer festen Spannung eine kleinere machen: genau das braucht man, wenn ein Sensor 5 V liefert, die Steuerung aber nur 3,3 V verträgt. Auch jedes Potentiometer ist nichts anderes als ein einstellbarer Spannungsteiler.",
+    "Beim Messen hilft dasselbe Wissen: Der Vorwiderstand am Spannungsmesser bildet mit dem Messwerk einen Spannungsteiler."
+  ],
+  rezept:[
+    "Zeichne die beiden Widerstände in Reihe und markiere, wo abgegriffen wird.",
+    "Rechne den Gesamtwiderstand aus: R1 + R2.",
+    "Bestimme den Anteil des Widerstands, an dem du misst: R2 geteilt durch den Gesamtwiderstand.",
+    "Multipliziere diesen Anteil mit der Gesamtspannung.",
+    "Probe: Beide Teilspannungen zusammen müssen die Quellenspannung ergeben."
+  ],
+  fehler:[
+    ["Den falschen Widerstand in den Zähler gesetzt", "Für die Spannung an R2 gehört R2 nach oben. Wer R1 nimmt, bekommt die andere Teilspannung."],
+    ["Die absoluten Werte für wichtig gehalten", "Nur das Verhältnis zählt. 100 Ω zu 200 Ω teilt genauso wie 1 kΩ zu 2 kΩ."],
+    ["Belastung übersehen", "Sobald am Abgriff ein Verbraucher hängt, stimmt die einfache Formel nicht mehr. Der Verbraucher liegt parallel zu R2 und zieht die Spannung herunter."],
+    ["Ergebnis größer als die Quellenspannung", "Das kann nie sein. Kommt so etwas heraus, ist der Bruch verkehrt herum."]
+  ],
   einfach:[
     "Manchmal hast du 12 V, brauchst aber nur 4 V. Dann nimmst du einen Spannungsteiler.",
     "Er besteht einfach aus zwei Widerständen in Reihe. Die Spannung wird zwischen ihnen abgegriffen.",
@@ -8714,6 +9523,23 @@ const ERKLAERUNGEN = {
 
 "Frequenz und Periodendauer": {
   worum:"Frequenz und Periodendauer sind zwei Blickwinkel auf dasselbe: wie schnell sich eine Schwingung wiederholt.",
+  wozu:[
+    "Am Oszilloskop misst du immer eine Zeit und rechnest die Frequenz daraus aus. Bei der Fehlersuche an Taktsignalen, an Frequenzumrichtern und an Reglern ist das Alltag.",
+    "Auch die Drehzahl eines Motors hängt direkt an der Frequenz. Wer einen Umrichter einstellt, rechnet dauernd zwischen Hertz und Umdrehungen um."
+  ],
+  rezept:[
+    "Kläre, was gegeben ist: eine Zeit (Sekunden, Millisekunden) oder eine Frequenz (Hertz).",
+    "Rechne die Zeit in Sekunden um — Millisekunden also durch 1000 teilen.",
+    "Nimm den Kehrwert: T = 1 : f oder f = 1 : T.",
+    "Rechne das Ergebnis in eine handliche Einheit um, meist Millisekunden oder Hertz.",
+    "Probe mit dem Netz: 50 Hz gehören zu 20 ms. Passt dein Ergebnis in diese Größenordnung?"
+  ],
+  fehler:[
+    ["Millisekunden nicht umgerechnet", "1 : 20 ergibt nicht die Frequenz zu 20 ms. Erst 20 ms = 0,02 s, dann 1 : 0,02 = 50 Hz."],
+    ["Frequenz und Periodendauer verwechselt", "Hohe Frequenz heißt kurze Periode. Wer beide gleichsetzt, dreht den Zusammenhang um."],
+    ["Kehrwert vergessen", "f = 1 : T, nicht f = T. Das klingt banal, passiert unter Zeitdruck aber ständig."],
+    ["Auf dem Oszilloskop nur eine halbe Periode gemessen", "Eine Periode ist erst voll, wenn die Kurve wieder genauso verläuft wie am Anfang — hoch, runter und zurück."]
+  ],
   einfach:[
     "Wechselspannung geht immer wieder auf und ab. Ein kompletter Durchgang — hoch, runter, wieder am Anfang — heißt eine Periode.",
     "Die Periodendauer T sagt, wie lange ein solcher Durchgang dauert. Gemessen in Sekunden oder Millisekunden.",
@@ -8753,6 +9579,24 @@ const ERKLAERUNGEN = {
 
 "Stern und Dreieck": {
   worum:"Im Drehstromnetz kann man drei Stränge auf zwei Arten anschließen — und davon hängt ab, wie viel Spannung und Strom sie bekommen.",
+  wozu:[
+    "Fast jeder Drehstrommotor in der Werkstatt lässt sich in Stern oder Dreieck klemmen. Welche Schaltung richtig ist, steht auf dem Typenschild — und wer sie verwechselt, zerstört den Motor oder bekommt nur ein Drittel der Leistung.",
+    "Die Stern-Dreieck-Anlaufschaltung beruht genau darauf: erst sanft im Stern anlaufen, dann auf Dreieck umschalten."
+  ],
+  rezept:[
+    "Lies auf dem Typenschild, für welche Spannungen der Motor gebaut ist — zum Beispiel 400/690 V.",
+    "Vergleich mit der Netzspannung. Die kleinere Zahl gehört zur Dreieckschaltung.",
+    "Kläre, ob nach Strang- oder Leitergröße gefragt ist.",
+    "Im Stern: U Leiter = √3 · U Strang, der Strom ist gleich.",
+    "Im Dreieck: U ist gleich, I Leiter = √3 · I Strang.",
+    "Rechne mit √3 ≈ 1,73 und runde erst am Schluss."
+  ],
+  fehler:[
+    ["Strang und Leiter verwechselt", "Die Strangspannung liegt an der Wicklung, die Leiterspannung zwischen zwei Außenleitern. Bei uns 230 V und 400 V."],
+    ["Mit √3 multipliziert statt geteilt", "Im Stern ist die Leiterspannung die größere. Wer teilt, bekommt 133 V statt 400 V."],
+    ["Beim Strom dieselbe Regel wie bei der Spannung angewendet", "Es ist genau umgekehrt: Im Stern ist der Strom gleich, im Dreieck die Spannung."],
+    ["Falsch geklemmt", "Ein 230/400-V-Motor gehört am 400-V-Netz in den Stern. Im Dreieck bekäme jede Wicklung 400 statt 230 V — er brennt durch."]
+  ],
   einfach:[
     "Drehstrom hat drei Außenleiter: L1, L2 und L3. Zwischen zwei Außenleitern liegen 400 V, zwischen einem Außenleiter und N liegen 230 V.",
     "Bei der Sternschaltung werden die drei Strangenden zu einem gemeinsamen Punkt verbunden — dem Sternpunkt. Jeder Strang liegt dann zwischen einem Außenleiter und diesem Punkt.",
@@ -8802,6 +9646,23 @@ const ERKLAERUNGEN = {
 
 "Transformator": {
   worum:"Ein Transformator macht aus einer Wechselspannung eine größere oder kleinere — im Verhältnis der Windungszahlen.",
+  wozu:[
+    "Jedes Netzteil, jeder Klingeltrafo und jede Schutztrennung im Betrieb arbeitet nach diesem Prinzip. Wenn du eine 24-V-Steuerspannung erzeugst, steht ein Trafo dahinter.",
+    "Wichtig ist auch die galvanische Trennung: Primär- und Sekundärseite berühren sich nicht. Genau darauf beruht der Trenntrafo als Schutzmaßnahme."
+  ],
+  rezept:[
+    "Schreib auf, was gegeben ist: Spannungen und Windungszahlen, jeweils mit 1 für primär und 2 für sekundär.",
+    "Bilde das Übersetzungsverhältnis: die größere Windungszahl durch die kleinere.",
+    "Stell U1 : U2 = N1 : N2 nach der gesuchten Größe um — über Kreuz malnehmen.",
+    "Rechne aus und prüf die Richtung: Weniger Windungen heißt weniger Spannung.",
+    "Für den Strom denk daran, dass er sich umgekehrt verhält: weniger Spannung, mehr Strom."
+  ],
+  fehler:[
+    ["Verhältnis umgedreht", "Aus einem Abwärtstrafo wird sonst ein Aufwärtstrafo. Prüf immer, ob das Ergebnis in die richtige Richtung geht."],
+    ["Strom wie die Spannung behandelt", "Spannung und Windungszahl gehen gleich mit, der Strom genau umgekehrt. Sonst wäre die Leistung nicht mehr gleich."],
+    ["Trafo an Gleichspannung gedacht", "Ohne Wechselspannung ändert sich das Magnetfeld nicht, und es wird nichts übertragen. Die Primärwicklung wirkt dann fast wie ein Kurzschluss."],
+    ["Verluste ganz vergessen", "Für die Schulrechnung gilt der ideale Trafo. In Wirklichkeit gehen ein paar Prozent als Wärme verloren."]
+  ],
   einfach:[
     "Ein Trafo besteht aus zwei Spulen auf einem gemeinsamen Eisenkern. Die eine heißt Primärwicklung, die andere Sekundärwicklung.",
     "Der Wechselstrom in der ersten Spule baut ein ständig wechselndes Magnetfeld auf. Der Eisenkern führt dieses Feld zur zweiten Spule.",
@@ -8850,6 +9711,23 @@ const ERKLAERUNGEN = {
 
 "Kondensator laden": {
   worum:"Ein Kondensator wird nicht sofort voll. Wie lange es dauert, hängt nur vom Widerstand und von der Kapazität ab.",
+  wozu:[
+    "Zeitrelais, Entstörglieder, Anlaufkondensatoren und Netzteile arbeiten alle mit Ladevorgängen. Wenn du wissen willst, wie lange eine Verzögerung dauert, rechnest du τ aus.",
+    "Sicherheitsrelevant ist die Entladung: Ein großer Kondensator im Umrichter steht auch nach dem Abschalten noch unter Spannung. Nach 5 τ ist er praktisch leer — vorher nicht anfassen."
+  ],
+  rezept:[
+    "Schreib R und C hin. In Kilo-Ohm und Mikrofarad kommt die Zeit direkt in Millisekunden heraus.",
+    "τ = R · C ausrechnen.",
+    "Kläre, was gefragt ist: eine einzelne Zeitkonstante oder der volle Ladevorgang.",
+    "Für „praktisch voll“ mal 5 nehmen.",
+    "Für Zwischenwerte die festen Prozentzahlen benutzen: 63 % nach 1 τ, 86 % nach 2 τ, 95 % nach 3 τ."
+  ],
+  fehler:[
+    ["Die Spannung in die Formel gesteckt", "τ = R · C. Die Spannung kommt gar nicht vor — sie ändert die Ladezeit nicht."],
+    ["Einheiten gemischt", "Ohm mal Farad ergibt Sekunden, Kilo-Ohm mal Mikrofarad ergibt Millisekunden. Alles andere gibt Unsinn."],
+    ["Nach 1 τ für voll gehalten", "Nach einer Zeitkonstanten sind es erst 63 %. Voll ist er erst nach etwa 5 τ."],
+    ["Restspannung unterschätzt", "Ein Kondensator im Zwischenkreis kann nach dem Abschalten noch minutenlang gefährliche Spannung führen. Immer entladen und nachmessen."]
+  ],
   einfach:[
     "Ein Kondensator speichert Ladung. Man kann ihn sich wie einen kleinen Eimer vorstellen, der über einen dünnen Schlauch gefüllt wird.",
     "Der Widerstand davor ist der Schlauch: Je enger er ist, desto langsamer läuft der Eimer voll.",
@@ -8896,6 +9774,23 @@ const ERKLAERUNGEN = {
 
 "Blindleistung und cos φ": {
   worum:"Im Wechselstromnetz leistet nicht jeder Strom Arbeit. Der cos φ sagt, welcher Anteil wirklich ankommt.",
+  wozu:[
+    "Motoren ziehen Blindstrom. Die Leitung und die Sicherung müssen ihn aushalten, obwohl er keine Arbeit leistet. Deshalb kompensieren Betriebe mit Kondensatoren — und sparen echtes Geld.",
+    "Auf dem Typenschild jedes Motors steht ein cos φ. Ohne ihn kannst du den Betriebsstrom gar nicht richtig ausrechnen."
+  ],
+  rezept:[
+    "Rechne zuerst die Scheinleistung: S = U · I, Einheit VA.",
+    "Multipliziere mit cos φ, um die Wirkleistung zu bekommen: P = S · cos φ, Einheit W.",
+    "Ist der cos φ gesucht, teile stattdessen: cos φ = P : S.",
+    "Für die Blindleistung: Q = S · sin φ, oder über das Leistungsdreieck mit Pythagoras.",
+    "Probe: Der cos φ muss zwischen 0 und 1 liegen."
+  ],
+  fehler:[
+    ["Watt und Voltampere gleichgesetzt", "S in VA ist immer größer als P in W. Nur bei cos φ = 1 sind beide gleich."],
+    ["cos φ über 1 herausbekommen", "Dann sind Wirk- und Scheinleistung vertauscht. Die Wirkleistung ist immer die kleinere."],
+    ["Beim Drehstrom das √3 vergessen", "Bei Drehstrom gilt P = √3 · U · I · cos φ. Die einfache Formel gilt nur einphasig."],
+    ["Blindleistung für verloren gehalten", "Sie wird nicht verbraucht, sie pendelt hin und her. Sie belastet aber trotzdem Leitung und Sicherung."]
+  ],
   einfach:[
     "Bei einem reinen Widerstand — einer Heizung zum Beispiel — wird alles, was hineingeht, in Wärme umgesetzt. Da ist Leistung einfach U · I.",
     "Bei Motoren, Spulen und Kondensatoren ist das anders. Ein Teil des Stroms baut nur Magnetfelder auf und wieder ab. Diese Energie pendelt hin und her, statt Arbeit zu leisten.",
@@ -8939,6 +9834,23 @@ const ERKLAERUNGEN = {
 
 "Einheiten und Vorsätze": {
   worum:"Vorsätze wie Kilo, Milli und Mikro sind nur Abkürzungen für Nullen. Wer sie sicher umrechnet, verrechnet sich nie wieder um den Faktor 1000.",
+  wozu:[
+    "Auf jedem Bauteil steht ein Vorsatz: 4k7 auf dem Widerstand, 100 µF auf dem Elko, 22 nF auf dem Kondensator. Ohne sichere Umrechnung kannst du nicht einmal prüfen, ob das richtige Teil verbaut ist.",
+    "In der Prüfung kosten Vorsatzfehler mehr Punkte als alles andere: Der Rechenweg stimmt, das Ergebnis liegt um den Faktor 1000 daneben."
+  ],
+  rezept:[
+    "Schreib den Wert mit seinem Vorsatz hin und such den Faktor in der Tabelle.",
+    "Frag dich: Rechne ich in die kleinere oder in die größere Einheit um?",
+    "Kleinere Einheit heißt größere Zahl — also malnehmen. Größere Einheit heißt kleinere Zahl — also teilen.",
+    "Beim Faktor 1000 wandert das Komma um drei Stellen. Zähl sie einzeln ab.",
+    "Prüf zum Schluss die Größenordnung: 4,7 kΩ müssen 4700 Ω ergeben, nicht 0,0047 Ω."
+  ],
+  fehler:[
+    ["Großes M und kleines m verwechselt", "M ist Mega (eine Million), m ist Milli (ein Tausendstel). Zwischen beiden liegt der Faktor eine Milliarde."],
+    ["In die falsche Richtung gerechnet", "Wer von A nach mA umrechnet, muss malnehmen. Die Zahl wird größer, weil Milliampere die kleinere Einheit ist."],
+    ["Nur durch 100 geteilt", "Kilo und Milli stehen für 1000, nicht für 100. Zenti wäre 100 — das kommt in der Elektrotechnik aber kaum vor."],
+    ["Erst am Ende umgerechnet", "Rechne immer zuerst alles auf Grundeinheiten um. Wer mit gemischten Vorsätzen rechnet, verzählt sich fast sicher."]
+  ],
   einfach:[
     "In der Elektrotechnik kommen sehr große und sehr kleine Zahlen vor: 4 700 000 Ω oder 0,000 022 F. So etwas schreibt niemand gern auf.",
     "Deshalb setzt man einen Vorsatz vor die Einheit. Aus 4 700 000 Ω wird 4,7 MΩ, aus 0,000 022 F wird 22 µF.",
@@ -9003,6 +9915,24 @@ const ERKLAERUNGEN = {
 
 "Leiterquerschnitt": {
   worum:"Jede Leitung hat selbst einen Widerstand. Ist sie zu dünn oder zu lang, kommt hinten zu wenig Spannung an.",
+  wozu:[
+    "Jede Leitung, die du verlegst, muss zwei Bedingungen erfüllen: Sie darf nicht zu warm werden, und am Ende muss noch genug Spannung ankommen. Der zweite Punkt ist genau diese Rechnung.",
+    "Bei langen Wegen — Außenbeleuchtung, Maschine hinten in der Halle, Pumpe im Garten — entscheidet der Spannungsfall über den Querschnitt, nicht der Strom."
+  ],
+  rezept:[
+    "Schreib auf: Länge in Meter, Strom in Ampere, zulässiger Spannungsfall in Volt.",
+    "Denk an den Faktor 2 — der Strom läuft hin und zurück.",
+    "Setz κ ein: 56 für Kupfer, 36 für Aluminium.",
+    "Rechne A = 2 · l · I : (κ · ΔU).",
+    "Runde auf den nächsten Normquerschnitt auf — nie ab.",
+    "Prüf zum Schluss, ob dieser Querschnitt auch den Strom aushält. Beide Bedingungen müssen erfüllt sein."
+  ],
+  fehler:[
+    ["Faktor 2 vergessen", "Hin- und Rückleiter sind beide gleich lang. Ohne die 2 kommt nur die Hälfte des Spannungsfalls heraus."],
+    ["Abgerundet statt aufgerundet", "Kommen 7,14 mm² heraus, brauchst du 10 mm². Mit 6 mm² wäre der Spannungsfall zu groß."],
+    ["Nur nach dem Spannungsfall ausgelegt", "Der Querschnitt muss auch die Strombelastbarkeit erfüllen. Maßgebend ist immer der größere der beiden Werte."],
+    ["Länge doppelt gezählt", "Die Leitungslänge ist die einfache Strecke. Der Hin- und Rückweg steckt schon in der 2."]
+  ],
   einfach:[
     "Ein Kabel ist kein perfekter Leiter. Auch Kupfer bremst den Strom ein bisschen.",
     "Wie stark, hängt von drei Dingen ab: von der Länge, vom Querschnitt und vom Material.",
@@ -9065,6 +9995,24 @@ const ERKLAERUNGEN = {
 
 "Schutzmaßnahmen": {
   worum:"Damit im Fehlerfall niemand zu Schaden kommt, muss die Anlage schnell genug abschalten und darf keine gefährliche Spannung stehen lassen.",
+  wozu:[
+    "Das ist der Teil deiner Ausbildung, bei dem es wirklich um Leben geht. Jede Anlage, die du übergibst, musst du prüfen — Schleifenimpedanz messen, RCD auslösen lassen, Werte protokollieren.",
+    "In der Prüfung ist das ein Schwerpunkt: Warum schaltet die Sicherung schnell genug ab, und was passiert, wenn der Erder zu schlecht ist?"
+  ],
+  rezept:[
+    "Kläre, um welche Frage es geht: Schaltet schnell genug ab, oder bleibt eine gefährliche Spannung stehen?",
+    "Für die Abschaltbedingung: I = U₀ : Z s ausrechnen, mit U₀ = 230 V.",
+    "Vergleich diesen Strom mit dem, den die Sicherung zum schnellen Auslösen braucht.",
+    "Für die Berührungsspannung: U B = R A · I Δn.",
+    "Vergleich das Ergebnis mit 50 V. Darüber ist es nicht zulässig.",
+    "Schreib immer dazu, ob die Bedingung erfüllt ist — die Zahl allein ist keine Antwort."
+  ],
+  fehler:[
+    ["Milliampere nicht in Ampere umgerechnet", "30 mA sind 0,03 A. Mit 30 statt 0,03 liegt das Ergebnis um den Faktor 1000 daneben."],
+    ["RCD und Sicherung verwechselt", "Der RCD schützt Personen vor Fehlerströmen, die Sicherung schützt die Leitung vor Überlast. Das eine ersetzt das andere nicht."],
+    ["Nur gerechnet, nicht bewertet", "„1667 Ω“ ist keine vollständige Antwort. Dazu gehört: Der gemessene Erder liegt darunter, also ist die Bedingung erfüllt."],
+    ["Grenzwert 50 V mit der Netzspannung verwechselt", "230 V ist die Betriebsspannung. Als Berührungsspannung sind bei Wechselstrom nur 50 V zulässig."]
+  ],
   einfach:[
     "Gefährlich wird es, wenn ein Außenleiter das Metallgehäuse eines Geräts berührt. Dann steht das Gehäuse unter Spannung.",
     "Zwei Dinge müssen dann passieren: Die Spannung am Gehäuse darf nicht gefährlich hoch werden, und die Anlage muss schnell abschalten.",
@@ -9124,6 +10072,24 @@ const ERKLAERUNGEN = {
 
 "Gemischte Schaltungen": {
   worum:"Sobald Reihe und Parallelschaltung gemischt vorkommen, rechnest du von innen nach außen — Gruppe für Gruppe.",
+  wozu:[
+    "Kaum eine echte Schaltung besteht nur aus einer Reihe oder nur aus einer Parallelschaltung. Sobald du an einem Steuerstromkreis oder einer Messbrücke rechnest, ist sie gemischt.",
+    "Der Trick, von innen nach außen zusammenzufassen, funktioniert bei jeder Schaltung — egal wie unübersichtlich sie aussieht."
+  ],
+  rezept:[
+    "Zeichne die Schaltung sauber ab und such die innerste Gruppe.",
+    "Fasse diese Gruppe zu einem Ersatzwiderstand zusammen.",
+    "Zeichne die Schaltung mit dem Ersatzwiderstand neu — das ist der Schritt, den die meisten überspringen.",
+    "Wiederhol das, bis nur noch ein Widerstand übrig ist.",
+    "Rechne jetzt rückwärts: Gesamtstrom, dann Teilspannungen, dann Zweigströme.",
+    "Probe: Die Teilspannungen müssen zusammen die Quellenspannung ergeben."
+  ],
+  fehler:[
+    ["Alles auf einmal gerechnet", "Wer versucht, die ganze Schaltung in einer Formel zu erschlagen, verrechnet sich fast immer. Immer Gruppe für Gruppe."],
+    ["Falsch erkannt, was parallel liegt", "Zwei Widerstände sind nur dann parallel, wenn beide Enden am selben Punkt hängen. Ein Bauteil dazwischen macht daraus eine Reihe."],
+    ["Nicht neu gezeichnet", "Nach jedem Zusammenfassen sieht die Schaltung anders aus. Wer im Kopf weiterarbeitet, verliert den Überblick."],
+    ["Am Ende nicht geprüft", "Der Gesamtwiderstand muss größer sein als der Reihenanteil allein und kleiner als die Summe aller Widerstände."]
+  ],
   einfach:[
     "In der Praxis liegen Widerstände selten nur in Reihe oder nur parallel. Meistens ist beides gemischt.",
     "Der Trick ist immer derselbe: Such dir die innerste Gruppe und fasse sie zu einem einzigen Ersatzwiderstand zusammen.",
@@ -9185,6 +10151,24 @@ const ERKLAERUNGEN = {
 
 "Wirkungsgrad": {
   worum:"Kein Gerät gibt so viel ab, wie es aufnimmt. Der Wirkungsgrad sagt, welcher Anteil wirklich ankommt.",
+  wozu:[
+    "Auf jedem Motortypenschild steht eine Effizienzklasse. Wenn du beraten sollst, ob sich ein Austausch lohnt, rechnest du mit dem Wirkungsgrad — und mit dem Strompreis.",
+    "Die Verlustleistung ist auch die Wärme, die weg muss. Danach richtet sich die Größe des Kühlkörpers und die Belüftung des Schaltschranks."
+  ],
+  rezept:[
+    "Schreib beide Leistungen hin und markiere klar, welche aufgenommen und welche abgegeben ist.",
+    "Die abgegebene ist immer die kleinere.",
+    "η = P ab : P zu. Für Prozent noch mal 100.",
+    "Für die aufgenommene Leistung umstellen: P zu = P ab : η, mit η als Kommazahl.",
+    "Verlustleistung: P v = P zu − P ab.",
+    "Probe: Der Wirkungsgrad muss unter 100 % liegen."
+  ],
+  fehler:[
+    ["Über 100 % herausbekommen", "Dann sind aufgenommene und abgegebene Leistung vertauscht. Ein Gerät kann nicht mehr abgeben, als es aufnimmt."],
+    ["Mit Prozent statt mit der Kommazahl gerechnet", "80 % sind 0,8. Wer mit 80 rechnet, liegt um den Faktor 100 daneben."],
+    ["Verlustleistung mit Wirkungsgrad verwechselt", "Der Wirkungsgrad ist ein Verhältnis ohne Einheit, die Verlustleistung eine Leistung in Watt."],
+    ["Bei mehreren Stufen addiert", "Hintereinandergeschaltete Wirkungsgrade werden malgenommen, nicht addiert. Zweimal 90 % ergeben 81 %, nicht 180 %."]
+  ],
   einfach:[
     "Ein Motor zieht Leistung aus dem Netz. Ein Teil davon kommt an der Welle als Drehmoment an — der Rest wird zu Wärme.",
     "Die Leistung aus dem Netz heißt aufgenommene Leistung P zu. Die an der Welle heißt abgegebene Leistung P ab.",
@@ -9250,6 +10234,23 @@ const ERKLAERUNGEN = {
 
 "Motor und Drehzahl": {
   worum:"Wie schnell ein Drehstrommotor läuft, bestimmt nicht seine Leistung, sondern die Zahl seiner Polpaare.",
+  wozu:[
+    "Auf dem Typenschild steht 1440 1/min. Daraus liest du sofort ab: vier Pole, also zwei Polpaare, und rund 4 % Schlupf. Das brauchst du beim Austausch eines Motors und beim Einstellen eines Umrichters.",
+    "Das Drehmoment entscheidet, ob der Motor die Maschine überhaupt anfahren kann. Bei gleicher Leistung liefert ein langsam drehender Motor mehr Drehmoment."
+  ],
+  rezept:[
+    "Lies die Polpaarzahl ab oder rechne sie aus der Drehzahl zurück.",
+    "Synchrondrehzahl: n s = 60 · f : p. Bei 50 Hz sind das 3000, 1500, 1000 oder 750 1/min.",
+    "Für den Schlupf: Differenz zur Läuferdrehzahl bilden und durch die Synchrondrehzahl teilen.",
+    "Mal 100 für Prozent.",
+    "Für das Drehmoment: M = 9550 · P : n, mit P in Kilowatt und n in 1/min."
+  ],
+  fehler:[
+    ["Polzahl und Polpaarzahl verwechselt", "Vier Pole sind zwei Polpaare. In die Formel gehört die Polpaarzahl."],
+    ["Schlupf auf die Läuferdrehzahl bezogen", "Bezogen wird immer auf die Synchrondrehzahl, nicht auf die gemessene."],
+    ["Beim Drehmoment mit Watt statt Kilowatt gerechnet", "In M = 9550 · P : n gehört P in Kilowatt. Sonst ist das Ergebnis tausendmal zu groß."],
+    ["Erwartet, dass der Läufer genau mitläuft", "Ohne Schlupf gäbe es keine Induktion und kein Drehmoment. Der Unterschied ist kein Fehler, sondern nötig."]
+  ],
   einfach:[
     "Im Ständer eines Drehstrommotors erzeugen die drei Wicklungen ein Magnetfeld, das sich dreht. Man nennt es Drehfeld.",
     "Wie schnell dieses Feld umläuft, hängt nur von der Netzfrequenz und von der Zahl der Polpaare ab.",
@@ -9311,6 +10312,23 @@ const ERKLAERUNGEN = {
 
 "Messen im Betrieb": {
   worum:"Ein Messwert ist nie ganz genau. Wie viel er abweichen darf und wie man Messbereiche erweitert, steht hier.",
+  wozu:[
+    "Falsch angeschlossen ist ein Strommesser in einer Sekunde hin — und bei 230 V wird das laut. Der Merksatz „Spannung parallel, Strom in Reihe“ ist der wichtigste Satz beim Messen.",
+    "Die Genauigkeitsklasse brauchst du, wenn du beurteilen sollst, ob eine Abweichung noch im Rahmen liegt oder auf einen echten Fehler hinweist."
+  ],
+  rezept:[
+    "Kläre zuerst, was du messen willst — Spannung, Strom oder Widerstand.",
+    "Spannung parallel zum Bauteil, Strom in Reihe im Kreis, Widerstand nur spannungsfrei.",
+    "Wähl den Messbereich so, dass der Wert im oberen Drittel der Skala liegt.",
+    "Für die höchstmögliche Abweichung: Klasse mal Bereichsendwert geteilt durch 100.",
+    "Beim Erweitern des Bereichs: Vorwiderstand in Reihe beim Voltmeter, Nebenwiderstand parallel beim Amperemeter."
+  ],
+  fehler:[
+    ["Strommesser parallel angeschlossen", "Er hat fast keinen Innenwiderstand — parallel an eine Spannung gelegt ist das ein Kurzschluss."],
+    ["Klasse auf den Messwert bezogen", "Die Klasse gilt für den Bereichsendwert. Bei 300 V Bereich sind es überall dieselben 4,5 V, auch wenn du nur 20 V misst."],
+    ["Im viel zu großen Bereich gemessen", "20 V im 600-V-Bereich abzulesen ist unbrauchbar genau. Erst grob messen, dann kleiner schalten."],
+    ["Widerstand unter Spannung gemessen", "Das zerstört das Messgerät und liefert Unsinn. Erst freischalten und Spannungsfreiheit feststellen."]
+  ],
   einfach:[
     "Der Spannungsmesser wird immer parallel angeschlossen — er soll die Spannung über einem Bauteil sehen.",
     "Der Strommesser wird immer in Reihe geschaltet — der Strom muss durch ihn hindurchfließen.",
@@ -9375,6 +10393,23 @@ const ERKLAERUNGEN = {
 
 "Energiekosten": {
   worum:"Aus Leistung, Laufzeit und Strompreis wird ein Betrag in Euro. Genau das steht am Jahresende auf der Rechnung.",
+  wozu:[
+    "Wenn ein Kunde fragt, ob sich eine neue Pumpe lohnt, rechnest du genau so: Leistungsdifferenz, Betriebsstunden, Strompreis. Das ist Beratung, die man dir abnimmt.",
+    "Auch für dich privat lohnt es sich zu wissen, was ein Dauerverbraucher im Jahr kostet — die Zahlen überraschen fast jeden."
+  ],
+  rezept:[
+    "Leistung in Kilowatt umrechnen: Watt durch 1000.",
+    "Betriebsstunden ausrechnen — Stunden am Tag mal Tage, oder 8760 für ein ganzes Jahr.",
+    "Kilowatt mal Stunden ergibt Kilowattstunden.",
+    "Kilowattstunden mal Preis je kWh ergibt die Kosten.",
+    "Bei einer Ersparnis nur mit der Differenz der Leistungen rechnen, nicht mit dem ganzen Verbrauch."
+  ],
+  fehler:[
+    ["Mit Watt statt Kilowatt gerechnet", "Das Ergebnis ist dann tausendmal zu groß. Erst durch 1000 teilen."],
+    ["Tage statt Betriebsstunden genommen", "Ein Gerät, das 30 Tage lang je 3 Stunden läuft, läuft 90 Stunden, nicht 30."],
+    ["Bei der Ersparnis den ganzen Verbrauch gerechnet", "Gespart wird nur die Differenz. Das neue Gerät verbraucht ja weiterhin Strom."],
+    ["Grundpreis vergessen", "Auf der Rechnung steht neben dem Arbeitspreis auch ein fester Grundpreis. Für den Vergleich zweier Geräte spielt er keine Rolle, für die Gesamtrechnung schon."]
+  ],
   einfach:[
     "Die Leistung eines Geräts steht in Watt auf dem Typenschild. Sie sagt, wie viel es in jedem Moment zieht.",
     "Was du bezahlst, ist aber die Energie — also Leistung mal Zeit. Abgerechnet wird in Kilowattstunden.",
@@ -9439,6 +10474,23 @@ const ERKLAERUNGEN = {
 
 "Logikverknüpfungen": {
   worum:"Steuerungen kennen nur 0 und 1. Wie aus mehreren Eingängen ein Ausgang wird, legen Verknüpfungen fest.",
+  wozu:[
+    "Jede Steuerung arbeitet so. Wenn du eine SPS programmierst oder einen Schaltplan liest, übersetzt du Sätze wie „Der Motor läuft nur, wenn beide Zustimmtaster gedrückt sind“ direkt in Verknüpfungen.",
+    "Auch Sicherheitsschaltungen beruhen darauf: Not-Aus, Schutztür und Zustimmung sind eine UND-Kette."
+  ],
+  rezept:[
+    "Lies die Beschreibung und unterstreich die Signalwörter: „beide“, „mindestens einer“, „keiner“, „verschieden“.",
+    "Ordne das passende Gatter zu.",
+    "Schreib die Wahrheitstabelle vollständig hin — bei zwei Eingängen vier Zeilen, bei drei acht.",
+    "Geh jede Zeile einzeln durch und trag den Ausgang ein.",
+    "Prüf zum Schluss, ob die Tabelle die Beschreibung wirklich abbildet."
+  ],
+  fehler:[
+    ["Wahrheitstabelle nicht vollständig", "Wer eine Zeile vergisst, übersieht genau den Fall, der in der Anlage später Probleme macht."],
+    ["UND und ODER verwechselt", "„Beide“ heißt UND, „mindestens einer“ heißt ODER. Im Alltag benutzen wir „oder“ oft im Sinne von „entweder … oder“ — das wäre XOR."],
+    ["Den Kreis am Ausgang übersehen", "Ein kleiner Kreis im Schaltzeichen bedeutet Negation. Aus UND wird NAND, und das Verhalten kehrt sich um."],
+    ["Bei drei Eingängen mit vier Zeilen gerechnet", "Es sind 2 hoch n Zeilen. Drei Eingänge ergeben acht."]
+  ],
   einfach:[
     "In der Digitaltechnik gibt es nur zwei Zustände: 0 und 1. Nichts dazwischen.",
     "0 heißt „liegt nicht an“, 1 heißt „liegt an“. Ein Taster ist gedrückt oder nicht.",
@@ -9507,6 +10559,24 @@ const ERKLAERUNGEN = {
 
 "Fehler suchen": {
   worum:"Mit Messgerät und Kopf statt mit Ausprobieren: Jeder Messwert sagt dir, in welche Richtung du weitersuchen musst.",
+  wozu:[
+    "Das ist der Teil des Berufs, für den du wirklich gebraucht wirst. Neu verdrahten kann fast jeder — den Fehler in einer laufenden Anlage finden nicht.",
+    "Systematisches Vorgehen spart die meiste Zeit. Wer Bauteile auf Verdacht tauscht, sucht am Ende länger und hat obendrein Material verbraucht."
+  ],
+  rezept:[
+    "Erst hinsehen und zuhören: Riecht es verbrannt, ist etwas locker, was hat sich zuletzt geändert?",
+    "Fehlerbild klären: Geht gar nichts, oder fliegt die Sicherung?",
+    "Bei „geht nichts“ auf Unterbrechung prüfen — Widerstand zu groß oder unendlich.",
+    "Bei „Sicherung fliegt“ auf Kurzschluss prüfen — Widerstand zu klein.",
+    "Mit dem Spannungsmesser der Reihe nach durchmessen. Wo die volle Betriebsspannung anliegt, sitzt die Unterbrechung.",
+    "Vor jeder Widerstandsmessung freischalten. Die fünf Sicherheitsregeln gelten immer."
+  ],
+  fehler:[
+    ["Auf Verdacht getauscht", "Erst messen, dann tauschen. Sonst hast du am Ende drei neue Bauteile verbaut und den Fehler immer noch."],
+    ["Wild gesprungen", "Geh systematisch vor — von der Quelle zum Verbraucher oder halbier den Weg. Wer wild springt, misst dieselbe Stelle dreimal."],
+    ["Unter Spannung Widerstand gemessen", "Das zerstört das Messgerät und liefert falsche Werte. Erst freischalten."],
+    ["Übergangswiderstand übersehen", "Eine lockere Klemme zeigt sich nicht im Durchgang, sondern erst unter Last — an einer fehlenden Teilspannung und an Wärme."]
+  ],
   einfach:[
     "Der häufigste Anfängerfehler ist, sofort Bauteile zu tauschen. Erst messen, dann tauschen.",
     "Es gibt im Grunde nur zwei Arten von Fehlern: Es fließt zu wenig Strom oder zu viel.",
@@ -9577,6 +10647,24 @@ const ERKLAERUNGEN = {
 
 "Zuordnungen": {
   worum:"Bei manchen Zuordnungen wächst alles im Gleichschritt, bei anderen wird das eine kleiner, wenn das andere größer wird.",
+  wozu:[
+    "Preis pro Stück, Verbrauch pro Kilometer, Arbeitszeit pro Person: Zuordnungen sind die Rechnung hinter fast jeder Alltagsfrage.",
+    "Wer erkennt, ob eine Zuordnung proportional oder antiproportional ist, rechnet nicht am Problem vorbei — das ist wichtiger als das Rechnen selbst."
+  ],
+  rezept:[
+    "Schreib die gegebenen Paare untereinander.",
+    "Denk an einen Extremfall: Wenn ich das eine verzehnfache — wird das andere größer oder kleiner?",
+    "Größer heißt proportional, kleiner heißt antiproportional.",
+    "Proportional: durch die alte Zahl teilen, mit der neuen malnehmen.",
+    "Antiproportional: mit der alten Zahl malnehmen, durch die neue teilen.",
+    "Prüf das Ergebnis auf Plausibilität."
+  ],
+  fehler:[
+    ["Immer proportional gerechnet", "Mehr Arbeiter brauchen weniger Zeit. Wer hier proportional rechnet, bekommt das Gegenteil heraus."],
+    ["Quotient und Produkt verwechselt", "Proportional bleibt der Quotient gleich, antiproportional das Produkt. Eine Probe mit den gegebenen Paaren klärt es sofort."],
+    ["Zwischenschritt gerundet", "Der Einzelwert ist oft eine krumme Zahl. Rechne mit dem genauen Wert weiter."],
+    ["Unpassende Größen zusammengerechnet", "Stück gehören zu Euro, Arbeiter zu Tagen. Wer die Paare durcheinanderbringt, rechnet Unsinn."]
+  ],
   einfach:[
     "Eine Zuordnung ordnet jedem Wert genau einen anderen zu: jeder Stückzahl einen Preis, jeder Arbeiterzahl eine Dauer.",
     "Es gibt zwei Sorten, die in der Schule ständig vorkommen.",
@@ -9635,6 +10723,23 @@ const ERKLAERUNGEN = {
 
 "Dreiecke": {
   worum:"In jedem Dreieck ergeben die drei Winkel zusammen 180°. Aus den Seiten liest du ab, welche Art von Dreieck vorliegt.",
+  wozu:[
+    "Dreiecke sind die stabilste Form überhaupt — deshalb bestehen Dachstühle, Kräne und Fachwerke daraus. Wer sie berechnen kann, versteht Konstruktionen.",
+    "Die Winkelsumme brauchst du bei jeder Konstruktionsaufgabe und später bei Pythagoras, Strahlensätzen und Trigonometrie."
+  ],
+  rezept:[
+    "Zeichne das Dreieck, auch grob, und trag alle bekannten Werte ein.",
+    "Bei Winkeln: Zwei bekannt heißt, der dritte ist 180° minus die beiden.",
+    "Prüf, ob eine besondere Art vorliegt — gleichschenklig oder gleichseitig spart Rechenarbeit.",
+    "Bei gleichschenkligen Dreiecken sind die Basiswinkel gleich groß.",
+    "Prüf zum Schluss: Alle drei Winkel zusammen müssen 180° ergeben."
+  ],
+  fehler:[
+    ["Nur einen Winkel abgezogen", "γ = 180° − α − β. Beide bekannten Winkel müssen weg."],
+    ["Bei gleichschenklig den falschen Winkel halbiert", "Halbiert wird der Rest nach Abzug des Spitzenwinkels, nicht der Spitzenwinkel selbst."],
+    ["Ein unmögliches Dreieck akzeptiert", "Zwei Winkel, die zusammen schon über 180° ergeben, gibt es nicht. Dann steckt ein Fehler in der Angabe."],
+    ["Dreiecksungleichung übersehen", "Die beiden kürzeren Seiten müssen zusammen länger sein als die längste. Sonst schließt sich das Dreieck nicht."]
+  ],
   einfach:[
     "Ein Dreieck hat drei Ecken, drei Seiten und drei Winkel. Die Ecken heißen A, B und C.",
     "Die Winkel bekommen griechische Buchstaben: α (alpha) bei A, β (beta) bei B, γ (gamma) bei C.",
@@ -9697,6 +10802,24 @@ const ERKLAERUNGEN = {
 
 "Wahrscheinlichkeit": {
   worum:"Wahrscheinlichkeit sagt, welcher Anteil aller möglichen Fälle günstig ausgeht — nicht mehr und nicht weniger.",
+  wozu:[
+    "Lotto, Würfelspiele, Wetterbericht, Qualitätskontrolle in der Fertigung: Überall wird mit Wahrscheinlichkeiten gearbeitet.",
+    "Wer sie versteht, fällt weniger auf Werbeversprechen und Glücksspiel herein — und kann einschätzen, was eine Fehlerquote von 2 % wirklich bedeutet."
+  ],
+  rezept:[
+    "Zähl alle möglichen Ausgänge.",
+    "Zähl die günstigen — die, die du haben willst.",
+    "Teile günstige durch mögliche.",
+    "Für Prozent mit 100 malnehmen.",
+    "Prüf: Das Ergebnis muss zwischen 0 und 1 beziehungsweise 0 % und 100 % liegen.",
+    "Für „mindestens einmal“ lohnt sich oft der Umweg über die Gegenwahrscheinlichkeit."
+  ],
+  fehler:[
+    ["Günstige und mögliche vertauscht", "Kommt ein Wert über 1 heraus, ist der Bruch verkehrt herum."],
+    ["Die günstigen bei den möglichen vergessen", "Bei 3 roten und 7 blauen Kugeln sind es 10 mögliche, nicht 7."],
+    ["Auf vergangene Ergebnisse geschlossen", "Nach fünf Sechsen ist die sechste genauso wahrscheinlich wie vorher. Ein Würfel hat kein Gedächtnis."],
+    ["Erwartungswert für eine Garantie gehalten", "10 erwartete Sechsen bei 60 Würfen heißt nicht, dass es genau 10 werden."]
+  ],
   einfach:[
     "Wenn alle Ausgänge gleich wahrscheinlich sind, ist die Rechnung einfach: günstige Fälle geteilt durch mögliche Fälle.",
     "Beispiel Würfel: Für eine Sechs gibt es einen günstigen Fall und sechs mögliche. Also 1 : 6, das sind rund 16,7 %.",
@@ -9764,6 +10887,24 @@ const ERKLAERUNGEN = {
 
 "Kreis": {
   worum:"Beim Kreis brauchst du zwei Formeln — eine für den Rand und eine für die Fläche. Der Unterschied steckt im Quadrat.",
+  wozu:[
+    "Rundes Beet einfassen, Rohrquerschnitt bestimmen, Materialbedarf für eine runde Platte, Umfang eines Rades für die Wegstrecke — überall Kreisrechnung.",
+    "In der Technik ist der Kreisquerschnitt die Grundlage für Rohre, Kabel, Wellen und Bohrungen."
+  ],
+  rezept:[
+    "Kläre, ob Radius oder Durchmesser gegeben ist. In die Flächenformel gehört immer der Radius.",
+    "Kläre, ob nach dem Rand (Umfang) oder nach der Fläche gefragt ist.",
+    "Umfang: u = 2 · π · r oder u = π · d.",
+    "Fläche: A = π · r². Erst quadrieren, dann mit π malnehmen.",
+    "Rechne mit der π-Taste und runde erst am Schluss.",
+    "Prüf die Einheit: cm beim Umfang, cm² bei der Fläche."
+  ],
+  fehler:[
+    ["Durchmesser statt Radius eingesetzt", "Bei d = 10 cm ist r = 5 cm. Wer 10 einsetzt, bekommt die vierfache Fläche."],
+    ["Umfang- und Flächenformel vertauscht", "Die Hochzahl verrät es: r² gehört zur Fläche."],
+    ["Zu früh gerundet", "Wer mit 3,14 statt der π-Taste rechnet und mehrfach rundet, weicht am Ende sichtbar ab."],
+    ["Beim doppelten Radius die doppelte Fläche erwartet", "Doppelter Radius heißt vierfache Fläche — wegen des Quadrats."]
+  ],
   einfach:[
     "Alle Punkte eines Kreises haben denselben Abstand vom Mittelpunkt. Dieser Abstand heißt Radius r.",
     "Der Durchmesser d geht quer durch den Mittelpunkt, von Rand zu Rand. Er ist doppelt so lang wie der Radius: d = 2 · r.",
@@ -9826,6 +10967,24 @@ const ERKLAERUNGEN = {
 
 "Gleichungssysteme": {
   worum:"Zwei Unbekannte brauchen zwei Gleichungen. Es gibt drei Wege, sie zu lösen — und einer passt fast immer am besten.",
+  wozu:[
+    "Immer wenn zwei Dinge zusammen bekannt sind, aber einzeln gesucht: Wie viele Erwachsenen- und Kinderkarten wurden verkauft? Wie viel von zwei Sorten muss ich mischen?",
+    "In der Technik löst du damit Stromkreise mit mehreren Maschen und alle Aufgaben mit zwei Unbekannten."
+  ],
+  rezept:[
+    "Nummeriere die Gleichungen mit I und II.",
+    "Schau, welches Verfahren am wenigsten Arbeit macht.",
+    "Steht eine Unbekannte allein: einsetzen. Steht sie einmal mit Plus und einmal mit Minus: addieren.",
+    "Löse die entstandene Gleichung mit nur einer Unbekannten.",
+    "Setz das Ergebnis in eine der Ausgangsgleichungen ein und rechne die zweite Unbekannte aus.",
+    "Probe in beide Gleichungen — nicht nur in eine."
+  ],
+  fehler:[
+    ["Nur eine Unbekannte ausgerechnet", "Die Lösung ist ein Zahlenpaar. Beide Werte gehören zur Antwort."],
+    ["In die umgeformte Gleichung eingesetzt", "Setz den gefundenen Wert in eine der ursprünglichen Gleichungen ein. In der umgeformten steckt vielleicht schon ein Fehler."],
+    ["Beim Addieren nur eine Seite verrechnet", "Beide Gleichungen werden komplett addiert — links plus links, rechts plus rechts."],
+    ["Probe nur in einer Gleichung", "Ein Zahlenpaar kann zufällig in eine Gleichung passen. Erst beide zusammen sind der Beweis."]
+  ],
   einfach:[
     "Eine Gleichung mit zwei Unbekannten hat unendlich viele Lösungen. Erst eine zweite Gleichung legt die Sache fest.",
     "Beide Gleichungen zusammen heißen Gleichungssystem. Gesucht ist das Zahlenpaar, das in beide passt.",
@@ -9885,6 +11044,24 @@ const ERKLAERUNGEN = {
 
 "Körper berechnen": {
   worum:"Volumen sagt, wie viel hineinpasst. Oberfläche sagt, wie viel Material außen herum nötig ist. Zwei Fragen, zwei Formeln.",
+  wozu:[
+    "Wie viel passt in den Behälter, wie viel Blech brauche ich für die Verkleidung, wie viel wiegt das Werkstück? Volumen und Oberfläche beantworten genau diese Fragen.",
+    "Für die Materialbestellung und die Kalkulation ist das tägliche Praxis in jedem Handwerk."
+  ],
+  rezept:[
+    "Kläre, ob Volumen (Rauminhalt) oder Oberfläche (Außenhaut) gefragt ist.",
+    "Die Einheit verrät es: cm³ ist Volumen, cm² ist Oberfläche.",
+    "Bring alle Maße auf dieselbe Einheit.",
+    "Bei geraden Körpern: Volumen = Grundfläche mal Höhe.",
+    "Für die Oberfläche alle Teilflächen einzeln rechnen und addieren.",
+    "Überschlag: Passt die Größenordnung zu dem, was du dir vorstellst?"
+  ],
+  fehler:[
+    ["Volumen und Oberfläche verwechselt", "Wer Farbe kaufen will, braucht die Oberfläche. Wer Wasser einfüllen will, das Volumen."],
+    ["Einheiten gemischt", "80 cm und 1,2 m in einer Rechnung ergeben Unsinn. Erst alles in dieselbe Einheit."],
+    ["Bei Umrechnungen den Faktor nicht potenziert", "1 m³ sind 1.000.000 cm³, nicht 100. Bei Volumen zählt der Faktor dreifach."],
+    ["Beim Zylinder den Durchmesser eingesetzt", "In π · r² gehört der Radius. Bei gegebenem Durchmesser erst halbieren."]
+  ],
   einfach:[
     "Ein Körper hat drei Ausdehnungen: Länge, Breite und Höhe. Deshalb heißt die Einheit des Volumens cm³ — drei Längen malgenommen.",
     "Das Volumen ist der Rauminhalt. Stell dir vor, du füllst den Körper mit Wasser.",
@@ -9950,6 +11127,23 @@ const ERKLAERUNGEN = {
 
 "Strahlensätze": {
   worum:"Schneiden parallele Geraden zwei Strahlen, stehen die Abschnitte im selben Verhältnis. Damit misst man Höhen, an die man nicht herankommt.",
+  wozu:[
+    "Höhen bestimmen, an die man nicht herankommt: Baum, Mast, Gebäude. Mit einem Stab und dem Schatten reicht es aus.",
+    "Auch beim Vergrößern und Verkleinern von Zeichnungen und beim Rechnen mit Maßstäben ist es dasselbe Prinzip."
+  ],
+  rezept:[
+    "Prüf zuerst: Sind die schneidenden Geraden wirklich parallel? Sonst gilt nichts.",
+    "Zeichne die Figur und beschrifte alle bekannten Strecken.",
+    "Ordne zusammengehörige Strecken einander zu — Höhe zu Schatten, kurz zu kurz.",
+    "Stell die Verhältnisgleichung auf und löse über Kreuz.",
+    "Prüf das Ergebnis: Die größere Figur muss auch die größeren Strecken haben."
+  ],
+  fehler:[
+    ["Ohne Parallelität gerechnet", "Der Strahlensatz gilt nur bei parallelen Schnittgeraden."],
+    ["Unpassende Strecken ins Verhältnis gesetzt", "Höhe gehört zu Schatten. Wer Höhe zu Höhe und Schatten zu Schatten mischt, verdreht die Gleichung."],
+    ["Abschnitte mit ganzen Strecken verwechselt", "Es macht einen Unterschied, ob eine Strecke vom Scheitel aus oder erst ab der ersten Parallelen gemessen wird."],
+    ["Nicht zur selben Zeit gemessen", "Bei der Schattenmethode müssen beide Messungen gleichzeitig erfolgen. Die Sonne wandert."]
+  ],
   einfach:[
     "Zeichne zwei Strahlen, die von einem Punkt ausgehen. Jetzt schneide sie mit zwei parallelen Geraden.",
     "Dann entstehen zwei Dreiecke, die genau gleich aussehen — nur eines ist größer. Man sagt: Sie sind ähnlich.",
@@ -10010,6 +11204,24 @@ const ERKLAERUNGEN = {
 
 "Kugel und Kegel": {
   worum:"Für Kugel und Kegel gibt es feste Formeln. Der Unterschied zwischen Volumen und Oberfläche steckt in der Hochzahl.",
+  wozu:[
+    "Tankinhalt, Materialbedarf für ein Kugellager, Blech für einen Trichter, Volumen einer Halbkugelschale: In der Fertigung und im Behälterbau sind das ganz normale Rechnungen.",
+    "Auch für Abschätzungen im Alltag nützlich — vom Fassungsvermögen eines runden Behälters bis zur Oberfläche eines Balls."
+  ],
+  rezept:[
+    "Kläre, welcher Körper vorliegt und was gesucht ist — Volumen oder Oberfläche.",
+    "Achte auf die Hochzahl: 3 gehört zum Volumen, 2 zur Oberfläche.",
+    "Kugel: V = 4/3 · π · r³, O = 4 · π · r².",
+    "Kegel: V = 1/3 · π · r² · h. Für die Mantelfläche brauchst du die Mantellinie s.",
+    "Ist s nicht gegeben, rechne sie mit s² = r² + h² aus.",
+    "Rechne mit der π-Taste und runde erst am Ende."
+  ],
+  fehler:[
+    ["Höhe und Mantellinie verwechselt", "Die Höhe steht senkrecht auf der Grundfläche, die Mantellinie geht schräg zur Spitze. Sie ist immer länger."],
+    ["Beim Kegel den Faktor 1/3 vergessen", "Dann rechnest du einen Zylinder aus — dreimal zu viel."],
+    ["Durchmesser statt Radius eingesetzt", "Bei r³ wirkt sich das achtfach aus. Immer prüfen, was gegeben ist."],
+    ["Volumen- und Oberflächenformel vertauscht", "Die Einheit im Ergebnis verrät es sofort: cm³ oder cm²."]
+  ],
   einfach:[
     "Bei der Kugel gibt es nur eine einzige Maßangabe: den Radius. Alles andere folgt daraus.",
     "Das Volumen der Kugel ist V = 4/3 · π · r³. Die Hochzahl 3 gehört zum Rauminhalt.",
@@ -10077,6 +11289,24 @@ const ERKLAERUNGEN = {
 
 "Statistik": {
   worum:"Aus vielen Zahlen macht man ein paar Kennwerte — Durchschnitt, Median und Spannweite sagen zusammen mehr als jeder für sich.",
+  wozu:[
+    "Durchschnittsnote, Durchschnittsverbrauch, Messreihen auswerten, Qualitätskontrolle: Kennwerte fassen viele Zahlen zu wenigen aussagekräftigen zusammen.",
+    "Wer Median und Mittelwert unterscheiden kann, durchschaut auch Statistiken in den Nachrichten — etwa beim Durchschnittseinkommen."
+  ],
+  rezept:[
+    "Schreib alle Werte auf und sortiere sie der Größe nach. Das brauchst du für fast alles.",
+    "Mittelwert: alle addieren, durch die Anzahl teilen.",
+    "Median: den mittleren Wert der sortierten Liste ablesen. Bei gerader Anzahl den Durchschnitt der beiden mittleren.",
+    "Spannweite: größter Wert minus kleinster.",
+    "Modalwert: der häufigste Wert.",
+    "Vergleich Mittelwert und Median. Liegen sie weit auseinander, gibt es Ausreißer."
+  ],
+  fehler:[
+    ["Beim Median nicht sortiert", "Ohne Sortieren liest du irgendeinen Wert ab, nicht den mittleren."],
+    ["Durch die falsche Anzahl geteilt", "Geteilt wird durch die Anzahl der Werte, nicht durch den größten Wert oder die Anzahl der verschiedenen Werte."],
+    ["Ausreißer nicht bemerkt", "Ein einziger extremer Wert verschiebt den Mittelwert stark. Der Median bleibt stabil."],
+    ["Kennwerte einzeln interpretiert", "Ein Mittelwert allein sagt wenig. Erst zusammen mit Spannweite und Median ergibt sich ein Bild."]
+  ],
   einfach:[
     "Wenn du eine lange Liste von Messwerten hast, willst du sie zu wenigen aussagekräftigen Zahlen zusammenfassen.",
     "Der bekannteste Kennwert ist der Durchschnitt, in der Mathematik arithmetisches Mittel genannt: alle Werte addieren, durch die Anzahl teilen.",
@@ -11081,6 +12311,7 @@ function kopfleisteHtml(){
         <span class="kopftrenner abmittel" aria-hidden="true"></span>
         ${benutzer ? `<a class="kopflink absehrbreit" href="/plan" onclick="return navKlick(event, zeigePlan)">Wiederholungsplan</a>` : ""}
         <a class="kopflink abbreit" href="/faq" onclick="return navKlick(event, () => zeigeSeite('faq'))">Häufige Fragen</a>
+        <a class="kopflink abbreit" href="/warum" onclick="return navKlick(event, () => zeigeSeite('warum'))">Warum nicht KI?</a>
         <a class="kopflink abmittel" href="/ueber" onclick="return navKlick(event, () => zeigeSeite('ueber'))">Über</a>
         <a class="kopflink abmittel" href="/hilfe" onclick="return navKlick(event, zeigeMelden)">Hilfe</a>
       </nav>
@@ -11122,6 +12353,7 @@ function menueHtml(){
       ${navLink("/hilfe", "zeigeMelden();menueSchliessen()", "Hilfe", "mpunkt")}
       ${navLink("/feedback", "zeigeFeedback();menueSchliessen()", "Feedback", "mpunkt")}
       ${navLink("/faq", "zeigeSeite('faq')", "Häufige Fragen", "mpunkt")}
+      ${navLink("/warum", "zeigeSeite('warum')", "Warum nicht einfach KI?", "mpunkt")}
       ${navLink("/ueber", "zeigeSeite('ueber')", "Über das Projekt", "mpunkt")}
       ${WARTUNG ? navLink("/baustelle", "zeigeSeite('baustelle')", "Woran gerade gebaut wird", "mpunkt") : ""}
 
@@ -11223,6 +12455,8 @@ function kontoHtml(){
 const FAQ = [
   ["Was ist „Endlich kapiert“?",
    "Eine Lernseite für Mathe und Deutsch von Klasse 5 bis 10 und für die Ausbildung zum Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr. Der Unterschied zu anderen: Du bekommst nie die fertige Lösung. Stattdessen wirst du mit kleinen Fragen dorthin geführt, bis du selbst draufkommst."],
+  ["Warum soll ich das nutzen und nicht einfach eine KI fragen?",
+   "Weil eine KI dir die Lösung gibt und diese Seite nicht. Beides hat seinen Zweck: Wenn du etwas wissen willst, frag die KI. Wenn du etwas können willst, übe hier — du bekommst nur Hinweise, bis du selbst darauf kommst. Dazu kommt: Was du nicht konntest, legt dir diese Seite von allein wieder vor, und jede Aufgabe wird vor der Veröffentlichung von einem Programm unabhängig nachgerechnet. Die ausführliche Antwort steht unter „Warum nicht einfach KI?“ im Menü — dort steht auch, was die KI besser kann."],
   ["Kostet das etwas?",
    "Nein. Du kannst alles ohne Anmeldung und ohne Kosten ausprobieren."],
   ["Warum bekomme ich nie die Lösung?",
@@ -11263,6 +12497,55 @@ function faqHtml(){
     </div>`;
 }
 
+function warumHtml(){
+  return `
+    <div class="card">
+      ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
+      <span class="tag">Warum diese App</span>
+      <h1>Warum nicht einfach eine KI fragen?</h1>
+      <p class="soft">Eine berechtigte Frage. Hier ist die ehrliche Antwort — mit dem, was die KI besser kann, und dem, was sie nicht kann.</p>
+    </div>
+
+    <div class="card">
+      <p class="einfachtext">Wenn du eine Aufgabe abfotografierst und eine KI fragst, bekommst du in Sekunden eine Lösung. Meistens sogar eine richtige, gut erklärte. Das ist beeindruckend, und für vieles ist es genau das richtige Werkzeug.</p>
+      <p class="einfachtext">Nur: Eine Lösung zu bekommen und etwas zu können sind zwei verschiedene Dinge. Am Tag der Arbeit oder in der Prüfung sitzt du allein da. Dann zählt nur, was in deinem Kopf ist.</p>
+      <p class="einfachtext">Genau darauf ist diese Seite gebaut. Nicht als Ersatz für die KI, sondern für den Teil, den sie dir nicht abnehmen kann.</p>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Die vier Unterschiede</p>
+      <div class="begriffe">
+        <div class="begriff"><b>Hier bekommst du die Lösung nicht — auch wenn du willst</b><span>Eine KI gibt dir das Ergebnis, sobald du fragst. Das ist ihre Aufgabe. Hier gibt es keinen Knopf dafür. Es gibt Hinweise, dann noch einen, dann die Regeln, dann die Erklärung von vorn — aber den letzten Schritt machst immer du. Das ist unbequem und genau deshalb wirkt es.</span></div>
+        <div class="begriff"><b>Es kommt von allein wieder</b><span>Ein Gespräch mit einer KI ist vorbei, wenn du den Tab schließt. Diese Seite merkt sich, was du nicht konntest, und legt es dir nach einem Tag wieder vor. Dann nach drei Tagen, nach einer Woche, nach einem Monat. Genau so bleibt etwas hängen.</span></div>
+        <div class="begriff"><b>Jede Aufgabe ist nachgerechnet</b><span>Eine KI kann sich verrechnen und es überzeugend begründen. Bei einem Thema, das du gerade erst lernst, merkst du das nicht. Hier wird jede einzelne Aufgabe vor der Veröffentlichung von einem Programm unabhängig ein zweites Mal durchgerechnet — jede Variante tausendfach. Was nicht stimmt, kommt gar nicht erst online.</span></div>
+        <div class="begriff"><b>Du musst nicht wissen, was du fragen sollst</b><span>Vor einem leeren Eingabefeld zu sitzen ist schwer, wenn man ein Thema gar nicht versteht. Man weiß ja nicht einmal, wo es hakt. Hier wählst du Fach und Klasse, und der Weg ist schon da.</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Was die KI besser kann</p>
+      <p class="einfachtext">Das gehört dazu, sonst wäre es keine ehrliche Antwort:</p>
+      <ul class="liste">
+        <li>Sie beantwortet <b>jede</b> Frage, zu jedem Fach — diese Seite kennt nur die Themen, die hier eingebaut sind.</li>
+        <li>Sie geht auf <b>genau deine</b> Hausaufgabe ein, mit deinem Aufgabentext und deinem Text.</li>
+        <li>Sie erklärt dasselbe auf zehn verschiedene Arten, bis eine passt.</li>
+        <li>Sie ist immer da, rund um die Uhr, und wird nie ungeduldig.</li>
+      </ul>
+      <p class="einfachtext" style="margin-top:14px">Deshalb: Nutz beides. Die KI, wenn du etwas wissen willst. Diese Seite, wenn du etwas <b>können</b> willst.</p>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Der ehrlichste Satz</p>
+      <p class="einfachtext">Wer sich die Lösung geben lässt, kommt schneller durch die Hausaufgabe. Wer selbst darauf kommt, kommt durch die Prüfung. Beides hat seine Berechtigung — du musst nur wissen, was du gerade tust.</p>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <p class="soft" style="margin:0 auto 16px;max-width:44ch">Am besten überzeugt es sich selbst. Eine Aufgabe dauert zwei Minuten.</p>
+      <button class="btn" onclick="alsGast()">Einfach ausprobieren</button>
+      ${navLink("/ueber", "zeigeSeite('ueber')", "Mehr über das Projekt", "btn ghost full", "margin-top:12px")}
+    </div>`;
+}
+
 function ueberHtml(){
   return `
     <div class="card">
@@ -11280,6 +12563,7 @@ function ueberHtml(){
         <li><b>Nichts geht verloren.</b> Was du nicht konntest, kommt von allein wieder, in wachsenden Abständen, bis es sitzt.</li>
       </ul>
       <p class="einfachtext" style="margin-top:14px">Die Seite ist kostenlos, zeigt keine Werbung und verkauft keine Daten. Sie wird laufend weitergebaut.</p>
+      <p class="einfachtext">Warum das Ganze neben ChatGPT und anderen KI-Werkzeugen überhaupt Sinn ergibt, steht auf einer eigenen Seite: ${navLink("/warum", "zeigeSeite('warum')", "Warum nicht einfach eine KI fragen?", "", "font-weight:700;color:var(--ac-dark);text-decoration:underline")}</p>
       <p class="einfachtext">Wenn dir etwas fehlt oder etwas falsch ist, sag uns Bescheid — über <b>Hilfe und Feedback</b>. Das hilft mehr als alles andere.</p>
     </div>
     <div class="card" style="text-align:center">
@@ -11483,6 +12767,7 @@ function fussleisteHtml(){
           ${navLink("/hilfe", "zeigeMelden()", "Hilfe", "fusslink")}
           ${navLink("/feedback", "zeigeFeedback()", "Feedback", "fusslink")}
           ${navLink("/faq", "zeigeSeite('faq')", "Häufige Fragen", "fusslink")}
+          ${navLink("/warum", "zeigeSeite('warum')", "Warum nicht einfach KI?", "fusslink")}
           ${navLink("/ueber", "zeigeSeite('ueber')", "Über das Projekt", "fusslink")}
           ${WARTUNG ? navLink("/baustelle", "zeigeSeite('baustelle')", "Woran gerade gebaut wird", "fusslink") : ""}
           ${benutzer ? navLink("/anfragen", "zeigeAnfragen()", "Meine Anfragen", "fusslink") : ""}
@@ -12424,6 +13709,7 @@ function pfadFuer(a, f, k){
     case "feedback":     return "/feedback";
     case "faq":          return "/faq";
     case "ueber":        return "/ueber";
+    case "warum":        return "/warum";
     case "impressum":    return "/impressum";
     case "datenschutz":  return "/datenschutz";
     case "agb":          return "/agb";
@@ -12450,7 +13736,7 @@ function ansichtAusPfad(){
   }
   const direkt = {anmelden:"anmelden", registrieren:"registrieren", start:"uebersicht",
     faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden", feedback:"feedback",
-    faq:"faq", ueber:"ueber", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
+    faq:"faq", ueber:"ueber", warum:"warum", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
     konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle"};
   const ziel = direkt[p];
   if (!ziel) return;
@@ -13200,6 +14486,7 @@ function render(gewaehlt){
   if (ansicht === "anfragen"){ el.innerHTML = anfragenHtml(); return; }
   if (ansicht === "baustelle"){ el.innerHTML = baustelleSeiteHtml(); return; }
   if (ansicht === "faq"){ el.innerHTML = faqHtml(); return; }
+  if (ansicht === "warum"){ el.innerHTML = warumHtml(); return; }
   if (ansicht === "ueber"){ el.innerHTML = ueberHtml(); return; }
   if (ansicht === "impressum"){ el.innerHTML = impressumHtml(); return; }
   if (ansicht === "datenschutz"){ el.innerHTML = datenschutzHtml(); return; }
@@ -13415,6 +14702,10 @@ function render(gewaehlt){
         <p class="ueberschrift">Wörter, die du kennen musst</p>
         <div class="begriffe">${e.begriffe.map(([w,b]) => `<div class="begriff"><b>${w}</b><span>${b}</span></div>`).join("")}</div>
       </div>` : ""}
+      ${e.wozu ? `<div class="card wozukarte">
+        <p class="ueberschrift">${SYM.ziel} Wozu brauchst du das?</p>
+        ${(Array.isArray(e.wozu) ? e.wozu : [e.wozu]).map(t => `<p class="einfachtext">${t}</p>`).join("")}
+      </div>` : ""}
       ${e.bild ? `<div class="card"><p class="ueberschrift">Zum Anschauen</p>${e.bild}</div>` : ""}
       ${e.tabelle ? `<div class="card">
         <p class="ueberschrift">${e.tabelle.titel || "Zum Nachschlagen"}</p>
@@ -13425,6 +14716,10 @@ function render(gewaehlt){
         <p class="ueberschrift">Das Wichtigste</p>
         <ul class="liste">${e.regeln.map(r => `<li>${r}</li>`).join("")}</ul>
       </div>
+      ${e.rezept ? `<div class="card">
+        <p class="ueberschrift">So gehst du jede Aufgabe an</p>
+        <ol class="rezept">${e.rezept.map(r => `<li>${r}</li>`).join("")}</ol>
+      </div>` : ""}
       <div class="card">
         <p class="ueberschrift">Ein Beispiel</p>
         <div class="probe">
@@ -13433,6 +14728,11 @@ function render(gewaehlt){
           <div class="ergebnis">${e.beispiel.ergebnis}</div>
         </div>
       </div>
+      ${e.fehler ? `<div class="card fehlerkarte">
+        <p class="ueberschrift">Daran scheitern die meisten</p>
+        <div class="fallen">${e.fehler.map(([falle, warum]) =>
+          `<div class="falle"><b>${falle}</b><span>${warum}</span></div>`).join("")}</div>
+      </div>` : ""}
       <div class="card" style="text-align:center">
         <p class="soft" style="margin:0 auto 16px;max-width:42ch">Alles klar? Dann probier es an einer Aufgabe — du wirst Schritt für Schritt hingeführt.</p>
         <button class="btn" onclick="starte(aktuellName)">Jetzt üben</button>
@@ -13682,11 +14982,13 @@ function willkommenHtml(){
     </div>
 
     <div class="card abschnitt indigo">
-      <p class="ueberschrift">Warum nicht einfach eine Lösungs-App?</p>
+      <p class="ueberschrift">Warum nicht einfach eine KI fragen?</p>
+      <p class="soft" style="margin:0 0 16px;max-width:52ch">Kannst du. Für vieles ist sie das bessere Werkzeug. Nur macht sie dich nicht besser — sie nimmt dir die Arbeit ab. Drei Unterschiede:</p>
       <div class="gegen">
-        <div class="andere"><b>Andere Apps</b>Du fotografierst die Aufgabe, bekommst das Ergebnis und schreibst es ab. Bei der nächsten Aufgabe stehst du genauso da wie vorher.</div>
-        <div class="wir"><b>Endlich kapiert</b>Du kommst selbst darauf — und wirst daran erinnert, bevor du es vergessen hast. Beim nächsten Mal weißt du, wie es geht.</div>
+        <div class="andere"><b>KI und Lösungs-Apps</b>Du fragst, du bekommst die Lösung. Das Gespräch ist vorbei, wenn du den Tab schließt. Und ob sich die KI verrechnet hat, merkst du bei einem neuen Thema nicht.</div>
+        <div class="wir"><b>Endlich kapiert</b>Die Lösung gibt es hier nicht — nur Hinweise, bis du selbst darauf kommst. Was du nicht konntest, kommt von allein wieder. Und jede Aufgabe ist vorher von einem Programm nachgerechnet worden.</div>
       </div>
+      ${navLink("/warum", "zeigeSeite('warum')", "Die ganze Antwort lesen — auch, was die KI besser kann", "btn ghost full", "margin-top:16px")}
     </div>
 
     ${/* Die Baustelle steht ohnehin als Band über jeder Seite. Hier unten
