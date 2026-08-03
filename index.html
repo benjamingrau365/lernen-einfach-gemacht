@@ -26,7 +26,7 @@
 <style>
   :root{
     --bg:#f4f8f7; --card:#ffffff; --ink:#16211e; --soft:#5b6b66; --line:#dfe8e5;
-    --ac:#10a37f; --ac-soft:#e4f5ef; --ac-dark:#0b7a5f;
+    --ac:#10a37f; --ac-soft:#e4f5ef; --ac-dark:#0b7a5f; --knopfschrift:#ffffff;
     /* „richtig“ und „geschafft“ bleiben immer grün, egal welches Fach */
     --gut:#10a37f; --gut-soft:#e4f5ef; --gut-dark:#0b7a5f;
     --red:#b3382f; --red-soft:#fdecea;
@@ -67,7 +67,7 @@
   }
   html.dunkel{
     --bg:#131a18; --card:#1b2422; --ink:#e9f1ee; --soft:#9cb0a9; --line:#2c3a36;
-    --ac:#2ebd95; --ac-soft:#17322a; --ac-dark:#6fdcbb;
+    --ac:#2ebd95; --ac-soft:#17322a; --ac-dark:#6fdcbb; --knopfschrift:#06231c;
     --gut:#2ebd95; --gut-soft:#17322a; --gut-dark:#6fdcbb;
     --red:#ff9b90; --red-soft:#3a2220;
     --amber:#e6bd6d; --amber-soft:#332a17;
@@ -226,15 +226,24 @@
   /* Hilfe steht darunter, abgesetzt und ohne Kasten — damit man sie nicht
      versehentlich für eine vierte Antwort hält */
   .hilfezeile{display:grid;gap:2px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
-  .hilfeknopf{background:none;border:none;padding:11px 8px;font:inherit;font-size:15px;
-    font-weight:600;color:var(--soft);cursor:pointer;text-align:center;border-radius:10px;
-    text-decoration:none;display:block}
+  /* Diese beiden sind das Herz der Sache — man drückt sie, wenn man
+     feststeckt. Als bloßer Text sahen sie nicht nach etwas aus, das man
+     antippen kann. Jetzt haben sie einen Rahmen, bleiben aber ruhig genug,
+     dass man sie nicht statt einer Antwort drückt. */
+  .hilfeknopf{background:var(--bg);border:1.5px solid var(--line);padding:12px 14px;
+    font:inherit;font-size:15px;font-weight:600;color:var(--soft);cursor:pointer;
+    text-align:center;border-radius:11px;text-decoration:none;display:block}
+  .hilfeknopf + .hilfeknopf{margin-top:8px}
   /* nur mit Maus hervorheben — auf dem Handy bliebe die Hervorhebung
      nach dem Antippen sonst kleben */
   @media(hover:hover){ .hilfeknopf:hover{color:var(--ac-dark);background:var(--ac-soft)} }
 
-  .btn{display:inline-block;background:var(--ac);color:#fff;border:none;border-radius:12px;
+  /* Im Dunkelmodus sind die Akzentfarben heller als im Hellen. Weiße Schrift
+     darauf ist dann kaum zu lesen — deshalb entscheidet eine eigene Variable
+     über die Schriftfarbe im Knopf, nicht ein festes Weiß. */
+  .btn{display:inline-block;background:var(--ac);color:var(--knopfschrift);border:none;border-radius:12px;
     padding:14px 24px;font:inherit;font-weight:600;font-size:16.5px;cursor:pointer}
+  .btn:hover{color:var(--knopfschrift)}
   .btn:hover{background:var(--ac-dark)}
   .btn.ghost{background:none;color:var(--soft);border:1.5px solid var(--line);font-weight:500}
   .btn.ghost:hover{color:var(--ac-dark);border-color:var(--ac);background:none}
@@ -810,13 +819,15 @@
   }
 
   /* ---------- Baustellenband und Hinweis ---------- */
-  .baustelle{position:relative;background:linear-gradient(90deg,var(--bau1),var(--bau2));
-    color:var(--bauink);display:flex;align-items:center;justify-content:center;
-    gap:10px;flex-wrap:wrap;padding:10px 20px;font-size:14.5px;line-height:1.4;
-    font-weight:600;text-align:center}
-  /* die schrägen Streifen wie am Absperrband */
-  .baustelle::before{content:"";position:absolute;inset:0;pointer-events:none;
-    background:repeating-linear-gradient(135deg,rgba(0,0,0,.07) 0 14px,transparent 14px 28px)}
+  /* Früher ein knallgelbes Absperrband mit schrägen Streifen und Warndreieck.
+     Bei 125 von 140 fertigen Themen sagt das etwas Falsches: Es liest sich
+     wie eine Störungsmeldung, dabei ist die Seite zu neun Zehnteln fertig.
+     Jetzt ein ruhiger Streifen, der dieselbe Zahl nennt — ehrlich bleibt es,
+     nur schreit es nicht mehr. */
+  .baustelle{position:relative;background:var(--amber-soft);
+    color:var(--amber);display:flex;align-items:center;justify-content:center;
+    gap:10px;flex-wrap:wrap;padding:8px 20px;font-size:13.5px;line-height:1.4;
+    font-weight:600;text-align:center;border-bottom:1px solid var(--line)}
   .baustelle .bzeichen{position:relative;flex:none;display:flex}
   .baustelle svg{width:19px;height:19px}
   .baustelle .btext{position:relative}
@@ -831,7 +842,7 @@
      einzige Zeile: Zeichen, Kurztext, ein kleiner Knopf. */
   @media(max-width:819px){
     .baustelle{flex-wrap:nowrap;justify-content:flex-start;text-align:left;
-      padding:7px 12px;gap:8px;font-size:13px;line-height:1.25}
+      padding:6px 12px;gap:8px;font-size:12.5px;line-height:1.25}
     .baustelle .btext{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .baustelle svg{width:17px;height:17px}
     .baustelle .bknopf{font-size:12px;padding:3px 11px;margin-left:auto}
@@ -26521,10 +26532,9 @@ function wartungBandHtml(){
   const s = baustelleStand();
   return `
     <div class="baustelle">
-      <span class="bzeichen">${BAU_SYM}</span>
-      <span class="btext"><b>Baustelle.</b>
-        <span class="nurbreit">An dieser Seite wird gerade gebaut — ${s.fertig} von ${s.gesamt} Themen sind fertig.</span>
-        <span class="nurschmal">${s.fertig} von ${s.gesamt} Themen fertig.</span></span>
+      <span class="btext"><b>${s.fertig} von ${s.gesamt} Themen</b>
+        <span class="nurbreit">sind fertig — die übrigen kommen nach und nach.</span>
+        <span class="nurschmal">fertig.</span></span>
       ${navLink("/baustelle", "zeigeSeite('baustelle')",
         `<span class="nurbreit">Was ist schon fertig?</span><span class="nurschmal">mehr</span>`, "bknopf")}
       <button class="bknopf" onclick="wartungZeigen()">Was heißt das?</button>
@@ -28913,7 +28923,11 @@ function render(gewaehlt){
   }
 
   if (kopf) kopf.innerHTML = wartungBandHtml() + kopfleisteHtml() + menueHtml() + wartungTorHtml();
-  if (fussEl) fussEl.innerHTML = fussleisteHtml();
+  /* Beim Lösen und auf dem Arbeitsblatt hat das Fußmenü nichts zu suchen:
+     Zwanzig Links unter einer Aufgabe lenken ab, und gesucht wird dort
+     ohnehin nichts. Auf allen anderen Seiten bleibt es. */
+  const ohneFuss = ["loesen", "fertig", "arbeitsblattDruck", "laden"].includes(ansicht);
+  if (fussEl) fussEl.innerHTML = ohneFuss ? "" : fussleisteHtml();
 
   /* Der Satz unter dem Inhalt soll den echten Stand zeigen, nicht einen fest
      eingetippten — sonst stimmt er nach dem nächsten Umbau nicht mehr. */
