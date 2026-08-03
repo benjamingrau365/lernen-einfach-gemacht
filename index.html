@@ -26202,9 +26202,11 @@ function arbeitsblattDruckHtml(){
     <div class="card nichtdrucken">
       <button class="zurueck" onclick="zeigeArbeitsblatt()">← Einstellungen ändern</button>
       <h2 style="margin:8px 0 6px">Fertig zum Drucken</h2>
-      <p class="soft" style="margin:0 0 14px">Im Druckfenster kannst du statt eines Druckers auch
-        <b>„Als PDF speichern“</b> wählen. Alles außer dem Blatt wird beim Drucken ausgeblendet.</p>
-      <button class="btn full" onclick="abDrucken()">Drucken oder als PDF speichern</button>
+      <p class="soft" style="margin:0 0 14px"><b>Als PDF speichern</b> legt die Datei sofort in
+        deine Downloads — ohne Umweg über das Druckfenster. <b>Drucken</b> öffnet das Druckfenster
+        deines Geräts; alles außer dem Blatt wird dabei ausgeblendet.</p>
+      <button class="btn full" onclick="abPdfSpeichern()">Als PDF speichern</button>
+      <button class="btn ghost full" style="margin-top:10px" onclick="abDrucken()">Drucken</button>
       <button class="btn ghost full" style="margin-top:10px" onclick="abNeuZiehen()">Andere Aufgaben würfeln</button>
     </div>
 
@@ -26247,6 +26249,277 @@ function arbeitsblattDruckHtml(){
       <p class="blattfuss">Nur die Ergebnisse. Der Weg dorthin steht in der App —
         dort wird gefragt statt vorgesagt.</p>` : ""}
     </div>`;
+}
+
+/* ---------- PDF selbst schreiben ----------
+   „Drucken“ und „Als PDF speichern“ sind im Browser dasselbe Fenster: Man
+   landet immer erst bei der Druckerauswahl und muss dort das Ziel umstellen.
+   Wer ein PDF will, will aber eine Datei — sofort, ohne Umweg.
+
+   Deshalb wird das PDF hier von Hand geschrieben. Das klingt nach viel, ist
+   aber überschaubar: Ein PDF ist eine Textdatei mit Objekten, einer Tabelle
+   der Byte-Positionen (xref) und einem Textstrom je Seite. Zwei eingebaute
+   Schriften — Helvetica und Helvetica fett — reichen; die muss keine
+   Schriftdatei begleiten, jeder Betrachter hat sie.
+
+   Was das PDF nicht kann: Zeichnungen. Zwei von 120 Themen haben eine im
+   Aufgabentext (Diagramme lesen, Funktionen im Schaubild). Dort steht dann
+   ein Hinweis statt des Bildes — verschwiegen wird nichts. */
+
+const PDF_BREITE = 595.28, PDF_HOEHE = 841.89;   /* A4 in Punkt */
+const PDF_RAND = 48, PDF_UNTEN = 56;
+
+/* Zeichen, die es in der Schrift nicht gibt, durch lesbare ersetzen.
+   WinAnsi kennt Umlaute, ß, €, · und die deutschen Anführungszeichen —
+   griechische Buchstaben und Rechenzeichen kennt es nicht. */
+const PDF_ERSATZ = {
+  /* Diese Zeichen GIBT es in WinAnsi, nur an anderer Stelle als in Unicode —
+     sie werden auf ihren Platz im Zeichensatz umgesetzt, nicht gelöscht. */
+  "\u201e":"\u0084", "\u201c":"\u0093", "\u201d":"\u0094",
+  "\u201a":"\u0082", "\u2018":"\u0091", "\u2019":"\u0092",
+  "\u2013":"\u0096", "\u2014":"\u0097", "\u2026":"\u0085", "\u20ac":"\u0080",
+  /* Diese gibt es dort nicht — dafuer etwas Lesbares */
+  "\u2212":"-", "\u2248":"~", "\u2192":"->", "\u2190":"<-",
+  "\u2264":"<=", "\u2265":">=", "\u2260":"!=",
+  "\u221a":"Wurzel aus ", "\u2219":"\u00b7", "\u00f7":":",
+  "\u2080":"0", "\u2081":"1", "\u2082":"2", "\u2083":"3", "\u2084":"4",
+  "\u03a9":"Ohm", "\u03b1":"alpha", "\u03b2":"beta", "\u03b3":"gamma",
+  "\u0394":"Delta", "\u03b7":"eta", "\u03ba":"kappa", "\u03c0":"pi",
+  "\u03c4":"tau", "\u03c6":"phi", "\u03bc":"\u00b5"
+};
+function pdfZeichen(text){
+  let raus = "";
+  for (const c of String(text)){
+    if (PDF_ERSATZ[c] !== undefined){ raus += PDF_ERSATZ[c]; continue; }
+    raus += c.charCodeAt(0) < 256 ? c : "?";
+  }
+  return raus;
+}
+function pdfText(s){ return pdfZeichen(s).replace(/([\\()])/g, "\\$1"); }
+
+/* Breite messen — mit derselben Schrift, die das PDF benutzt. Das Ergebnis
+   ist nicht auf den Punkt genau, aber genau genug; umbrochen wird bei 97 %
+   der Zeilenbreite, dann steht nichts über den Rand. */
+let pdfMessLatte = null;
+function pdfBreite(text, groesse, fett){
+  if (!pdfMessLatte) pdfMessLatte = document.createElement("canvas").getContext("2d");
+  pdfMessLatte.font = `${fett ? "bold " : ""}${groesse}px Helvetica, Arial, sans-serif`;
+  return pdfMessLatte.measureText(pdfZeichen(text)).width;
+}
+
+/* HTML in Stücke zerlegen: {text, fett}. Mehr braucht das Blatt nicht —
+   kursiv und Hochgestelltes werden zu normalem Text. */
+function pdfStuecke(html){
+  const ohneSvg = String(html).replace(/<svg[\s\S]*?<\/svg>/g, " [Zeichnung — siehe App] ");
+  const stuecke = [];
+  let fett = 0, puffer = "";
+  const schieben = () => { if (puffer){ stuecke.push({text: puffer, fett: fett > 0}); puffer = ""; } };
+  ohneSvg.replace(/<[^>]+>|[^<]+/g, (teil) => {
+    if (teil[0] !== "<"){
+      puffer += teil.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&")
+                    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+      return "";
+    }
+    const name = (teil.match(/^<\/?\s*([a-z0-9]+)/i) || [])[1];
+    if (!name) return "";
+    if (/^(b|strong)$/i.test(name)){ schieben(); fett += teil[1] === "/" ? -1 : 1; if (fett < 0) fett = 0; }
+    else if (/^(br|div|p|li)$/i.test(name)) puffer += " ";
+    return "";
+  });
+  schieben();
+  return stuecke.filter(s => s.text.trim() !== "" || s.text === " ");
+}
+
+/* Stücke auf Zeilen umbrechen. Ergebnis: [[{text,fett}, …], …] */
+function pdfUmbrechen(stuecke, breite, groesse){
+  const zeilen = [];
+  let zeile = [], breit = 0;
+  const platz = breite * 0.97;
+  for (const stueck of stuecke){
+    const woerter = stueck.text.split(/(\s+)/).filter(w => w !== "");
+    for (const w of woerter){
+      const b = pdfBreite(w, groesse, stueck.fett);
+      if (breit + b > platz && zeile.length && w.trim() !== ""){
+        zeilen.push(zeile); zeile = []; breit = 0;
+      }
+      if (!zeile.length && w.trim() === "") continue;      /* keine Zeile mit Leerzeichen anfangen */
+      zeile.push({text: w, fett: stueck.fett, breite: b});
+      breit += b;
+    }
+  }
+  if (zeile.length) zeilen.push(zeile);
+  return zeilen.length ? zeilen : [[]];
+}
+
+/* ---------- Der Seitensetzer ---------- */
+function pdfSetzer(){
+  const seiten = [];
+  let strom = "", y = PDF_HOEHE - PDF_RAND;
+  const neueSeite = () => { if (strom) seiten.push(strom); strom = ""; y = PDF_HOEHE - PDF_RAND; };
+
+  const platzPruefen = (hoehe) => { if (y - hoehe < PDF_UNTEN) neueSeite(); };
+  /* Eine Zeile wird als EIN Textblock geschrieben: Nach jedem Tj rückt die
+     Schreibmarke von allein um die echte Zeichenbreite weiter. Würde man
+     jedes Wort einzeln absetzen, müsste man die Breiten selbst ausrechnen —
+     und die gemessene Breite weicht von der echten leicht ab. Genau das gab
+     zu große Lücken hinter Anführungszeichen. */
+  const schreibe = (zeilen, x, groesse, zeilenhoehe, grau) => {
+    for (const zeile of zeilen){
+      platzPruefen(zeilenhoehe);
+      strom += `BT ${grau ? "0.36 0.42 0.40 rg" : "0 0 0 rg"} 1 0 0 1 ${x.toFixed(2)} ${(y - groesse).toFixed(2)} Tm\n`;
+      let letzteSchrift = "";
+      for (const teil of zeile){
+        const schrift = teil.fett ? "F2" : "F1";
+        if (schrift !== letzteSchrift){ strom += `/${schrift} ${groesse} Tf `; letzteSchrift = schrift; }
+        strom += `(${pdfText(teil.text)}) Tj\n`;
+      }
+      strom += "ET\n";
+      y -= zeilenhoehe;
+    }
+  };
+  const linie = (dick) => {
+    platzPruefen(6);
+    strom += `${dick ? 1.2 : 0.6} w 0.1 0.15 0.13 RG ${PDF_RAND} ${y.toFixed(2)} m ${(PDF_BREITE - PDF_RAND).toFixed(2)} ${y.toFixed(2)} l S\n`;
+    y -= 10;
+  };
+  const kasten = (hoehe) => {
+    platzPruefen(hoehe + 6);
+    strom += `0.72 0.78 0.76 RG 0.8 w [3 3] 0 d ${PDF_RAND} ${(y - hoehe).toFixed(2)} ${(PDF_BREITE - 2 * PDF_RAND).toFixed(2)} ${hoehe} re S [] 0 d\n`;
+    y -= hoehe + 12;
+  };
+  return {
+    get seiten(){ return strom ? seiten.concat([strom]) : seiten; },
+    neueSeite, schreibe, linie, kasten,
+    luft: (n) => { y -= n; },
+    /* Wie hoch wird dieser Absatz? Damit lässt sich vorher fragen, ob eine
+       ganze Aufgabe noch auf die Seite passt. */
+    hoeheVon: (html, groesse, x, zeilenhoehe) =>
+      pdfUmbrechen(pdfStuecke(html), PDF_BREITE - PDF_RAND - x - PDF_RAND, groesse).length
+        * (zeilenhoehe || groesse * 1.42),
+    /* Passt der ganze Block nicht mehr, lieber gleich eine neue Seite —
+       eine Aufgabe soll nicht mitten im Satz umbrechen. */
+    platzFuer: (hoehe) => { if (y - hoehe < PDF_UNTEN) neueSeite(); },
+    absatz: (html, groesse, x, grau, zeilenhoehe) => {
+      const breite = PDF_BREITE - PDF_RAND - x - PDF_RAND;
+      schreibe(pdfUmbrechen(pdfStuecke(html), breite, groesse), x, groesse, zeilenhoehe || groesse * 1.42, grau);
+    },
+    rechts: (text, groesse) => {
+      const b = pdfBreite(text, groesse, false);
+      strom += `BT /F1 ${groesse} Tf 0.36 0.42 0.40 rg 1 0 0 1 ${(PDF_BREITE - PDF_RAND - b).toFixed(2)} ${(y - groesse).toFixed(2)} Tm (${pdfText(text)}) Tj ET\n`;
+    },
+    namenslinie: () => {
+      strom += `0.1 0.15 0.13 RG 0.8 w ${(PDF_BREITE - PDF_RAND - 150).toFixed(2)} ${(y - 16).toFixed(2)} m ${(PDF_BREITE - PDF_RAND).toFixed(2)} ${(y - 16).toFixed(2)} l S\n`;
+    }
+  };
+}
+
+/* ---------- Aus den Objekten eine Datei machen ---------- */
+function pdfDatei(seiten){
+  const objekte = [];
+  const dazu = (inhalt) => { objekte.push(inhalt); return objekte.length; };
+
+  const katalog = dazu(null);            /* 1 */
+  const baum    = dazu(null);            /* 2 */
+  const f1 = dazu("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
+  const f2 = dazu("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
+
+  const seitenNr = [];
+  for (const strom of seiten){
+    const inhaltNr = dazu(`<< /Length ${strom.length} >>\nstream\n${strom}endstream`);
+    const seiteNr = dazu(`<< /Type /Page /Parent ${baum} 0 R /MediaBox [0 0 ${PDF_BREITE} ${PDF_HOEHE}] ` +
+      `/Resources << /Font << /F1 ${f1} 0 R /F2 ${f2} 0 R >> >> /Contents ${inhaltNr} 0 R >>`);
+    seitenNr.push(seiteNr);
+  }
+  objekte[katalog - 1] = `<< /Type /Catalog /Pages ${baum} 0 R >>`;
+  objekte[baum - 1] = `<< /Type /Pages /Kids [${seitenNr.map(n => n + " 0 R").join(" ")}] /Count ${seitenNr.length} >>`;
+
+  let datei = "%PDF-1.4\n";
+  const stellen = [];
+  objekte.forEach((inhalt, i) => {
+    stellen.push(datei.length);
+    datei += `${i + 1} 0 obj\n${inhalt}\nendobj\n`;
+  });
+  const xref = datei.length;
+  datei += `xref\n0 ${objekte.length + 1}\n0000000000 65535 f \n`;
+  stellen.forEach(s => { datei += String(s).padStart(10, "0") + " 00000 n \n"; });
+  datei += `trailer\n<< /Size ${objekte.length + 1} /Root ${katalog} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+
+  const bytes = new Uint8Array(datei.length);
+  for (let i = 0; i < datei.length; i++) bytes[i] = datei.charCodeAt(i) & 0xff;
+  return new Blob([bytes], {type: "application/pdf"});
+}
+
+/* ---------- Das Arbeitsblatt als PDF ---------- */
+function abPdfBauen(){
+  if (!abBlatt) return null;
+  const titel = abThemen.length === 1 ? abThemen[0]
+    : `${KATALOG[abFach].name} ${stufenText(abFach, abKlasse)}`;
+  const s = pdfSetzer();
+
+  s.rechts("Name", 8.5);
+  s.namenslinie();
+  s.absatz(`<b>${titel}</b>`, 18, PDF_RAND, false, 22);
+  s.absatz(`${KATALOG[abFach].name} · ${stufenText(abFach, abKlasse)}` +
+           (abThemen.length > 1 ? " · " + abThemen.join(", ") : ""), 9.5, PDF_RAND, true, 13);
+  s.luft(4); s.linie(true);
+
+  abBlatt.forEach((e, i) => {
+    /* Erst ausrechnen, wie hoch die ganze Aufgabe wird — Nummer, Text,
+       Hilfefragen und Schreibkasten — und nur dann hier anfangen, wenn das
+       alles noch auf die Seite passt. */
+    let hoehe = 4 + 56 + 16;
+    if (abThemen.length > 1) hoehe += s.hoeheVon(e.thema, 7.5, PDF_RAND, 10);
+    hoehe += s.hoeheVon(`<b>${i + 1}.</b>  ${e.aufgabe.text}`, 11.5, PDF_RAND, 16);
+    if (abHilfen && e.hilfen && e.hilfen.length){
+      hoehe += s.hoeheVon("<b>Wenn du nicht weiterkommst:</b>", 8.5, PDF_RAND + 14, 12);
+      e.hilfen.forEach(f => { hoehe += s.hoeheVon("· " + f, 8.5, PDF_RAND + 14, 12); });
+    }
+    s.platzFuer(hoehe);
+    s.luft(4);
+    if (abThemen.length > 1) s.absatz(e.thema.toUpperCase(), 7.5, PDF_RAND, true, 10);
+    s.absatz(`<b>${i + 1}.</b>  ${e.aufgabe.text}`, 11.5, PDF_RAND, false, 16);
+    if (abHilfen && e.hilfen && e.hilfen.length){
+      s.luft(2);
+      s.absatz("<b>Wenn du nicht weiterkommst:</b>", 8.5, PDF_RAND + 14, true, 12);
+      e.hilfen.forEach(f => s.absatz("· " + f, 8.5, PDF_RAND + 14, true, 12));
+    }
+    s.luft(4);
+    s.kasten(56);
+  });
+
+  s.luft(6); s.linie(false);
+  s.absatz("Endlich kapiert · endlichkapiert.com — nie die Lösung, nur Fragen, die hinführen.",
+    8, PDF_RAND, true, 11);
+
+  if (abLoesungen){
+    s.neueSeite();
+    s.absatz("<b>Lösungen</b>", 18, PDF_RAND, false, 22);
+    s.absatz(`${titel} · zum Abtrennen`, 9.5, PDF_RAND, true, 13);
+    s.luft(4); s.linie(true); s.luft(4);
+    abBlatt.forEach((e, i) => {
+      s.absatz(`<b>${i + 1}.  ${e.aufgabe.loesung}</b>`, 11.5, PDF_RAND, false, 15);
+      if (e.aufgabe.schluss) s.absatz(e.aufgabe.schluss, 8.5, PDF_RAND + 14, true, 11.5);
+      s.luft(5);
+    });
+    s.luft(4); s.linie(false);
+    s.absatz("Nur die Ergebnisse. Der Weg dorthin steht in der App — dort wird gefragt statt vorgesagt.",
+      8, PDF_RAND, true, 11);
+  }
+  return pdfDatei(s.seiten);
+}
+function abPdfName(){
+  const titel = abThemen.length === 1 ? abThemen[0]
+    : `${KATALOG[abFach].name} ${stufenText(abFach, abKlasse)}`;
+  return "Arbeitsblatt " + titel.replace(/[\\/:*?"<>|]/g, "") + ".pdf";
+}
+function abPdfSpeichern(){
+  const blob = abPdfBauen();
+  if (!blob) return;
+  const adresse = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = adresse; a.download = abPdfName();
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(adresse), 4000);
 }
 
 /* ---------- Prüfungsmodus ----------
