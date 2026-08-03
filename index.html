@@ -860,10 +860,10 @@
 
   /* ---------- Baustellenband und Hinweis ---------- */
   /* Früher ein knallgelbes Absperrband mit schrägen Streifen und Warndreieck.
-     Bei 125 von 140 fertigen Themen sagt das etwas Falsches: Es liest sich
-     wie eine Störungsmeldung, dabei ist die Seite zu neun Zehnteln fertig.
-     Jetzt ein ruhiger Streifen, der dieselbe Zahl nennt — ehrlich bleibt es,
-     nur schreit es nicht mehr. */
+     Bei über zweihundert fertigen Themen sagt das etwas Falsches: Es liest sich
+     wie eine Störungsmeldung, dabei ist fast alles da. Jetzt ein ruhiger
+     Streifen, der dieselbe Zahl nennt — ehrlich bleibt es, nur schreit es
+     nicht mehr. */
   .baustelle{position:relative;background:var(--amber-soft);
     color:var(--amber);display:flex;align-items:center;justify-content:center;
     gap:10px;flex-wrap:wrap;padding:8px 20px;font-size:13.5px;line-height:1.4;
@@ -12986,6 +12986,13 @@ function vokabelListe(klasse, thema){
 }
 /* Wie viele Wörter gibt es insgesamt? Steht auf der Übersichtsseite. */
 function vokabelAnzahl(){ return vokabelListe("alle").length; }
+
+/* Wie viele Vokabelthemen gibt es je Klasse? Der Baustellenstand hat sie lange
+   übersehen und die Seite dadurch kleiner gerechnet, als sie ist. */
+function vokThemenZahl(klasse){ return Object.keys(VOKABELN[klasse] || {}).length; }
+function vokThemenGesamt(){
+  return Object.keys(VOKABELN).reduce((a, k) => a + vokThemenZahl(k), 0);
+}
 
 const ERKLAERUNGEN = {
 
@@ -27123,7 +27130,7 @@ function fussleisteHtml(){
       ${/* Damit man auf einen Blick sieht, welche Fassung gerade geladen ist.
             Sonst rätselt man, ob eine Änderung schon draußen ist oder ob der
             Browser noch die alte Seite aus dem Zwischenspeicher zeigt. */""}
-      <p class="fussstand">Fassung ${STAND} · ${baustelleStand().fertig} von ${baustelleStand().gesamt} Themen fertig</p>
+      <p class="fussstand">Fassung ${STAND} · ${z(baustelleStand().fertig)} Themen fertig</p>
     </footer>`;
 }
 /* ---------- Startseite der App (Übersicht) ---------- */
@@ -27318,6 +27325,8 @@ function uebersichtHtml(){
       ${Object.entries(KATALOG).map(([k, v]) => {
         let fertig = 0;
         for (const liste of Object.values(v.themen)) fertig += liste.filter(t => AUFGABEN[t]).length;
+        /* Englisch ist mehr als seine Grammatikthemen — die Vokabeln gehören dazu. */
+        if (k === "englisch") fertig += vokThemenGesamt();
         return navLink(`/${k}`, `waehleFach('${k}')`, `
           <span class="einstiegzeichen">${v.name[0]}</span>
           <b>${v.name}</b>
@@ -27606,9 +27615,22 @@ function baustelleStand(){
     const gesamt = klassen.reduce((a,z) => a + z.gesamt, 0);
     return {schluessel, name: f.name, klassen, fertig, gesamt};
   });
+  /* Die Vokabeln sind ein eigener Bereich mit eigenen Themen. Sie fehlten im
+     Stand, und deshalb stand oben eine Zahl, die nicht stimmte: Sie zählte nur
+     die Aufgabenthemen und tat so, als sei bei einer festen Zahl Schluss.
+     Beides ist falsch — der Bereich wächst weiter. */
+  const vokKlassen = Object.keys(VOKABELN).map(k => {
+    const n = vokThemenZahl(k);
+    return {klasse: k, fertig: n, gesamt: n, stand: "fertig"};
+  });
+  const vokSumme = vokThemenGesamt();
+  faecher.push({schluessel: "vokabeln", name: "Englisch · Vokabeln",
+    klassen: vokKlassen, fertig: vokSumme, gesamt: vokSumme});
+
   const fertig = faecher.reduce((a,f) => a + f.fertig, 0);
   const gesamt = faecher.reduce((a,f) => a + f.gesamt, 0);
-  return {faecher, fertig, gesamt, prozent: gesamt ? Math.round(fertig / gesamt * 100) : 0};
+  return {faecher, fertig, gesamt, offen: gesamt - fertig,
+    prozent: gesamt ? Math.round(fertig / gesamt * 100) : 0};
 }
 
 /* Fächer, die noch gar nicht angefangen sind */
@@ -27629,9 +27651,9 @@ function wartungBandHtml(){
   const s = baustelleStand();
   return `
     <div class="baustelle">
-      <span class="btext"><b>${s.fertig} von ${s.gesamt} Themen</b>
-        <span class="nurbreit">sind fertig — die übrigen kommen nach und nach.</span>
-        <span class="nurschmal">fertig.</span></span>
+      <span class="btext"><b>${z(s.fertig)} Themen sind fertig</b><span
+          class="nurschmal">, ${z(s.offen)} in Arbeit.</span><span
+          class="nurbreit"> — ${z(s.offen)} fehlen noch, und es kommen laufend neue dazu.</span></span>
       ${navLink("/baustelle", "zeigeSeite('baustelle')",
         `<span class="nurbreit">Was ist schon fertig?</span><span class="nurschmal">mehr</span>`, "bknopf")}
       <button class="bknopf" onclick="wartungZeigen()">Was heißt das?</button>
@@ -27651,7 +27673,8 @@ function baustelleBoxHtml(){
       <p>Alles, was du hier findest, funktioniert schon richtig — es ist nur noch nicht alles da.
          Hier siehst du jederzeit, woran gerade gebaut wird.</p>
       <div class="baubalken"><i style="width:${s.prozent}%"></i></div>
-      <p class="small">${s.fertig} von ${s.gesamt} Themen fertig (${s.prozent} %)</p>
+      <p class="small">${z(s.fertig)} Themen sind fertig, ${z(s.offen)} fehlen noch.
+        Es kommen laufend neue dazu — das hier ist kein Ziel, das irgendwann erreicht ist.</p>
 
       <div class="baufaecher">
         ${s.faecher.map(f => `
@@ -27689,7 +27712,8 @@ function baustelleSeiteHtml(){
         was schon geht und was nicht, steht hier der ehrliche Stand — er rechnet sich
         automatisch aus dem aus, was wirklich in der Seite drin ist.</p>
       <div class="baubalken" style="margin-top:18px"><i style="width:${s.prozent}%"></i></div>
-      <p class="small soft">${s.fertig} von ${s.gesamt} Themen fertig (${s.prozent} %)</p>
+      <p class="small soft">${z(s.fertig)} Themen sind fertig, ${z(s.offen)} fehlen noch.
+        Die Gesamtzahl ist keine Ziellinie: Sobald ein neues Thema dazukommt, wächst sie mit.</p>
     </div>
 
     ${s.faecher.map(f => `
@@ -30320,7 +30344,7 @@ function render(gewaehlt){
               ${navLink("/vokabeln", "zeigeVokabeln()", `
                 <span class="unterzeichen">Aa</span>
                 <span class="untertext"><b>Vokabeln</b>
-                  <span>${z(vokabelAnzahl())} Wörter · eigener Trainer</span></span>
+                  <span>${z(vokabelAnzahl())} Wörter in ${z(vokThemenGesamt())} Themen</span></span>
               `, "unterpunkt")}
             </div>`;
           }).join("")}
@@ -31060,7 +31084,8 @@ function willkommenHtml(){
             <div><b>${v.langname || v.name}</b>
               <span>${stufenwort(k) === "Lehrjahr" ? stufen[0] + ". bis " + stufen[stufen.length - 1] + ". Lehrjahr"
                                                    : "Klasse " + stufen[0] + " bis " + stufen[stufen.length - 1]}
-                · ${fertig} von ${gesamt} Themen fertig${k === "englisch" ? " · dazu " + z(vokabelAnzahl()) + " Vokabeln" : ""}</span></div>
+                · ${fertig} von ${gesamt} Themen fertig${k === "englisch"
+                    ? " · dazu " + z(vokThemenGesamt()) + " Vokabelthemen" : ""}</span></div>
           </div>`;
         }).join("")}
       </div>
