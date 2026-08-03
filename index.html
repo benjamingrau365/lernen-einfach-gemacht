@@ -251,6 +251,28 @@
   .fortschritt{display:flex;gap:5px;margin-bottom:18px}
   .fortschritt i{flex:1;height:5px;border-radius:3px;background:var(--line)}
   .fortschritt i.an{background:var(--fach)}
+  /* Eigene Wörter — als das erkennbar, was sie sind: deine, nicht unsere */
+  .vokeigen{border:1.5px dashed var(--englisch);background:var(--englisch-soft)}
+  .vokeigen .tag{background:var(--englisch);color:#fff}
+  .vokknopf.eigen{border-style:dashed;border-color:var(--englisch);color:var(--englisch-dark)}
+  .vokknopf.eigen.an{background:var(--englisch-soft);border-style:solid}
+  .vokmeldung{border-color:var(--gut);background:var(--gut-soft);color:var(--gut-dark)}
+  .eigfeld{display:block;margin-bottom:12px}
+  .eigfeld span{display:block;font-size:13.5px;font-weight:700;color:var(--soft);margin-bottom:5px}
+  .eigfeld span i{font-weight:500;font-style:normal}
+  .eigfeld .feld{width:100%}
+  .eigblock{width:100%;min-height:120px;line-height:1.5;resize:vertical;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px}
+  .eigkopf{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .eigliste{margin-top:10px}
+  .eigzeile{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:9px 0;border-bottom:1px solid var(--line)}
+  .eigzeile:last-child{border-bottom:none}
+  .eigzeile b{display:block;font-size:15.5px}
+  .eigzeile span{display:block;font-size:13.5px;color:var(--soft)}
+  .eigweg{flex:none;width:32px;height:32px;border-radius:9px;border:1.5px solid var(--line);
+    background:var(--card);color:var(--soft);font-size:18px;line-height:1;cursor:pointer;font-family:inherit}
+  .eigweg:hover{border-color:var(--red);color:var(--red)}
 
   .feedback{border-radius:12px;padding:15px 17px;margin:16px 0 0;font-size:16px}
   .feedback.ok{background:var(--gut-soft);color:var(--gut-dark)}
@@ -11259,8 +11281,43 @@ const VOKABELN = {
   }
 };
 
-/* Alle Wörter einer Klasse — oder aller Klassen — als flache Liste */
+/* ---------- Eigene Wörter ----------
+   Die mitgelieferten Listen decken nie das ab, was am Freitag drankommt.
+   Deshalb kann jeder seine eigenen Wörter hinschreiben — einzeln oder als
+   ganze Liste aus dem Heft. Sie liegen im Browser auf diesem Gerät; ohne
+   Konto verlässt nichts davon das Handy. */
+let EIGENE = [];
+function eigeneLaden(){
+  try {
+    const roh = JSON.parse(localStorage.getItem("ek_eigene_woerter") || "[]");
+    EIGENE = Array.isArray(roh) ? roh.filter(w => w && w.en && w.de) : [];
+  } catch(e){ EIGENE = []; }
+}
+function eigeneSichern(){
+  try { localStorage.setItem("ek_eigene_woerter", JSON.stringify(EIGENE)); } catch(e){}
+}
+/* Die Namen aller eigenen Listen, in der Reihenfolge, in der sie angelegt wurden */
+function eigeneListen(){
+  const raus = [];
+  EIGENE.forEach(w => { if (!raus.includes(w.liste)) raus.push(w.liste); });
+  return raus;
+}
+/* Gibt es dieses Wort in dieser Liste schon? Dann nicht doppelt anlegen. */
+function eigenesDoppelt(en, de, liste){
+  const putz = (s) => String(s).toLowerCase().trim();
+  return EIGENE.some(w => w.liste === liste && putz(w.en) === putz(en) && putz(w.de) === putz(de));
+}
+eigeneLaden();
+
+/* Alle Wörter einer Klasse — oder aller Klassen — als flache Liste.
+   „eigene“ ist dabei wie eine weitere Klasse, damit der Trainer nichts
+   Besonderes können muss. */
 function vokabelListe(klasse, thema){
+  if (String(klasse) === "eigene"){
+    return EIGENE
+      .filter(w => !thema || thema === "alle" || w.liste === thema)
+      .map(w => ({en:w.en, de:w.de, satz:w.satz || "", klasse:"eigene", thema:w.liste, eigen:true}));
+  }
   const raus = [];
   const klassen = klasse === "alle" ? Object.keys(VOKABELN) : [String(klasse)];
   klassen.forEach(k => {
@@ -24354,12 +24411,20 @@ function kopfleisteHtml(){
 
 function menueHtml(){
   if (!menueOffen) return "";
-  const klassen = f => stufenVon(f).map(k => {
-    const fertig = KATALOG[f].themen[k].filter(t => AUFGABEN[t]).length;
-    const label = `${stufenText(f, k)}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>`;
-    return navLink(`/${f}/${k}`, `menueLernen('${f}', ${k})`, label, "mpunkt unter",
-      `--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)`);
-  }).join("");
+  const klassen = f => {
+    const farbe = `--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)`;
+    const stufen = stufenVon(f).map(k => {
+      const fertig = KATALOG[f].themen[k].filter(t => AUFGABEN[t]).length;
+      const label = `${stufenText(f, k)}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>`;
+      return navLink(`/${f}/${k}`, `menueLernen('${f}', ${k})`, label, "mpunkt unter", farbe);
+    }).join("");
+    /* Unterbereiche stehen im Menü bei den Klassen — sonst findet sie dort
+       niemand, weil man dort ja gerade sucht, was es zum Fach gibt. */
+    if (!KATALOG[f].vokabeln) return stufen;
+    return stufen + navLink("/vokabeln", "zeigeVokabeln();menueSchliessen()",
+      `Vokabeln<span>${z(vokabelAnzahl())} Wörter${EIGENE.length ? " + " + z(EIGENE.length) + " eigene" : ""}</span>`,
+      "mpunkt unter", farbe);
+  };
 
   return `
     <div class="menuegrund" onclick="menueSchliessen()"></div>
@@ -25799,6 +25864,7 @@ function vokMischen(liste){
   return k;
 }
 function vokThemenFuer(klasse){
+  if (String(klasse) === "eigene") return eigeneListen();
   const raus = new Set();
   const klassen = klasse === "alle" ? Object.keys(VOKABELN) : [String(klasse)];
   klassen.forEach(k => Object.keys(VOKABELN[k] || {}).forEach(t => raus.add(t)));
@@ -25854,6 +25920,89 @@ function vokWeiter(){
 }
 function vokAbbrechen(){ ansicht = "vokabeln"; render(); }
 function zeigeVokabeln(){ menueOffen = false; ansicht = "vokabeln"; render(); }
+
+/* ---------- Eigene Wörter anlegen ---------- */
+let eigListe = "";        /* in welche Liste wird gerade geschrieben */
+let eigMeldung = "";      /* kurze Rückmeldung über der Eingabe */
+let eigLinksDeutsch = false;  /* beim Einfügen: steht links Englisch oder Deutsch? */
+
+function zeigeEigene(){ menueOffen = false; eigMeldung = ""; ansicht = "vokabelnEigene"; render(); }
+
+function eigListeName(){
+  const feld = document.getElementById("eigListeFeld");
+  const name = ((feld && feld.value) || eigListe || "").trim();
+  return name || "Meine Wörter";
+}
+/* Ein einzelnes Wort dazu */
+function eigHinzu(){
+  const en = (document.getElementById("eigEn").value || "").trim();
+  const de = (document.getElementById("eigDe").value || "").trim();
+  const satz = (document.getElementById("eigSatz").value || "").trim();
+  const liste = eigListeName();
+  if (!en || !de){ eigMeldung = "Es fehlt noch das englische oder das deutsche Wort."; render(); return; }
+  if (eigenesDoppelt(en, de, liste)){ eigMeldung = `„${en}“ steht in „${liste}“ schon drin.`; render(); return; }
+  EIGENE.push({en, de, satz, liste});
+  eigneSichernUndMelden(`„${en}“ ist in „${liste}“ dazugekommen.`, liste);
+}
+/* Eine ganze Liste aus dem Heft einfügen — eine Zeile je Wortpaar */
+function eigEinfuegen(){
+  const text = (document.getElementById("eigBlock").value || "");
+  const liste = eigListeName();
+  const {woerter, verworfen} = eigZeilenLesen(text, eigLinksDeutsch);
+  let neu = 0, doppelt = 0;
+  woerter.forEach(w => {
+    if (eigenesDoppelt(w.en, w.de, liste)){ doppelt++; return; }
+    EIGENE.push({en:w.en, de:w.de, satz:"", liste}); neu++;
+  });
+  if (!neu && !doppelt && !verworfen){ eigMeldung = "In dem Feld stand nichts Lesbares."; render(); return; }
+  const teile = [`${neu} ${neu === 1 ? "Wort" : "Wörter"} in „${liste}“ übernommen`];
+  if (doppelt)  teile.push(`${doppelt} ${doppelt === 1 ? "stand" : "standen"} schon drin`);
+  if (verworfen) teile.push(`${verworfen} ${verworfen === 1 ? "Zeile war" : "Zeilen waren"} nicht als Paar lesbar`);
+  const feld = document.getElementById("eigBlock"); if (feld) feld.value = "";
+  eigneSichernUndMelden(teile.join(", ") + ".", liste);
+}
+/* Zeilen zu Wortpaaren machen. Getrennt wird an Tabulator, =, ; oder einem
+   Bindestrich mit Leerzeichen — nicht an jedem Bindestrich, sonst zerfällt
+   „e-mail“. Kommas bleiben unangetastet, sie trennen zulässige Bedeutungen. */
+function eigZeilenLesen(text, linksDeutsch){
+  const woerter = []; let verworfen = 0;
+  String(text).split(/\r?\n/).forEach(zeile => {
+    const z = zeile.trim();
+    if (!z) return;
+    const teile = z.split(/\t+|\s*=\s*|\s*;\s*|\s+[-–—]\s+/).map(x => x.trim()).filter(Boolean);
+    if (teile.length < 2){ verworfen++; return; }
+    const links = teile[0], rechts = teile.slice(1).join(", ");
+    woerter.push(linksDeutsch ? {en:rechts, de:links} : {en:links, de:rechts});
+  });
+  return {woerter, verworfen};
+}
+function eigneSichernUndMelden(text, liste){
+  eigeneSichern();
+  eigListe = liste; eigMeldung = text;
+  ["eigEn", "eigDe", "eigSatz"].forEach(id => { const f = document.getElementById(id); if (f) f.value = ""; });
+  render();
+  const f = document.getElementById("eigEn"); if (f) f.focus();
+}
+function eigLoeschen(nr){
+  const w = EIGENE[nr];
+  if (!w) return;
+  EIGENE.splice(nr, 1); eigeneSichern();
+  eigMeldung = `„${w.en}“ ist gelöscht.`;
+  render();
+}
+function eigListeLoeschen(liste){
+  const anzahl = EIGENE.filter(w => w.liste === liste).length;
+  if (!confirm(`„${liste}“ mit ${anzahl} ${anzahl === 1 ? "Wort" : "Wörtern"} wirklich löschen?`)) return;
+  EIGENE = EIGENE.filter(w => w.liste !== liste); eigeneSichern();
+  if (eigListe === liste) eigListe = "";
+  eigMeldung = `„${liste}“ ist gelöscht.`;
+  render();
+}
+/* Direkt aus der Liste heraus üben */
+function eigUeben(liste){
+  vokKlasse = "eigene"; vokThema = liste || "alle";
+  vokStarten();
+}
 function vokRichtungWechseln(){
   vokRichtung = vokRichtung === "de2en" ? "en2de" : "de2en";
   render();
@@ -25873,12 +26022,24 @@ function vokabelnHtml(){
         Auch hier bekommst du die Lösung nie einfach hingelegt — die Hilfe kommt in Stufen.</p>
     </div>
 
+    <div class="card vokeigen">
+      <span class="tag">Deine Wörter</span>
+      <h2 style="margin:8px 0 6px">Selbst hinschreiben</h2>
+      <p class="soft" style="margin:0 0 14px">Die Wörter, die bei dir am Freitag drankommen, stehen hier natürlich nicht.
+        Schreib sie selbst hin — einzeln oder die ganze Liste aus dem Heft auf einmal.
+        ${EIGENE.length ? `Du hast schon <b>${z(EIGENE.length)}</b> eigene ${EIGENE.length === 1 ? "Wort" : "Wörter"} in
+          ${z(eigeneListen().length)} ${eigeneListen().length === 1 ? "Liste" : "Listen"}.` : ""}</p>
+      ${navLink("/vokabeln/eigene", "zeigeEigene()", EIGENE.length ? "Eigene Wörter verwalten" : "Eigene Wörter anlegen", "btn full")}
+    </div>
+
     <div class="card">
       <p class="ueberschrift">Klasse</p>
       <div class="vokwahl">
         ${["alle", 5, 6, 7, 8, 9, 10].map(k =>
           `<button class="vokknopf ${String(vokKlasse) === String(k) ? "an" : ""}"
                    onclick="vokKlasse='${k}';vokThema='alle';render()">${k === "alle" ? "alle" : "Klasse " + k}</button>`).join("")}
+        ${EIGENE.length ? `<button class="vokknopf eigen ${vokKlasse === "eigene" ? "an" : ""}"
+                   onclick="vokKlasse='eigene';vokThema='alle';render()">meine ${z(EIGENE.length)}</button>` : ""}
       </div>
     </div>
 
@@ -25909,6 +26070,94 @@ function vokabelnHtml(){
     </div>`;
 }
 
+/* ---------- Eigene Wörter: anlegen und verwalten ---------- */
+function vokabelnEigeneHtml(){
+  const listen = eigeneListen();
+  const offen = eigListe || listen[0] || "";
+  const sicher = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const js = (s) => JSON.stringify(String(s)).replace(/"/g, "&quot;");
+
+  return `
+    <div class="card">
+      ${navLink("/vokabeln", "zeigeVokabeln()", "← Zurück zu den Vokabeln", "zurueck")}
+      <span class="tag">Englisch · Vokabeln</span>
+      <h1>Deine eigenen Wörter</h1>
+      <p class="soft" style="margin:10px 0 0">Schreib hier die Wörter hin, die bei dir wirklich drankommen.
+        Du übst sie danach genauso wie die mitgelieferten — mit derselben Hilfe in Stufen.</p>
+      <p class="small soft" style="margin:10px 0 0">Sie liegen in diesem Browser auf diesem Gerät.
+        Wenn du den Browserspeicher löschst, sind sie weg.</p>
+    </div>
+
+    ${eigMeldung ? `<div class="card vokmeldung"><p style="margin:0">${sicher(eigMeldung)}</p></div>` : ""}
+
+    <div class="card">
+      <p class="ueberschrift">In welche Liste?</p>
+      <input class="feld" id="eigListeFeld" type="text" maxlength="40"
+             placeholder="zum Beispiel: Unit 3 · Test am Freitag"
+             value="${sicher(offen)}" oninput="eigListe=this.value">
+      ${listen.length ? `<div class="vokwahl" style="margin-top:10px">
+        ${listen.map(l => `<button class="vokknopf ${l === offen ? "an" : ""}"
+          onclick="eigListe=${js(l)};render()">${sicher(l)}</button>`).join("")}
+      </div>` : ""}
+      <p class="small soft" style="margin:12px 0 0">Ein Name hilft dir später beim Wiederfinden.
+        Lässt du das Feld leer, heißt die Liste „Meine Wörter“.</p>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Ein Wort dazu</p>
+      <label class="eigfeld"><span>Englisch</span>
+        <input class="feld" id="eigEn" type="text" maxlength="60" autocomplete="off"
+               autocorrect="off" autocapitalize="none" spellcheck="false"
+               placeholder="screwdriver" onkeydown="if(event.key==='Enter')document.getElementById('eigDe').focus()"></label>
+      <label class="eigfeld"><span>Deutsch</span>
+        <input class="feld" id="eigDe" type="text" maxlength="60" autocomplete="off"
+               placeholder="der Schraubendreher" onkeydown="if(event.key==='Enter')eigHinzu()"></label>
+      <label class="eigfeld"><span>Beispielsatz <i>(freiwillig)</i></span>
+        <input class="feld" id="eigSatz" type="text" maxlength="120" autocomplete="off"
+               autocorrect="off" autocapitalize="none" spellcheck="false"
+               placeholder="Pass me the ___, please." onkeydown="if(event.key==='Enter')eigHinzu()"></label>
+      <p class="small soft" style="margin:0 0 12px">Setz im Beispielsatz drei Unterstriche dorthin, wo das Wort steht.
+        Der Satz ist die dritte Hilfestufe — er zeigt das Wort im Zusammenhang, ohne es zu verraten.</p>
+      <button class="btn full" onclick="eigHinzu()">Wort übernehmen</button>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Oder gleich die ganze Liste</p>
+      <p class="small soft" style="margin:0 0 12px">Eine Zeile je Wortpaar. Zwischen beiden Wörtern
+        ein Gleichheitszeichen, ein Semikolon, ein Tabulator oder ein Bindestrich mit Leerzeichen davor und dahinter.</p>
+      <textarea class="feld eigblock" id="eigBlock" rows="7" spellcheck="false"
+        placeholder="screwdriver = der Schraubendreher&#10;pliers = die Zange&#10;fuse = die Sicherung"></textarea>
+      <div class="vokwahl" style="margin-top:10px">
+        <button class="vokknopf ${eigLinksDeutsch ? "" : "an"}" onclick="eigLinksDeutsch=false;render()">links steht Englisch</button>
+        <button class="vokknopf ${eigLinksDeutsch ? "an" : ""}" onclick="eigLinksDeutsch=true;render()">links steht Deutsch</button>
+      </div>
+      <button class="btn full" style="margin-top:12px" onclick="eigEinfuegen()">Liste übernehmen</button>
+    </div>
+
+    ${listen.length ? listen.map(l => {
+      const drin = EIGENE.map((w, i) => ({w, i})).filter(x => x.w.liste === l);
+      return `
+      <div class="card">
+        <div class="eigkopf">
+          <p class="ueberschrift" style="margin:0">${sicher(l)}</p>
+          <span class="pill neutral">${z(drin.length)} ${drin.length === 1 ? "Wort" : "Wörter"}</span>
+        </div>
+        <div class="eigliste">
+          ${drin.map(x => `<div class="eigzeile">
+            <div><b>${sicher(x.w.en)}</b><span>${sicher(x.w.de)}</span></div>
+            <button class="eigweg" title="Wort löschen" onclick="eigLoeschen(${x.i})">×</button>
+          </div>`).join("")}
+        </div>
+        <button class="btn full" style="margin-top:12px" onclick="eigUeben(${js(l)})">Diese Liste üben</button>
+        <button class="btn ghost full" style="margin-top:8px" onclick="eigListeLoeschen(${js(l)})">Ganze Liste löschen</button>
+      </div>`;
+    }).join("") : `
+      <div class="card">
+        <p class="soft" style="margin:0">Noch keine eigenen Wörter. Sobald du das erste übernommen hast,
+          steht es hier — und du kannst es sofort üben.</p>
+      </div>`}`;
+}
+
 /* ---------- Übungsseite ---------- */
 function vokUebenHtml(){
   const v = vokAktuell();
@@ -25921,7 +26170,11 @@ function vokUebenHtml(){
     /\s/.test(nackt) ? ` in ${z(nackt.split(/\s+/).length)} Wörtern` : ""}</p>`);
   if (vokHilfe >= 2) hilfen.push(`<p class="vokhilfe"><b>Anfang:</b> ${nackt.charAt(0).toUpperCase()}${
     nackt.slice(1).replace(/[^\s]/g, "·")}</p>`);
-  if (vokHilfe >= 3) hilfen.push(`<p class="vokhilfe"><b>Im Satz:</b> <i>${v.satz}</i></p>`);
+  /* Eigene Wörter haben oft keinen Beispielsatz — dann fällt diese Stufe aus,
+     statt eine leere Zeile zu zeigen. */
+  if (vokHilfe >= 3) hilfen.push(v.satz
+    ? `<p class="vokhilfe"><b>Im Satz:</b> <i>${v.satz}</i></p>`
+    : `<p class="vokhilfe"><b>Im Satz:</b> <span class="soft">Zu diesem Wort hast du keinen Beispielsatz hinterlegt.</span></p>`);
   if (vokHilfe >= 4) hilfen.push(`<p class="vokhilfe"><b>Das Wort heißt:</b> ${loesung}<br>
     <span class="small soft">Schreib es trotzdem selbst hin — nur dann bleibt es hängen.</span></p>`);
 
@@ -25932,7 +26185,7 @@ function vokUebenHtml(){
         `<i class="${i < vokNr ? "an" : ""}"></i>`).join("")}</div>
       <div class="vokkopf">
         <span class="tag">Wort ${z(vokNr + 1)} von ${z(vokStapel.length)}</span>
-        <span class="small soft">${v.thema} · Klasse ${z(v.klasse)}</span>
+        <span class="small soft">${v.thema}${v.eigen ? " · deine Liste" : " · Klasse " + z(v.klasse)}</span>
       </div>
     </div>
 
@@ -25960,7 +26213,7 @@ function vokUebenHtml(){
       <p style="margin:8px 0 0">${vokRichtung === "de2en" ? v.de : v.en} &nbsp;→&nbsp; <b>${loesung}</b></p>
       ${vokStand === "falsch" ? `<p class="small soft" style="margin:10px 0 0">Du hattest „${vokEingabe.replace(/</g, "&lt;")}" geschrieben.
         Das Wort kommt am Ende noch einmal dran.</p>` : ""}
-      <p class="small soft" style="margin:10px 0 0"><i>${v.satz.replace("___", "<b>" + loesung.replace(/^(der|die|das|to|a|an|the)\s+/i, "") + "</b>")}</i></p>
+      ${v.satz ? `<p class="small soft" style="margin:10px 0 0"><i>${v.satz.replace("___", "<b>" + loesung.replace(/^(der|die|das|to|a|an|the)\s+/i, "") + "</b>")}</i></p>` : ""}
       <button class="btn full" style="margin-top:14px" onclick="vokWeiter()">Weiter</button>
     </div>`}`;
 }
@@ -26016,6 +26269,7 @@ function pfadFuer(a, f, k){
     case "vokabeln":
     case "vokabelnUeben":
     case "vokabelnFertig": return "/vokabeln";
+    case "vokabelnEigene": return "/vokabeln/eigene";
     case "dashboard":    return "/dashboard";
     case "baustelle":    return "/baustelle";
     case "passwortNeu":  return "/passwort-neu";
@@ -26039,6 +26293,8 @@ function ansichtAusPfad(){
     faq:"faq", ueber:"ueber", warum:"warum", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
     konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle",
     vokabeln:"vokabeln"};
+  /* /vokabeln/eigene ist die einzige Adresse mit zweiter Stufe außerhalb der Fächer */
+  if (p === "vokabeln" && teile[1] === "eigene"){ ansicht = "vokabelnEigene"; return; }
   const ziel = direkt[p];
   if (!ziel) return;
   if (ziel === "dashboard" && !istAdmin) return;
@@ -26852,6 +27108,7 @@ function render(gewaehlt){
   /* ---- Einstellungen ---- */
   if (ansicht === "serie"){ el.innerHTML = serieHtml(); return; }
   if (ansicht === "vokabeln"){ el.innerHTML = vokabelnHtml(); return; }
+  if (ansicht === "vokabelnEigene"){ el.innerHTML = vokabelnEigeneHtml(); return; }
   if (ansicht === "vokabelnUeben"){
     el.innerHTML = vokUebenHtml();
     /* Beim Weiterblättern soll der Finger nicht erst das Feld suchen müssen. */
