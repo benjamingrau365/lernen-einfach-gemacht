@@ -316,6 +316,23 @@
     .blattumbruch{break-after:page;page-break-after:always}
     .blattfeld{border-color:#bbb}
   }
+  /* ---------- Vokabeln erst ansehen ---------- */
+  .lernliste{display:grid;gap:0;margin-top:10px}
+  .lernzeile{padding:11px 0;border-bottom:1px solid var(--line)}
+  .lernzeile:last-child{border-bottom:none}
+  .lernzeile b{display:block;font-size:16.5px}
+  .lernzeile > div > span{display:block;font-size:14.5px;color:var(--soft)}
+  .lernzeile i{display:block;margin-top:4px;font-size:13.5px;color:var(--soft)}
+  /* Die Karteikarte ist ein Knopf — sie muss also aussehen wie eine Karte,
+     nicht wie ein Knopf: keine Knopffarbe, volle Breite, Text mittig. */
+  .lernkarte{display:block;width:100%;text-align:center;font:inherit;color:var(--ink);
+    cursor:pointer;border:1.5px solid var(--line);min-height:170px;
+    transition:border-color .12s,background .12s}
+  .lernkarte.gedreht{border-color:var(--ac);background:var(--ac-soft)}
+  .lernknoepfe{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .lernknoepfe .btn{width:100%;text-align:center}
+  .lernfuss{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
+  .lernfuss .textlink{width:auto;padding:6px 0;text-align:left}
   .vokkarte{text-align:center;padding-top:26px;padding-bottom:26px}
   .vokwort{font-size:clamp(26px,7vw,36px);font-weight:800;line-height:1.2;margin:10px 0;color:var(--ink)}
   .vokkopf{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -28126,6 +28143,182 @@ function vokRichtungWechseln(){
   render();
 }
 
+/* ---------- Vokabeln erst lernen, dann abgefragt werden ----------
+   Bisher ging es sofort in die Abfrage. Wer ein Wort noch nie gesehen hat,
+   kann es aber nicht wissen — dann ist die Abfrage keine Übung, sondern nur
+   eine Reihe von Misserfolgen. Deshalb steht davor jetzt ein Lernschritt.
+
+   Zwei Wege, weil Leute unterschiedlich lernen:
+     Liste         alle Wörter untereinander, zum Überfliegen und Nachschlagen
+     Karteikarten  ein Wort, umdrehen, nächstes — ohne Tippen, ohne Bewertung
+
+   Beides führt am Ende auf denselben Knopf: Jetzt abfragen. */
+let lernStapel = [];
+let lernNr = 0;
+let lernGedreht = false;
+let lernModus = "liste";        /* liste | karten */
+let lernGewusst = 0;
+
+function zeigeVokLernen(){
+  menueOffen = false;
+  lernStapel = vokMischen(vokabelListe(vokKlasse, vokThema));
+  lernNr = 0; lernGedreht = false; lernGewusst = 0;
+  ansicht = "vokabelnLernen"; render();
+}
+function lernModusWahl(m){ lernModus = m; lernNr = 0; lernGedreht = false; render(); }
+function lernDrehen(){ lernGedreht = !lernGedreht; render(); }
+function lernWeiter(gewusst){
+  if (gewusst) lernGewusst++;
+  lernNr++; lernGedreht = false;
+  if (lernNr >= lernStapel.length) lernNr = lernStapel.length;   /* Schlusskarte */
+  render();
+}
+function lernZurueck(){
+  if (lernNr > 0){ lernNr--; lernGedreht = false; render(); }
+}
+function lernNochmal(){ lernNr = 0; lernGedreht = false; lernGewusst = 0; render(); }
+
+/* Aus dem Lernen direkt in die Abfrage — mit derselben Auswahl */
+function lernZumUeben(){ vokStarten(); }
+
+/* ---------- Die Lernseite ---------- */
+function vokabelnLernenHtml(){
+  const sicher = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const gesamt = lernStapel.length;
+  const wahl = vokThema === "alle"
+    ? (vokKlasse === "alle" ? "alle Wörter" : "Klasse " + vokKlasse)
+    : vokThema;
+
+  const kopf = `
+    <div class="card">
+      <button class="zurueck" onclick="zeigeVokabeln()">← Zurück zur Auswahl</button>
+      <span class="tag">Englisch · ${sicher(wahl)}</span>
+      <h1>Erst ansehen</h1>
+      <p class="soft" style="margin:10px 0 0">${z(gesamt)} ${gesamt === 1 ? "Wort" : "Wörter"}.
+        Schau sie dir in Ruhe an — abgefragt wird erst danach.</p>
+      <div class="vokwahl" style="margin-top:16px">
+        <button class="vokknopf ${lernModus === "liste" ? "an" : ""}" onclick="lernModusWahl('liste')">Als Liste</button>
+        <button class="vokknopf ${lernModus === "karten" ? "an" : ""}" onclick="lernModusWahl('karten')">Als Karteikarten</button>
+      </div>
+    </div>`;
+
+  if (!gesamt) return kopf + `<div class="card"><p class="soft" style="margin:0">Für diese Auswahl gibt es keine Wörter.</p></div>`;
+
+  /* ---- Liste ---- */
+  if (lernModus === "liste"){
+    const nachThema = {};
+    lernStapel.forEach(w => (nachThema[w.thema] = nachThema[w.thema] || []).push(w));
+    return kopf + Object.entries(nachThema).map(([thema, woerter]) => `
+      <div class="card">
+        <p class="ueberschrift">${sicher(thema)}</p>
+        <div class="lernliste">
+          ${woerter.map(w => `<div class="lernzeile">
+            <div><b>${sicher(w.en)}</b><span>${sicher(w.de)}</span></div>
+            ${w.satz ? `<i>${sicher(w.satz.replace("___", w.en))}</i>` : ""}
+          </div>`).join("")}
+        </div>
+      </div>`).join("") + `
+      <div class="card">
+        <button class="btn full" onclick="lernZumUeben()">Jetzt abfragen</button>
+        <button class="btn ghost full" style="margin-top:10px" onclick="vokListePdf()">Liste als PDF speichern</button>
+        <p class="small soft" style="margin:12px 0 0">Beim Abfragen bekommst du die Lösung nie hingelegt —
+          die Hilfe kommt in vier Stufen, und schreiben musst du am Ende selbst.</p>
+      </div>`;
+  }
+
+  /* ---- Karteikarten ---- */
+  if (lernNr >= gesamt){
+    return kopf + `
+      <div class="card geschafftkarte">
+        <div class="geschafftkreis">✓</div>
+        <h1>Alle durchgesehen</h1>
+        <div class="geschafftzahlen">
+          <div><b>${z(gesamt)}</b><span>${gesamt === 1 ? "Karte" : "Karten"}</span></div>
+          <div><b>${z(lernGewusst)}</b><span>schon gewusst</span></div>
+        </div>
+        <p class="geschafftlob">${lernGewusst >= gesamt * 0.8
+          ? "Das sitzt größtenteils schon. Jetzt zeigt die Abfrage, was davon wirklich hält."
+          : "Ansehen ist der erste Schritt. Hängen bleibt es erst, wenn du es selbst hinschreibst."}</p>
+      </div>
+      <div class="card">
+        <button class="btn full" onclick="lernZumUeben()">Jetzt abfragen</button>
+        <button class="btn ghost full" style="margin-top:10px" onclick="lernNochmal()">Karten noch einmal ansehen</button>
+      </div>`;
+  }
+
+  const w = lernStapel[lernNr];
+  const vorne = vokRichtung === "de2en" ? w.de : w.en;
+  const hinten = vokRichtung === "de2en" ? w.en : w.de;
+  return kopf + `
+    <div class="card">
+      <div class="fortschritt">${Array.from({length: gesamt}, (_, i) =>
+        `<i class="${i < lernNr ? "an" : ""}"></i>`).join("")}</div>
+      <div class="vokkopf">
+        <span class="tag">Karte ${z(lernNr + 1)} von ${z(gesamt)}</span>
+        <span class="small soft">${sicher(w.thema)}</span>
+      </div>
+    </div>
+
+    <button class="card vokkarte lernkarte ${lernGedreht ? "gedreht" : ""}" onclick="lernDrehen()">
+      <p class="small soft" style="margin:0">${lernGedreht
+        ? (vokRichtung === "de2en" ? "English" : "Deutsch")
+        : (vokRichtung === "de2en" ? "Deutsch" : "English")}</p>
+      <p class="vokwort">${sicher(lernGedreht ? hinten : vorne)}</p>
+      ${lernGedreht && w.satz
+        ? `<p class="small soft" style="margin:0"><i>${sicher(w.satz.replace("___", w.en))}</i></p>`
+        : `<p class="small soft" style="margin:0">Tippen zum Umdrehen</p>`}
+    </button>
+
+    <div class="card">
+      ${lernGedreht ? `
+        <div class="lernknoepfe">
+          <button class="btn ghost" onclick="lernWeiter(false)">Noch nicht</button>
+          <button class="btn" onclick="lernWeiter(true)">Wusste ich</button>
+        </div>` : `
+        <button class="btn full" onclick="lernDrehen()">Umdrehen</button>`}
+      <div class="lernfuss">
+        ${lernNr > 0 ? `<button class="textlink" onclick="lernZurueck()">← eine zurück</button>` : "<span></span>"}
+        <button class="textlink" onclick="lernZumUeben()">Abfrage starten →</button>
+      </div>
+    </div>`;
+}
+
+/* ---------- Die Wortliste als PDF ----------
+   Zum Ausdrucken und Danebenlegen. Nutzt denselben Setzer wie das
+   Arbeitsblatt — geschrieben wird die Datei also auch hier selbst. */
+function vokListePdf(){
+  if (!lernStapel.length) return;
+  const wahl = vokThema === "alle"
+    ? (vokKlasse === "alle" ? "Alle Wörter" : "Klasse " + vokKlasse)
+    : vokThema;
+  const s = pdfSetzer();
+  s.absatz(`<b>Vokabeln — ${wahl}</b>`, 18, PDF_RAND, false, 22);
+  s.absatz(`Englisch · ${lernStapel.length} Wörter · endlichkapiert.com`, 9.5, PDF_RAND, true, 13);
+  s.luft(4); s.linie(true); s.luft(2);
+
+  const nachThema = {};
+  lernStapel.forEach(w => (nachThema[w.thema] = nachThema[w.thema] || []).push(w));
+  Object.entries(nachThema).forEach(([thema, woerter]) => {
+    s.luft(6);
+    s.absatz(thema.toUpperCase(), 8, PDF_RAND, true, 12);
+    s.luft(2);
+    woerter.forEach(w => {
+      s.absatz(`<b>${w.en}</b>  —  ${w.de}`, 11, PDF_RAND, false, 15);
+      if (w.satz) s.absatz(w.satz.replace("___", w.en), 8.5, PDF_RAND + 14, true, 11.5);
+      s.luft(3);
+    });
+  });
+  s.luft(6); s.linie(false);
+  s.absatz("Erst ansehen, dann abfragen lassen — endlichkapiert.com/vokabeln", 8, PDF_RAND, true, 11);
+
+  const blob = pdfDatei(s.seiten);
+  const adresse = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = adresse; a.download = "Vokabeln " + String(wahl).replace(/[\\/:*?"<>|]/g, "") + ".pdf";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(adresse), 4000);
+}
+
 /* ---------- Auswahlseite ---------- */
 function vokabelnHtml(){
   const themen = vokThemenFuer(vokKlasse);
@@ -28184,7 +28377,11 @@ function vokabelnHtml(){
       <p class="soft" style="margin:0 0 14px">${anzahl === 0
         ? "Für diese Auswahl gibt es noch keine Wörter."
         : `<b>${z(Math.min(20, anzahl))}</b> Wörter in dieser Runde${anzahl > 20 ? ` (aus ${z(anzahl)} zufällig gezogen)` : ""}.`}</p>
-      ${anzahl === 0 ? "" : `<button class="btn full" onclick="vokStarten()">Losgehen</button>`}
+      ${anzahl === 0 ? "" : `
+        <button class="btn full" onclick="zeigeVokLernen()">Erst ansehen</button>
+        <button class="btn ghost full" style="margin-top:10px" onclick="vokStarten()">Gleich abfragen</button>
+        <p class="small soft" style="margin:12px 0 0">Wer die Wörter noch nie gesehen hat, fängt oben an.
+          Wer sie schon kann, geht gleich in die Abfrage.</p>`}
     </div>`;
 }
 
@@ -28387,6 +28584,7 @@ function pfadFuer(a, f, k){
     case "vokabeln":
     case "vokabelnUeben":
     case "vokabelnFertig": return "/vokabeln";
+    case "vokabelnLernen": return "/vokabeln/lernen";
     case "vokabelnEigene": return "/vokabeln/eigene";
     case "pruefungen":
     case "pruefung":
@@ -28418,6 +28616,7 @@ function ansichtAusPfad(){
     vokabeln:"vokabeln", pruefung:"pruefungen", arbeitsblatt:"arbeitsblatt"};
   /* /vokabeln/eigene ist die einzige Adresse mit zweiter Stufe außerhalb der Fächer */
   if (p === "vokabeln" && teile[1] === "eigene"){ ansicht = "vokabelnEigene"; return; }
+  if (p === "vokabeln" && teile[1] === "lernen"){ zeigeVokLernen(); return; }
   const ziel = direkt[p];
   if (!ziel) return;
   if (ziel === "dashboard" && !istAdmin) return;
@@ -29256,6 +29455,7 @@ function render(gewaehlt){
   if (ansicht === "serie"){ el.innerHTML = serieHtml(); return; }
   if (ansicht === "vokabeln"){ el.innerHTML = vokabelnHtml(); return; }
   if (ansicht === "vokabelnEigene"){ el.innerHTML = vokabelnEigeneHtml(); return; }
+  if (ansicht === "vokabelnLernen"){ el.innerHTML = vokabelnLernenHtml(); return; }
   if (ansicht === "arbeitsblatt"){ el.innerHTML = arbeitsblattHtml(); return; }
   if (ansicht === "arbeitsblattDruck"){ el.innerHTML = arbeitsblattDruckHtml(); return; }
   if (ansicht === "pruefungen"){ el.innerHTML = pruefungenHtml(); return; }
