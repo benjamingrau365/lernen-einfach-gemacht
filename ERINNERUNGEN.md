@@ -201,6 +201,47 @@ herausrutschen — das ist der häufigste Fehler an dieser Stelle.
 Nutzer in der Schule und wischen die Mitteilung weg, bevor sie überhaupt üben
 könnten.
 
+### Sicherer: den Schlüssel in den Tresor legen
+
+Bei der Fassung oben steht der Service-Role-Key als Klartext im Cron-Job — und
+der Job liegt in der Tabelle `cron.job`, die jeder lesen kann, der Zugang zur
+Datenbank hat. Für dich allein ist das verschmerzbar. Sobald aber jemand
+mitarbeitet oder du einmal einen Datenbank-Auszug weitergibst, ist der
+Schlüssel mit dabei — und mit ihm die ganze Datenbank.
+
+Supabase hat dafür einen Tresor. Der Schlüssel wird einmal hineingelegt und im
+Job nur noch **beim Namen** genannt:
+
+```sql
+-- 1. Schlüssel einmalig hinterlegen (nur dieses eine Mal im Klartext)
+select vault.create_secret('HIER_DEN_KEY', 'service_role_key', 'für den Erinnerungs-Cron');
+```
+
+```sql
+-- 2. Job anlegen, der den Schlüssel aus dem Tresor holt
+select cron.unschedule('erinnerungen-taeglich');
+
+select cron.schedule('erinnerungen-taeglich', '0 16 * * *', $$
+  select net.http_post(
+    url     := 'https://KÜRZEL.supabase.co/functions/v1/erinnerungen',
+    headers := jsonb_build_object(
+      'Authorization', 'Bearer ' || (
+        select decrypted_secret from vault.decrypted_secrets
+        where name = 'service_role_key'
+      ),
+      'Content-Type', 'application/json'
+    )
+  );
+$$);
+```
+
+Danach steht im Job nur noch der **Name** des Schlüssels, nicht der Schlüssel
+selbst. Wichtig: Nach Schritt 1 den SQL-Editor leeren, damit der Schlüssel
+nicht im Verlauf stehen bleibt.
+
+Beide Wege funktionieren gleich gut. Wenn du es schnell hinter dich bringen
+willst, nimm die einfache Fassung — du kannst später jederzeit wechseln.
+
 ---
 
 ## Schritt 6 — aufräumen

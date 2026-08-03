@@ -1751,8 +1751,123 @@ const matheProben4 = {
   }
 };
 
+/* -------------------------------------------------- ELEKTROTECHNIK IV */
+
+const elektroProben4 = {
+
+  "Diode und Gleichrichter": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const ganz = roh(a.text);
+
+    /* Vorwiderstand für eine LED */
+    const led = ganz.match(/([\d.,]+) V Durchlassspannung soll mit ([\d.,]+) mA an ([\d.,]+) V/);
+    if (led) {
+      const uf = dz(led[1]), i = dz(led[2]) / 1000, ub = dz(led[3]);
+      if (ub <= uf) return `${ub} V reichen für eine LED mit ${uf} V nicht aus`;
+      return stimmt(Math.round((ub - uf) / i), l);
+    }
+
+    /* Gleichspannung hinter dem Gleichrichter */
+    const gl = ganz.match(/(Einweggleichrichter|Brückengleichrichter) liegt an ([\d.,]+) V/);
+    if (gl) {
+      const ueff = dz(gl[2]);
+      const dioden = gl[1] === "Brückengleichrichter" ? 2 : 1;
+      const spitze = Math.round(ueff * 1.41 * 100) / 100;
+      const soll = Math.round((spitze - dioden * 0.7) * 100) / 100;
+      /* Gegenprobe: der Spitzenwert muss über dem Effektivwert liegen */
+      if (spitze <= ueff) return "der Spitzenwert kann nicht kleiner als der Effektivwert sein";
+      return stimmt(soll, l, 1e-6);
+    }
+
+    /* Diode in Durchlass- oder Sperrrichtung */
+    const ri = ganz.match(/Anschluss: (Anode am Plus|Kathode am Plus)/);
+    if (!ri) return "konnte die Aufgabe nicht einordnen: " + ganz.slice(0, 90);
+    const leitet = ri[1] === "Anode am Plus";
+    const u = dz((ganz.match(/an ([\d.,]+) V<?\/?b?> ?Gleichspannung/) || ganz.match(/an ([\d.,]+) V/) || [])[1]);
+    const r = dz((ganz.match(/mit ([\d.,]+) Ω/) || [])[1]);
+    if (!isFinite(u) || !isFinite(r)) return "Spannung oder Widerstand nicht lesbar: " + ganz.slice(0, 90);
+    const soll = leitet ? Math.round((u - 0.7) / r * 1000 * 100) / 100 : 0;
+    /* die als richtig markierte Antwort im ersten Schritt muss zur Richtung passen */
+    const erste = roh((a.schritte[0].optionen.find(o => o.ok) || {}).t || "");
+    if (leitet !== /^Ja/.test(erste))
+      return `Anschluss „${ri[1]}“ passt nicht zur Antwort „${erste}“`;
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Beleuchtung berechnen": (a) => {
+    const ganz = roh(a.text), l = loes(a);
+
+    /* Anzahl der Leuchten */
+    const raum = ganz.match(/([\d.,]+) m × ([\d.,]+) m groß und braucht ([\d.,]+) lx/);
+    if (raum) {
+      const lm = dz((ganz.match(/Leuchte gibt ([\d.,]+) lm/) || [])[1]);
+      if (!isFinite(lm) || lm <= 0) return "Lichtstrom je Leuchte nicht lesbar: " + ganz;
+      const flaeche = dz(raum[1]) * dz(raum[2]);
+      const gesamt = flaeche * dz(raum[3]);
+      const soll = Math.ceil(gesamt / lm);
+      if (soll < 1) return "es müsste mindestens eine Leuchte herauskommen";
+      /* Gegenprobe: mit einer Leuchte weniger darf es nicht reichen */
+      if ((soll - 1) * lm >= gesamt) return `${soll - 1} Leuchten würden auch schon reichen — dann ist aufgerundet worden, wo es nicht nötig war`;
+      return stimmt(soll, l);
+    }
+
+    /* Lichtstrom aus Leistung und Lichtausbeute */
+    const lampe = ganz.match(/hat ([\d.,]+) W und eine Lichtausbeute von ([\d.,]+) lm\/W/);
+    if (!lampe) return "konnte die Aufgabe nicht einordnen: " + ganz.slice(0, 90);
+    const p = dz(lampe[1]), eta = dz(lampe[2]);
+    if (eta > 250) return `${eta} lm/W ist keine erreichbare Lichtausbeute`;
+    return stimmt(p * eta, l);
+  },
+
+  "Anlage prüfen und protokollieren": (a) => {
+    const ganz = roh(a.text);
+
+    /* Kurzschlussstrom aus der Schleifenimpedanz */
+    const zs = ganz.match(/Schleifenimpedanz von ([\d.,]+) Ω/);
+    if (zs) {
+      const z0 = dz(zs[1]);
+      if (!(z0 > 0)) return "die Schleifenimpedanz muss größer als null sein";
+      const soll = Math.round(230 / z0);
+      const fehl = stimmt(soll, loes(a));
+      if (fehl) return fehl;
+      /* die Bewertung im letzten Schritt muss zum gerechneten Strom passen */
+      const nen = dz((ganz.match(/B([\d.,]+)\s*-Automaten/) || [])[1]);
+      if (!isFinite(nen)) return "Nennstrom der Sicherung nicht lesbar: " + ganz;
+      const noetig = nen * 5;
+      const letzte = a.schritte[a.schritte.length - 1];
+      const gewaehlt = roh((letzte.optionen.find(o => o.ok) || {}).t || "");
+      const behauptet = /^Ja/.test(gewaehlt);
+      if (behauptet !== (soll >= noetig))
+        return `bei ${soll} A und nötigen ${noetig} A ist die Bewertung „${gewaehlt}“ falsch`;
+      return null;
+    }
+
+    /* Isolationswiderstand bewerten */
+    const iso = ganz.match(/Isolationswiderstand: ([\d.,]+) MΩ/);
+    if (!iso) return "konnte die Aufgabe nicht einordnen: " + ganz.slice(0, 90);
+    const wert = dz(iso[1]);
+    const mind = dz((ganz.match(/Mindestwert nach DIN VDE 0100-600: ([\d.,]+) MΩ/) || [])[1]);
+    if (!isFinite(mind)) return "Mindestwert nicht lesbar: " + ganz;
+    /* eigene Tabelle der Grenzwerte, unabhängig von der Aufgabe */
+    const NETZ = { "SELV/PELV": [250, 0.5], "bis 500 V": [500, 1.0], "über 500 V": [1000, 1.0] };
+    const netz = Object.keys(NETZ).find(n => ganz.includes("Stromkreis " + n));
+    if (!netz) return "Spannungsbereich nicht erkannt: " + ganz.slice(0, 90);
+    const [pruefU, sollMind] = NETZ[netz];
+    if (mind !== sollMind)
+      return `für ${netz} sind ${sollMind} MΩ vorgeschrieben, die Aufgabe nennt ${mind} MΩ`;
+    /* die Prüfspannung im ersten Schritt muss zum Bereich passen */
+    const erste = roh((a.schritte[0].optionen.find(o => o.ok) || {}).t || "");
+    if (dz((erste.match(/^([\d.]+)/) || [])[1]) !== pruefU)
+      return `für ${netz} gehören ${pruefU} V DC dazu, angegeben ist „${erste}“`;
+    if (wert === mind) return "Messwert und Grenzwert sind gleich — der Grenzfall taugt nicht zum Üben";
+    const soll = wert >= mind ? "bestanden" : "nicht bestanden";
+    return roh(a.loesung).trim() === soll ? null
+      : `bei ${wert} MΩ und Grenzwert ${mind} MΩ müsste es „${soll}“ heißen`;
+  }
+};
+
 const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...deutschProben,
-                 ...elektroProben, ...elektroProben2, ...elektroProben3 };
+                 ...elektroProben, ...elektroProben2, ...elektroProben3, ...elektroProben4 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
   const probe = proben[thema];
