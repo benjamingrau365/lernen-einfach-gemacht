@@ -7596,6 +7596,532 @@ const AUFGABEN = {
                 F(`${z(f.db / 10)} dB`, "Der Faktor 10 fehlt."),
                 F(`${z(f.v)} dB`, "Das ist die Verstärkung, nicht der Dezibelwert.")]}]};
  }
+],
+
+"Rechnen mit Zeit":[
+
+ /* Arbeitszeit von Anfang bis Ende */
+ () => {
+   const beginn = pick([6, 7, 8]) * 60 + pick([0, 15, 30]);
+   const dauer  = pick([7, 8, 9]) * 60 + pick([0, 15, 30, 45]);
+   const ende   = beginn + dauer;
+   const uhr = (m) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+   const pause = pick([30, 45, 60]);
+   const netto = dauer - pause;
+   const std = Math.round(netto / 60 * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Schichtbeginn <b>${uhr(beginn)}</b>, Schichtende <b>${uhr(ende)}</b>. Davon geht ${z(pause)} min Pause ab.<br>Wie viele <b>Stunden</b> Arbeitszeit werden bezahlt? Gib das Ergebnis als Dezimalzahl an, zum Beispiel 7,25.`,
+    loesung: z(std),
+    schluss:"Auf dem Stundenzettel steht die Zeit dezimal. 7,25 h sind 7 Stunden und 15 Minuten — nicht 7 Stunden 25 Minuten.",
+    schritte:[
+     {frage:`Wie lange dauert die Schicht von <b>${uhr(beginn)}</b> bis <b>${uhr(ende)}</b>, in Minuten?`,
+      tipp:"Rechne erst die vollen Stunden, dann die Minuten dazu.",
+      tipp2:`Von ${uhr(beginn)} bis ${uhr(ende)} sind es ${z(Math.floor(dauer / 60))} h und ${z(dauer % 60)} min, zusammen ${z(dauer)} min.`,
+      optionen:[R(`${z(dauer)} min`, "Richtig."),
+                F(`${z(dauer + 60)} min`, "Eine Stunde zu viel — zähl noch einmal nach."),
+                F(`${z(dauer - 40)} min`, "Da fehlen Minuten. Eine Stunde hat 60, nicht 100.")]},
+     {frage:`Zieh die Pause ab: <b>${z(dauer)} min − ${z(pause)} min</b>`,
+      tipp:"Die Pause wird nicht bezahlt.",
+      tipp2:`Rechne ${z(dauer)} − ${z(pause)}.`,
+      optionen:[R(`${z(netto)} min`, "Richtig."),
+                F(`${z(dauer + pause)} min`, "Die Pause wird abgezogen, nicht dazugezählt."),
+                F(`${z(dauer)} min`, "Ohne Pausenabzug stimmt der Stundenzettel nicht.")]},
+     {frage:`Wie viele <b>Stunden</b> sind ${z(netto)} min?`,
+      tippAntwort: z(std),
+      tipp:"Durch 60 teilen — eine Stunde hat 60 Minuten.",
+      tipp2:`Rechne ${z(netto)} : 60.`,
+      optionen:[R(`${z(std)} h`, "Richtig."),
+                F(`${z(Math.round(netto / 100 * 100) / 100)} h`, "Durch 100 geteilt — die Uhr rechnet aber in 60ern."),
+                F(`${z(netto)} h`, "Das sind Minuten, keine Stunden.")]}]};
+ },
+
+ /* Dezimalstunden in Stunden und Minuten */
+ () => {
+   const std = rnd(1, 9);
+   const min = pick([6, 12, 18, 24, 36, 42, 48, 54]);
+   const anteil = Math.round(min / 60 * 100) / 100;
+   const dez = Math.round((std + anteil) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Auf dem Stundenzettel stehen <b>${z(dez)} h</b>.<br>Wie viele <b>Minuten</b> sind der Teil hinter dem Komma?`,
+    loesung: z(min),
+    schluss:"Der Teil hinter dem Komma ist ein Bruchteil einer Stunde. Mal 60 macht daraus Minuten.",
+    schritte:[
+     {frage:`Wie viele <b>volle Stunden</b> stecken in ${z(dez)} h?`,
+      tipp:"Alles vor dem Komma.",
+      tipp2:`Vor dem Komma steht ${z(std)}.`,
+      optionen:[R(`${z(std)} h`, "Richtig."),
+                F(`${z(std + 1)} h`, "Nicht aufrunden — der Rest wird gleich extra gerechnet."),
+                F(`${z(dez)} h`, "Das ist die ganze Zeit, nicht nur der Stundenanteil.")]},
+     {frage:`Der Rest ist <b>${z(anteil)}</b> einer Stunde. Womit rechnest du ihn in Minuten um?`,
+      tipp:"Eine Stunde hat 60 Minuten.",
+      tipp2:"Nimm den Teil hinter dem Komma mit 60 mal.",
+      optionen:[R("Mal 60", "Richtig."),
+                F("Mal 100", "Die Uhr rechnet in 60ern, nicht in 100ern."),
+                F("Geteilt durch 60", "Dann würde die Zahl noch kleiner.")]},
+     {frage:`Was ergibt <b>${z(anteil)} · 60</b>?`,
+      tippAntwort: z(min),
+      tipp:"Teil hinter dem Komma mal 60.",
+      tipp2:`Rechne ${z(anteil)} · 60.`,
+      optionen:[R(`${z(min)} min`, "Richtig."),
+                F(`${z(Math.round(anteil * 100))} min`, "Mal 100 statt mal 60 gerechnet."),
+                F(`${z(anteil)} min`, "Das ist noch der Bruchteil einer Stunde, keine Minutenzahl.")]}]};
+ },
+
+ /* Zeit auf mehrere Aufträge verteilen */
+ () => {
+   const auftraege = rnd(3, 6);
+   const proAuftrag = pick([25, 35, 40, 50, 55]);
+   const gesamt = auftraege * proAuftrag;
+   const std = Math.floor(gesamt / 60), rest = gesamt % 60;
+   return {
+    typ:"formel",
+    text:`Du hast <b>${z(auftraege)} Aufträge</b>, jeder dauert ${z(proAuftrag)} min.<br>Wie viele <b>volle Stunden</b> sind das?`,
+    loesung: z(std),
+    schluss:`${z(gesamt)} min sind ${z(std)} h und ${z(rest)} min. Die Uhr bricht nach 60 um, nicht nach 100.`,
+    schritte:[
+     {frage:`Wie viele Minuten sind ${z(auftraege)} · ${z(proAuftrag)} min?`,
+      tipp:"Anzahl mal Dauer.",
+      tipp2:`Rechne ${z(auftraege)} · ${z(proAuftrag)}.`,
+      optionen:[R(`${z(gesamt)} min`, "Richtig."),
+                F(`${z(auftraege + proAuftrag)} min`, "Hier wird malgenommen, nicht addiert."),
+                F(`${z(gesamt + proAuftrag)} min`, `Das wären ${z(auftraege + 1)} Aufträge.`)]},
+     {frage:`Wie oft passen <b>60 min</b> ganz in ${z(gesamt)} min?`,
+      tippAntwort: z(std),
+      tipp:"Teile durch 60 und schau nur auf die vollen Stunden.",
+      tipp2:`${z(gesamt)} : 60 = ${z(std)} Rest ${z(rest)}.`,
+      optionen:[R(`${z(std)}-mal`, `Richtig — ${z(std)} volle Stunden, ${z(rest)} min bleiben übrig.`),
+                F(`${z(std + 1)}-mal`, "Einmal zu oft — dafür reichen die Minuten nicht."),
+                F(`${z(gesamt)}-mal`, "Das ist die Minutenzahl selbst.")]}]};
+ }
+],
+
+"Rechnen mit Klammern":[
+
+ /* Klammer vor Punkt vor Strich */
+ () => {
+   const a = rnd(3, 9), b = rnd(3, 8), c = rnd(2, 9);
+   const mitKlammer = (a + b) * c;
+   const ohneKlammer = a + b * c;
+   return {
+    typ:"formel",
+    text:`Rechne aus: <b>(${z(a)} + ${z(b)}) · ${z(c)}</b>`,
+    loesung: z(mitKlammer),
+    schluss:"Die Klammer ändert die Reihenfolge. Ohne sie käme etwas anderes heraus — genau dafür ist sie da.",
+    schritte:[
+     {frage:"Was rechnest du <b>zuerst</b>?",
+      tipp:"Klammer vor Punkt vor Strich.",
+      tipp2:"Was in der Klammer steht, wird immer zuerst zusammengefasst.",
+      optionen:[R(`${z(a)} + ${z(b)}`, "Richtig — die Klammer hat Vorrang."),
+                F(`${z(b)} · ${z(c)}`, "Ohne Klammer wäre das richtig. Hier steht aber eine."),
+                F(`${z(a)} · ${z(c)}`, `Die ${z(a)} gehört zur Klammer und wird erst dort verrechnet.`)]},
+     {frage:`Was ergibt <b>${z(a)} + ${z(b)}</b>?`,
+      tipp:"Die beiden Zahlen in der Klammer zusammenzählen.",
+      tipp2:`Rechne ${z(a)} + ${z(b)}.`,
+      optionen:[R(`${z(a + b)}`, "Richtig."),
+                F(`${z(a * b)}`, "Hier steht ein Plus, kein Malzeichen."),
+                F(`${z(Math.abs(a - b))}`, "Abgezogen statt zusammengezählt.")]},
+     {frage:`Jetzt <b>${z(a + b)} · ${z(c)}</b>`,
+      tippAntwort: z(mitKlammer),
+      tipp:"Das Ergebnis der Klammer mit dem Faktor malnehmen.",
+      tipp2:`Rechne ${z(a + b)} · ${z(c)}.`,
+      optionen:[R(`${z(mitKlammer)}`, "Richtig."),
+                F(`${z(ohneKlammer)}`, "So käme es ohne Klammer heraus — dann hätte nur die zweite Zahl den Faktor bekommen."),
+                F(`${z(a + b + c)}`, "Hier wird malgenommen, nicht addiert.")]}]};
+ },
+
+ /* Klammer ausmultiplizieren */
+ () => {
+   const f = rnd(2, 9), a = rnd(6, 14), b = rnd(2, a - 2);
+   return {
+    typ:"formel",
+    text:`Multipliziere die Klammer aus und rechne aus: <b>${z(f)} · (${z(a)} − ${z(b)})</b>`,
+    loesung: z(f * (a - b)),
+    schluss:"Ausmultiplizieren heißt: Der Faktor kommt an jede Zahl in der Klammer — auch an die zweite.",
+    schritte:[
+     {frage:`An welche Zahlen kommt die <b>${z(f)}</b> dran?`,
+      tipp:"Der Faktor gilt für alles in der Klammer.",
+      tipp2:`Es wird ${z(f)} · ${z(a)} und ${z(f)} · ${z(b)} gerechnet.`,
+      optionen:[R(`An beide — an ${z(a)} und an ${z(b)}`, "Richtig."),
+                F(`Nur an ${z(a)}`, "Dann bliebe der zweite Teil unverrechnet — das ist der häufigste Fehler."),
+                F(`Nur an ${z(b)}`, "Der Faktor gilt für die ganze Klammer.")]},
+     {frage:`Was ergibt <b>${z(f)} · ${z(a)} − ${z(f)} · ${z(b)}</b>?`,
+      tippAntwort: z(f * (a - b)),
+      tipp:"Erst beide Produkte, dann abziehen.",
+      tipp2:`${z(f)} · ${z(a)} = ${z(f * a)} und ${z(f)} · ${z(b)} = ${z(f * b)}. Dann ${z(f * a)} − ${z(f * b)}.`,
+      optionen:[R(`${z(f * (a - b))}`, "Richtig."),
+                F(`${z(f * a - b)}`, `Beim zweiten Teil fehlt der Faktor ${z(f)}.`),
+                F(`${z(f * a + f * b)}`, "In der Klammer steht ein Minus, kein Plus.")]}]};
+ },
+
+ /* Minus vor der Klammer */
+ () => {
+   const a = rnd(30, 90), b = rnd(3, 15), c = rnd(2, 12);
+   const richtig = a - (b + c);
+   const falle = a - b + c;
+   return {
+    typ:"formel",
+    text:`Rechne aus: <b>${z(a)} − (${z(b)} + ${z(c)})</b>`,
+    loesung: z(richtig),
+    schluss:"Ein Minus vor der Klammer dreht drinnen jedes Vorzeichen um. Wer das übersieht, rechnet regelmäßig daneben.",
+    schritte:[
+     {frage:"Was passiert mit den Vorzeichen, wenn du die Klammer <b>auflöst</b>?",
+      tipp:"Vor der Klammer steht ein Minus.",
+      tipp2:`Aus − (${z(b)} + ${z(c)}) wird − ${z(b)} − ${z(c)}. Beide Zahlen werden abgezogen.`,
+      optionen:[R("Beide Zahlen werden abgezogen", "Richtig — das Minus gilt für die ganze Klammer."),
+                F(`Nur ${z(b)} wird abgezogen, ${z(c)} kommt dazu`, "Das ist die klassische Falle. Das Minus gilt für beide."),
+                F("Die Vorzeichen bleiben, wie sie sind", "Ein Minus vor der Klammer dreht drinnen alles um.")]},
+     {frage:"Was steht in der Klammer zusammengefasst?",
+      tipp:"Erst die Klammer ausrechnen geht auch.",
+      tipp2:`${z(b)} + ${z(c)} = ${z(b + c)}.`,
+      optionen:[R(`${z(b + c)}`, "Richtig."),
+                F(`${z(Math.abs(b - c))}`, "In der Klammer steht ein Plus."),
+                F(`${z(b * c)}`, "Zusammenzählen, nicht malnehmen.")]},
+     {frage:`Und jetzt <b>${z(a)} − ${z(b + c)}</b>`,
+      tippAntwort: z(richtig),
+      tipp:"Die zusammengefasste Klammer abziehen.",
+      tipp2:`Rechne ${z(a)} − ${z(b + c)}.`,
+      optionen:[R(`${z(richtig)}`, "Richtig."),
+                F(`${z(falle)}`, `So kommt es heraus, wenn man das Minus nur auf die ${z(b)} bezieht.`),
+                F(`${z(a + b + c)}`, "Hier wird abgezogen, nicht dazugezählt.")]}]};
+ }
+],
+
+"Terme aufstellen":[
+
+ /* Satz in einen Term übersetzen */
+ () => {
+   const f = pick([
+     {satz:"Eine Zahl wird verdoppelt und dann um 5 vermehrt.",
+      term:"2 · x + 5", falsch:["2 · (x + 5)", "x + 2 + 5"], x:7, wert:(x) => 2 * x + 5},
+     {satz:"Eine Zahl wird um 3 vermehrt und das Ergebnis verdreifacht.",
+      term:"3 · (x + 3)", falsch:["3 · x + 3", "x + 3 · 3"], x:5, wert:(x) => 3 * (x + 3)},
+     {satz:"Von einer Zahl wird 4 abgezogen, danach wird halbiert.",
+      term:"(x − 4) : 2", falsch:["x − 4 : 2", "x : 2 − 4"], x:14, wert:(x) => (x - 4) / 2},
+     {satz:"Eine Zahl wird halbiert und danach um 4 verringert.",
+      term:"x : 2 − 4", falsch:["(x − 4) : 2", "x : (2 − 4)"], x:20, wert:(x) => x / 2 - 4}
+   ]);
+   const wert = f.wert(f.x);
+   return {
+    typ:"formel",
+    text:`<b>${f.satz}</b><br>Stell den Term auf und setze dann <b>x = ${z(f.x)}</b> ein. Wie lautet das Ergebnis?`,
+    loesung: z(wert),
+    schluss:"Die Reihenfolge im Satz ist die Reihenfolge im Term. Wo etwas zuerst passiert, gehört eine Klammer hin.",
+    schritte:[
+     {frage:"Welcher Term passt zum Satz?",
+      tipp:"Lies den Satz von vorn und schreib jeden Schritt der Reihe nach auf.",
+      tipp2:`Der Term lautet ${f.term}.`,
+      optionen:[R(f.term, "Richtig."),
+                F(f.falsch[0], "Hier steht die Klammer an der falschen Stelle — damit stimmt die Reihenfolge nicht."),
+                F(f.falsch[1], "So wird eine andere Rechnung beschrieben.")]},
+     {frage:`Setze <b>x = ${z(f.x)}</b> in <b>${f.term}</b> ein. Was kommt heraus?`,
+      tippAntwort: z(wert),
+      tipp:"Für jedes x die Zahl einsetzen, dann Klammer vor Punkt vor Strich.",
+      tipp2:`Aus ${f.term} wird mit x = ${z(f.x)} das Ergebnis ${z(wert)}.`,
+      optionen:[R(`${z(wert)}`, "Richtig."),
+                F(`${z(wert + f.x)}`, `Da ist die ${z(f.x)} einmal zu viel eingesetzt.`),
+                F(`${z(f.x)}`, "Das ist nur der eingesetzte Wert, ohne die Rechnung.")]}]};
+ },
+
+ /* Term für eine Preisliste aus dem Betrieb */
+ () => {
+   const grund = pick([35, 45, 55, 65]);
+   const proStd = pick([48, 52, 60, 72]);
+   const std = rnd(2, 9);
+   const kosten = grund + proStd * std;
+   return {
+    typ:"formel",
+    text:`Ein Betrieb rechnet <b>${eur(grund)} Anfahrt</b> und dazu <b>${eur(proStd)} je Stunde</b>.<br>Was kostet ein Einsatz von ${z(std)} Stunden?`,
+    loesung: eur(kosten),
+    schluss:"Der feste Teil kommt einmal dazu, der veränderliche Teil wird mit der Anzahl malgenommen. So ist fast jede Preisliste aufgebaut.",
+    schritte:[
+     {frage:"Welcher Term beschreibt die Kosten für <b>t</b> Stunden?",
+      tipp:"Was fällt einmal an, was fällt je Stunde an?",
+      tipp2:`Die Anfahrt kommt einmal dazu, der Stundensatz wird mit t malgenommen: ${z(grund)} + ${z(proStd)} · t.`,
+      optionen:[R(`${z(grund)} + ${z(proStd)} · t`, "Richtig."),
+                F(`(${z(grund)} + ${z(proStd)}) · t`, "Dann würde die Anfahrt für jede Stunde neu berechnet."),
+                F(`${z(grund)} · t + ${z(proStd)}`, "Vertauscht — die Anfahrt fällt einmal an, nicht je Stunde.")]},
+     {frage:`Was kosten die <b>${z(std)} Stunden</b> Arbeit allein?`,
+      tipp:"Stundensatz mal Stundenzahl.",
+      tipp2:`Rechne ${z(proStd)} · ${z(std)}.`,
+      optionen:[R(eur(proStd * std), "Richtig."),
+                F(eur(proStd + std), "Hier wird malgenommen, nicht addiert."),
+                F(eur(proStd), "Das ist der Preis für eine einzige Stunde.")]},
+     {frage:`Zähl die Anfahrt dazu: <b>${eur(proStd * std)} + ${eur(grund)}</b>`,
+      tippAntwort: eur(kosten),
+      tipp:"Der feste Anteil kommt einmal obendrauf.",
+      tipp2:`Rechne ${z(proStd * std)} + ${z(grund)}.`,
+      optionen:[R(eur(kosten), "Richtig."),
+                F(eur(proStd * std), "Die Anfahrt fehlt noch."),
+                F(eur(kosten + grund), "Die Anfahrt ist doppelt drin.")]}]};
+ }
+],
+
+"Prozentuale Veränderung":[
+
+ /* Preiserhöhung */
+ () => {
+   const alt = pick([40, 60, 80, 120, 250, 400]);
+   const p = pick([5, 8, 10, 12, 15, 20, 25]);
+   const zuschlag = Math.round(alt * p / 100 * 100) / 100;
+   const neu = Math.round((alt + zuschlag) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Bauteil kostete <b>${eur(alt)}</b>. Der Preis steigt um <b>${z(p)} %</b>.<br>Was kostet es jetzt?`,
+    loesung: eur(neu),
+    schluss:`Kürzer geht es mit dem Faktor: eine Erhöhung um ${z(p)} % ist mal ${z(Math.round((100 + p)) / 100)}.`,
+    schritte:[
+     {frage:`Wie viel Euro sind <b>${z(p)} %</b> von ${eur(alt)}?`,
+      tipp:"Ein Prozent ist ein Hundertstel des Grundwerts.",
+      tipp2:`Rechne ${z(alt)} : 100 · ${z(p)} = ${z(zuschlag)}.`,
+      optionen:[R(eur(zuschlag), "Richtig."),
+                F(eur(p), "Das sind Prozent, keine Euro — der Grundwert fehlt."),
+                F(eur(Math.round(alt * p * 100) / 100), "Da fehlt das Teilen durch 100.")]},
+     {frage:"Wird der Betrag <b>dazugezählt</b> oder <b>abgezogen</b>?",
+      tipp:"Der Preis steigt.",
+      tipp2:"Bei einer Erhöhung kommt der Betrag zum alten Preis dazu.",
+      optionen:[R("Dazugezählt", "Richtig."),
+                F("Abgezogen", "Das wäre eine Senkung."),
+                F("Weder noch", "Der Preis ändert sich ja — sonst wäre nichts zu rechnen.")]},
+     {frage:`Was ergibt <b>${eur(alt)} + ${eur(zuschlag)}</b>?`,
+      tippAntwort: eur(neu),
+      tipp:"Alter Preis plus Erhöhung.",
+      tipp2:`Rechne ${z(alt)} + ${z(zuschlag)}.`,
+      optionen:[R(eur(neu), "Richtig."),
+                F(eur(Math.round((alt - zuschlag) * 100) / 100), "Das wäre eine Senkung um denselben Prozentsatz."),
+                F(eur(alt), "Das ist noch der alte Preis.")]}]};
+ },
+
+ /* Rabatt über den Restanteil */
+ () => {
+   const alt = pick([80, 150, 200, 320, 500, 900]);
+   const p = pick([10, 15, 20, 25, 30, 40]);
+   const neu = Math.round(alt * (100 - p)) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Gerät kostet <b>${eur(alt)}</b>. Es gibt <b>${z(p)} % Rabatt</b>.<br>Was zahlst du?`,
+    loesung: eur(neu),
+    schluss:`Am schnellsten geht es über den Restanteil: 100 % − ${z(p)} % = ${z(100 - p)} %, also ${z(alt)} · ${z((100 - p) / 100)} in einem Schritt.`,
+    schritte:[
+     {frage:"Wie viel <b>Prozent</b> zahlst du noch?",
+      tipp:"Der volle Preis sind 100 %.",
+      tipp2:`100 % − ${z(p)} % = ${z(100 - p)} %.`,
+      optionen:[R(`${z(100 - p)} %`, "Richtig."),
+                F(`${z(p)} %`, "Das ist der Rabatt, nicht der Rest."),
+                F("100 %", "Dann gäbe es ja keinen Rabatt.")]},
+     {frage:`Wie viel Euro sind <b>${z(100 - p)} %</b> von ${eur(alt)}?`,
+      tippAntwort: eur(neu),
+      tipp:"Grundwert durch 100, dann mal dem Prozentsatz.",
+      tipp2:`Rechne ${z(alt)} : 100 · ${z(100 - p)}.`,
+      optionen:[R(eur(neu), "Richtig."),
+                F(eur(Math.round(alt * p) / 100), "Das ist der Rabattbetrag, nicht der Preis."),
+                F(eur(alt), "Der Rabatt ist noch nicht abgezogen.")]}]};
+ },
+
+ /* Um wie viel Prozent hat sich etwas geändert? */
+ () => {
+   const alt = pick([200, 250, 400, 500, 800]);
+   const p = pick([5, 10, 20, 25, 40]);
+   const rauf = pick([0, 1]);
+   const diff = Math.round(alt * p) / 100;
+   const neu = rauf ? alt + diff : alt - diff;
+   return {
+    typ:"formel",
+    text:`Der Stromverbrauch lag bei <b>${z(alt)} kWh</b> und liegt jetzt bei <b>${z(neu)} kWh</b>.<br>Um wie viel <b>Prozent</b> hat er sich geändert?`,
+    loesung: z(p),
+    schluss:"Verglichen wird immer mit dem alten Wert. Er ist der Grundwert, also die 100 %.",
+    schritte:[
+     {frage:"Wie groß ist der <b>Unterschied</b> in kWh?",
+      tipp:"Größerer Wert minus kleinerer Wert.",
+      tipp2:`${z(Math.max(alt, neu))} − ${z(Math.min(alt, neu))} = ${z(diff)}.`,
+      optionen:[R(`${z(diff)} kWh`, "Richtig."),
+                F(`${z(alt + neu)} kWh`, "Ein Unterschied wird abgezogen, nicht addiert."),
+                F(`${z(neu)} kWh`, "Das ist der neue Wert, nicht der Unterschied.")]},
+     {frage:"Welcher Wert ist der <b>Grundwert</b>, also die 100 %?",
+      tipp:"Womit wird verglichen?",
+      tipp2:`Verglichen wird mit dem alten Wert, hier ${z(alt)} kWh.`,
+      optionen:[R(`${z(alt)} kWh — der alte Wert`, "Richtig."),
+                F(`${z(neu)} kWh — der neue Wert`, "Mit dem neuen Wert käme ein anderer Prozentsatz heraus."),
+                F(`${z(diff)} kWh — der Unterschied`, "Der Unterschied ist das, was in Prozent ausgedrückt wird.")]},
+     {frage:`Wie viel Prozent sind <b>${z(diff)}</b> von <b>${z(alt)}</b>?`,
+      tippAntwort: z(p),
+      tipp:"Unterschied geteilt durch Grundwert, mal 100.",
+      tipp2:`Rechne ${z(diff)} : ${z(alt)} · 100.`,
+      optionen:[R(`${z(p)} %`, `Richtig — der Verbrauch ist um ${z(p)} % ${rauf ? "gestiegen" : "gesunken"}.`),
+                F(`${z(Math.round(diff / neu * 1000) / 10)} %`, "Hier wurde durch den neuen Wert geteilt statt durch den alten."),
+                F(`${z(diff)} %`, "Das sind kWh, noch keine Prozent.")]}]};
+ }
+],
+
+"Diagramme lesen":[
+
+ /* Säulendiagramm ablesen und vergleichen */
+ () => {
+   const monate = ["Januar","Februar","März","April","Mai"];
+   let werte;
+   do { werte = monate.map(() => rnd(2, 9) * 50); }
+   while (new Set(werte).size < 5);
+   const g = Math.max(...werte), k = Math.min(...werte);
+   const iG = werte.indexOf(g), iK = werte.indexOf(k);
+   const bild = `<svg viewBox="0 0 320 152" style="width:100%;max-width:360px;height:auto;display:block;margin:12px auto" role="img" aria-label="Säulendiagramm: Stromverbrauch von Januar bis Mai in Kilowattstunden">
+     <line x1="30" y1="118" x2="308" y2="118" stroke="currentColor" stroke-width="1.5"/>
+     ${werte.map((w, i) => {
+       const x = 40 + i * 54, hoehe = Math.round(w / g * 84);
+       return `<rect x="${x}" y="${118 - hoehe}" width="34" height="${hoehe}" fill="#10a37f" fill-opacity=".45" stroke="#10a37f" stroke-width="1.5"/>` +
+         `<text x="${x + 17}" y="${112 - hoehe}" text-anchor="middle" font-size="10" fill="currentColor">${w}</text>` +
+         `<text x="${x + 17}" y="131" text-anchor="middle" font-size="9" fill="currentColor">${monate[i].slice(0, 3)}</text>`;
+     }).join("")}
+     <text x="169" y="147" text-anchor="middle" font-size="10" fill="currentColor">Stromverbrauch in kWh</text>
+   </svg>`;
+   return {
+    typ:"formel",
+    text:`${bild}<br>Wie groß ist der <b>Unterschied</b> zwischen dem höchsten und dem niedrigsten Monat, in kWh?`,
+    loesung: z(g - k),
+    schluss:"Beim Ablesen zählt zuerst die Beschriftung: Welche Einheit steht an der Achse? Ohne sie ist jede Zahl bedeutungslos.",
+    schritte:[
+     {frage:"Welcher Monat hat den <b>höchsten</b> Verbrauch?",
+      tipp:"Such die längste Säule.",
+      tipp2:`Die längste Säule steht bei ${monate[iG]} mit ${z(g)} kWh.`,
+      optionen:[R(`${monate[iG]} mit ${z(g)} kWh`, "Richtig."),
+                F(`${monate[iK]} mit ${z(k)} kWh`, "Das ist der niedrigste Wert."),
+                F(`${monate[iG]} mit ${z(k)} kWh`, "Der Monat stimmt, der Wert daneben nicht.")]},
+     {frage:"Und welcher den <b>niedrigsten</b>?",
+      tipp:"Such die kürzeste Säule.",
+      tipp2:`Die kürzeste Säule steht bei ${monate[iK]} mit ${z(k)} kWh.`,
+      optionen:[R(`${monate[iK]} mit ${z(k)} kWh`, "Richtig."),
+                F(`${monate[iG]} mit ${z(g)} kWh`, "Das ist der höchste Wert."),
+                F(`${monate[iK]} mit ${z(g)} kWh`, "Der Monat stimmt, der Wert daneben nicht.")]},
+     {frage:`Was ergibt <b>${z(g)} − ${z(k)}</b>?`,
+      tippAntwort: z(g - k),
+      tipp:"Höchster Wert minus niedrigster Wert.",
+      tipp2:`Rechne ${z(g)} − ${z(k)}.`,
+      optionen:[R(`${z(g - k)} kWh`, "Richtig."),
+                F(`${z(g + k)} kWh`, "Ein Unterschied wird abgezogen, nicht addiert."),
+                F(`${z(g)} kWh`, "Das ist nur der höchste Wert.")]}]};
+ },
+
+ /* Kreisdiagramm: Anteil in eine Menge umrechnen */
+ () => {
+   const teile = pick([
+     [{n:"Heizung", p:50}, {n:"Warmwasser", p:25}, {n:"Licht", p:15}, {n:"Rest", p:10}],
+     [{n:"Maschinen", p:40}, {n:"Beleuchtung", p:30}, {n:"Lüftung", p:20}, {n:"Rest", p:10}],
+     [{n:"Antriebe", p:60}, {n:"Druckluft", p:20}, {n:"Licht", p:15}, {n:"Rest", p:5}]
+   ]);
+   const gesamt = pick([2000, 4000, 5000, 8000, 12000]);
+   const gewaehlt = pick(teile.slice(0, 3));
+   const kwh = Math.round(gesamt * gewaehlt.p / 100);
+   const farben = ["#10a37f", "#3b82f6", "#f59e0b", "#94a3b8"];
+   let winkel = -90;
+   const stuecke = teile.map((t, i) => {
+     const bogen = t.p * 3.6, r = 50, cx = 74, cy = 76;
+     const x1 = cx + r * Math.cos(winkel * Math.PI / 180), y1 = cy + r * Math.sin(winkel * Math.PI / 180);
+     winkel += bogen;
+     const x2 = cx + r * Math.cos(winkel * Math.PI / 180), y2 = cy + r * Math.sin(winkel * Math.PI / 180);
+     return `<path d="M${cx} ${cy}L${x1.toFixed(1)} ${y1.toFixed(1)}A${r} ${r} 0 ${bogen > 180 ? 1 : 0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}Z" fill="${farben[i]}" fill-opacity=".6" stroke="#fff" stroke-width="1.5"/>`;
+   }).join("");
+   const bild = `<svg viewBox="0 0 320 152" style="width:100%;max-width:360px;height:auto;display:block;margin:12px auto" role="img" aria-label="Kreisdiagramm: ${teile.map(t => t.n + " " + t.p + " Prozent").join(", ")}">
+     ${stuecke}
+     ${teile.map((t, i) => `<rect x="150" y="${28 + i * 24}" width="13" height="13" fill="${farben[i]}" fill-opacity=".6" stroke="#fff"/>` +
+       `<text x="171" y="${39 + i * 24}" font-size="11" fill="currentColor">${t.n} ${t.p} %</text>`).join("")}
+   </svg>`;
+   return {
+    typ:"formel",
+    text:`${bild}<br>Der Betrieb verbraucht im Jahr <b>${z(gesamt)} kWh</b>. Wie viele kWh entfallen auf <b>${gewaehlt.n}</b>?`,
+    loesung: z(kwh),
+    schluss:"Im Kreisdiagramm ist der ganze Kreis der Grundwert — hier die 100 %, also der gesamte Jahresverbrauch.",
+    schritte:[
+     {frage:`Wie viel <b>Prozent</b> entfallen laut Diagramm auf ${gewaehlt.n}?`,
+      tipp:"Schau in die Legende neben dem Kreis.",
+      tipp2:`Neben ${gewaehlt.n} steht ${z(gewaehlt.p)} %.`,
+      optionen:[R(`${z(gewaehlt.p)} %`, "Richtig."),
+                F(`${z(teile[3].p)} %`, "Das ist der Rest, nicht der gesuchte Anteil."),
+                F("100 %", "Das ist der ganze Kreis, nicht ein Stück davon.")]},
+     {frage:`Wie viele kWh sind <b>${z(gewaehlt.p)} %</b> von ${z(gesamt)} kWh?`,
+      tippAntwort: z(kwh),
+      tipp:"Gesamtwert durch 100, dann mal dem Prozentsatz.",
+      tipp2:`Rechne ${z(gesamt)} : 100 · ${z(gewaehlt.p)}.`,
+      optionen:[R(`${z(kwh)} kWh`, "Richtig."),
+                F(`${z(gewaehlt.p)} kWh`, "Das sind Prozent, keine Kilowattstunden."),
+                F(`${z(gesamt)} kWh`, "Das ist der ganze Verbrauch.")]}]};
+ }
+],
+
+"Funktionen im Schaubild":[
+
+ /* Steigung und y-Achsenabschnitt aus der Zeichnung ablesen */
+ () => {
+   const m = pick([-3, -2, -1, 1, 2, 3]);
+   const b = pick([-4, -3, -2, -1, 1, 2, 3, 4].filter(v => v !== m && v !== -m));
+   const px = (x) => 160 + x * 26;
+   const py = (y) => 78 - y * 12;
+   /* Nur den Abschnitt zeichnen, der ins Bild passt: dort, wo |y| <= 5 bleibt */
+   const xa = (-5 - b) / m, xb = (5 - b) / m;
+   const lo = Math.max(-5, Math.min(xa, xb)), hi = Math.min(5, Math.max(xa, xb));
+   const bild = `<svg viewBox="0 0 320 156" style="width:100%;max-width:360px;height:auto;display:block;margin:12px auto" role="img" aria-label="Gerade im Koordinatensystem, Steigung ${m}, y-Achsenabschnitt ${b}">
+     <line x1="24" y1="78" x2="298" y2="78" stroke="currentColor" stroke-width="1"/>
+     <line x1="160" y1="10" x2="160" y2="148" stroke="currentColor" stroke-width="1"/>
+     ${[-4,-2,2,4].map(t => `<line x1="${px(t)}" y1="74" x2="${px(t)}" y2="82" stroke="currentColor"/>` +
+       `<text x="${px(t)}" y="94" text-anchor="middle" font-size="9" fill="currentColor">${t}</text>`).join("")}
+     ${[-4,-2,2,4].map(t => `<line x1="156" y1="${py(t)}" x2="164" y2="${py(t)}" stroke="currentColor"/>` +
+       `<text x="150" y="${py(t) + 3}" text-anchor="end" font-size="9" fill="currentColor">${t}</text>`).join("")}
+     <line x1="${px(lo).toFixed(1)}" y1="${py(m * lo + b).toFixed(1)}" x2="${px(hi).toFixed(1)}" y2="${py(m * hi + b).toFixed(1)}" stroke="#10a37f" stroke-width="2.5"/>
+     <circle cx="160" cy="${py(b).toFixed(1)}" r="4" fill="#10a37f"/>
+     <text x="300" y="70" text-anchor="end" font-size="9" fill="currentColor">x</text>
+   </svg>`;
+   const wert = m * 3 + b;
+   return {
+    typ:"formel",
+    text:`${bild}<br>Lies die Gerade ab und berechne damit den <b>y-Wert bei x = 3</b>.`,
+    loesung: z(wert),
+    schluss:"Aus einem Schaubild liest du zwei Dinge ab: wo die Gerade die y-Achse schneidet und wie steil sie läuft. Mehr braucht die Gleichung nicht.",
+    schritte:[
+     {frage:"Wo schneidet die Gerade die <b>y-Achse</b>?",
+      tipp:"Das ist der Punkt genau auf der senkrechten Achse, also bei x = 0.",
+      tipp2:`Der Schnittpunkt liegt bei y = ${z(b)}.`,
+      optionen:[R(`Bei y = ${z(b)}`, "Richtig — das ist das b in y = m · x + b."),
+                F(`Bei y = ${z(-b)}`, "Auf der falschen Seite der Achse abgelesen."),
+                F(`Bei y = ${z(m)}`, "Das ist die Steigung, nicht der Schnittpunkt.")]},
+     {frage:"Wie groß ist die <b>Steigung</b>?",
+      tipp:"Geh ein Kästchen nach rechts. Wie viele Kästchen geht es hoch oder runter?",
+      tipp2:`Pro Schritt nach rechts geht es um ${z(Math.abs(m))} nach ${m > 0 ? "oben" : "unten"} — also m = ${z(m)}.`,
+      optionen:[R(`m = ${z(m)}`, "Richtig."),
+                F(`m = ${z(-m)}`, "Das Vorzeichen stimmt nicht — schau, ob die Gerade steigt oder fällt."),
+                F(`m = ${z(b)}`, "Das ist der y-Achsenabschnitt.")]},
+     {frage:`Setze <b>x = 3</b> in <b>y = ${z(m)} · x ${b < 0 ? "− " + z(-b) : "+ " + z(b)}</b> ein.`,
+      tippAntwort: z(wert),
+      tipp:"Erst malnehmen, dann den y-Achsenabschnitt dazu.",
+      tipp2:`${z(m)} · 3 = ${z(m * 3)}, dann ${z(m * 3)} ${b < 0 ? "− " + z(-b) : "+ " + z(b)} = ${z(wert)}.`,
+      optionen:[R(`${z(wert)}`, "Richtig."),
+                F(`${z(m * 3)}`, "Der y-Achsenabschnitt fehlt noch."),
+                F(`${z((m + b) * 3)}`, "Hier wurde erst addiert und dann malgenommen — es gilt Punkt vor Strich.")]}]};
+ },
+
+ /* Nullstelle berechnen */
+ () => {
+   const m = pick([-4, -2, 2, 4, 5]);
+   const n = pick([-3, -2, -1, 1, 2, 3]);
+   const b = -m * n;                       /* damit liegt die Nullstelle genau bei x = n */
+   return {
+    typ:"formel",
+    text:`Eine Gerade hat die Gleichung <b>y = ${z(m)} · x ${b < 0 ? "− " + z(-b) : "+ " + z(b)}</b>.<br>Bei welchem <b>x</b> schneidet sie die x-Achse?`,
+    loesung: z(n),
+    schluss:"Die Nullstelle ist der x-Wert, bei dem die Gerade die waagerechte Achse kreuzt. Dort ist y genau null.",
+    schritte:[
+     {frage:"Welchen Wert hat <b>y</b> auf der x-Achse?",
+      tipp:"Die x-Achse liegt auf der Höhe null.",
+      tipp2:"Auf der x-Achse ist y = 0. Das setzt du in die Gleichung ein.",
+      optionen:[R("y = 0", "Richtig."),
+                F("x = 0", "Das wäre der Schnittpunkt mit der y-Achse."),
+                F(`y = ${z(b)}`, "Das ist der y-Achsenabschnitt.")]},
+     {frage:`Löse <b>0 = ${z(m)} · x ${b < 0 ? "− " + z(-b) : "+ " + z(b)}</b> nach x auf.`,
+      tippAntwort: z(n),
+      tipp:`Bring die ${z(Math.abs(b))} auf die andere Seite, dann teile durch ${z(m)}.`,
+      tipp2:`Aus 0 = ${z(m)} · x ${b < 0 ? "− " + z(-b) : "+ " + z(b)} wird ${z(-b)} = ${z(m)} · x, also x = ${z(-b)} : ${z(m)} = ${z(n)}.`,
+      optionen:[R(`x = ${z(n)}`, "Richtig."),
+                F(`x = ${z(-n)}`, "Das Vorzeichen stimmt nicht — setz die Zahl zur Probe wieder ein."),
+                F(`x = ${z(b)}`, "Das ist der y-Achsenabschnitt, nicht die Nullstelle.")]}]};
+ }
 ]
 
 };
@@ -8171,6 +8697,663 @@ Object.assign(AUFGABEN, {
 const SVG_STIL = `style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto"`;
 
 const ERKLAERUNGEN = {
+
+"Rechnen mit Zeit": {
+  worum:"Zeit rechnet nicht in Zehnern, sondern in 60ern. Wer das übersieht, verrechnet sich auf jedem Stundenzettel.",
+  wozu:[
+    "Jeden Arbeitstag trägst du Zeiten ein: Beginn, Ende, Pause. Auf dem Stundenzettel steht die Zeit aber dezimal — 7,25 h statt 7 h 15 min. Wer die beiden Schreibweisen verwechselt, schreibt sich um Geld.",
+    "Bei Wartungsintervallen, Laufzeiten und Schaltuhren rechnest du dauernd mit Minuten und Stunden. Eine Anlage, die alle 90 Minuten schaltet, läuft eben nicht 1,9-mal in der Stunde."
+  ],
+  rezept:[
+    "Rechne beide Zeiten zuerst in eine einzige Einheit um — meist in Minuten.",
+    "Führ die eigentliche Rechnung durch: zusammenzählen, abziehen, malnehmen.",
+    "Rechne das Ergebnis zurück in die Form, die gefragt ist.",
+    "In Stunden und Minuten: durch 60 teilen, ganze Zahl sind die Stunden, der Rest sind die Minuten.",
+    "In Dezimalstunden: durch 60 teilen und das Komma stehen lassen.",
+    "Mach die Probe: 90 min müssen 1,5 h ergeben — nicht 1,3."
+  ],
+  fehler:[
+    ["Minuten wie Hundertstel behandelt", "1 h 30 min sind 1,5 h und nicht 1,30 h. Die Uhr bricht nach 60 um, der Taschenrechner nach 100."],
+    ["Über Mitternacht falsch gerechnet", "Von 22:00 bis 06:00 sind es 8 Stunden, nicht −16. Bei einem Nachtsprung 24 Stunden dazuzählen."],
+    ["Pause vergessen abzuziehen", "Anwesenheit ist nicht Arbeitszeit. Die Pause geht ab, sonst stimmt der Stundenzettel nicht."],
+    ["Beim Dezimalisieren gerundet", "0,33 h sind 19,8 min, nicht 20. Bei Abrechnungen erst am Ende runden, nicht zwischendurch."]
+  ],
+  einfach:[
+    "Eine Stunde hat 60 Minuten, eine Minute hat 60 Sekunden. Bei Zeiten wird nach 60 umgebrochen, nicht nach 100.",
+    "Willst du zwei Zeiten verrechnen, rechne beide zuerst in Minuten um. Aus 2 h 20 min werden 2 · 60 + 20 = 140 min.",
+    "Erst danach rechnest du. Zum Beispiel 140 min − 45 min = 95 min.",
+    "Zum Schluss wandelst du zurück: 95 : 60 = 1 Rest 35, also 1 h 35 min.",
+    "Auf dem Stundenzettel steht die Zeit oft dezimal. Dafür teilst du die Minuten durch 60 und lässt das Komma stehen.",
+    "35 min sind 35 : 60 = 0,58 h. Aus 1 h 35 min wird also 1,58 h — und nicht 1,35 h.",
+    "Umgekehrt: 0,75 h sind 0,75 · 60 = 45 min. Ein Viertel, eine halbe und eine Dreiviertelstunde sind 0,25, 0,5 und 0,75.",
+    "Bei einer Schicht über Mitternacht zählst du 24 Stunden dazu: von 22:00 bis 06:00 sind es 6 + 24 − 22 = 8 Stunden.",
+    "Prüf jedes Ergebnis mit dem Gefühl nach: Eine Schicht von 8 Stunden kann keine 4,8 h Arbeitszeit ergeben."
+  ],
+  begriffe:[
+    ["Dezimalstunde","Zeit mit Komma, wie sie auf Stundenzetteln steht: 7,25 h."],
+    ["Industrieminute","Ein Hundertstel einer Stunde, also 0,6 echte Minuten. Nur in der Abrechnung üblich."],
+    ["Zeitspanne","Der Abstand zwischen zwei Uhrzeiten — Ende minus Beginn."],
+    ["Umbruch","Der Punkt, an dem eine Einheit voll ist: bei der Zeit nach 60."]
+  ],
+  tabelle:{
+    titel:"Minuten und Dezimalstunden",
+    kopf:["Minuten","Dezimalstunden","So gesprochen"],
+    zeilen:[
+      ["6 min","0,1 h","ein Zehntel"],
+      ["15 min","0,25 h","Viertelstunde"],
+      ["20 min","0,33 h","Drittelstunde"],
+      ["30 min","0,5 h","halbe Stunde"],
+      ["45 min","0,75 h","Dreiviertelstunde"],
+      ["50 min","0,83 h","—"],
+      ["60 min","1,0 h","volle Stunde"],
+      ["90 min","1,5 h","anderthalb Stunden"]
+    ],
+    fuss:"Von Minuten zu Dezimalstunden: durch 60 teilen. Zurück: mal 60 nehmen."
+  },
+  regeln:[
+    "1 h = 60 min, 1 min = 60 s.",
+    "Vor dem Rechnen alles in eine Einheit bringen, meist in Minuten.",
+    "Minuten in Dezimalstunden: geteilt durch 60.",
+    "Dezimalstunden in Minuten: mal 60.",
+    "Über Mitternacht 24 Stunden dazuzählen.",
+    "Pausen gehören abgezogen, bevor die Arbeitszeit feststeht."
+  ],
+  beispiel:{aufgabe:"Schicht von 07:30 bis 16:15, davon 45 min Pause. Wie viele Stunden werden bezahlt?",
+    schritte:["Von 07:30 bis 16:15 sind 8 h 45 min","8 · 60 + 45 = 525 min","525 − 45 = 480 min","480 : 60 = 8"],
+    ergebnis:"8,0 h"},
+  spiel:{
+    titel:"Stundenzettel ausprobieren",
+    hinweis:"Schieb Beginn, Ende und Pause. Unten steht sofort, was auf dem Stundenzettel landet.",
+    regler:[
+      {id:"start", name:"Beginn", einheit:"Uhr", von:5, bis:12, schritt:0.25, start:7},
+      {id:"ende",  name:"Ende",   einheit:"Uhr", von:13, bis:22, schritt:0.25, start:16},
+      {id:"pause", name:"Pause",  einheit:"min", von:0, bis:90, schritt:15, start:45}
+    ],
+    ausgabe:(w) => {
+      const uhr = (h) => `${String(Math.floor(h)).padStart(2, "0")}:${String(Math.round((h % 1) * 60)).padStart(2, "0")}`;
+      const brutto = Math.round((w.ende - w.start) * 60);
+      const netto = Math.max(0, brutto - w.pause);
+      const std = Math.floor(netto / 60), min = netto % 60;
+      const dez = Math.round(netto / 60 * 100) / 100;
+      return {
+        werte:[
+          {name:"Anwesend", text:uhr(w.start) + " – " + uhr(w.ende)},
+          {name:"Anwesenheit", text:z(Math.floor(brutto / 60)) + " h " + z(brutto % 60) + " min"},
+          {name:"Arbeitszeit", text:z(std) + " h " + z(min) + " min"},
+          {name:"Auf dem Zettel", text:z(dez) + " h"}
+        ],
+        satz:`${z(std)} h ${z(min)} min sind <b>${z(dez)} h</b> — nicht ${z(std)},${String(min).padStart(2, "0")} h. Genau hier verrechnen sich die meisten.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="Vergleich: eine Stunde als 60 Minuten und als Dezimalstunde">
+    <text x="20" y="24" font-size="12" font-weight="700" fill="currentColor">Die Uhr zählt bis 60</text>
+    <rect x="20" y="34" width="360" height="26" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    ${[0,1,2,3,4].map(i => `<line x1="${20 + i * 72}" y1="34" x2="${20 + i * 72}" y2="60" stroke="currentColor"/>
+      <text x="${20 + i * 72}" y="74" text-anchor="middle" font-size="10" fill="currentColor">${i * 15} min</text>`).join("")}
+    <line x1="380" y1="34" x2="380" y2="60" stroke="currentColor"/>
+    <text x="380" y="74" text-anchor="middle" font-size="10" fill="currentColor">60 min</text>
+    <text x="20" y="104" font-size="12" font-weight="700" fill="currentColor">Der Zettel zählt bis 1,0</text>
+    <rect x="20" y="114" width="360" height="26" rx="4" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="1.5"/>
+    ${[0,1,2,3,4].map(i => `<line x1="${20 + i * 72}" y1="114" x2="${20 + i * 72}" y2="140" stroke="#10a37f"/>
+      <text x="${20 + i * 72}" y="112" text-anchor="middle" font-size="10" fill="currentColor">${(i * 0.25).toString().replace(".", ",")}</text>`).join("")}
+    <text x="380" y="112" text-anchor="middle" font-size="10" fill="currentColor">1,0</text>
+  </svg>`
+},
+
+"Rechnen mit Klammern": {
+  worum:"Klammern bestimmen, was zuerst gerechnet wird. Sie sind kein Beiwerk, sondern ändern das Ergebnis.",
+  wozu:[
+    "Jede Formel im Tabellenbuch steht und fällt mit ihren Klammern. Bei der Reihenschaltung heißt es R = R1 + R2 + R3 — schreibst du beim Umstellen die Klammer falsch, kommt ein anderer Widerstand heraus.",
+    "Auch der Taschenrechner rechnet stur nach diesen Regeln. Wenn du eine Klammer vergisst einzutippen, rechnet er etwas anderes als du gemeint hast — und merkt es nicht."
+  ],
+  rezept:[
+    "Schau zuerst, ob Klammern da sind. Was drinsteht, wird zuerst gerechnet.",
+    "Bei mehreren Klammern von innen nach außen arbeiten.",
+    "Danach Punkt vor Strich: erst mal und geteilt, dann plus und minus.",
+    "Zum Schluss von links nach rechts abarbeiten.",
+    "Steht ein Minus vor der Klammer, dreht sich drinnen jedes Vorzeichen um.",
+    "Steht ein Faktor vor der Klammer, kommt er an jede Zahl darin."
+  ],
+  fehler:[
+    ["Punkt vor Strich vergessen", "3 + 4 · 2 ist 11, nicht 14. Erst wird malgenommen, dann addiert — auch wenn das Plus vorn steht."],
+    ["Minus nur auf die erste Zahl bezogen", "20 − (5 + 3) ist 12, nicht 18. Das Minus gilt für die ganze Klammer, also für beide Zahlen."],
+    ["Beim Ausmultiplizieren einen Summanden vergessen", "3 · (x + 4) ist 3x + 12, nicht 3x + 4. Der Faktor gehört an jeden Summanden."],
+    ["Klammern beim Eintippen weggelassen", "Wer (12 + 8) : 4 als 12 + 8 : 4 eintippt, bekommt 14 statt 5. Der Rechner rechnet, was dasteht."]
+  ],
+  einfach:[
+    "In einer Rechnung ist die Reihenfolge festgelegt. Sie heißt: Klammer vor Punkt vor Strich.",
+    "Zuerst wird also alles gerechnet, was in einer Klammer steht.",
+    "Danach kommen die Punktrechnungen dran: malnehmen und teilen.",
+    "Zuletzt die Strichrechnungen: plus und minus.",
+    "Beispiel: (4 + 6) · 3 = 10 · 3 = 30. Ohne Klammer wäre es 4 + 6 · 3 = 4 + 18 = 22 — ein ganz anderes Ergebnis.",
+    "Steht ein Faktor vor einer Klammer, darfst du ausmultiplizieren: 5 · (a + 2) = 5 · a + 5 · 2.",
+    "Wichtig dabei: Der Faktor kommt an jede Zahl in der Klammer, nicht nur an die erste.",
+    "Steht ein Minus vor der Klammer, dreht es drinnen alle Vorzeichen um: 12 − (3 + 4) = 12 − 3 − 4 = 5.",
+    "Bei mehreren Klammern arbeitest du von innen nach außen.",
+    "Wenn du unsicher bist, setz lieber eine Klammer zu viel. Überflüssige Klammern ändern nichts, fehlende schon."
+  ],
+  begriffe:[
+    ["Klammer","Sagt, was zuerst gerechnet wird."],
+    ["Punktrechnung","Malnehmen und teilen."],
+    ["Strichrechnung","Plus und minus."],
+    ["Ausmultiplizieren","Den Faktor vor der Klammer an jede Zahl darin verteilen."],
+    ["Summand","Eine der Zahlen, die zusammengezählt werden."]
+  ],
+  tabelle:{
+    titel:"Mit und ohne Klammer",
+    kopf:["Rechnung","Ergebnis","Warum"],
+    zeilen:[
+      ["4 + 6 · 3","22","Punkt vor Strich: erst 6 · 3"],
+      ["(4 + 6) · 3","30","Klammer zuerst: erst 4 + 6"],
+      ["20 − 5 + 3","18","von links nach rechts"],
+      ["20 − (5 + 3)","12","Minus gilt für beide Zahlen"],
+      ["24 : 4 · 2","12","von links nach rechts"],
+      ["24 : (4 · 2)","3","Klammer zuerst"],
+      ["3 · (x + 4)","3x + 12","Faktor an beide Summanden"],
+      ["−(x − 7)","−x + 7","alle Vorzeichen drehen sich um"]
+    ],
+    fuss:"Die vier Paare zeigen dasselbe mit und ohne Klammer. Der Unterschied im Ergebnis ist genau das, wofür Klammern da sind."
+  },
+  regeln:[
+    "Klammer vor Punkt vor Strich.",
+    "Mehrere Klammern: von innen nach außen.",
+    "Gleichrangiges von links nach rechts.",
+    "Faktor vor der Klammer: an jeden Summanden verteilen.",
+    "Minus vor der Klammer: alle Vorzeichen drinnen drehen sich um.",
+    "Im Zweifel eine Klammer mehr setzen."
+  ],
+  beispiel:{aufgabe:"Rechne aus: 40 − 3 · (2 + 4)",
+    schritte:["Klammer zuerst: 2 + 4 = 6","Punkt vor Strich: 3 · 6 = 18","Zum Schluss: 40 − 18"],
+    ergebnis:"22"},
+  spiel:{
+    titel:"Klammer an, Klammer aus",
+    hinweis:"Schieb die drei Zahlen und vergleiche: dieselben Zahlen, einmal mit und einmal ohne Klammer.",
+    regler:[
+      {id:"a", name:"erste Zahl",  von:1, bis:20, schritt:1, start:4},
+      {id:"b", name:"zweite Zahl", von:1, bis:20, schritt:1, start:6},
+      {id:"c", name:"dritte Zahl", von:1, bis:12, schritt:1, start:3}
+    ],
+    ausgabe:(w) => {
+      const mit = (w.a + w.b) * w.c, ohne = w.a + w.b * w.c;
+      const unterschied = Math.abs(mit - ohne);
+      return {
+        werte:[
+          {name:`(${z(w.a)} + ${z(w.b)}) · ${z(w.c)}`, text:z(mit)},
+          {name:`${z(w.a)} + ${z(w.b)} · ${z(w.c)}`,   text:z(ohne)},
+          {name:"Unterschied", text:z(unterschied)}
+        ],
+        satz: unterschied === 0
+          ? `Hier ist es ausnahmsweise gleich — das passiert nur, wenn die dritte Zahl 1 ist.`
+          : `Dieselben drei Zahlen, ein Unterschied von <b>${z(unterschied)}</b>. Nur wegen der Klammer.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Reihenfolge: Klammer vor Punkt vor Strich">
+    <rect x="30" y="16" width="340" height="34" rx="6" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+    <text x="200" y="38" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">1. Klammern ( )</text>
+    <path d="M200 50v14" stroke="currentColor" stroke-width="1.5"/><path d="M195 60l5 6 5-6" fill="currentColor"/>
+    <rect x="30" y="66" width="340" height="34" rx="6" fill="#3b82f6" fill-opacity=".25" stroke="#3b82f6" stroke-width="2"/>
+    <text x="200" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">2. Punkt · und :</text>
+    <path d="M200 100v14" stroke="currentColor" stroke-width="1.5"/><path d="M195 110l5 6 5-6" fill="currentColor"/>
+    <rect x="30" y="116" width="340" height="34" rx="6" fill="#f59e0b" fill-opacity=".25" stroke="#f59e0b" stroke-width="2"/>
+    <text x="200" y="138" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3. Strich + und −</text>
+    <text x="200" y="165" text-anchor="middle" font-size="11" fill="currentColor">innerhalb einer Stufe: von links nach rechts</text>
+  </svg>`
+},
+
+"Terme aufstellen": {
+  worum:"Ein Term ist eine Rechnung mit einem Platzhalter. Aus einem Satz einen Term zu machen ist der Schritt von der Sprache zur Mathematik.",
+  wozu:[
+    "Jede Preisliste, jeder Kostenvoranschlag und jede Formel im Tabellenbuch ist ein Term. Grundgebühr plus Arbeitspreis mal Menge — wer den Term hinschreiben kann, kann jede Menge durchrechnen, ohne neu zu überlegen.",
+    "In der Prüfung stehen Aufgaben als Text da. Das Rechnen selbst ist meist leicht; der schwierige Teil ist, aus dem Text die richtige Rechnung zu machen."
+  ],
+  rezept:[
+    "Lies den Text und finde die gesuchte Größe. Sie bekommt den Buchstaben, meist x.",
+    "Streich alles an, was eine Zahl ist, und schreib daneben, was sie bedeutet.",
+    "Klär, was einmal anfällt und was sich mit der Menge ändert.",
+    "Schreib den Term in der Reihenfolge auf, in der der Text die Schritte nennt.",
+    "Setz Klammern überall dort, wo etwas zuerst passieren muss.",
+    "Mach die Probe: Setz eine leichte Zahl ein und prüfe, ob das Ergebnis zum Text passt."
+  ],
+  fehler:[
+    ["Reihenfolge aus dem Satz verdreht", "„Um 3 vermehrt und dann verdoppelt\" ist 2 · (x + 3), nicht 2 · x + 3. Die Klammer hält fest, was zuerst dran ist."],
+    ["Festen und veränderlichen Teil vertauscht", "Die Anfahrt fällt einmal an, der Stundensatz je Stunde. 45 + 60 · t ist etwas anderes als 45 · t + 60."],
+    ["Klammer weggelassen", "„Die Summe halbieren\" heißt (a + b) : 2. Ohne Klammer wird nur b halbiert."],
+    ["Weniger und geteilt verwechselt", "„Um 4 kleiner\" ist x − 4. „Viermal kleiner\" ist x : 4. Das sind zwei verschiedene Rechnungen."]
+  ],
+  einfach:[
+    "Ein Term ist eine Rechnung, in der mindestens ein Buchstabe steht: 3 · x + 5.",
+    "Der Buchstabe ist ein Platzhalter für eine Zahl, die noch nicht feststeht.",
+    "Setzt du eine Zahl ein, kannst du ausrechnen: für x = 4 wird aus 3 · x + 5 die Rechnung 3 · 4 + 5 = 17.",
+    "Einen Term aufzustellen heißt, einen Satz in eine Rechnung zu übersetzen.",
+    "„Eine Zahl wird verdoppelt\" wird zu 2 · x. „Und dann um 5 vermehrt\" wird zu 2 · x + 5.",
+    "Achte genau auf die Reihenfolge. „Erst um 5 vermehrt, dann verdoppelt\" ist 2 · (x + 5) — mit Klammer.",
+    "Die Klammer sagt: Das passiert zuerst. Ohne sie stimmt die Reihenfolge nicht.",
+    "Typische Wörter: „mehr als\" heißt plus, „weniger als\" heißt minus, „mal so viel\" heißt malnehmen, „geteilt\" oder „pro\" heißt teilen.",
+    "Aus dem Betrieb: Eine Grundgebühr fällt einmal an, ein Stundensatz für jede Stunde. Das ergibt den Term Grundgebühr + Stundensatz · t.",
+    "Prüf deinen Term immer mit einer einfachen Zahl nach — zum Beispiel mit 1 oder 2."
+  ],
+  begriffe:[
+    ["Term","Eine Rechnung mit mindestens einem Platzhalter."],
+    ["Variable","Der Buchstabe, der für eine Zahl steht."],
+    ["Einsetzen","Den Buchstaben durch eine Zahl ersetzen und ausrechnen."],
+    ["Fester Anteil","Was unabhängig von der Menge einmal anfällt."],
+    ["Veränderlicher Anteil","Was mit der Menge malgenommen wird."]
+  ],
+  tabelle:{
+    titel:"Vom Satz zum Term",
+    kopf:["So steht es im Text","So heißt der Term"],
+    zeilen:[
+      ["um 5 vermehrt","x + 5"],
+      ["um 5 vermindert","x − 5"],
+      ["verdoppelt","2 · x"],
+      ["halbiert","x : 2"],
+      ["um 3 vermehrt, dann verdoppelt","2 · (x + 3)"],
+      ["verdoppelt, dann um 3 vermehrt","2 · x + 3"],
+      ["Grundgebühr 20 € plus 5 € je Stück","20 + 5 · x"],
+      ["dreimal so viel wie y","3 · y"],
+      ["um 3 weniger als y","y − 3"]
+    ],
+    fuss:"Die Zeilen 5 und 6 sehen fast gleich aus und bedeuten Verschiedenes. Die Klammer macht den Unterschied."
+  },
+  regeln:[
+    "Die gesuchte Größe bekommt den Buchstaben.",
+    "Die Reihenfolge im Satz ist die Reihenfolge im Term.",
+    "Was zuerst passiert, kommt in die Klammer.",
+    "Fester Anteil wird addiert, veränderlicher Anteil malgenommen.",
+    "„Pro\" und „je\" heißen malnehmen mit der Anzahl.",
+    "Probe mit einer einfachen Zahl machen."
+  ],
+  beispiel:{aufgabe:"Ein Betrieb rechnet 50 € Anfahrt und 60 € je Stunde. Stell den Term auf und berechne 4 Stunden.",
+    schritte:["Anfahrt fällt einmal an: 50","Stundensatz je Stunde: 60 · t","Term: 50 + 60 · t","Einsetzen: 50 + 60 · 4 = 50 + 240"],
+    ergebnis:"290 €"},
+  spiel:{
+    titel:"Preisliste ausprobieren",
+    hinweis:"Schieb Grundgebühr, Stundensatz und Stunden. Der Term bleibt derselbe, nur die Zahlen ändern sich.",
+    regler:[
+      {id:"grund", name:"Anfahrt",     einheit:"€", von:0,  bis:150, schritt:5, start:50},
+      {id:"satz",  name:"je Stunde",   einheit:"€", von:20, bis:120, schritt:5, start:60},
+      {id:"t",     name:"Stunden",     einheit:"h", von:0,  bis:12,  schritt:1, start:4}
+    ],
+    ausgabe:(w) => {
+      const arbeit = w.satz * w.t, gesamt = w.grund + arbeit;
+      return {
+        werte:[
+          {name:"Term", text:`${z(w.grund)} + ${z(w.satz)} · t`},
+          {name:"Arbeit", text:eur(arbeit)},
+          {name:"Anfahrt", text:eur(w.grund)},
+          {name:"Gesamt", text:eur(gesamt)}
+        ],
+        satz: w.t === 0
+          ? `Ohne eine einzige Arbeitsstunde bleibt nur die Anfahrt: <b>${eur(w.grund)}</b>. Das ist der feste Anteil.`
+          : `${z(w.t)} Stunden kosten <b>${eur(gesamt)}</b>. Jede weitere Stunde schlägt mit ${eur(w.satz)} zu Buche — die Anfahrt bleibt gleich.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Ein Satz wird Schritt für Schritt in einen Term übersetzt">
+    <text x="200" y="22" text-anchor="middle" font-size="12" font-style="italic" fill="currentColor">„Eine Zahl wird um 3 vermehrt und dann verdreifacht.“</text>
+    <rect x="34" y="42" width="150" height="32" rx="5" fill="#10a37f" fill-opacity=".25" stroke="#10a37f" stroke-width="2"/>
+    <text x="109" y="63" text-anchor="middle" font-size="12" fill="currentColor">um 3 vermehrt</text>
+    <path d="M188 58h28" stroke="currentColor" stroke-width="1.5"/><path d="M210 53l8 5-8 5" fill="currentColor"/>
+    <rect x="220" y="42" width="150" height="32" rx="5" fill="#10a37f" fill-opacity=".25" stroke="#10a37f" stroke-width="2"/>
+    <text x="295" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">x + 3</text>
+    <rect x="34" y="88" width="150" height="32" rx="5" fill="#3b82f6" fill-opacity=".22" stroke="#3b82f6" stroke-width="2"/>
+    <text x="109" y="109" text-anchor="middle" font-size="12" fill="currentColor">dann verdreifacht</text>
+    <path d="M188 104h28" stroke="currentColor" stroke-width="1.5"/><path d="M210 99l8 5-8 5" fill="currentColor"/>
+    <rect x="220" y="88" width="150" height="32" rx="5" fill="#3b82f6" fill-opacity=".22" stroke="#3b82f6" stroke-width="2"/>
+    <text x="295" y="109" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">3 · (x + 3)</text>
+    <text x="200" y="146" text-anchor="middle" font-size="11" fill="currentColor">Die Klammer hält fest, was zuerst passiert.</text>
+  </svg>`
+},
+
+"Prozentuale Veränderung": {
+  worum:"Eine Veränderung in Prozent wird immer am alten Wert gemessen. Der alte Wert ist der Grundwert, also die 100 %.",
+  wozu:[
+    "Preise steigen, Rabatte werden gewährt, der Stromverbrauch sinkt. Überall sind es Prozentangaben — und sie sagen nur dann etwas, wenn klar ist, worauf sie sich beziehen.",
+    "Im Betrieb rechnest du mit Aufschlägen und Nachlässen: Materialzuschlag, Skonto, Mehrwertsteuer. Wer den Faktor kennt, macht das in einem Schritt statt in dreien."
+  ],
+  rezept:[
+    "Bestimm den Grundwert — das ist fast immer der alte oder ursprüngliche Wert.",
+    "Klär die Richtung: wird mehr oder weniger?",
+    "Bei einer Erhöhung um p Prozent ist der Faktor (100 + p) : 100.",
+    "Bei einer Senkung um p Prozent ist der Faktor (100 − p) : 100.",
+    "Grundwert mal Faktor ergibt den neuen Wert in einem Schritt.",
+    "Umgekehrt: Unterschied geteilt durch Grundwert, mal 100, ergibt den Prozentsatz."
+  ],
+  fehler:[
+    ["Mit dem neuen Wert statt dem alten verglichen", "Von 200 auf 250 sind 25 % Anstieg, denn 50 : 200 = 0,25. Rechnet man 50 : 250, kommen 20 % heraus — das ist die Rückrichtung."],
+    ["Erhöhung und Senkung heben sich angeblich auf", "100 € plus 20 % sind 120 €. Davon 20 % Rabatt sind 96 €, nicht wieder 100 €. Der zweite Prozentsatz gilt für den größeren Wert."],
+    ["Prozentpunkte mit Prozent verwechselt", "Von 5 % auf 7 % sind 2 Prozentpunkte, aber 40 % Steigerung. Beides ist richtig und bedeutet Verschiedenes."],
+    ["Bei Rabatt den Rabattbetrag als Preis genommen", "20 % von 80 € sind 16 €. Zu zahlen sind aber 64 €, nicht 16 €."]
+  ],
+  einfach:[
+    "Prozent heißt „von hundert\". 20 % sind 20 von 100, also ein Fünftel.",
+    "Bei einer Veränderung gibt es immer drei Werte: den alten, den neuen und den Unterschied.",
+    "Der alte Wert ist der Grundwert. Er entspricht 100 %.",
+    "Steigt ein Preis um 20 %, kommen 20 % des alten Preises dazu: aus 50 € werden 50 + 10 = 60 €.",
+    "Schneller geht es mit dem Faktor: 100 % + 20 % = 120 %, also mal 1,2. 50 · 1,2 = 60.",
+    "Sinkt etwas um 20 %, bleiben 80 % übrig: 50 · 0,8 = 40 €.",
+    "Suchst du den Prozentsatz, teilst du den Unterschied durch den alten Wert und nimmst mal 100.",
+    "Von 200 kWh auf 250 kWh sind das 50 : 200 · 100 = 25 %.",
+    "Achtung bei zwei Änderungen hintereinander: Sie zählen nicht einfach zusammen. Plus 10 % und dann noch einmal plus 10 % ergibt 21 %, nicht 20 %.",
+    "Prozentpunkte sind etwas anderes als Prozent. Von 5 % auf 7 % sind 2 Prozentpunkte — aber 40 % mehr."
+  ],
+  begriffe:[
+    ["Grundwert","Der Wert, der 100 % entspricht — meist der alte Wert."],
+    ["Prozentwert","Der Betrag, der den Prozenten entspricht."],
+    ["Prozentsatz","Die Angabe in Prozent."],
+    ["Faktor","Die Zahl, mit der man in einem Schritt malnimmt: 1,2 für plus 20 %."],
+    ["Prozentpunkt","Die Differenz zweier Prozentangaben."]
+  ],
+  tabelle:{
+    titel:"Faktoren für Auf- und Abschläge",
+    kopf:["Änderung","Faktor","Aus 200 € wird"],
+    zeilen:[
+      ["+ 5 %","1,05","210,00 €"],
+      ["+ 10 %","1,10","220,00 €"],
+      ["+ 19 % (MwSt.)","1,19","238,00 €"],
+      ["+ 25 %","1,25","250,00 €"],
+      ["− 3 % (Skonto)","0,97","194,00 €"],
+      ["− 10 %","0,90","180,00 €"],
+      ["− 25 %","0,75","150,00 €"],
+      ["− 50 %","0,50","100,00 €"]
+    ],
+    fuss:"Der Faktor ist (100 ± p) : 100. Damit wird aus drei Rechenschritten ein einziger."
+  },
+  regeln:[
+    "Der alte Wert ist der Grundwert und entspricht 100 %.",
+    "Erhöhung um p Prozent: mal (100 + p) : 100.",
+    "Senkung um p Prozent: mal (100 − p) : 100.",
+    "Prozentsatz = Unterschied : Grundwert · 100.",
+    "Zwei Änderungen hintereinander werden multipliziert, nicht addiert.",
+    "Prozentpunkte sind Differenzen von Prozentangaben, keine Prozente."
+  ],
+  beispiel:{aufgabe:"Ein Gerät kostet 320 €, es gibt 25 % Rabatt. Was zahlst du?",
+    schritte:["Rest in Prozent: 100 % − 25 % = 75 %","Faktor: 75 : 100 = 0,75","320 · 0,75"],
+    ergebnis:"240 €"},
+  spiel:{
+    titel:"Auf- und Abschlag ausprobieren",
+    hinweis:"Zieh den Prozentsatz nach rechts für einen Aufschlag, nach links für einen Nachlass.",
+    regler:[
+      {id:"grund", name:"Grundwert", einheit:"€", von:20, bis:1000, schritt:10, start:200},
+      {id:"p",     name:"Änderung",  einheit:"%", von:-50, bis:50,  schritt:1,  start:20}
+    ],
+    ausgabe:(w) => {
+      const faktor = (100 + w.p) / 100;
+      const neu = Math.round(w.grund * faktor * 100) / 100;
+      const diff = Math.round((neu - w.grund) * 100) / 100;
+      return {
+        werte:[
+          {name:"Faktor", text:z(Math.round(faktor * 1000) / 1000)},
+          {name:"Unterschied", text:(diff >= 0 ? "+ " : "− ") + eur(Math.abs(diff))},
+          {name:"Neuer Wert", text:eur(neu)}
+        ],
+        satz: w.p === 0
+          ? "Ohne Änderung ist der Faktor 1 — der Wert bleibt, wie er war."
+          : `${w.p > 0 ? "Plus" : "Minus"} ${z(Math.abs(w.p))} % heißt: mal <b>${z(Math.round(faktor * 1000) / 1000)}</b>. Ein Schritt statt drei.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 168" ${SVG_STIL} role="img" aria-label="Balken: 100 Prozent Grundwert, darunter plus 20 Prozent und minus 20 Prozent">
+    <text x="20" y="20" font-size="11" fill="currentColor">Grundwert = 100 %</text>
+    <rect x="20" y="26" width="250" height="26" rx="4" fill="#94a3b8" fill-opacity=".35" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="145" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">200 €</text>
+    <text x="20" y="76" font-size="11" fill="currentColor">+ 20 % → Faktor 1,2</text>
+    <rect x="20" y="82" width="250" height="26" rx="4" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="1.5"/>
+    <rect x="270" y="82" width="50" height="26" rx="4" fill="#10a37f" fill-opacity=".6" stroke="#10a37f" stroke-width="1.5"/>
+    <text x="295" y="100" text-anchor="middle" font-size="10" fill="currentColor">+40</text>
+    <text x="330" y="100" font-size="12" font-weight="700" fill="currentColor">240 €</text>
+    <text x="20" y="132" font-size="11" fill="currentColor">− 20 % → Faktor 0,8</text>
+    <rect x="20" y="138" width="200" height="26" rx="4" fill="#f59e0b" fill-opacity=".3" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="220" y="138" width="50" height="26" rx="4" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="245" y="156" text-anchor="middle" font-size="10" fill="currentColor">−40</text>
+    <text x="280" y="156" font-size="12" font-weight="700" fill="currentColor">160 €</text>
+  </svg>`
+},
+
+"Diagramme lesen": {
+  worum:"Ein Diagramm zeigt Zahlen als Bild. Richtig lesen heißt: erst die Achsen und die Einheit klären, dann erst die Werte ablesen.",
+  wozu:[
+    "Verbrauchsauswertungen, Messschriebe, Prüfprotokolle und Datenblätter kommen fast immer als Diagramm. Wer eine Kennlinie lesen kann, sieht auf einen Blick, ob ein Bauteil im richtigen Bereich arbeitet.",
+    "Auch in Nachrichten und Werbung stehen Diagramme. Wenn die y-Achse nicht bei null anfängt, sieht ein winziger Unterschied riesig aus — das erkennst du nur, wenn du die Achse prüfst."
+  ],
+  rezept:[
+    "Lies zuerst die Überschrift: Worum geht es überhaupt?",
+    "Prüf beide Achsen: Was wird aufgetragen und in welcher Einheit?",
+    "Schau, wo die Achse anfängt. Beginnt sie nicht bei null, sind die Unterschiede optisch übertrieben.",
+    "Klär die Schrittweite: Wie viel ist ein Kästchen wert?",
+    "Lies den gesuchten Wert ab und schreib die Einheit dazu.",
+    "Rechne erst danach — Unterschied, Anteil oder Mittelwert."
+  ],
+  fehler:[
+    ["Einheit weggelassen", "„450\" ist keine Antwort. 450 kWh, 450 € und 450 h sind völlig verschiedene Dinge."],
+    ["Achsenanfang übersehen", "Beginnt die y-Achse bei 400 statt bei 0, wirkt ein Unterschied von 20 wie eine Verdopplung. Immer auf den Nullpunkt schauen."],
+    ["Säulenhöhe geschätzt statt abgelesen", "Zwischen den Strichen liegen feste Schritte. Zähl die Kästchen, statt nach Gefühl zu raten."],
+    ["Beim Kreisdiagramm den Anteil für die Menge gehalten", "30 % sind erst dann kWh, wenn du sie mit dem Gesamtverbrauch verrechnest."]
+  ],
+  einfach:[
+    "Ein Säulendiagramm vergleicht Werte. Je höher die Säule, desto größer der Wert.",
+    "Unten an der waagerechten Achse steht, wozu die Säule gehört — zum Beispiel der Monat.",
+    "An der senkrechten Achse steht, wie viel es ist, und in welcher Einheit.",
+    "Bevor du irgendetwas abliest, schau, wo die senkrechte Achse anfängt. Fängt sie nicht bei null an, sehen kleine Unterschiede riesig aus.",
+    "Ein Liniendiagramm zeigt einen Verlauf über die Zeit. Steigt die Linie, wird es mehr; fällt sie, wird es weniger.",
+    "Ein Kreisdiagramm zeigt Anteile an einem Ganzen. Der ganze Kreis ist immer 100 %.",
+    "Im Kreisdiagramm musst du fast immer zweimal rechnen: erst den Prozentsatz ablesen, dann in die wirkliche Menge umrechnen.",
+    "Beispiel: 30 % von 5000 kWh sind 5000 : 100 · 30 = 1500 kWh.",
+    "Schreib bei jeder Antwort die Einheit dazu. Eine Zahl ohne Einheit ist im Betrieb wertlos.",
+    "Zum Schluss: Passt das Ergebnis zur Größenordnung? Ein Haushalt verbraucht keine 500 000 kWh im Jahr."
+  ],
+  begriffe:[
+    ["Achse","Die Linie am Rand, an der die Werte abgelesen werden."],
+    ["Skalierung","Die Schrittweite der Achse — wie viel ein Kästchen wert ist."],
+    ["Legende","Die Erklärung, welche Farbe wofür steht."],
+    ["Säulendiagramm","Vergleicht einzelne Werte nebeneinander."],
+    ["Liniendiagramm","Zeigt einen Verlauf, meist über die Zeit."],
+    ["Kreisdiagramm","Zeigt Anteile an einem Ganzen, zusammen immer 100 %."]
+  ],
+  tabelle:{
+    titel:"Welches Diagramm wofür",
+    kopf:["Art","Zeigt","Typisches Beispiel"],
+    zeilen:[
+      ["Säulendiagramm","Werte im Vergleich","Verbrauch je Monat"],
+      ["Balkendiagramm","Werte im Vergleich, lange Namen","Störungen je Anlage"],
+      ["Liniendiagramm","Verlauf über die Zeit","Temperatur über den Tag"],
+      ["Kreisdiagramm","Anteile am Ganzen","Wofür der Strom draufgeht"],
+      ["Kennlinie","Zusammenhang zweier Größen","Strom über Spannung bei einer Diode"],
+      ["Histogramm","Häufigkeit in Klassen","Wie oft welcher Messwert vorkam"]
+    ],
+    fuss:"Kreisdiagramme taugen nur für Anteile eines Ganzen. Für Verläufe sind sie ungeeignet."
+  },
+  regeln:[
+    "Erst Überschrift und Achsen lesen, dann Werte ablesen.",
+    "Immer prüfen, ob die Achse bei null anfängt.",
+    "Schrittweite bestimmen: Wie viel ist ein Kästchen?",
+    "Zu jedem Wert gehört eine Einheit.",
+    "Im Kreisdiagramm ist das Ganze 100 %.",
+    "Prozente werden erst zu Mengen, wenn man sie mit dem Gesamtwert verrechnet."
+  ],
+  beispiel:{aufgabe:"Ein Betrieb verbraucht 8000 kWh im Jahr. Laut Kreisdiagramm entfallen 40 % auf Maschinen. Wie viele kWh sind das?",
+    schritte:["Der ganze Kreis sind 8000 kWh","1 % sind 8000 : 100 = 80 kWh","40 % sind 80 · 40"],
+    ergebnis:"3200 kWh"},
+  spiel:{
+    titel:"Wie die Achse täuscht",
+    hinweis:"Schieb den Anfang der senkrechten Achse nach oben. Die Zahlen bleiben gleich — der Eindruck nicht.",
+    regler:[
+      {id:"start", name:"Achse beginnt bei", einheit:"kWh", von:0, bis:400, schritt:20, start:0},
+      {id:"b",     name:"Wert Februar",      einheit:"kWh", von:410, bis:600, schritt:10, start:440}
+    ],
+    ausgabe:(w) => {
+      const a = 420, b = w.b;
+      const oben = Math.max(a, b) + 40;
+      const spanne = Math.max(1, oben - w.start);
+      const hoehe = (v) => Math.max(0, Math.min(96, (v - w.start) / spanne * 96));
+      const hA = hoehe(a), hB = hoehe(b);
+      const verhaeltnis = hA > 0 ? Math.round(hB / hA * 100) / 100 : 0;
+      const echt = Math.round(b / a * 100) / 100;
+      return {
+        bild:`<svg viewBox="0 0 240 130" style="width:100%;max-width:280px;height:auto;display:block;margin:8px auto" role="img" aria-label="Zwei Säulen mit verschiebbarem Achsenanfang">
+          <line x1="42" y1="112" x2="220" y2="112" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="42" y1="10" x2="42" y2="112" stroke="currentColor" stroke-width="1.5"/>
+          <text x="38" y="115" text-anchor="end" font-size="9" fill="currentColor">${w.start}</text>
+          <rect x="70" y="${(112 - hA).toFixed(1)}" width="44" height="${hA.toFixed(1)}" fill="#10a37f" fill-opacity=".45" stroke="#10a37f" stroke-width="1.5"/>
+          <text x="92" y="${(106 - hA).toFixed(1)}" text-anchor="middle" font-size="10" fill="currentColor">${a}</text>
+          <text x="92" y="125" text-anchor="middle" font-size="9" fill="currentColor">Jan</text>
+          <rect x="146" y="${(112 - hB).toFixed(1)}" width="44" height="${hB.toFixed(1)}" fill="#3b82f6" fill-opacity=".45" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="168" y="${(106 - hB).toFixed(1)}" text-anchor="middle" font-size="10" fill="currentColor">${b}</text>
+          <text x="168" y="125" text-anchor="middle" font-size="9" fill="currentColor">Feb</text>
+        </svg>`,
+        werte:[
+          {name:"Wirklich größer um", text:z(Math.round((b / a - 1) * 1000) / 10) + " %"},
+          {name:"Sieht aus wie Faktor", text:z(verhaeltnis)},
+          {name:"Wirklicher Faktor", text:z(echt)}
+        ],
+        satz: w.start === 0
+          ? "Achse bei null: Das Bild sagt die Wahrheit — der Balken ist so viel länger, wie der Wert größer ist."
+          : `Achse beginnt bei ${z(w.start)}: Februar <b>sieht</b> ${z(verhaeltnis)}-mal so groß aus, ist aber nur ${z(echt)}-mal so groß. Genau so werden Diagramme geschönt.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 175" ${SVG_STIL} role="img" aria-label="Dieselben Zahlen mit Achse ab null und Achse ab 400">
+    <text x="100" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">Achse ab 0 — ehrlich</text>
+    <line x1="40" y1="132" x2="176" y2="132" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="40" y1="26" x2="40" y2="132" stroke="currentColor" stroke-width="1.5"/>
+    <text x="36" y="135" text-anchor="end" font-size="9" fill="currentColor">0</text>
+    <rect x="62" y="42" width="36" height="90" fill="#10a37f" fill-opacity=".45" stroke="#10a37f" stroke-width="1.5"/>
+    <rect x="118" y="36" width="36" height="96" fill="#3b82f6" fill-opacity=".45" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="80" y="146" text-anchor="middle" font-size="9" fill="currentColor">420</text>
+    <text x="136" y="146" text-anchor="middle" font-size="9" fill="currentColor">450</text>
+    <text x="300" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">Achse ab 400 — irreführend</text>
+    <line x1="240" y1="132" x2="376" y2="132" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="240" y1="26" x2="240" y2="132" stroke="currentColor" stroke-width="1.5"/>
+    <text x="236" y="135" text-anchor="end" font-size="9" fill="currentColor">400</text>
+    <rect x="262" y="96" width="36" height="36" fill="#10a37f" fill-opacity=".45" stroke="#10a37f" stroke-width="1.5"/>
+    <rect x="318" y="42" width="36" height="90" fill="#3b82f6" fill-opacity=".45" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="280" y="146" text-anchor="middle" font-size="9" fill="currentColor">420</text>
+    <text x="336" y="146" text-anchor="middle" font-size="9" fill="currentColor">450</text>
+    <text x="200" y="168" text-anchor="middle" font-size="11" fill="currentColor">Gleiche Zahlen, ganz anderer Eindruck. Immer auf den Achsenanfang schauen.</text>
+  </svg>`
+},
+
+"Funktionen im Schaubild": {
+  worum:"Eine Funktion lässt sich als Gleichung oder als Bild zeigen. Beides sagt dasselbe — man muss nur zwischen beiden hin und her übersetzen können.",
+  wozu:[
+    "Kennlinien sind nichts anderes als Funktionsschaubilder: Strom über Spannung, Drehmoment über Drehzahl, Widerstand über Temperatur. Wer sie lesen kann, holt aus einem Datenblatt in Sekunden die Antwort.",
+    "Bei einer Anlage mit fester Grundlast und verbrauchsabhängigem Anteil ist die Kostenkurve eine Gerade. Der y-Achsenabschnitt ist die Grundgebühr, die Steigung der Preis je Einheit."
+  ],
+  rezept:[
+    "Schau, wo die Gerade die senkrechte Achse schneidet. Dieser Wert ist b.",
+    "Geh vom Schnittpunkt aus einen Schritt nach rechts.",
+    "Zähl, wie viele Schritte es dabei hoch oder runter geht. Das ist m — nach unten mit Minus.",
+    "Schreib die Gleichung hin: y = m · x + b.",
+    "Zum Ablesen eines Werts: x einsetzen und ausrechnen.",
+    "Für die Nullstelle y = 0 setzen und nach x auflösen."
+  ],
+  fehler:[
+    ["Steigung und y-Achsenabschnitt vertauscht", "In y = 2x + 3 ist 2 die Steigung und 3 der Schnittpunkt mit der y-Achse. Wer das dreht, zeichnet eine ganz andere Gerade."],
+    ["Vorzeichen der Steigung übersehen", "Eine fallende Gerade hat ein negatives m. Steigt sie, ist m positiv. Zuerst hinschauen, dann rechnen."],
+    ["Steigung ohne die Kästchengröße abgelesen", "Ist ein Kästchen an der y-Achse 10 wert, sind zwei Kästchen nach oben nicht 2, sondern 20."],
+    ["Nullstelle und y-Achsenabschnitt verwechselt", "Die Nullstelle ist der Schnittpunkt mit der waagerechten Achse; dort ist y = 0. Der y-Achsenabschnitt liegt bei x = 0."]
+  ],
+  einfach:[
+    "Eine lineare Funktion heißt y = m · x + b und zeigt sich im Bild als Gerade.",
+    "Das b sagt, wo die Gerade die senkrechte y-Achse schneidet. Es ist der Startwert bei x = 0.",
+    "Das m ist die Steigung. Es sagt, wie stark die Gerade steigt oder fällt.",
+    "Steigung ablesen: Geh einen Schritt nach rechts und schau, wie viele Schritte es hoch oder runter geht.",
+    "Geht es hoch, ist m positiv. Geht es runter, ist m negativ.",
+    "Beispiel: Schnittpunkt bei 2, ein Schritt nach rechts und drei nach oben — dann ist y = 3x + 2.",
+    "Willst du einen Wert wissen, setzt du die Zahl für x ein: für x = 4 ist y = 3 · 4 + 2 = 14.",
+    "Die Nullstelle ist die Stelle, an der die Gerade die waagerechte Achse kreuzt. Dort ist y = 0.",
+    "Zum Ausrechnen setzt du 0 = m · x + b und löst nach x auf.",
+    "Achte immer auf die Kästchengröße. Ist ein Kästchen 5 wert, musst du die abgezählten Kästchen noch mit 5 malnehmen."
+  ],
+  begriffe:[
+    ["Steigung m","Wie viel y sich ändert, wenn x um 1 wächst."],
+    ["y-Achsenabschnitt b","Der y-Wert an der Stelle x = 0."],
+    ["Nullstelle","Der x-Wert, an dem die Gerade die x-Achse schneidet."],
+    ["Schaubild","Die Zeichnung einer Funktion im Koordinatensystem."],
+    ["Kennlinie","Ein Schaubild aus der Technik, meist gemessen statt gerechnet."]
+  ],
+  tabelle:{
+    titel:"Gleichung und Bild",
+    kopf:["Gleichung","Schnitt mit y-Achse","Steigung","Verlauf"],
+    zeilen:[
+      ["y = 2x + 3","3","2","steigt, mittelsteil"],
+      ["y = 2x − 3","−3","2","gleich steil, tiefer"],
+      ["y = −2x + 3","3","−2","fällt"],
+      ["y = 0,5x","0","0,5","steigt flach, durch den Ursprung"],
+      ["y = 5","5","0","waagerecht"],
+      ["y = x","0","1","45 Grad durch den Ursprung"]
+    ],
+    fuss:"Zeilen 1 und 2 sind parallel: gleiche Steigung, verschobene Höhe. Zeile 3 hat dieselbe Steilheit, läuft aber abwärts."
+  },
+  regeln:[
+    "y = m · x + b beschreibt jede Gerade.",
+    "b ist der Schnittpunkt mit der y-Achse.",
+    "m ist die Steigung: ein Schritt nach rechts, m Schritte nach oben.",
+    "m negativ bedeutet fallende Gerade.",
+    "Nullstelle: y = 0 setzen und nach x auflösen.",
+    "Gleiche Steigung heißt parallel."
+  ],
+  beispiel:{aufgabe:"Eine Gerade schneidet die y-Achse bei −1 und steigt pro Schritt nach rechts um 2. Wie groß ist y bei x = 4?",
+    schritte:["b = −1 und m = 2","Gleichung: y = 2x − 1","Einsetzen: 2 · 4 − 1 = 8 − 1"],
+    ergebnis:"y = 7"},
+  spiel:{
+    titel:"Gerade selbst einstellen",
+    hinweis:"Zieh an Steigung und Achsenabschnitt und sieh zu, wie sich die Gerade dreht und verschiebt.",
+    regler:[
+      {id:"m", name:"Steigung m",         von:-3, bis:3, schritt:0.5, start:2},
+      {id:"b", name:"y-Achsenabschnitt b", von:-4, bis:4, schritt:0.5, start:1}
+    ],
+    ausgabe:(w) => {
+      const px = (x) => 120 + x * 22;
+      const py = (y) => 70 - y * 11;
+      let d;
+      if (w.m === 0) d = `M${px(-5)} ${py(w.b).toFixed(1)}L${px(5)} ${py(w.b).toFixed(1)}`;
+      else {
+        const xa = (-5 - w.b) / w.m, xb = (5 - w.b) / w.m;
+        const lo = Math.max(-5, Math.min(xa, xb)), hi = Math.min(5, Math.max(xa, xb));
+        d = `M${px(lo).toFixed(1)} ${py(w.m * lo + w.b).toFixed(1)}L${px(hi).toFixed(1)} ${py(w.m * hi + w.b).toFixed(1)}`;
+      }
+      const null4 = w.m === 0 ? null : Math.round(-w.b / w.m * 100) / 100;
+      return {
+        bild:`<svg viewBox="0 0 240 140" style="width:100%;max-width:280px;height:auto;display:block;margin:8px auto" role="img" aria-label="Gerade mit Steigung ${w.m} und Achsenabschnitt ${w.b}">
+          <line x1="8" y1="70" x2="232" y2="70" stroke="currentColor" stroke-width="1"/>
+          <line x1="120" y1="8" x2="120" y2="132" stroke="currentColor" stroke-width="1"/>
+          ${[-4,-2,2,4].map(t => `<line x1="${px(t)}" y1="67" x2="${px(t)}" y2="73" stroke="currentColor"/><text x="${px(t)}" y="84" text-anchor="middle" font-size="8" fill="currentColor">${t}</text>`).join("")}
+          ${[-4,-2,2,4].map(t => `<line x1="117" y1="${py(t)}" x2="123" y2="${py(t)}" stroke="currentColor"/><text x="113" y="${py(t) + 3}" text-anchor="end" font-size="8" fill="currentColor">${t}</text>`).join("")}
+          <path d="${d}" stroke="#10a37f" stroke-width="2.5" fill="none"/>
+          <circle cx="120" cy="${py(w.b).toFixed(1)}" r="4" fill="#10a37f"/>
+        </svg>`,
+        werte:[
+          {name:"Gleichung", text:`y = ${z(w.m)} · x ${w.b < 0 ? "− " + z(-w.b) : "+ " + z(w.b)}`},
+          {name:"y bei x = 2", text:z(Math.round((w.m * 2 + w.b) * 100) / 100)},
+          {name:"Nullstelle", text:null4 === null ? "keine" : "x = " + z(null4)}
+        ],
+        satz: w.m === 0
+          ? `Steigung 0: Die Gerade ist waagerecht. y bleibt überall <b>${z(w.b)}</b>.`
+          : `Ein Schritt nach rechts, ${z(Math.abs(w.m))} nach ${w.m > 0 ? "oben" : "unten"}. Der Punkt auf der y-Achse liegt bei <b>${z(w.b)}</b>.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Gerade y gleich zwei x plus eins mit eingezeichnetem Steigungsdreieck">
+    <line x1="30" y1="120" x2="370" y2="120" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="120" y1="14" x2="120" y2="170" stroke="currentColor" stroke-width="1.2"/>
+    <text x="366" y="112" text-anchor="end" font-size="11" fill="currentColor">x</text>
+    <text x="128" y="22" font-size="11" fill="currentColor">y</text>
+    ${[1,2,3,4].map(t => `<line x1="${120 + t * 46}" y1="116" x2="${120 + t * 46}" y2="124" stroke="currentColor"/><text x="${120 + t * 46}" y="136" text-anchor="middle" font-size="10" fill="currentColor">${t}</text>`).join("")}
+    ${[1,2,3].map(t => `<line x1="116" y1="${120 - t * 26}" x2="124" y2="${120 - t * 26}" stroke="currentColor"/><text x="112" y="${123 - t * 26}" text-anchor="end" font-size="10" fill="currentColor">${t * 2}</text>`).join("")}
+    <line x1="60" y1="146" x2="330" y2="10" stroke="#10a37f" stroke-width="2.5"/>
+    <circle cx="120" cy="107" r="4.5" fill="#10a37f"/>
+    <text x="80" y="100" font-size="10" fill="currentColor">b = 1</text>
+    <path d="M166 84h46" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 3"/>
+    <path d="M212 84v-23" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="189" y="98" text-anchor="middle" font-size="10" fill="currentColor">1 nach rechts</text>
+    <text x="218" y="74" font-size="10" fill="currentColor">2 nach oben</text>
+    <text x="200" y="182" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">y = 2 · x + 1</text>
+  </svg>`
+},
+
 
 /* ===================== MATHE ===================== */
 

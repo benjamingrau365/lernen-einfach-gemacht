@@ -1565,7 +1565,193 @@ const matheProben3 = {
 const NICHT_PRUEFBAR = {
 };
 
-const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...deutschProben,
+/* ------------------------------------------------------------- MATHE IV */
+
+/* Aus einem eingebetteten SVG die beschrifteten Werte und die gezeichneten
+   Balkenhöhen holen. Damit lässt sich prüfen, ob das Bild dieselbe Aussage
+   macht wie die Zahlen — ein falsch gezeichnetes Diagramm ist genauso
+   schlimm wie eine falsche Lösung. */
+/* Geldbetrag aus der Anzeige zurücklesen: „1.234,56 €" -> 1234.56.
+   dz() allein scheitert am Euro-Zeichen und liefert NaN. */
+const geld = (s) => Number(String(s).replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", "."));
+const geldLoes = (a) => geld(roh(a.loesung));
+
+const svgTeil = (t) => (String(t).match(/<svg[\s\S]*?<\/svg>/) || [""])[0];
+const ohneSvg = (t) => roh(String(t).replace(/<svg[\s\S]*?<\/svg>/g, " "));
+const balken  = (svg) => (svg.match(/<rect[^>]*height="([\d.]+)"/g) || [])
+  .map(s => Number((s.match(/height="([\d.]+)"/) || [])[1]));
+const beschriftung = (svg) => (svg.match(/<text[^>]*>(\d+)<\/text>/g) || [])
+  .map(s => Number((s.match(/>(\d+)</) || [])[1]));
+
+const matheProben4 = {
+
+  "Rechnen mit Zeit": (a) => {
+    const t = vorne(a), l = loes(a);
+    const uhrzeiten = (t.match(/\b(\d{2}):(\d{2})\b/g) || []);
+    if (uhrzeiten.length === 2) {                                  // Schicht ausrechnen
+      const min = uhrzeiten.map(u => Number(u.slice(0, 2)) * 60 + Number(u.slice(3)));
+      const pause = groesse(t, "min");
+      if (pause === null) return "Pause nicht lesbar: " + t;
+      let brutto = min[1] - min[0];
+      if (brutto <= 0) return `Schichtende ${uhrzeiten[1]} liegt nicht nach dem Beginn ${uhrzeiten[0]}`;
+      if (brutto > 12 * 60) return `${Math.round(brutto / 60 * 10) / 10} h Anwesenheit ist keine realistische Schicht`;
+      const netto = brutto - pause;
+      if (netto <= 0) return "nach Abzug der Pause bleibt keine Arbeitszeit übrig";
+      return stimmt(Math.round(netto / 60 * 100) / 100, l, 1e-9);
+    }
+    const dez = groesse(t, "h");
+    if (dez !== null) {                                            // Nachkommateil in Minuten
+      const anteil = dez - Math.floor(dez);
+      if (anteil === 0) return "ohne Nachkommateil gibt es nichts umzurechnen";
+      const soll = Math.round(anteil * 60);
+      if (Math.abs(anteil * 60 - soll) > 0.6)
+        return `${Math.round(anteil * 100) / 100} h ergeben keine glatte Minutenzahl`;
+      if (soll >= 60) return "der Nachkommateil kann keine volle Stunde sein";
+      return stimmt(soll, l);
+    }
+    const stueck = (t.match(/(\d+) Aufträge/) || [])[1];           // Aufträge zusammenrechnen
+    if (!stueck) return "konnte die Aufgabe nicht einordnen: " + t;
+    const dauer = groesse(t, "min");
+    if (dauer === null) return "Dauer je Auftrag nicht lesbar: " + t;
+    const gesamt = Number(stueck) * dauer;
+    return stimmt(Math.floor(gesamt / 60), l);
+  },
+
+  "Rechnen mit Klammern": (a) => {
+    /* Den Term aus der Aufgabe selbst auswerten — unabhängig von der
+       Schrittfolge, mit der die Aufgabe ihn herleitet. */
+    const t = roh(a.text);
+    const term = (t.match(/Rechne aus: (.+)$/) || t.match(/rechne aus: (.+)$/) || [])[1];
+    if (!term) return "konnte den Term nicht finden: " + t;
+    const js = term.replace(/·/g, "*").replace(/:/g, "/").replace(/\s+/g, "");
+    if (!/^[\d+\-*/().]+$/.test(js)) return "im Term stehen unerwartete Zeichen: " + js;
+    let wert;
+    try { wert = new Function(`return ${js}`)(); }
+    catch (fehler) { return `Term „${term}“ lässt sich nicht auswerten: ${fehler.message}`; }
+    /* Gegenprobe: ohne Klammern käme etwas anderes heraus — sonst übt die
+       Aufgabe die Klammer gar nicht. */
+    const ohne = js.replace(/[()]/g, "");
+    let wertOhne;
+    try { wertOhne = new Function(`return ${ohne}`)(); } catch (e) { wertOhne = null; }
+    if (wertOhne !== null && Math.abs(wertOhne - wert) < 1e-9 && /[()]/.test(js))
+      return `die Klammer ändert nichts — ${term} und ${ohne.replace(/\*/g, "·")} ergeben beide ${wert}`;
+    return stimmt(wert, loes(a));
+  },
+
+  "Terme aufstellen": (a) => {
+    const t = roh(a.text);
+    const preis = t.match(/([\d.,]+) € Anfahrt und dazu ([\d.,]+) € je Stunde/);
+    if (preis) {                                                   // Preisliste
+      const std = dz((t.match(/Einsatz von ([\d.,]+) Stunden/) || [])[1]);
+      if (!isFinite(std)) return "Stundenzahl nicht lesbar: " + t;
+      return stimmt(dz(preis[1]) + dz(preis[2]) * std, geldLoes(a), 1e-6);
+    }
+    /* Satzaufgabe: den Term aus der richtigen Antwort holen, x einsetzen und
+       unabhängig ausrechnen. Zusätzlich prüfen, ob er zum Satz passt. */
+    const x = dz((t.match(/x = ([\d.,]+)/) || [])[1]);
+    if (!isFinite(x)) return "konnte x nicht lesen: " + t;
+    const richtig = (a.schritte[0].optionen.find(o => o.ok) || {}).t;
+    if (!richtig) return "im ersten Schritt ist keine Antwort als richtig markiert";
+    const js = roh(richtig).replace(/·/g, "*").replace(/:/g, "/").replace(/x/g, `(${x})`).replace(/\s+/g, "");
+    if (!/^[\d+\-*/().]+$/.test(js)) return "im Term stehen unerwartete Zeichen: " + js;
+    let wert;
+    try { wert = new Function(`return ${js}`)(); }
+    catch (fehler) { return `Term „${richtig}“ lässt sich nicht auswerten: ${fehler.message}`; }
+    const ERWARTET = {
+      "Eine Zahl wird verdoppelt und dann um 5 vermehrt.": (v) => 2 * v + 5,
+      "Eine Zahl wird um 3 vermehrt und das Ergebnis verdreifacht.": (v) => 3 * (v + 3),
+      "Von einer Zahl wird 4 abgezogen, danach wird halbiert.": (v) => (v - 4) / 2,
+      "Eine Zahl wird halbiert und danach um 4 verringert.": (v) => v / 2 - 4
+    };
+    const satz = Object.keys(ERWARTET).find(s => t.startsWith(s));
+    if (!satz) return "für diesen Satz ist keine Gegenrechnung hinterlegt: " + t;
+    if (Math.abs(ERWARTET[satz](x) - wert) > 1e-9)
+      return `der Term „${richtig}“ passt nicht zum Satz — erwartet ${ERWARTET[satz](x)}, er ergibt ${wert}`;
+    return stimmt(wert, loes(a), 1e-9);
+  },
+
+  "Prozentuale Veränderung": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const steigt = t.match(/kostete ([\d.,]+) €.*steigt um ([\d.,]+) %/);
+    if (steigt) return stimmt(Math.round(dz(steigt[1]) * (100 + dz(steigt[2]))) / 100, geldLoes(a), 1e-6);
+    const rabatt = t.match(/kostet ([\d.,]+) €.*?([\d.,]+) % Rabatt/);
+    if (rabatt) {
+      const p = dz(rabatt[2]);
+      if (!(p > 0 && p < 100)) return `ein Rabatt von ${p} % ergibt keinen Sinn`;
+      return stimmt(Math.round(dz(rabatt[1]) * (100 - p)) / 100, geldLoes(a), 1e-6);
+    }
+    const aend = t.match(/lag bei ([\d.,]+) kWh und liegt jetzt bei ([\d.,]+) kWh/);
+    if (!aend) return "konnte die Aufgabe nicht einordnen: " + t;
+    const alt = dz(aend[1]), neu = dz(aend[2]);
+    if (alt === neu) return "alter und neuer Wert sind gleich — dann gibt es keine Änderung";
+    if (alt <= 0) return "der Grundwert muss größer als null sein";
+    return stimmt(Math.round(Math.abs(neu - alt) / alt * 10000) / 100, l, 1e-6);
+  },
+
+  "Diagramme lesen": (a) => {
+    const svg = svgTeil(a.text), rest = ohneSvg(a.text), l = loes(a);
+    if (!svg) return "die Aufgabe hat kein Diagramm";
+    if (/Kreisdiagramm/.test(svg)) {                               // Anteil in Menge umrechnen
+      const gesamt = dz((rest.match(/([\d.,]+) kWh/) || [])[1]);
+      const name = ((rest.match(/entfallen auf (.+?)\?/) || [])[1] || "").trim();
+      if (!isFinite(gesamt) || !name) return "Gesamtwert oder Anteilsname nicht lesbar: " + rest;
+      const legende = {};
+      (svg.match(/>([A-Za-zÄÖÜäöüß]+) (\d+) %</g) || []).forEach(s => {
+        const m = s.match(/>([A-Za-zÄÖÜäöüß]+) (\d+) %</);
+        legende[m[1]] = Number(m[2]);
+      });
+      const summe = Object.values(legende).reduce((s, v) => s + v, 0);
+      if (summe !== 100) return `die Anteile im Kreisdiagramm ergeben ${summe} % statt 100 %`;
+      const p = legende[name];
+      if (p === undefined) return `„${name}“ steht nicht in der Legende`;
+      return stimmt(Math.round(gesamt * p / 100), l);
+    }
+    /* Säulendiagramm: beschriftete Werte gegen die gezeichneten Höhen prüfen */
+    const werte = beschriftung(svg).filter(v => v >= 100);
+    const hoehen = balken(svg);
+    if (werte.length !== 5 || hoehen.length !== 5)
+      return `erwartet werden 5 Säulen mit 5 Beschriftungen, gefunden ${hoehen.length} und ${werte.length}`;
+    const g = Math.max(...werte), k = Math.min(...werte);
+    if (g === k) return "alle Säulen sind gleich hoch — dann gibt es keinen Unterschied abzulesen";
+    for (let i = 0; i < 5; i++) {
+      const soll = werte[i] / g * 84;
+      if (Math.abs(hoehen[i] - soll) > 1)
+        return `Säule ${i + 1} ist ${hoehen[i]} hoch gezeichnet, zum Wert ${werte[i]} gehören aber ${Math.round(soll)}`;
+    }
+    return stimmt(g - k, l);
+  },
+
+  "Funktionen im Schaubild": (a) => {
+    const l = loes(a);
+    const gleichung = roh(a.text).match(/y = (-?[\d.,]+) · x ([+-]) ([\d.,]+)/);
+    if (gleichung) {                                               // Nullstelle
+      const m = dz(gleichung[1]), b = (gleichung[2] === "-" ? -1 : 1) * dz(gleichung[3]);
+      if (m === 0) return "eine waagerechte Gerade hat keine einzelne Nullstelle";
+      const soll = -b / m;
+      if (Math.abs(soll - Math.round(soll)) > 1e-9)
+        return `die Nullstelle ${soll} ist nicht ganzzahlig — zum Ablesen ungeeignet`;
+      return stimmt(soll, l, 1e-9);
+    }
+    /* Schaubild: Steigung und Achsenabschnitt aus der gezeichneten Linie
+       zurückrechnen und damit den gefragten y-Wert unabhängig bestimmen. */
+    const svg = svgTeil(a.text);
+    const linie = (svg.match(/<line x1="([\d.]+)" y1="([\d.]+)" x2="([\d.]+)" y2="([\d.]+)" stroke="#10a37f"/) || []);
+    if (linie.length !== 5) return "die gezeichnete Gerade ist nicht auffindbar";
+    const zuX = (px) => (Number(px) - 160) / 26, zuY = (py) => (78 - Number(py)) / 12;
+    const x1 = zuX(linie[1]), y1 = zuY(linie[2]), x2 = zuX(linie[3]), y2 = zuY(linie[4]);
+    if (Math.abs(x2 - x1) < 1e-6) return "die gezeichnete Gerade ist senkrecht";
+    const m = (y2 - y1) / (x2 - x1), b = y1 - m * x1;
+    if (Math.abs(m - Math.round(m)) > 0.02 || Math.abs(b - Math.round(b)) > 0.02)
+      return `aus der Zeichnung ergibt sich m = ${Math.round(m * 100) / 100} und b = ${Math.round(b * 100) / 100} — beides sollte ganzzahlig sein`;
+    const punkt = svg.match(/<circle cx="160" cy="([\d.]+)"/);
+    if (!punkt) return "der Punkt auf der y-Achse fehlt";
+    if (Math.abs(zuY(punkt[1]) - b) > 0.02)
+      return `der markierte Punkt liegt bei y = ${Math.round(zuY(punkt[1]) * 100) / 100}, die Gerade schneidet aber bei ${Math.round(b * 100) / 100}`;
+    return stimmt(Math.round(m) * 3 + Math.round(b), l, 1e-9);
+  }
+};
+
+const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...deutschProben,
                  ...elektroProben, ...elektroProben2, ...elektroProben3 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
