@@ -2639,7 +2639,157 @@ const englischProben2 = {
 };
 
 
-const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2, ...deutschProben3, ...englischProben, ...englischProben2,
+const englischProben3 = {
+
+  "Present Perfect": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* since oder for — aus der Zeitangabe selbst erschlossen */
+    if (/Setz since oder for ein/.test(t)) {
+      const angabe = (t.match(/here ___ (.+?)\.\s*$/) || [])[1];
+      if (!angabe) return "konnte die Zeitangabe nicht lesen: " + t.slice(0, 100);
+      /* eigene Regel: nennt die Angabe eine Dauer, gehört for dazu */
+      const DAUER = ["three years", "two hours", "a long time", "six months"];
+      const ZEITPUNKT = ["2019", "Monday", "my birthday", "last summer"];
+      let soll;
+      if (DAUER.includes(angabe)) soll = "for";
+      else if (ZEITPUNKT.includes(angabe)) soll = "since";
+      else return `für „${angabe}“ ist nicht hinterlegt, ob es Dauer oder Zeitpunkt ist`;
+      return l === soll ? null : `„${angabe}“ ist ${soll === "for" ? "eine Dauer" : "ein Zeitpunkt"}, also „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* Form bilden: have/has plus Partizip, beides unabhängig hinterlegt */
+    const verb = (t.match(/Present Perfect von (\w+)\s*:/) || [])[1];
+    const wer  = (t.match(/:\s*(I|You|He|She|It|We|They) ___ /) || [])[1];
+    if (!verb || !wer) return "konnte Verb oder Subjekt nicht lesen: " + t.slice(0, 110);
+    const HABEN = {I:"have", You:"have", We:"have", They:"have", He:"has", She:"has", It:"has"};
+    const PARTIZIP = {finish:"finished", work:"worked", live:"lived", study:"studied",
+                      go:"gone", see:"seen", write:"written", take:"taken", do:"done", buy:"bought"};
+    if (!PARTIZIP[verb]) return `für „${verb}“ ist kein Partizip hinterlegt`;
+    const soll = HABEN[wer] + " " + PARTIZIP[verb];
+    if (l !== soll) return `zu „${wer}“ und „${verb}“ gehört „${soll}“, angegeben ist „${l}“`;
+    /* Gegenprobe: Partizip und Simple Past sind nicht dasselbe */
+    const PAST = {go:"went", see:"saw", write:"wrote", take:"took", do:"did"};
+    if (PAST[verb] && l.includes(PAST[verb]))
+      return `„${PAST[verb]}“ ist das Simple Past, nicht das Partizip`;
+    return null;
+  },
+
+  "will future und going to": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Die Form von be zur Person */
+    if (/Setz die richtige Form ein/.test(t)) {
+      const wer = (t.match(/:\s*(I|You|He|She|It|We|They) ___ going to/) || [])[1];
+      if (!wer) return "konnte das Subjekt nicht lesen: " + t.slice(0, 100);
+      const BE = {I:"am", He:"is", She:"is", It:"is", You:"are", We:"are", They:"are"};
+      return l === BE[wer] ? null : `zu „${wer}“ gehört „${BE[wer]}“, angegeben ist „${l}“`;
+    }
+
+    /* Zeitwahl: Was im Satz steht, entscheidet — unabhängig nachgeprüft */
+    if (!/^(will|am going to|is going to|are going to)$/.test(l))
+      return `unerwartete Lösung „${l}“`;
+    const geplant = /already arranged|contract is signed|have already been|it's arranged/i.test(t);
+    const sichtbar = /Look at those clouds|Look at that crack/i.test(t);
+    const spontan = /is ringing|Don't worry|I think|next month/i.test(t);
+    if (geplant || sichtbar){
+      if (!/going to/.test(l)) return `Satz nennt ${geplant ? "einen festen Plan" : "einen sichtbaren Hinweis"} — dann gehört going to hin, angegeben ist „${l}“`;
+      /* die be-Form muss zur Person passen */
+      const wer = (t.match(/i>\s*([A-Za-z]+)/) || [])[1];
+      const BE = {I:"am", He:"is", She:"is", It:"is", They:"are", We:"are", You:"are", The:"is"};
+      const soll = BE[wer];
+      if (soll && !l.startsWith(soll)) return `zu „${wer}“ gehört „${soll} going to“, angegeben ist „${l}“`;
+      return null;
+    }
+    if (spontan) return l === "will" ? null
+      : `Satz nennt eine spontane Entscheidung oder Vermutung — dann gehört will hin, angegeben ist „${l}“`;
+    return "der Satz enthält kein hinterlegtes Signal";
+  },
+
+  "Modalverben": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* mustn't oder needn't */
+    if (/mustn't oder needn't/.test(t) || /mustn't.*needn't/.test(t)) {
+      /* Wird ein Grund dagegen genannt, ist es ein Verbot */
+      const verboten = /sealed for a reason|before the test is finished|forget the safety rules/i.test(t);
+      const unnoetig = /we have everything here|the shift starts at nine|I will send you an email/i.test(t);
+      if (verboten && unnoetig) return "Satz ist gleichzeitig Verbot und unnötig — nicht vorgesehen";
+      if (!verboten && !unnoetig) return "kein hinterlegtes Signal im Satz: " + t.slice(0, 100);
+      const soll = verboten ? "mustn't" : "needn't";
+      return l === soll ? null
+        : `${verboten ? "Der Satz nennt einen Grund dagegen — Verbot" : "Der Satz nennt einen Grund, warum es unnötig ist"}, also „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* welches Modalverb zur Bedeutung */
+    const SIGNAL = [
+      [/It is a rule/i, "must"],
+      [/It is dangerous/i, "mustn't"],
+      [/There is a sign/i, "mustn't"],
+      [/It is not necessary/i, "needn't"],
+      [/speak three languages/i, "can"],
+      [/That would be better/i, "should"],
+      [/borrow your pen/i, "May"],
+      [/when he was five/i, "could"]
+    ];
+    const treffer = SIGNAL.find(([re]) => re.test(t));
+    if (!treffer) return "kein hinterlegtes Signal im Satz: " + t.slice(0, 100);
+    return l === treffer[1] ? null : `das Signal im Satz verlangt „${treffer[1]}“, angegeben ist „${l}“`;
+  },
+
+  "Adverbien bilden": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+    /* eigene Tabelle, unabhängig aufgestellt */
+    const ADVERB = {quick:"quickly", careful:"carefully", slow:"slowly", loud:"loudly",
+                    easy:"easily", happy:"happily", terrible:"terribly", possible:"possibly",
+                    good:"well", fast:"fast", hard:"hard", late:"late"};
+
+    /* Adjektiv oder Adverb im Satz */
+    if (/Adjektiv oder Adverb/.test(t)) {
+      const wort = (t.match(/Setz (\w+) in der richtigen Form/) || [])[1];
+      if (!wort) return "konnte das Wort nicht lesen: " + t.slice(0, 100);
+      if (!ADVERB[wort]) return `für „${wort}“ ist kein Adverb hinterlegt`;
+      /* Steht vor der Lücke ein Artikel, folgt ein Hauptwort — dann Adjektiv */
+      const beimDing = /\b(a|an|is a|is an)\s+___/.test(t) || /___ (driver|worker|machine|exercise)/.test(t);
+      const soll = beimDing ? wort : ADVERB[wort];
+      return l === soll ? null
+        : `${beimDing ? "vor einem Hauptwort steht das Adjektiv" : "beim Verb steht das Adverb"} — „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* Adverb bilden */
+    const adj = (t.match(/Adverb zu (\w+)\s*\?/) || [])[1];
+    if (!adj) return "konnte das Adjektiv nicht lesen: " + t.slice(0, 100);
+    if (!ADVERB[adj]) return `für „${adj}“ ist kein Adverb hinterlegt`;
+    if (l !== ADVERB[adj]) return `das Adverb zu „${adj}“ ist „${ADVERB[adj]}“, angegeben ist „${l}“`;
+    /* Gegenprobe: Bei Konsonant + y darf kein schlichtes -ly stehen */
+    if (/[^aeiou]y$/.test(adj) && !/ily$/.test(l))
+      return `„${adj}“ endet auf Konsonant + y — dann muss -ily folgen`;
+    return null;
+  },
+
+  "Mengenangaben": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+    /* eigene Einteilung, nicht aus der Aufgabe übernommen */
+    const ZAEHLBAR = ["apples", "friends", "books", "people", "tools",
+                      "minutes", "questions", "screws", "days"];
+    const NICHT = ["water", "money", "time", "information", "milk",
+                   "sugar", "help", "patience", "space"];
+    const wort = (t.match(/___ (\w+)[\s.?]/) || [])[1];
+    if (!wort) return "konnte das Wort nicht lesen: " + t.slice(0, 100);
+    let zaehlbar;
+    if (ZAEHLBAR.includes(wort)) zaehlbar = true;
+    else if (NICHT.includes(wort)) zaehlbar = false;
+    else return `für „${wort}“ ist nicht hinterlegt, ob es zählbar ist`;
+
+    const klein = /a few oder a little/.test(t);
+    const soll = klein ? (zaehlbar ? "a few" : "a little") : (zaehlbar ? "many" : "much");
+    return l === soll ? null
+      : `„${wort}“ ist ${zaehlbar ? "zählbar" : "nicht zählbar"}, also „${soll}“, angegeben ist „${l}“`;
+  }
+};
+
+
+const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2, ...deutschProben3, ...englischProben, ...englischProben2, ...englischProben3,
                  ...elektroProben, ...elektroProben2, ...elektroProben3, ...elektroProben4 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {

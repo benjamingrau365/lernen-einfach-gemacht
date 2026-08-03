@@ -11206,6 +11206,445 @@ Object.assign(AUFGABEN, {
                 F("its'", "Diese Schreibweise gibt es im Englischen überhaupt nicht.")]}]};
  }
 ]
+,
+
+/* ===================== ENGLISCH · KLASSE 7 ===================== */
+
+"Present Perfect":[
+
+ /* Die Form: have oder has + Partizip */
+ () => {
+   const f = pick([
+     {p:"I",    form:"have", verb:"finish", part:"finished", art:"regelmäßig", rest:"my homework."},
+     {p:"She",  form:"has",  verb:"work",   part:"worked",   art:"regelmäßig", rest:"here for two years."},
+     {p:"We",   form:"have", verb:"live",   part:"lived",    art:"regelmäßig, endet auf e", rest:"in Berlin since 2019."},
+     {p:"He",   form:"has",  verb:"study",  part:"studied",  art:"regelmäßig, Konsonant + y", rest:"English for six years."},
+     {p:"They", form:"have", verb:"go",     part:"gone",     art:"unregelmäßig", rest:"home already."},
+     {p:"I",    form:"have", verb:"see",    part:"seen",     art:"unregelmäßig", rest:"that film twice."},
+     {p:"She",  form:"has",  verb:"write",  part:"written",  art:"unregelmäßig", rest:"three emails today."},
+     {p:"He",   form:"has",  verb:"take",   part:"taken",    art:"unregelmäßig", rest:"the wrong bus."},
+     {p:"We",   form:"have", verb:"do",     part:"done",     art:"unregelmäßig", rest:"everything we could."},
+     {p:"They", form:"have", verb:"buy",    part:"bought",   art:"unregelmäßig", rest:"a new car."}
+   ]);
+   return {
+    typ:"text",
+    text:`Bilde das <b>Present Perfect</b> von <b>${f.verb}</b>:<br><i>${f.p} <span class='luecke'>___</span> ${f.rest}</i><br><span class="small">Gefragt sind beide Teile, zum Beispiel „have done“.</span>`,
+    loesung: f.form + " " + f.part,
+    schluss:"Das Present Perfect besteht immer aus zwei Teilen: have oder has und dem Partizip. Es verbindet Vergangenheit und Gegenwart — etwas ist passiert, und das wirkt bis jetzt.",
+    schritte:[
+     {frage:`Heißt es bei <b>${f.p}</b> have oder has?`,
+      tipp:"has steht nur bei he, she und it.",
+      tipp2:`Zu „${f.p}“ gehört „${f.form}“.`,
+      optionen:[R(f.form, "Richtig."),
+                F(f.form === "have" ? "has" : "have", f.form === "have" ? "„has“ steht nur bei he, she und it." : "Bei he, she und it heißt es „has“."),
+                F("had", "„had“ wäre die Vergangenheit von have — hier geht es um das Present Perfect.")]},
+     {frage:`Wie heißt das <b>Partizip</b> von <b>${f.verb}</b>?`,
+      tipp:"Regelmäßig: -ed. Unregelmäßig: dritte Spalte der Liste.",
+      tipp2:`${f.art} — es heißt „${f.part}“.`,
+      optionen: zieheVerschiedene([
+        R(f.part, "Richtig."),
+        F(f.verb + (f.verb.slice(-1) === "e" ? "d" : "ed"), f.part === f.verb + "ed" || f.part === f.verb + "d" ? "" : "So bildet man nur regelmäßige Verben."),
+        F(f.verb, "Das ist die Grundform, nicht das Partizip.")], 3)},
+     {frage:"Wie heißt der ganze Ausdruck?",
+      tippAntwort: f.form + " " + f.part,
+      tipp:"Setz beide Teile zusammen.",
+      tipp2:`Es heißt „${f.form} ${f.part}“.`,
+      optionen: zieheVerschiedene([
+        R(f.form + " " + f.part, "Richtig."),
+        F(f.part, "Das Partizip allein reicht nicht — have oder has gehört dazu."),
+        F(f.form + " " + f.verb, "Ohne Partizip ist es kein Present Perfect.")], 3)}]};
+ },
+
+ /* since oder for */
+ () => {
+   const f = pick([
+     {angabe:"2019",          loes:"since", art:"ein Zeitpunkt"},
+     {angabe:"three years",   loes:"for",   art:"eine Zeitspanne"},
+     {angabe:"Monday",        loes:"since", art:"ein Zeitpunkt"},
+     {angabe:"two hours",     loes:"for",   art:"eine Zeitspanne"},
+     {angabe:"my birthday",   loes:"since", art:"ein Zeitpunkt"},
+     {angabe:"a long time",   loes:"for",   art:"eine Zeitspanne"},
+     {angabe:"last summer",   loes:"since", art:"ein Zeitpunkt"},
+     {angabe:"six months",    loes:"for",   art:"eine Zeitspanne"}
+   ]);
+   return {
+    typ:"text",
+    text:`Setz <b>since</b> oder <b>for</b> ein:<br><i>I have worked here <span class='luecke'>___</span> ${f.angabe}.</i>`,
+    loesung: f.loes,
+    schluss:"since gibt an, seit wann — ein Zeitpunkt. for gibt an, wie lange — eine Zeitspanne. Beides heißt auf Deutsch „seit“, deshalb ist es eine der häufigsten Fehlerquellen.",
+    schritte:[
+     {frage:`Ist <b>${f.angabe}</b> ein Zeitpunkt oder eine Zeitspanne?`,
+      tipp:"Kann man es auf einen Kalender zeigen — oder ist es eine Dauer?",
+      tipp2:`„${f.angabe}“ ist ${f.art}.`,
+      optionen:[R(f.art, "Richtig."),
+                F(f.art === "ein Zeitpunkt" ? "eine Zeitspanne" : "ein Zeitpunkt",
+                  f.art === "ein Zeitpunkt" ? "Es sagt, wann es losging, nicht wie lange." : "Es sagt, wie lange es dauert, nicht wann es losging."),
+                F("beides gleichzeitig", "Eins von beidem — sonst wäre die Regel nutzlos.")]},
+     {frage:"Welches Wort gehört dazu?",
+      tipp:"Zeitpunkt → since. Zeitspanne → for.",
+      tipp2:`${f.art} verlangt „${f.loes}“.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(f.loes === "since" ? "for" : "since", "Das gehört zur anderen Sorte."),
+                F("ago", "„ago“ steht am Satzende und verlangt das Simple Past: two years ago.")]},
+     {frage:"Was steht also in der Lücke?",
+      tippAntwort: f.loes,
+      tipp:"Schreib das Wort hin.",
+      tipp2:`Es heißt „${f.loes} ${f.angabe}“.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(f.loes === "since" ? "for" : "since", "Andersherum."),
+                F("from", "„from“ braucht ein „to“ dahinter: from Monday to Friday.")]}]};
+ }
+],
+
+
+"will future und going to":[
+
+ /* spontane Entscheidung oder fester Plan */
+ () => {
+   const f = pick([
+     {satz:"The phone is ringing. I ___ answer it.", loes:"will", grund:"Das entscheidest du in diesem Augenblick.", art:"spontane Entscheidung"},
+     {satz:"We ___ visit my grandma next Sunday, it's already arranged.", loes:"are going to", grund:"Es ist längst abgesprochen.", art:"fester Plan"},
+     {satz:"Look at those clouds! It ___ rain.", loes:"is going to", grund:"Man sieht es kommen.", art:"sichtbarer Hinweis"},
+     {satz:"I think she ___ like the present.", loes:"will", grund:"Das ist eine Vermutung, kein Plan.", art:"Vermutung"},
+     {satz:"I ___ start an apprenticeship in August — the contract is signed.", loes:"am going to", grund:"Der Vertrag ist unterschrieben.", art:"fester Plan"},
+     {satz:"Don't worry, I ___ help you.", loes:"will", grund:"Du bietest es gerade eben an.", art:"spontanes Angebot"},
+     {satz:"He ___ be twenty next month.", loes:"will", grund:"Das steht ohnehin fest, niemand plant es.", art:"Tatsache in der Zukunft"},
+     {satz:"They ___ buy a new car, they have already been to the dealer.", loes:"are going to", grund:"Sie waren schon beim Händler.", art:"fester Plan"}
+   ]);
+   const willEs = f.loes === "will";
+   return {
+    typ:"text",
+    text:`Setz die passende Zukunftsform ein:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.loes,
+    schluss:"will nimmt man für das, was man gerade entscheidet, vermutet oder anbietet. going to für das, was schon geplant ist oder sich sichtbar anbahnt.",
+    schritte:[
+     {frage:"Worum geht es in diesem Satz?",
+      tipp:"War es vorher schon beschlossen — oder entsteht es gerade?",
+      tipp2:f.grund,
+      optionen: zieheVerschiedene([
+        R(f.art, "Richtig — " + f.grund),
+        F(willEs ? "fester Plan" : "spontane Entscheidung",
+          willEs ? "Ein Plan war es nicht — es entsteht gerade." : "Spontan ist das nicht, es stand schon fest."),
+        F("etwas Vergangenes", "Von Vergangenheit ist keine Rede, es geht um die Zukunft.")], 3)},
+     {frage:"Welche Form passt dazu?",
+      tipp:"Spontan, Vermutung, Angebot → will. Plan oder sichtbarer Hinweis → going to.",
+      tipp2: willEs ? "Hier passt will." : "Hier passt going to.",
+      optionen:[R(willEs ? "will" : "going to", "Richtig."),
+                F(willEs ? "going to" : "will", willEs ? "going to steht bei Geplantem." : "will steht bei Spontanem und Vermutungen."),
+                F("das Simple Present", "Das wäre für Regelmäßiges — hier geht es um die Zukunft.")]},
+     {frage:"Wie heißt die eingesetzte Form?",
+      tippAntwort: f.loes,
+      tipp: willEs ? "will bleibt bei jeder Person gleich." : "Bei going to muss die Form von be zur Person passen.",
+      tipp2:`Es heißt „${f.loes}“.`,
+      optionen: zieheVerschiedene([
+        R(f.loes, "Richtig."),
+        F(willEs ? "going to" : "will", "Das ist die andere Form."),
+        F(willEs ? "will going to" : "is going to", f.loes === "is going to" ? "" : "So passt es nicht zur Person im Satz.")], 3)}]};
+ },
+
+ /* die Form von going to richtig zur Person */
+ () => {
+   const f = pick([
+     {p:"I",    form:"am"},  {p:"He",   form:"is"},  {p:"She",  form:"is"},
+     {p:"It",   form:"is"},  {p:"You",  form:"are"}, {p:"We",   form:"are"},
+     {p:"They", form:"are"}
+   ]);
+   const verb = pick(["watch a film", "call the office", "repair the socket", "write a report", "check the fuse"]);
+   return {
+    typ:"text",
+    text:`Setz die richtige Form ein:<br><i>${f.p} <span class='luecke'>___</span> going to ${verb} tonight.</i>`,
+    loesung: f.form,
+    schluss:"Bei going to ist der einzige veränderliche Teil die Form von be. „going to“ selbst bleibt immer gleich — genau wie das Verb dahinter.",
+    schritte:[
+     {frage:"Welcher Teil des Ausdrucks verändert sich überhaupt?",
+      tipp:"Vergleich: I am going to, he is going to, they are going to.",
+      tipp2:"Nur die Form von be. „going to“ und das Verb bleiben unverändert.",
+      optionen:[R("Nur die Form von be", "Richtig."),
+                F("Auch „going to“", "Das bleibt immer gleich."),
+                F("Das Verb am Ende", "Auch das bleibt in der Grundform.")]},
+     {frage:`Welche Form von <b>be</b> passt zu <b>${f.p}</b>?`,
+      tipp:"I → am, he/she/it → is, we/you/they → are.",
+      tipp2:`Zu „${f.p}“ gehört „${f.form}“.`,
+      optionen: zieheVerschiedene([
+        R(f.form, "Richtig."),
+        F(f.form === "am" ? "is" : "am", f.form === "am" ? "„is“ steht bei he, she und it." : "„am“ steht nur bei I."),
+        F(f.form === "are" ? "is" : "are", f.form === "are" ? "„is“ steht bei he, she und it." : "„are“ steht bei we, you und they.")], 3)},
+     {frage:"Was steht in der Lücke?",
+      tippAntwort: f.form,
+      tipp:"Nur das eine Wort.",
+      tipp2:`Es heißt „${f.p} ${f.form} going to ${verb}“.`,
+      optionen: zieheVerschiedene([
+        R(f.form, "Richtig."),
+        F("will", "„will“ steht ohne going to — beides zusammen gibt es nicht."),
+        F("be", "Die Grundform passt nicht, sie muss zur Person gebeugt werden.")], 3)}]};
+ }
+],
+
+
+"Modalverben":[
+
+ /* welches Modalverb passt zur Bedeutung */
+ () => {
+   const f = pick([
+     {satz:"You ___ wear safety glasses in the workshop. It is a rule.", loes:"must", bed:"eine Pflicht"},
+     {satz:"You ___ touch the wires. It is dangerous!", loes:"mustn't", bed:"ein Verbot"},
+     {satz:"You ___ come if you don't want to. It is not necessary.", loes:"needn't", bed:"etwas ist nicht nötig"},
+     {satz:"She ___ speak three languages.", loes:"can", bed:"eine Fähigkeit"},
+     {satz:"You ___ ask your boss first. That would be better.", loes:"should", bed:"ein Rat"},
+     {satz:"___ I borrow your pen, please?", loes:"May", bed:"eine höfliche Bitte um Erlaubnis"},
+     {satz:"He ___ swim when he was five.", loes:"could", bed:"eine Fähigkeit in der Vergangenheit"},
+     {satz:"You ___ smoke here. There is a sign.", loes:"mustn't", bed:"ein Verbot"}
+   ]);
+   const ANDERE = ["must", "mustn't", "needn't", "can", "should", "May", "could"];
+   const falsch = ANDERE.filter(x => x !== f.loes);
+   return {
+    typ:"text",
+    text:`Setz das passende <b>Modalverb</b> ein:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.loes,
+    schluss:"Modalverben sagen, wie etwas gemeint ist: Pflicht, Verbot, Erlaubnis, Fähigkeit oder Rat. Nach ihnen steht immer die Grundform — ohne to und ohne s.",
+    schritte:[
+     {frage:"Was drückt der Satz aus?",
+      tipp:"Achte auf den zweiten Satzteil — er verrät die Absicht.",
+      tipp2:`Es geht um ${f.bed}.`,
+      optionen: zieheVerschiedene([
+        R(f.bed, "Richtig."),
+        F(f.bed === "ein Verbot" ? "eine Erlaubnis" : "ein Verbot",
+          f.bed === "ein Verbot" ? "Erlaubt wird hier gerade nichts." : "Verboten wird hier nichts."),
+        F("eine Vermutung über die Zukunft", "Davon steht nichts im Satz.")], 3)},
+     {frage:"Was steht nach einem Modalverb?",
+      tipp:"Vergleich: He can swim. Nicht: He can to swim.",
+      tipp2:"Die Grundform — ohne to und ohne s, auch bei he, she und it.",
+      optionen:[R("Die Grundform, ohne to und ohne s", "Richtig — deshalb „She can speak“, nicht „She can speaks“."),
+                F("Die Grundform mit to", "„He can to swim“ gibt es nicht."),
+                F("Bei he, she, it die Form mit -s", "Gerade nicht — Modalverben bekommen selbst kein -s und geben auch keins weiter.")]},
+     {frage:"Welches Modalverb gehört in die Lücke?",
+      tippAntwort: f.loes,
+      tipp:`Gesucht ist das Wort für ${f.bed}.`,
+      tipp2:`Es heißt „${f.loes}“.`,
+      optionen: zieheVerschiedene([
+        R(f.loes, "Richtig."),
+        F(pick(falsch), "Das drückt etwas anderes aus."),
+        F(pick(falsch), "Das drückt etwas anderes aus.")], 3)}]};
+ },
+
+ /* mustn't oder needn't — die klassische Falle */
+ () => {
+   const f = pick([
+     {satz:"You ___ open this box. It is sealed for a reason.", loes:"mustn't", deutsch:"du darfst nicht"},
+     {satz:"You ___ bring your own tools, we have everything here.", loes:"needn't", deutsch:"du brauchst nicht"},
+     {satz:"You ___ switch it on before the test is finished.", loes:"mustn't", deutsch:"du darfst nicht"},
+     {satz:"You ___ come in early tomorrow, the shift starts at nine.", loes:"needn't", deutsch:"du brauchst nicht"},
+     {satz:"You ___ forget the safety rules.", loes:"mustn't", deutsch:"du darfst nicht"},
+     {satz:"You ___ write it down, I will send you an email.", loes:"needn't", deutsch:"du brauchst nicht"}
+   ]);
+   const verboten = f.loes === "mustn't";
+   return {
+    typ:"text",
+    text:`Achtung, hier liegt eine Falle. Setz <b>mustn't</b> oder <b>needn't</b> ein:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.loes,
+    schluss:"mustn't ist ein Verbot: Du darfst nicht. needn't ist das Gegenteil von Pflicht: Du brauchst nicht, darfst aber. Wer das verwechselt, sagt das Gegenteil von dem, was er meint.",
+    schritte:[
+     {frage:"Wird hier etwas verboten oder nur nicht verlangt?",
+      tipp:"Frag dich: Wäre es schlimm, es trotzdem zu tun?",
+      tipp2: verboten ? "Es wird verboten — es zu tun wäre falsch oder gefährlich."
+                      : "Es wird nur nicht verlangt — man dürfte es aber tun.",
+      optionen:[R(verboten ? "Es wird verboten" : "Es wird nur nicht verlangt", "Richtig."),
+                F(verboten ? "Es wird nur nicht verlangt" : "Es wird verboten",
+                  verboten ? "Doch — der zweite Satzteil nennt einen Grund dagegen." : "Nein, es spricht nichts dagegen. Es ist nur unnötig."),
+                F("Es wird ausdrücklich erlaubt", "Von Erlaubnis steht nichts da.")]},
+     {frage:"Was heißt <b>mustn't</b> auf Deutsch?",
+      tipp:"Nicht das, was es aussieht.",
+      tipp2:"„du darfst nicht“ — nicht „du musst nicht“. Das ist die Falle.",
+      optionen:[R("du darfst nicht", "Richtig — das ist der Punkt, an dem die meisten scheitern."),
+                F("du musst nicht", "So sieht es aus, so ist es aber nicht. „du musst nicht“ heißt needn't."),
+                F("du solltest nicht", "Das wäre shouldn't — schwächer als mustn't.")]},
+     {frage:"Was steht in der Lücke?",
+      tippAntwort: f.loes,
+      tipp:`Gemeint ist „${f.deutsch}“.`,
+      tipp2:`Es heißt „${f.loes}“.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(verboten ? "needn't" : "mustn't", verboten ? "Damit würdest du sagen, es sei bloß unnötig — dabei ist es verboten." : "Damit würdest du es verbieten, dabei ist es nur unnötig."),
+                F("don't have to", f.loes === "needn't" ? "Das bedeutet zwar dasselbe wie needn't, gefragt war aber das Modalverb." : "Das bedeutet „nicht müssen“ — hier geht es um ein Verbot.")]}]};
+ }
+],
+
+
+"Adverbien bilden":[
+
+ /* Adjektiv zu Adverb */
+ () => {
+   const f = pick([
+     {adj:"quick",     adv:"quickly",     regel:"einfach -ly"},
+     {adj:"careful",   adv:"carefully",   regel:"einfach -ly"},
+     {adj:"slow",      adv:"slowly",      regel:"einfach -ly"},
+     {adj:"easy",      adv:"easily",      regel:"y wird zu -ily"},
+     {adj:"happy",     adv:"happily",     regel:"y wird zu -ily"},
+     {adj:"terrible",  adv:"terribly",    regel:"-le wird zu -ly"},
+     {adj:"possible",  adv:"possibly",    regel:"-le wird zu -ly"},
+     {adj:"good",      adv:"well",        regel:"unregelmäßig"},
+     {adj:"fast",      adv:"fast",        regel:"bleibt gleich"},
+     {adj:"hard",      adv:"hard",        regel:"bleibt gleich"},
+     {adj:"late",      adv:"late",        regel:"bleibt gleich"}
+   ]);
+   return {
+    typ:"text",
+    text:`Wie heißt das <b>Adverb</b> zu <b>${f.adj}</b>?<br><i>He works <span class='luecke'>___</span>.</i>`,
+    loesung: f.adv,
+    schluss:"Ein Adjektiv beschreibt ein Ding, ein Adverb beschreibt eine Tätigkeit. „a quick worker“, aber „he works quickly“.",
+    schritte:[
+     {frage:"Was beschreibt ein Adverb?",
+      tipp:"Frag: Wie macht er es?",
+      tipp2:"Das Verb — also wie etwas getan wird. Das Adjektiv beschreibt dagegen ein Ding.",
+      optionen:[R("Wie etwas getan wird", "Richtig — deshalb steht es beim Verb."),
+                F("Wie ein Ding ist", "Das macht das Adjektiv: a quick worker."),
+                F("Wann etwas passiert", "Das können Zeitangaben, aber es ist nicht der Kern.")]},
+     {frage:`Welche Regel greift bei <b>${f.adj}</b>?`,
+      tipp:"Schau auf das Wortende.",
+      tipp2:f.regel,
+      optionen: zieheVerschiedene([
+        R(f.regel, "Richtig."),
+        F(f.regel === "einfach -ly" ? "y wird zu -ily" : "einfach -ly", "Das trifft hier nicht zu."),
+        F(f.regel === "bleibt gleich" ? "unregelmäßig" : "bleibt gleich", "Das trifft hier nicht zu.")], 3)},
+     {frage:"Wie heißt das Adverb also?",
+      tippAntwort: f.adv,
+      tipp:"Wende die Regel an.",
+      tipp2:`Es heißt „${f.adv}“.`,
+      optionen: zieheVerschiedene([
+        R(f.adv, "Richtig."),
+        F(f.adj + "ly", f.adv === f.adj + "ly" ? "" : "So einfach ist es hier nicht."),
+        F(f.adj, f.adv === f.adj ? "" : "Das ist das Adjektiv, nicht das Adverb.")], 3)}]};
+ },
+
+ /* Adjektiv oder Adverb im Satz */
+ () => {
+   const f = pick([
+     {satz:"She is a ___ driver.",        wort:"careful", loes:"careful",  art:"Adjektiv", grund:"Es beschreibt das Ding „driver“."},
+     {satz:"She drives ___.",             wort:"careful", loes:"carefully", art:"Adverb",   grund:"Es beschreibt die Tätigkeit „drives“."},
+     {satz:"He is a ___ worker.",         wort:"good",    loes:"good",     art:"Adjektiv", grund:"Es beschreibt das Ding „worker“."},
+     {satz:"He works ___.",               wort:"good",    loes:"well",     art:"Adverb",   grund:"Es beschreibt die Tätigkeit „works“."},
+     {satz:"This is a ___ machine.",      wort:"loud",    loes:"loud",     art:"Adjektiv", grund:"Es beschreibt das Ding „machine“."},
+     {satz:"The machine runs ___.",       wort:"loud",    loes:"loudly",   art:"Adverb",   grund:"Es beschreibt die Tätigkeit „runs“."},
+     {satz:"That was an ___ exercise.",   wort:"easy",    loes:"easy",     art:"Adjektiv", grund:"Es beschreibt das Ding „exercise“."},
+     {satz:"You can do that ___.",        wort:"easy",    loes:"easily",   art:"Adverb",   grund:"Es beschreibt die Tätigkeit „do“."}
+   ]);
+   const adjektiv = f.art === "Adjektiv";
+   return {
+    typ:"text",
+    text:`Adjektiv oder Adverb? Setz <b>${f.wort}</b> in der richtigen Form ein:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.loes,
+    schluss:"Die Frage ist nie, wie das Wort klingt, sondern worauf es sich bezieht: auf ein Ding oder auf eine Tätigkeit.",
+    schritte:[
+     {frage:"Worauf bezieht sich das gesuchte Wort?",
+      tipp:"Steht daneben ein Ding oder ein Verb?",
+      tipp2:f.grund,
+      optionen: zieheVerschiedene([
+        R(adjektiv ? "Auf ein Ding" : "Auf eine Tätigkeit", "Richtig — " + f.grund),
+        F(adjektiv ? "Auf eine Tätigkeit" : "Auf ein Ding",
+          adjektiv ? "Daneben steht kein Verb, sondern ein Hauptwort." : "Daneben steht kein Hauptwort, sondern ein Verb."),
+        F("Auf den ganzen Satz", "So weit gefasst hilft es hier nicht weiter.")], 3)},
+     {frage:"Welche Wortart wird also gebraucht?",
+      tipp:"Ding → Adjektiv. Tätigkeit → Adverb.",
+      tipp2:`Gebraucht wird ein ${f.art}.`,
+      optionen:[R(f.art, "Richtig."),
+                F(adjektiv ? "Adverb" : "Adjektiv", adjektiv ? "Ein Adverb steht beim Verb, hier steht ein Hauptwort daneben." : "Ein Adjektiv steht beim Hauptwort, hier steht ein Verb daneben."),
+                F("ein Hauptwort", "Das Hauptwort steht schon im Satz.")]},
+     {frage:"Wie heißt die eingesetzte Form?",
+      tippAntwort: f.loes,
+      tipp: adjektiv ? "Das Adjektiv bleibt, wie es ist." : "Beim Adverb kommt meist -ly dazu — bei good heißt es well.",
+      tipp2:`Es heißt „${f.loes}“.`,
+      optionen: zieheVerschiedene([
+        R(f.loes, "Richtig."),
+        F(adjektiv ? (f.wort === "good" ? "well" : f.wort + "ly") : f.wort,
+          adjektiv ? "Das wäre das Adverb — hier steht aber ein Hauptwort daneben." : "Das ist das Adjektiv — hier steht aber ein Verb daneben."),
+        F(f.wort + "ness", "Das wäre ein Hauptwort, keine der beiden gesuchten Formen.")], 3)}]};
+ }
+],
+
+
+"Mengenangaben":[
+
+ /* much oder many */
+ () => {
+   const f = pick([
+     {wort:"water",     loes:"much", art:"nicht zählbar"},
+     {wort:"apples",    loes:"many", art:"zählbar"},
+     {wort:"money",     loes:"much", art:"nicht zählbar"},
+     {wort:"friends",   loes:"many", art:"zählbar"},
+     {wort:"time",      loes:"much", art:"nicht zählbar"},
+     {wort:"books",     loes:"many", art:"zählbar"},
+     {wort:"information", loes:"much", art:"nicht zählbar"},
+     {wort:"people",    loes:"many", art:"zählbar"},
+     {wort:"milk",      loes:"much", art:"nicht zählbar"},
+     {wort:"tools",     loes:"many", art:"zählbar"}
+   ]);
+   return {
+    typ:"text",
+    text:`Setz <b>much</b> oder <b>many</b> ein:<br><i>How <span class='luecke'>___</span> ${f.wort} do you need?</i>`,
+    loesung: f.loes,
+    schluss:"many steht vor Zählbarem, much vor Nichtzählbarem. Der Trick: Kann man eine Zahl davorsetzen? Dann ist es zählbar.",
+    schritte:[
+     {frage:`Kann man <b>${f.wort}</b> zählen?`,
+      tipp:"Kann man „three ${f.wort}“ sagen?",
+      tipp2:`${f.wort} ist ${f.art}.`,
+      optionen:[R(f.art === "zählbar" ? "Ja, man kann sie zählen" : "Nein, das kann man nicht zählen", "Richtig."),
+                F(f.art === "zählbar" ? "Nein, das kann man nicht zählen" : "Ja, man kann sie zählen",
+                  f.art === "zählbar" ? `„three ${f.wort}“ geht doch — also zählbar.` : `„three ${f.wort}“ sagt man nicht — man braucht ein Maß dazu.`),
+                F("Das kommt auf den Satz an", "Bei diesem Wort ist es eindeutig.")]},
+     {frage:"Welches Wort gehört zu dieser Sorte?",
+      tipp:"Zählbar → many. Nicht zählbar → much.",
+      tipp2:`${f.art} verlangt „${f.loes}“.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(f.loes === "much" ? "many" : "much", "Das gehört zur anderen Sorte."),
+                F("a lot of", "Das passt zwar bei beidem, hier ist aber much oder many gefragt.")]},
+     {frage:"Was steht in der Lücke?",
+      tippAntwort: f.loes,
+      tipp:"Schreib das Wort hin.",
+      tipp2:`Es heißt „How ${f.loes} ${f.wort}“.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(f.loes === "much" ? "many" : "much", "Andersherum."),
+                F("more", "„more“ wäre ein Vergleich — gefragt ist die Menge.")]}]};
+ },
+
+ /* a few oder a little */
+ () => {
+   const f = pick([
+     {wort:"minutes",  loes:"a few",    art:"zählbar"},
+     {wort:"sugar",    loes:"a little", art:"nicht zählbar"},
+     {wort:"questions", loes:"a few",   art:"zählbar"},
+     {wort:"help",     loes:"a little", art:"nicht zählbar"},
+     {wort:"screws",   loes:"a few",    art:"zählbar"},
+     {wort:"patience", loes:"a little", art:"nicht zählbar"},
+     {wort:"days",     loes:"a few",    art:"zählbar"},
+     {wort:"space",    loes:"a little", art:"nicht zählbar"}
+   ]);
+   return {
+    typ:"text",
+    text:`Setz <b>a few</b> oder <b>a little</b> ein:<br><i>I need <span class='luecke'>___</span> ${f.wort}.</i>`,
+    loesung: f.loes,
+    schluss:"a few steht vor Zählbarem, a little vor Nichtzählbarem — genau dieselbe Trennlinie wie bei many und much. Wer sie einmal begriffen hat, hat beide Regelpaare.",
+    schritte:[
+     {frage:`Ist <b>${f.wort}</b> zählbar?`,
+      tipp:"Kann man eine Zahl davorsetzen?",
+      tipp2:`${f.wort} ist ${f.art}.`,
+      optionen:[R(f.art, "Richtig."),
+                F(f.art === "zählbar" ? "nicht zählbar" : "zählbar",
+                  f.art === "zählbar" ? `„three ${f.wort}“ geht — also zählbar.` : `„three ${f.wort}“ sagt man nicht.`),
+                F("beides möglich", "Bei diesem Wort ist es eindeutig.")]},
+     {frage:"Wie hängt das mit many und much zusammen?",
+      tipp:"Die Trennlinie ist dieselbe.",
+      tipp2:"Wo many steht, steht auch a few. Wo much steht, steht auch a little.",
+      optionen:[R("Dieselbe Trennlinie: zählbar oder nicht", "Richtig — eine Regel für zwei Wortpaare."),
+                F("Es ist eine ganz andere Regel", "Nein, es ist genau dieselbe Unterscheidung."),
+                F("a few und a little sind austauschbar", "Das sind sie nicht.")]},
+     {frage:"Was steht in der Lücke?",
+      tippAntwort: f.loes,
+      tipp:"Zählbar → a few. Nicht zählbar → a little.",
+      tipp2:`Es heißt „${f.loes} ${f.wort}“.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(f.loes === "a few" ? "a little" : "a few", "Das gehört zur anderen Sorte."),
+                F("a lot of", "Das wäre viel — gefragt war eine kleine Menge.")]}]};
+ }
+]
 });
 /* ---------- Erklärungen ----------
    Aufbau: worum · einfach (von ganz vorn) · begriffe (Wörter, die man kennen muss)
@@ -12577,6 +13016,574 @@ const ERKLAERUNGEN = {
           <text x="${x + 41}" y="${y + 38}" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">${r[1]}</text>`;
       }).join("")}
     <text x="200" y="152" text-anchor="middle" font-size="10" fill="currentColor">Immer nach dem Besitzer — nie nach dem Ding dahinter.</text>
+  </svg>`
+},
+
+
+"Present Perfect": {
+  worum:"Das Present Perfect verbindet Vergangenheit und Gegenwart: Etwas ist passiert, und das wirkt bis jetzt. Es besteht aus have oder has und dem Partizip.",
+  wozu:[
+    "Es ist die Zeit, in der man über Erfahrungen spricht: Was hast du schon gemacht, wo warst du schon, wie lange machst du das schon. Genau das wird in jedem Bewerbungsgespräch gefragt.",
+    "Im Betrieb steht es in jeder Statusmeldung: „I have checked the fuse.“ Die Prüfung ist vorbei, das Ergebnis gilt jetzt. Das Simple Past würde nur sagen, dass es irgendwann mal war."
+  ],
+  rezept:[
+    "Nimm have — bei he, she und it nimm has.",
+    "Häng das Partizip an. Regelmäßige Verben bekommen -ed, unregelmäßige haben eine eigene Form aus der dritten Spalte.",
+    "Bei einer Angabe seit wann: since. Bei einer Angabe wie lange: for.",
+    "Signalwörter: already, just, yet, ever, never, since, for.",
+    "Steht eine abgeschlossene Zeitangabe im Satz — yesterday, last week, in 2019 —, nimm das Simple Past, nicht das Present Perfect."
+  ],
+  fehler:[
+    ["Present Perfect mit yesterday benutzt", "„I have seen him yesterday“ ist falsch. Eine abgeschlossene Zeitangabe verlangt das Simple Past: I saw him yesterday."],
+    ["Simple Past statt Partizip", "„I have went“ gibt es nicht. Das Partizip von go ist gone — went ist die zweite Spalte."],
+    ["has bei der falschen Person", "„They has finished“ ist falsch. has steht nur bei he, she und it."],
+    ["since und for verwechselt", "since nennt den Zeitpunkt (since Monday), for die Dauer (for two hours). Beides heißt auf Deutsch seit."],
+    ["Bei einer Dauer das Simple Past benutzt", "„I worked here for two years“ heißt: Ich arbeite nicht mehr dort. Wer noch dort ist, sagt „I have worked here for two years“."]
+  ],
+  einfach:[
+    "Das Present Perfect ist eine Zeit, die es im Deutschen so nicht gibt.",
+    "Es sagt: Etwas ist passiert, und das hat jetzt noch eine Bedeutung.",
+    "Gebaut wird es aus zwei Teilen: have oder has und dem Partizip des Verbs.",
+    "Bei he, she und it heißt es has, sonst immer have.",
+    "Bei regelmäßigen Verben ist das Partizip dasselbe wie die Vergangenheit: work, worked, worked.",
+    "Bei unregelmäßigen Verben steht es in der dritten Spalte der Liste: go, went, gone.",
+    "Wichtig ist der Unterschied zum Simple Past.",
+    "Simple Past heißt: Es ist vorbei und die Zeit steht dabei — I saw him yesterday.",
+    "Present Perfect heißt: Es wirkt bis jetzt und die Zeit steht nicht dabei — I have seen him.",
+    "Steht im Satz eine abgeschlossene Zeitangabe wie yesterday, ist das Present Perfect immer falsch."
+  ],
+  begriffe:[
+    ["Present Perfect","Die Zeit für Vergangenes, das bis jetzt wirkt."],
+    ["Partizip","Die dritte Form des Verbs: gone, seen, written."],
+    ["since","Seit einem Zeitpunkt: since Monday, since 2019."],
+    ["for","Über eine Dauer hinweg: for two hours, for six months."],
+    ["Signalwort","already, just, yet, ever, never — sie zeigen aufs Present Perfect."]
+  ],
+  tabelle:{
+    titel:"Present Perfect oder Simple Past?",
+    kopf:["Satz","Zeit","Warum"],
+    zeilen:[
+      ["I have finished my homework.","Present Perfect","Es ist fertig — das gilt jetzt"],
+      ["I finished it yesterday.","Simple Past","yesterday ist abgeschlossen"],
+      ["She has lived here since 2019.","Present Perfect","Sie wohnt immer noch hier"],
+      ["She lived here for two years.","Simple Past","Sie wohnt nicht mehr hier"],
+      ["Have you ever been to London?","Present Perfect","Frage nach der Erfahrung"],
+      ["When did you go to London?","Simple Past","Frage nach dem Zeitpunkt"]
+    ],
+    fuss:"Die Faustregel: Steht eine abgeschlossene Zeit im Satz, ist es Simple Past."
+  },
+  regeln:[
+    "have oder has plus Partizip.",
+    "has nur bei he, she und it.",
+    "Regelmäßig: -ed. Unregelmäßig: dritte Spalte.",
+    "since für den Zeitpunkt, for für die Dauer.",
+    "Mit yesterday, last week oder einer Jahreszahl: Simple Past.",
+    "Signalwörter: already, just, yet, ever, never."
+  ],
+  beispiel:{aufgabe:"Setz ein: „She (work) here since 2019.“ und „She (work) here in 2019.“",
+    schritte:["since 2019 heißt: sie ist noch da → Present Perfect, she → has","in 2019 ist abgeschlossen → Simple Past"],
+    ergebnis:"She has worked here since 2019. · She worked here in 2019."},
+  spiel:{
+    titel:"Wirkt es bis jetzt?",
+    hinweis:"Schieb durch die Sätze und sieh, wie die Zeitangabe die Zeitform umkippen lässt.",
+    regler:[
+      {id:"i", name:"Satz", von:0, bis:7, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["I ___ my homework.", "finish", "have finished", "Present Perfect", "keine Zeitangabe — es gilt jetzt"],
+        ["I ___ my homework yesterday.", "finish", "finished", "Simple Past", "yesterday ist abgeschlossen"],
+        ["She ___ here since 2019.", "live", "has lived", "Present Perfect", "since — sie wohnt noch hier"],
+        ["She ___ here in 2019.", "live", "lived", "Simple Past", "in 2019 ist vorbei"],
+        ["We ___ this film twice.", "see", "have seen", "Present Perfect", "eine Erfahrung, ohne Zeitpunkt"],
+        ["We ___ this film last night.", "see", "saw", "Simple Past", "last night ist abgeschlossen"],
+        ["He ___ the fuse already.", "check", "has checked", "Present Perfect", "already zeigt aufs Present Perfect"],
+        ["He ___ the fuse two hours ago.", "check", "checked", "Simple Past", "ago verlangt immer Simple Past"]
+      ];
+      const [satz, verb, form, zeit, grund] = S[w.i];
+      return {
+        werte:[
+          {name:"Satz", text:satz.replace("___", "<b>___</b>")},
+          {name:"Verb", text:verb},
+          {name:"Zeit", text:"<b>" + zeit + "</b>"},
+          {name:"Eingesetzt", text:"<b>" + form + "</b>"}
+        ],
+        satz: `${grund} — deshalb ${zeit}.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Present Perfect gegen Simple Past">
+    <text x="200" y="18" text-anchor="middle" font-size="11" fill="currentColor">gestern ————————————— jetzt</text>
+    <line x1="30" y1="30" x2="370" y2="30" stroke="currentColor" stroke-width="1.2"/>
+    <circle cx="360" cy="30" r="4" fill="currentColor"/>
+
+    <rect x="24" y="44" width="352" height="48" rx="10" fill="#3b82f6" fill-opacity=".14" stroke="#3b82f6" stroke-width="1.6"/>
+    <text x="40" y="63" font-size="11.5" font-weight="800" fill="currentColor">Simple Past</text>
+    <circle cx="90" cy="80" r="6" fill="#3b82f6"/>
+    <text x="110" y="84" font-size="10.5" fill="currentColor">I saw him yesterday. — abgeschlossen, Zeit steht dabei</text>
+
+    <rect x="24" y="100" width="352" height="48" rx="10" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="1.6"/>
+    <text x="40" y="119" font-size="11.5" font-weight="800" fill="currentColor">Present Perfect</text>
+    <rect x="86" y="132" width="60" height="9" rx="4" fill="#10a37f"/>
+    <path d="M146 136 L160 136" stroke="#10a37f" stroke-width="2.5" stroke-dasharray="3 3"/>
+    <text x="170" y="140" font-size="10.5" fill="currentColor">I have seen him. — wirkt bis jetzt</text>
+  </svg>`
+},
+
+
+"will future und going to": {
+  worum:"Beide Formen sprechen über die Zukunft. will nimmt man für das, was man gerade entscheidet oder vermutet, going to für das, was schon geplant ist oder sich sichtbar anbahnt.",
+  wozu:[
+    "Wer Termine absprechen will, braucht die Unterscheidung. „I will call you“ heißt: Ich entscheide das jetzt. „I am going to call you“ heißt: Das stand schon fest.",
+    "Im Betrieb ist der Unterschied handfest: „It is going to break“ heißt, man sieht es kommen. „It will break“ ist eine bloße Vermutung."
+  ],
+  rezept:[
+    "Frag dich: Stand das vorher schon fest?",
+    "Wenn ja — es war geplant: going to.",
+    "Wenn man es kommen sieht, etwa an den Wolken: auch going to.",
+    "Wenn du es gerade in diesem Moment entscheidest: will.",
+    "Wenn du etwas anbietest oder versprichst: will.",
+    "Wenn du bloß vermutest, oft mit I think: will.",
+    "Bei will bleibt die Form immer gleich. Bei going to muss die Form von be zur Person passen: am, is, are."
+  ],
+  fehler:[
+    ["will und going to zusammen benutzt", "„I will going to help“ gibt es nicht. Entweder will help oder am going to help."],
+    ["Bei going to die Form von be vergessen", "„He going to call“ ist falsch. Richtig: He is going to call."],
+    ["Nach will ein to gesetzt", "„I will to help“ ist falsch. Nach will steht die Grundform ohne to."],
+    ["going to bei spontanen Entscheidungen", "Klingelt das Telefon und du gehst ran, sagst du „I will answer it“ — geplant war das nicht."],
+    ["will bei sichtbaren Anzeichen", "Bei dunklen Wolken sagt man „It is going to rain“. Man sieht es kommen, man vermutet es nicht nur."]
+  ],
+  einfach:[
+    "Für die Zukunft gibt es im Englischen zwei gebräuchliche Formen.",
+    "Die erste ist will plus Grundform: I will help you.",
+    "Die zweite ist going to: I am going to help you.",
+    "will nimmt man, wenn man sich gerade eben entscheidet.",
+    "Klingelt das Telefon und du sagst „ich geh ran“, dann ist das will.",
+    "will nimmt man auch für Versprechen, Angebote und Vermutungen.",
+    "going to nimmt man, wenn etwas schon vorher geplant war.",
+    "Ein unterschriebener Vertrag, ein gebuchter Termin — das ist going to.",
+    "going to nimmt man außerdem, wenn man etwas kommen sieht: dunkle Wolken, ein Riss im Kabel.",
+    "Bei going to muss die Form von be zur Person passen: I am, he is, we are."
+  ],
+  begriffe:[
+    ["will future","Die Zukunft mit will plus Grundform."],
+    ["going to future","Die Zukunft mit be plus going to plus Grundform."],
+    ["Spontane Entscheidung","Etwas, das man erst im Moment des Sprechens beschließt."],
+    ["Sichtbarer Hinweis","Ein Anzeichen, an dem man etwas kommen sieht."],
+    ["Grundform","Das Verb ohne jede Endung — sie steht nach will und nach going to."]
+  ],
+  tabelle:{
+    titel:"will oder going to?",
+    kopf:["Fall","Form","Beispiel"],
+    zeilen:[
+      ["spontane Entscheidung","will","The phone is ringing. I will answer it."],
+      ["Angebot oder Versprechen","will","Don't worry, I will help you."],
+      ["Vermutung","will","I think she will like it."],
+      ["Tatsache in der Zukunft","will","He will be twenty next month."],
+      ["fester Plan","going to","We are going to visit grandma on Sunday."],
+      ["sichtbarer Hinweis","going to","Look at those clouds! It is going to rain."]
+    ],
+    fuss:"Die ersten vier gehören will, die letzten beiden going to. Mehr muss man nicht unterscheiden."
+  },
+  regeln:[
+    "Spontan, Angebot, Vermutung: will.",
+    "Geplant oder sichtbar kommend: going to.",
+    "Nach will steht die Grundform ohne to.",
+    "Bei going to muss be zur Person passen.",
+    "Nie beides zusammen."
+  ],
+  beispiel:{aufgabe:"Setz ein: „Look at that crack in the cable! It (break).“",
+    schritte:["Man sieht den Riss — ein sichtbarer Hinweis","Sichtbarer Hinweis verlangt going to","it → is"],
+    ergebnis:"It is going to break."},
+  spiel:{
+    titel:"Geplant oder gerade entschieden?",
+    hinweis:"Schieb durch die Sätze und sieh, woran man es jeweils erkennt.",
+    regler:[
+      {id:"i", name:"Satz", von:0, bis:7, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["The phone is ringing. I ___ answer it.", "will answer", "will", "spontane Entscheidung"],
+        ["Don't worry, I ___ help you.", "will help", "will", "Angebot"],
+        ["I think she ___ like the present.", "will like", "will", "Vermutung"],
+        ["He ___ be twenty next month.", "will be", "will", "Tatsache in der Zukunft"],
+        ["We ___ visit grandma, it's arranged.", "are going to visit", "going to", "fester Plan"],
+        ["Look at those clouds! It ___ rain.", "is going to rain", "going to", "sichtbarer Hinweis"],
+        ["The contract is signed. I ___ start in August.", "am going to start", "going to", "fester Plan"],
+        ["Look at that crack! The cable ___ break.", "is going to break", "going to", "sichtbarer Hinweis"]
+      ];
+      const [satz, form, welche, grund] = S[w.i];
+      return {
+        werte:[
+          {name:"Satz", text:satz.replace("___", "<b>___</b>")},
+          {name:"Grund", text:grund},
+          {name:"Form", text:"<b>" + welche + "</b>"},
+          {name:"Eingesetzt", text:"<b>" + form + "</b>"}
+        ],
+        satz: welche === "will"
+          ? `${grund} — das entsteht im Augenblick des Sprechens, deshalb will.`
+          : `${grund} — das stand schon fest oder ist zu sehen, deshalb going to.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="will gegen going to">
+    <rect x="18" y="16" width="170" height="118" rx="10" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="1.6"/>
+    <text x="103" y="38" text-anchor="middle" font-size="14" font-weight="800" fill="currentColor">will</text>
+    <text x="103" y="58" text-anchor="middle" font-size="10" fill="currentColor">entsteht beim Sprechen</text>
+    <text x="103" y="80" text-anchor="middle" font-size="10" fill="currentColor">spontan · Angebot</text>
+    <text x="103" y="96" text-anchor="middle" font-size="10" fill="currentColor">Versprechen · Vermutung</text>
+    <text x="103" y="122" text-anchor="middle" font-size="10.5" font-weight="700" fill="currentColor">I will answer it.</text>
+
+    <rect x="212" y="16" width="170" height="118" rx="10" fill="#f59e0b" fill-opacity=".16" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="297" y="38" text-anchor="middle" font-size="14" font-weight="800" fill="currentColor">going to</text>
+    <text x="297" y="58" text-anchor="middle" font-size="10" fill="currentColor">stand vorher schon fest</text>
+    <text x="297" y="80" text-anchor="middle" font-size="10" fill="currentColor">fester Plan</text>
+    <text x="297" y="96" text-anchor="middle" font-size="10" fill="currentColor">sichtbarer Hinweis</text>
+    <text x="297" y="122" text-anchor="middle" font-size="10.5" font-weight="700" fill="currentColor">It is going to rain.</text>
+  </svg>`
+},
+
+
+"Modalverben": {
+  worum:"Modalverben sagen, wie etwas gemeint ist: Pflicht, Verbot, Erlaubnis, Fähigkeit oder Rat. Nach ihnen steht immer die Grundform — ohne to und ohne s.",
+  wozu:[
+    "Fast jede Anweisung enthält eins. Wer must und mustn't verwechselt, verbietet aus Versehen etwas oder erlaubt es.",
+    "In der Sicherheitsunterweisung ist das kein Sprachspiel: „You mustn't touch it“ und „You needn't touch it“ sind das Gegenteil voneinander."
+  ],
+  rezept:[
+    "Frag dich zuerst, was gemeint ist: Pflicht, Verbot, Erlaubnis, Fähigkeit oder Rat.",
+    "Pflicht: must oder have to.",
+    "Verbot: mustn't.",
+    "Nicht nötig: needn't oder don't have to.",
+    "Fähigkeit: can, in der Vergangenheit could.",
+    "Erlaubnis erfragen: may oder can.",
+    "Rat: should.",
+    "Nach jedem Modalverb steht die Grundform. Kein to, kein s, auch nicht bei he, she und it."
+  ],
+  fehler:[
+    ["mustn't als „muss nicht“ gelesen", "mustn't heißt „darf nicht“. „Du musst nicht“ heißt needn't oder don't have to. Das ist der häufigste Fehler überhaupt."],
+    ["Ein -s an das Modalverb gehängt", "„She cans swim“ gibt es nicht. Modalverben bekommen nie ein -s."],
+    ["Ein to nach dem Modalverb", "„I can to help“ ist falsch. Nach can steht die blanke Grundform."],
+    ["Zwei Modalverben hintereinander", "„He will can do it“ gibt es nicht. Richtig: He will be able to do it."],
+    ["must in der Vergangenheit benutzt", "must hat keine Vergangenheit. Dafür nimmt man had to: I had to work late."]
+  ],
+  einfach:[
+    "Modalverben stehen vor einem anderen Verb und färben dessen Bedeutung.",
+    "can heißt können: She can speak three languages.",
+    "must heißt müssen: You must wear safety glasses.",
+    "Achtung bei der Verneinung: mustn't heißt nicht dürfen, nicht etwa nicht müssen.",
+    "You mustn't touch it heißt: Du darfst es nicht anfassen.",
+    "Wenn etwas nur nicht nötig ist, sagt man needn't oder don't have to.",
+    "You needn't come heißt: Du brauchst nicht zu kommen, du darfst aber.",
+    "should heißt sollte und gibt einen Rat: You should ask first.",
+    "may heißt dürfen und ist die höfliche Form: May I borrow your pen?",
+    "Nach jedem Modalverb steht die Grundform — ohne to und ohne s, auch bei he, she und it."
+  ],
+  begriffe:[
+    ["Modalverb","Ein Verb, das ein anderes einfärbt: can, must, should, may."],
+    ["Grundform","Das Verb ohne Endung — sie steht immer nach dem Modalverb."],
+    ["mustn't","Verbot: Du darfst nicht."],
+    ["needn't","Keine Pflicht: Du brauchst nicht, darfst aber."],
+    ["had to","Die Vergangenheit von must — must selbst hat keine."]
+  ],
+  tabelle:{
+    titel:"Welches Modalverb wofür?",
+    kopf:["Bedeutung","Wort","Beispiel"],
+    zeilen:[
+      ["Pflicht","must / have to","You must wear safety glasses."],
+      ["Verbot","mustn't","You mustn't touch the wires."],
+      ["nicht nötig","needn't / don't have to","You needn't bring tools."],
+      ["Fähigkeit","can","She can speak three languages."],
+      ["Fähigkeit früher","could","He could swim at five."],
+      ["Rat","should","You should ask your boss."],
+      ["höfliche Bitte","may / could","May I borrow your pen?"]
+    ],
+    fuss:"Die Zeilen zwei und drei stehen bewusst nebeneinander — sie werden am häufigsten verwechselt."
+  },
+  regeln:[
+    "Nach dem Modalverb steht die Grundform.",
+    "Modalverben bekommen nie ein -s.",
+    "Kein to nach can, must, should, may.",
+    "mustn't heißt darf nicht.",
+    "needn't heißt braucht nicht.",
+    "Zwei Modalverben nebeneinander gibt es nicht.",
+    "Die Vergangenheit von must ist had to."
+  ],
+  beispiel:{aufgabe:"Setz ein: „You ___ touch the wires“ (Verbot) und „You ___ bring tools“ (nicht nötig).",
+    schritte:["Verbot → mustn't","Nicht nötig → needn't"],
+    ergebnis:"You mustn't touch the wires. · You needn't bring tools."},
+  spiel:{
+    titel:"Verbot oder nur nicht nötig?",
+    hinweis:"Schieb durch die Bedeutungen und sieh, wie sich der Satz dadurch verändert.",
+    regler:[
+      {id:"i", name:"Bedeutung", von:0, bis:6, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const M = [
+        ["Pflicht", "must", "You must wear safety glasses.", "Es ist Vorschrift."],
+        ["Verbot", "mustn't", "You mustn't wear loose sleeves.", "Es ist untersagt."],
+        ["nicht nötig", "needn't", "You needn't wear a helmet here.", "Erlaubt wäre es, nötig ist es nicht."],
+        ["Fähigkeit", "can", "You can wear your own boots.", "Es ist möglich."],
+        ["Fähigkeit früher", "could", "You could wear them last year.", "Früher ging es."],
+        ["Rat", "should", "You should wear gloves.", "Es wäre besser."],
+        ["höfliche Bitte", "may", "May I wear my own gloves?", "Man fragt um Erlaubnis."]
+      ];
+      const [bed, wort, satz, erklaerung] = M[w.i];
+      return {
+        werte:[
+          {name:"Bedeutung", text:bed},
+          {name:"Modalverb", text:"<b>" + wort + "</b>"},
+          {name:"Satz", text:satz},
+          {name:"Heißt", text:erklaerung}
+        ],
+        satz: wort === "mustn't"
+          ? `Achtung: mustn't heißt <b>darf nicht</b>. Schieb einen Schritt weiter — needn't heißt <b>braucht nicht</b>. Das ist ein Unterschied wie Tag und Nacht.`
+          : wort === "needn't"
+            ? `needn't heißt <b>braucht nicht</b>, nicht <b>darf nicht</b>. Einen Schritt zurück steht mustn't — das ist das Verbot.`
+            : `${erklaerung} Nach dem Modalverb steht die Grundform: ${wort} wear, nie ${wort} to wear.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Modalverben nach Bedeutung">
+    ${[["Pflicht","must","#3b82f6"],
+       ["Verbot","mustn't","#b3382f"],
+       ["nicht nötig","needn't","#10a37f"],
+       ["Fähigkeit","can","#6b4fd8"],
+       ["Rat","should","#f59e0b"]]
+      .map((r, i) => {
+        const y = 12 + i * 30;
+        return `<rect x="20" y="${y}" width="360" height="25" rx="6" fill="${r[2]}" fill-opacity=".18" stroke="${r[2]}" stroke-width="1.5"/>
+          <text x="34" y="${y + 17}" font-size="11" font-weight="700" fill="currentColor">${r[0]}</text>
+          <text x="190" y="${y + 17}" font-size="12" font-weight="800" fill="currentColor">${r[1]}</text>`;
+      }).join("")}
+    <text x="200" y="160" text-anchor="middle" font-size="10.5" fill="currentColor">mustn't = darf nicht · needn't = braucht nicht</text>
+  </svg>`
+},
+
+
+"Adverbien bilden": {
+  worum:"Ein Adjektiv beschreibt ein Ding, ein Adverb beschreibt eine Tätigkeit. Aus dem Adjektiv wird das Adverb meistens mit -ly.",
+  wozu:[
+    "Es entscheidet, ob ein Satz richtig klingt oder nach Anfänger: „He works good“ fällt sofort auf, „He works well“ nicht.",
+    "In jeder Arbeitsanweisung steckt eins: carefully, slowly, correctly. Wer das -ly weglässt, beschreibt plötzlich die Person statt der Arbeit."
+  ],
+  rezept:[
+    "Frag dich, worauf sich das Wort bezieht: auf ein Ding oder auf eine Tätigkeit.",
+    "Auf ein Ding — dann bleibt es ein Adjektiv: a careful driver.",
+    "Auf eine Tätigkeit — dann brauchst du ein Adverb: she drives carefully.",
+    "Adverb bilden: meistens einfach -ly anhängen.",
+    "Endet das Adjektiv auf Konsonant + y, wird daraus -ily: easy → easily.",
+    "Endet es auf -le, wird daraus -ly: terrible → terribly.",
+    "Ein paar bleiben gleich: fast, hard, late, early.",
+    "Eines ist unregelmäßig und kommt dauernd vor: good → well."
+  ],
+  fehler:[
+    ["good statt well benutzt", "„He works good“ ist falsch. Das Adverb zu good heißt well: He works well."],
+    ["-ly an Wörter gehängt, die gleich bleiben", "„He runs fastly“ gibt es nicht. fast bleibt fast."],
+    ["hardly für „hart“ benutzt", "hardly heißt kaum, nicht hart. „He works hardly“ heißt: Er arbeitet kaum."],
+    ["Adverb beim Hauptwort benutzt", "„a carefully driver“ ist falsch. Vor einem Hauptwort steht das Adjektiv."],
+    ["Bei y einfach -ly angehängt", "„easyly“ gibt es nicht. Das y wird zu i: easily."]
+  ],
+  einfach:[
+    "Ein Adjektiv sagt, wie ein Ding ist: a quick worker — ein schneller Arbeiter.",
+    "Ein Adverb sagt, wie etwas getan wird: he works quickly — er arbeitet schnell.",
+    "Im Deutschen sieht beides gleich aus, im Englischen nicht.",
+    "Das Adverb bildet man meistens, indem man -ly anhängt: quick wird zu quickly.",
+    "Endet das Adjektiv auf einen Mitlaut und y, wird das y zu i: easy wird zu easily.",
+    "Endet es auf -le, fällt das e weg: terrible wird zu terribly.",
+    "Einige Wörter ändern sich gar nicht: fast, hard, late und early.",
+    "Ein Wort ist unregelmäßig, und ausgerechnet das braucht man ständig: good wird zu well.",
+    "Vorsicht bei hardly — das heißt nicht hart, sondern kaum.",
+    "Die Frage ist nie, wie das Wort klingt, sondern worauf es sich bezieht."
+  ],
+  begriffe:[
+    ["Adjektiv","Beschreibt ein Ding: a quick worker."],
+    ["Adverb","Beschreibt eine Tätigkeit: he works quickly."],
+    ["-ly","Die übliche Endung des Adverbs."],
+    ["well","Das Adverb zu good — unregelmäßig."],
+    ["hardly","Heißt kaum, nicht hart. Eine echte Falle."]
+  ],
+  tabelle:{
+    titel:"Adjektiv und Adverb",
+    kopf:["Adjektiv","Adverb","Regel"],
+    zeilen:[
+      ["quick","quickly","einfach -ly"],
+      ["careful","carefully","einfach -ly"],
+      ["easy","easily","Konsonant + y wird zu -ily"],
+      ["happy","happily","Konsonant + y wird zu -ily"],
+      ["terrible","terribly","-le wird zu -ly"],
+      ["good","well","unregelmäßig"],
+      ["fast","fast","bleibt gleich"],
+      ["hard","hard","bleibt gleich — hardly heißt kaum"]
+    ],
+    fuss:"Die letzten drei Zeilen sind die, an denen es scheitert."
+  },
+  regeln:[
+    "Adjektiv beim Ding, Adverb beim Verb.",
+    "Meistens -ly anhängen.",
+    "Konsonant + y wird zu -ily.",
+    "-le wird zu -ly.",
+    "good wird zu well.",
+    "fast, hard, late und early bleiben gleich.",
+    "hardly heißt kaum."
+  ],
+  beispiel:{aufgabe:"Setz ein: „He is a ___ worker“ und „He works ___“ mit dem Wort good.",
+    schritte:["worker ist ein Ding → Adjektiv → good","works ist eine Tätigkeit → Adverb → well"],
+    ergebnis:"He is a good worker. · He works well."},
+  spiel:{
+    titel:"Ding oder Tätigkeit?",
+    hinweis:"Schieb durch die Wörter und sieh, wie sich die Form ändert, sobald es beim Verb steht.",
+    regler:[
+      {id:"i", name:"Wort", von:0, bis:7, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const A = [
+        ["quick", "quickly", "einfach -ly", "a quick worker", "he works quickly"],
+        ["careful", "carefully", "einfach -ly", "a careful driver", "she drives carefully"],
+        ["easy", "easily", "Konsonant + y wird zu -ily", "an easy exercise", "you can do it easily"],
+        ["happy", "happily", "Konsonant + y wird zu -ily", "a happy child", "the child plays happily"],
+        ["terrible", "terribly", "-le wird zu -ly", "a terrible noise", "it sounds terribly loud"],
+        ["good", "well", "unregelmäßig", "a good worker", "he works well"],
+        ["fast", "fast", "bleibt gleich", "a fast car", "the car drives fast"],
+        ["hard", "hard", "bleibt gleich", "hard work", "he works hard"]
+      ];
+      const [adj, adv, regel, beimDing, beimTun] = A[w.i];
+      const naiv = adj + "ly";
+      return {
+        werte:[
+          {name:"Beim Ding", text:beimDing},
+          {name:"Beim Tun", text:"<b>" + beimTun + "</b>"},
+          {name:"Adjektiv", text:adj},
+          {name:"Adverb", text:"<b>" + adv + "</b>"},
+          {name:"Regel", text:regel}
+        ],
+        satz: adv === naiv
+          ? `Hier trägt das schlichte -ly. Das gilt für die meisten Adjektive.`
+          : adv === adj
+            ? `Dieses Wort ändert sich nicht — „${naiv}“ gibt es nicht. Bei hard kommt dazu: hardly heißt kaum.`
+            : `„${naiv}“ gibt es nicht. ${regel}.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="Adjektiv gegen Adverb">
+    <rect x="18" y="16" width="170" height="118" rx="10" fill="#6b4fd8" fill-opacity=".15" stroke="#6b4fd8" stroke-width="1.6"/>
+    <text x="103" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">Adjektiv</text>
+    <text x="103" y="58" text-anchor="middle" font-size="10" fill="currentColor">beschreibt ein Ding</text>
+    <text x="103" y="88" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">a good worker</text>
+    <text x="103" y="112" text-anchor="middle" font-size="10" fill="currentColor">Wie ist er?</text>
+
+    <rect x="212" y="16" width="170" height="118" rx="10" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="1.6"/>
+    <text x="297" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">Adverb</text>
+    <text x="297" y="58" text-anchor="middle" font-size="10" fill="currentColor">beschreibt eine Tätigkeit</text>
+    <text x="297" y="88" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">he works well</text>
+    <text x="297" y="112" text-anchor="middle" font-size="10" fill="currentColor">Wie macht er es?</text>
+  </svg>`
+},
+
+
+"Mengenangaben": {
+  worum:"Ob many oder much, a few oder a little — es hängt an einer einzigen Frage: Kann man das Ding zählen?",
+  wozu:[
+    "Mengen kommen in jedem zweiten Satz vor. Wer die Trennlinie kennt, hat gleich vier Wörter richtig statt einzeln geraten.",
+    "Bei der Materialbestellung ist es handfest: many cables, aber much cable — im ersten Fall zählt man Stücke, im zweiten Meter."
+  ],
+  rezept:[
+    "Prüf zuerst: Kann man eine Zahl davorsetzen? three apples geht, three water nicht.",
+    "Zählbar: many, a few, few.",
+    "Nicht zählbar: much, a little, little.",
+    "a lot of und lots of passen bei beidem — im Zweifel sind sie die sichere Wahl.",
+    "In Fragen und Verneinungen stehen much und many am natürlichsten, in bejahten Aussagen eher a lot of.",
+    "Achte auf den Unterschied zwischen a few und few: a few heißt ein paar, few heißt wenige — und klingt negativ."
+  ],
+  fehler:[
+    ["much vor Zählbarem", "„much apples“ ist falsch. Äpfel kann man zählen: many apples."],
+    ["many vor Nichtzählbarem", "„many money“ ist falsch. Geld zählt man nicht als Stücke: much money."],
+    ["information oder advice in die Mehrzahl gesetzt", "„informations“ und „advices“ gibt es nicht. Beide sind nicht zählbar: much information."],
+    ["a few und few verwechselt", "„a few friends“ heißt ein paar Freunde — schön. „few friends“ heißt wenige Freunde — traurig."],
+    ["people für nicht zählbar gehalten", "people ist die Mehrzahl von person und damit zählbar: many people."]
+  ],
+  einfach:[
+    "Im Englischen unterscheidet man Dinge, die man zählen kann, von Dingen, die man nicht zählen kann.",
+    "Äpfel, Bücher und Menschen kann man zählen: one apple, two apples.",
+    "Wasser, Geld und Zeit kann man nicht zählen: man sagt nicht two waters.",
+    "Vor Zählbarem steht many: How many apples do you need?",
+    "Vor Nichtzählbarem steht much: How much water do you need?",
+    "Dieselbe Trennlinie gilt für kleine Mengen.",
+    "Vor Zählbarem steht a few: a few minutes.",
+    "Vor Nichtzählbarem steht a little: a little sugar.",
+    "a lot of passt bei beidem und ist im Zweifel die sichere Wahl.",
+    "Achtung: a few heißt ein paar, few allein heißt wenige und klingt nach zu wenig."
+  ],
+  begriffe:[
+    ["zählbar","Man kann eine Zahl davorsetzen: three apples."],
+    ["nicht zählbar","Man braucht ein Maß dazu: three litres of water."],
+    ["many / much","Viele beziehungsweise viel."],
+    ["a few / a little","Ein paar beziehungsweise ein bisschen."],
+    ["few / little","Wenige beziehungsweise wenig — ohne a klingt es negativ."]
+  ],
+  tabelle:{
+    titel:"Zählbar oder nicht",
+    kopf:["","zählbar","nicht zählbar"],
+    zeilen:[
+      ["viel(e)","many apples","much water"],
+      ["ein bisschen","a few minutes","a little sugar"],
+      ["zu wenig","few friends","little time"],
+      ["passt immer","a lot of apples","a lot of water"],
+      ["Beispiele","apples, books, people, tools","water, money, time, information"]
+    ],
+    fuss:"Eine einzige Frage entscheidet alle vier Zeilen: Kann man es zählen?"
+  },
+  regeln:[
+    "Zählbar: many, a few, few.",
+    "Nicht zählbar: much, a little, little.",
+    "a lot of passt bei beidem.",
+    "information, advice, money und time sind nicht zählbar.",
+    "people ist zählbar.",
+    "a few heißt ein paar, few heißt wenige."
+  ],
+  beispiel:{aufgabe:"Setz ein: „How ___ money“ und „How ___ tools“.",
+    schritte:["money kann man nicht zählen → much","tools kann man zählen → many"],
+    ergebnis:"How much money · How many tools"},
+  spiel:{
+    titel:"Kann man es zählen?",
+    hinweis:"Schieb durch die Wörter — die Zeile darunter ändert sich mit.",
+    regler:[
+      {id:"i", name:"Wort", von:0, bis:7, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const W = [
+        ["apples", true],  ["water", false], ["books", true],   ["money", false],
+        ["people", true],  ["time", false],  ["tools", true],   ["information", false]
+      ];
+      const [wort, zaehlbar] = W[w.i];
+      return {
+        werte:[
+          {name:"Wort", text:wort},
+          {name:"Zählbar?", text: zaehlbar ? "<b>ja</b> — one, two, three " + wort : "<b>nein</b> — man braucht ein Maß"},
+          {name:"viel(e)", text:"<b>" + (zaehlbar ? "many" : "much") + " " + wort + "</b>"},
+          {name:"ein bisschen", text:"<b>" + (zaehlbar ? "a few" : "a little") + " " + wort + "</b>"},
+          {name:"passt immer", text:"a lot of " + wort}
+        ],
+        satz: zaehlbar
+          ? `${wort} kann man zählen — deshalb many und a few. „much ${wort}“ wäre falsch.`
+          : `${wort} kann man nicht zählen — deshalb much und a little. „many ${wort}“ wäre falsch.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 155" ${SVG_STIL} role="img" aria-label="zählbar gegen nicht zählbar">
+    <rect x="18" y="14" width="170" height="124" rx="10" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="1.6"/>
+    <text x="103" y="34" text-anchor="middle" font-size="12.5" font-weight="800" fill="currentColor">zählbar</text>
+    ${[0,1,2].map(i => `<circle cx="${72 + i * 31}" cy="56" r="9" fill="#10a37f"/>`).join("")}
+    <text x="103" y="84" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">many · a few</text>
+    <text x="103" y="104" text-anchor="middle" font-size="10" fill="currentColor">apples, books, people</text>
+    <text x="103" y="124" text-anchor="middle" font-size="10" fill="currentColor">one, two, three …</text>
+
+    <rect x="212" y="14" width="170" height="124" rx="10" fill="#3b82f6" fill-opacity=".14" stroke="#3b82f6" stroke-width="1.6"/>
+    <text x="297" y="34" text-anchor="middle" font-size="12.5" font-weight="800" fill="currentColor">nicht zählbar</text>
+    <path d="M252 64 q45 -20 90 0 v-14 q-45 -18 -90 0 z" fill="#3b82f6" fill-opacity=".8"/>
+    <text x="297" y="84" text-anchor="middle" font-size="11.5" font-weight="700" fill="currentColor">much · a little</text>
+    <text x="297" y="104" text-anchor="middle" font-size="10" fill="currentColor">water, money, time</text>
+    <text x="297" y="124" text-anchor="middle" font-size="10" fill="currentColor">braucht ein Maß</text>
   </svg>`
 },
 
