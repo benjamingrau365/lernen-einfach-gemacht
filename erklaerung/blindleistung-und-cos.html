@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blindleistung und cos φ einfach erklärt — Blindleistung berechnen (Lehrjahr 4) | Endlich kapiert</title>
+<meta name="description" content="Blindleistung und cos φ für Lehrjahr 4: Im Wechselstromnetz leistet nicht jeder Strom Arbeit. Der cos φ sagt, welcher Anteil wirklich ankommt.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://endlichkapiert.com/erklaerung/blindleistung-und-cos">
+<meta property="og:site_name" content="Endlich kapiert">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Blindleistung und cos φ einfach erklärt — Blindleistung berechnen (Lehrjahr 4) | Endlich kapiert">
+<meta property="og:description" content="Blindleistung und cos φ für Lehrjahr 4: Im Wechselstromnetz leistet nicht jeder Strom Arbeit. Der cos φ sagt, welcher Anteil wirklich ankommt.">
+<meta property="og:url" content="https://endlichkapiert.com/erklaerung/blindleistung-und-cos">
+<meta name="theme-color" content="#10a37f">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#f4f8f7;--card:#fff;--ink:#16211e;--soft:#5b6b66;--line:#dfe8e5;
+  --ac:#10a37f;--ac-soft:#e4f5ef;--ac-dark:#0b7a5f;--red:#b3382f;--red-soft:#fdecea;
+  --amber:#8a5a09;--amber-soft:#fdf3e0}
+@media (prefers-color-scheme:dark){:root{--bg:#101614;--card:#18201d;--ink:#e8efec;
+  --soft:#9bada7;--line:#2a3733;--ac:#2fbf99;--ac-soft:#17302a;--ac-dark:#7fe0c4;
+  --red:#f08a80;--red-soft:#301a18;--amber:#e0b467;--amber-soft:#2c2415}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.huelle{max-width:760px;margin:0 auto;padding:20px 18px 60px}
+a{color:var(--ac-dark)}
+.pfad{font-size:14px;color:var(--soft);margin:0 0 18px}
+.pfad a{color:var(--soft)}
+.karte{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+  padding:22px 24px;margin-bottom:16px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 10px;letter-spacing:-.02em}
+h2{font-size:20px;margin:0 0 10px;letter-spacing:-.01em}
+h3{font-size:16px;margin:18px 0 6px}
+p{margin:0 0 12px}
+p:last-child{margin-bottom:0}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:7px}
+.marke{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ac-dark);background:var(--ac-soft);
+  border-radius:999px;padding:4px 12px;margin-bottom:12px}
+.knopf{display:block;text-align:center;background:var(--ac);color:#fff;text-decoration:none;
+  font-weight:700;border-radius:13px;padding:15px 20px;margin-top:6px}
+.knopf.leise{background:transparent;color:var(--ac-dark);border:1.6px solid var(--ac);margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-bottom:12px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:800;color:var(--soft);font-size:13.5px}
+.rollen{overflow-x:auto}
+.fehler{background:var(--red-soft);border-radius:12px;padding:13px 15px;margin-bottom:10px}
+.fehler b{color:var(--red);display:block;margin-bottom:3px}
+.merke{background:var(--amber-soft);border-radius:12px;padding:13px 15px}
+.begriff{border-bottom:1px solid var(--line);padding:9px 0}
+.begriff:last-child{border-bottom:none}
+.begriff b{display:block}
+.begriff span{color:var(--soft);font-size:15px}
+svg{width:100%;max-width:420px;height:auto;display:block;margin:14px auto;color:var(--ink)}
+.fuss{font-size:14px;color:var(--soft);text-align:center;margin-top:26px}
+.fuss a{color:var(--soft)}
+.andere{display:grid;gap:8px}
+.andere a{display:block;background:var(--card);border:1.5px solid var(--line);
+  border-radius:12px;padding:12px 15px;text-decoration:none;color:var(--ink);font-weight:600}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Blindleistung und cos φ — einfach erklärt","description":"Blindleistung und cos φ für Lehrjahr 4: Im Wechselstromnetz leistet nicht jeder Strom Arbeit. Der cos φ sagt, welcher Anteil wirklich ankommt.","url":"https://endlichkapiert.com/erklaerung/blindleistung-und-cos","inLanguage":"de","isAccessibleForFree":true,"learningResourceType":"Erklärung und Übungen","educationalLevel":"Lehrjahr 4","about":{"@type":"Thing","name":"Blindleistung und cos φ"},"teaches":"Blindleistung und cos φ","provider":{"@type":"Organization","name":"Endlich kapiert","url":"https://endlichkapiert.com"}}</script>
+</head>
+<body>
+<div class="huelle">
+
+<p class="pfad"><a href="/">Startseite</a> › <a href="/elektroniker">Elektroniker</a> › Lehrjahr 4</p>
+
+<div class="karte">
+  <span class="marke">Elektroniker · Lehrjahr 4</span>
+  <h1>Blindleistung und cos φ — einfach erklärt</h1>
+  <p style="color:var(--soft);font-size:15px">Oft auch gesucht als: Blindleistung berechnen · Leistungsfaktor</p>
+  <p>Im Wechselstromnetz leistet nicht jeder Strom Arbeit. Der cos φ sagt, welcher Anteil wirklich ankommt.</p>
+  <a class="knopf" href="/elektroniker/4">Jetzt üben — du bekommst nie die Lösung, nur Fragen</a>
+  <a class="knopf leise" href="/elektroniker/4">Alle Themen in Lehrjahr 4</a>
+</div>
+
+<div class="karte">
+  <h2>Von ganz vorn</h2>
+  <p style="color:var(--soft);font-size:15px">Ein Satz nach dem anderen, ohne Vorwissen.</p>
+  <p>Bei einem reinen Widerstand — einer Heizung zum Beispiel — wird alles, was hineingeht, in Wärme umgesetzt. Da ist Leistung einfach U · I.</p><p>Bei Motoren, Spulen und Kondensatoren ist das anders. Ein Teil des Stroms baut nur Magnetfelder auf und wieder ab. Diese Energie pendelt hin und her, statt Arbeit zu leisten.</p><p>Deshalb unterscheidet man drei Leistungen: Scheinleistung S ist alles, was durch die Leitung geht. Wirkleistung P ist der Teil, der Arbeit leistet. Blindleistung Q ist der Teil, der nur pendelt.</p><p>Der cos φ sagt, welcher Anteil der Scheinleistung Wirkleistung ist. Er liegt immer zwischen 0 und 1.</p><p>cos φ = 1 heißt: alles ist Wirkleistung, ideal. cos φ = 0,5 heißt: nur die Hälfte leistet Arbeit.</p><p>Das ist kein reines Rechenspiel. Die Leitung und die Sicherung müssen den ganzen Strom aushalten — auch den blinden Anteil.</p><p>Deshalb schaltet man in Betrieben Kondensatoren parallel zu den Motoren. Das nennt man Blindleistungskompensation und bringt den cos φ näher an 1.</p>
+</div>
+
+<div class="karte"><h2>Wozu man das braucht</h2><ul><li>Motoren ziehen Blindstrom. Die Leitung und die Sicherung müssen ihn aushalten, obwohl er keine Arbeit leistet. Deshalb kompensieren Betriebe mit Kondensatoren — und sparen echtes Geld.</li><li>Auf dem Typenschild jedes Motors steht ein cos φ. Ohne ihn kannst du den Betriebsstrom gar nicht richtig ausrechnen.</li></ul></div>
+<div class="karte"><h2>Schritt für Schritt</h2><ol><li>Rechne zuerst die Scheinleistung: S = U · I, Einheit VA.</li><li>Multipliziere mit cos φ, um die Wirkleistung zu bekommen: P = S · cos φ, Einheit W.</li><li>Ist der cos φ gesucht, teile stattdessen: cos φ = P : S.</li><li>Für die Blindleistung: Q = S · sin φ, oder über das Leistungsdreieck mit Pythagoras.</li><li>Probe: Der cos φ muss zwischen 0 und 1 liegen.</li></ol></div>
+
+<div class="karte">
+  <h2>Ein durchgerechnetes Beispiel</h2>
+  <p><b>Aufgabe:</b> Ein Motor an 230 V zieht 5 A bei cos φ = 0,8. Wie groß ist die Wirkleistung?</p>
+  <ol><li>S = 230 V · 5 A = 1150 VA</li><li>P = S · cos φ</li><li>1150 · 0,8</li></ol>
+  <p><b>Ergebnis:</b> 920 W</p>
+</div>
+
+<div class="karte">
+  <h2>Die häufigsten Fehler</h2>
+  <div class="fehler"><b>Watt und Voltampere gleichgesetzt</b>S in VA ist immer größer als P in W. Nur bei cos φ = 1 sind beide gleich.</div><div class="fehler"><b>cos φ über 1 herausbekommen</b>Dann sind Wirk- und Scheinleistung vertauscht. Die Wirkleistung ist immer die kleinere.</div><div class="fehler"><b>Beim Drehstrom das √3 vergessen</b>Bei Drehstrom gilt P = √3 · U · I · cos φ. Die einfache Formel gilt nur einphasig.</div><div class="fehler"><b>Blindleistung für verloren gehalten</b>Sie wird nicht verbraucht, sie pendelt hin und her. Sie belastet aber trotzdem Leitung und Sicherung.</div>
+</div>
+
+
+
+<div class="karte"><h2>Zum Ansehen</h2><svg viewBox="0 0 400 215" style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto" role="img" aria-label="Leistungsdreieck aus Wirkleistung, Blindleistung und Scheinleistung">
+    <path d="M60 175h160" stroke="#10a37f" stroke-width="3"/>
+    <path d="M220 175V55" stroke="#10a37f" stroke-width="3" opacity=".55"/>
+    <path d="M60 175L220 55" stroke="#10a37f" stroke-width="3"/>
+    <path d="M105 175A45 45 0 0 0 96 148" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".75"/>
+    <text x="112" y="166" font-size="14" font-weight="700" fill="currentColor">φ</text>
+    <text x="140" y="194" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">P = 920 W</text>
+    <text x="140" y="209" text-anchor="middle" font-size="11" fill="currentColor">Wirkleistung — leistet Arbeit</text>
+    <text x="232" y="106" font-size="12" font-weight="700" fill="currentColor">Q = 690 var</text>
+    <text x="232" y="123" font-size="11" fill="currentColor">Blindleistung — pendelt nur</text>
+    <text x="118" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">S = 1150 VA</text>
+    <text x="300" y="34" text-anchor="middle" font-size="12" fill="currentColor">cos φ = P : S = 0,8</text>
+  </svg></div>
+
+<div class="karte">
+  <h2>Wörter, die man kennen muss</h2>
+  <div class="begriff"><b>Scheinleistung S</b><span>U · I, alles was durch die Leitung geht. Einheit: Voltampere (VA).</span></div><div class="begriff"><b>Wirkleistung P</b><span>Der Teil, der Arbeit leistet. Einheit: Watt (W).</span></div><div class="begriff"><b>Blindleistung Q</b><span>Der Teil, der nur hin- und herpendelt. Einheit: var.</span></div><div class="begriff"><b>cos φ</b><span>Der Leistungsfaktor: Anteil der Wirkleistung an der Scheinleistung.</span></div>
+</div>
+
+<div class="karte">
+  <h2>Das Wichtigste in Kürze</h2>
+  <div class="merke"><ul><li>S = U · I  (in VA)</li><li>P = S · cos φ = U · I · cos φ  (in W)</li><li>cos φ = P : S</li><li>Der cos φ liegt immer zwischen 0 und 1.</li><li>Kommt ein Wert über 1 heraus, hast du verkehrt herum geteilt.</li><li>Kondensatoren parallel zum Motor verbessern den cos φ.</li></ul></div>
+</div>
+
+<div class="karte">
+  <h2>Leistungsdreieck ziehen — zum Ausprobieren</h2>
+  <p>Nur die Wirkleistung arbeitet. Die Blindleistung pendelt hin und her — bezahlen muss man trotzdem den Strom dafür.</p>
+  <p style="color:var(--soft);font-size:15px">Das Modell zum Schieben steht in der App —
+    dort siehst du sofort, was sich ändert, wenn du an einem Wert drehst.</p>
+  <a class="knopf" href="/elektroniker/4">Modell ausprobieren</a>
+</div>
+
+<div class="karte">
+  <h2>Weiter in Lehrjahr 4</h2>
+  <div class="andere">
+    <a href="/erklaerung/kondensator-laden">Kondensator laden — einfach erklärt</a><a href="/erklaerung/energiekosten">Energiekosten — einfach erklärt</a><a href="/erklaerung/logikverknuepfungen">Logikverknüpfungen — einfach erklärt</a><a href="/erklaerung/fehler-suchen">Fehler suchen — einfach erklärt</a><a href="/erklaerung/instandhaltung-und-verfuegbarkeit">Instandhaltung und Verfügbarkeit — einfach erklärt</a><a href="/erklaerung/angebot-kalkulieren">Angebot kalkulieren — einfach erklärt</a>
+  </div>
+</div>
+
+<div class="karte">
+  <h2>Und dann?</h2>
+  <p>Lesen reicht nicht. Verstanden hast du es erst, wenn du es selbst hinschreiben kannst —
+    deshalb bekommst du in der App nie die Lösung, sondern Fragen, die dich hinführen.
+    Was hakt, kommt von allein wieder: nach einem Tag, nach drei Tagen, nach einer Woche.</p>
+  <a class="knopf" href="/elektroniker/4">Blindleistung und cos φ jetzt üben</a>
+</div>
+<p class="fuss"><a href="/">Endlich kapiert</a> · <a href="/erklaerungen">Alle Erklärungen</a>
+  · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
+</div>
+</body>
+</html>

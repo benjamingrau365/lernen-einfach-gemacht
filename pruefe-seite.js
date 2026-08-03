@@ -91,9 +91,24 @@ for (const m of h.matchAll(/navLink\(\s*[`"']([^`"'$]*)/g)) if (m[1].startsWith(
 for (const m of h.matchAll(/href="(\/[^"${]*)"/g))
   if (!/\.[a-z0-9]+$/i.test(m[1])) adressen.add(m[1]);   /* .svg, .webmanifest … sind Dateien, keine Routen */
 
+/* Feste Seiten außerhalb der App: Sie werden nicht von der App aufgelöst,
+   sondern liegen als eigene HTML-Datei auf der Platte. Für sie gilt die
+   umgekehrte Prüfung — es muss die Datei geben. */
+const feste = (adr) => {
+  if (adr === "/erklaerungen") return "erklaerungen.html";
+  const m = adr.match(/^\/erklaerung\/(.+)$/);
+  return m ? "erklaerung/" + m[1] + ".html" : null;
+};
+
 adressen.forEach((adr) => {
   const teile = adr.split("/").filter(Boolean);
   if (!teile.length) return;                                  /* "/" ist die Startseite */
+  const datei = feste(adr);
+  if (datei){
+    if (!fs.existsSync(__dirname + "/" + datei))
+      melde("Adressen", `„${adr}“ wird verlinkt, aber die Datei ${datei} gibt es nicht — „node seiten-bauen.js“ vergessen?`);
+    return;
+  }
   if (faecher.includes(teile[0])) return;                     /* /mathe , /mathe/8 */
   if (bekannteDirekt.has(teile[0])) return;
   melde("Adressen", `„${adr}“ wird verlinkt, aber beim Neuladen erkennt die App sie nicht — man landet auf der Startseite`);
