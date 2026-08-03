@@ -24421,9 +24421,14 @@ function menueHtml(){
     /* Unterbereiche stehen im Menü bei den Klassen — sonst findet sie dort
        niemand, weil man dort ja gerade sucht, was es zum Fach gibt. */
     if (!KATALOG[f].vokabeln) return stufen;
-    return stufen + navLink("/vokabeln", "zeigeVokabeln();menueSchliessen()",
-      `Vokabeln<span>${z(vokabelAnzahl())} Wörter${EIGENE.length ? " + " + z(EIGENE.length) + " eigene" : ""}</span>`,
-      "mpunkt unter", farbe);
+    return stufen
+      + navLink("/vokabeln", "zeigeVokabeln();menueSchliessen()",
+          `Vokabeln<span>${z(vokabelAnzahl())} Wörter</span>`, "mpunkt unter", farbe)
+      /* Eigene Wörter kommen direkt daneben ins Menü — wer sie sucht, sucht sie
+         hier und nicht erst zwei Seiten weiter. */
+      + navLink("/vokabeln/eigene", "zeigeEigene()",
+          `Eigene Wörter<span>${EIGENE.length ? z(EIGENE.length) + " selbst geschrieben" : "selbst hinschreiben"}</span>`,
+          "mpunkt unter", farbe);
   };
 
   return `
@@ -24853,7 +24858,8 @@ function fussleisteHtml(){
           ${Object.entries(KATALOG).map(([k, v]) =>
             navLink(`/${k}`, `waehleFach('${k}')`, v.name, "fusslink") +
             /* Unterbereiche stehen eingerückt unter ihrem Fach */
-            (v.vokabeln ? navLink("/vokabeln", "zeigeVokabeln()", "Vokabeln", "fusslink fussunter") : "")).join("")}
+            (v.vokabeln ? navLink("/vokabeln", "zeigeVokabeln()", "Vokabeln", "fusslink fussunter")
+                        + navLink("/vokabeln/eigene", "zeigeEigene()", "Eigene Wörter", "fusslink fussunter") : "")).join("")}
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
         <div class="fussspalte">
@@ -26944,6 +26950,9 @@ function render(gewaehlt){
         <p class="soft" style="margin:0 0 14px">${z(vokabelAnzahl())} Wörter nach Klasse und Thema geordnet —
           in beide Richtungen, mit Hilfe in Stufen. Unabhängig von der Grammatik.</p>
         ${navLink("/vokabeln", "zeigeVokabeln()", "Zum Vokabeltrainer", "btn full")}
+        ${navLink("/vokabeln/eigene", "zeigeEigene()",
+          EIGENE.length ? `Eigene Wörter (${z(EIGENE.length)})` : "Eigene Wörter selbst hinschreiben",
+          "btn ghost full", "margin-top:10px")}
       </div>`;
   }
 
