@@ -8427,6 +8427,422 @@ const AUFGABEN = {
                 F(ok ? "nicht bestanden" : "bestanden", "Vergleich noch einmal mit dem Mindestwert."),
                 F("nur mit Einschränkung", "Die Norm kennt hier kein Dazwischen: entweder der Wert reicht oder nicht.")]}]};
  }
+],
+
+"Zufall und Häufigkeit":[
+
+ /* Relative Häufigkeit aus einer Strichliste */
+ () => {
+   const treffer = rnd(3, 40);
+   const gesamt = pick([50, 80, 100, 200, 250]);
+   const g = Math.max(treffer + 5, gesamt);
+   const anteil = Math.round(treffer / g * 10000) / 100;
+   return {
+    typ:"formel",
+    text:`Bei <b>${z(g)} Würfen</b> fiel <b>${z(treffer)}-mal</b> eine Sechs.<br>Wie groß ist die relative Häufigkeit in Prozent?`,
+    loesung: z(anteil),
+    schluss:"Die relative Häufigkeit ist das, was man gemessen hat. Die Wahrscheinlichkeit ist das, was man erwartet. Beides stimmt nie ganz überein.",
+    schritte:[
+     {frage:"Was ist die <b>relative</b> Häufigkeit?",
+      tipp:"Sie setzt die Treffer ins Verhältnis zur Gesamtzahl.",
+      tipp2:"Treffer geteilt durch Anzahl der Versuche.",
+      optionen:[R("Treffer geteilt durch Gesamtzahl", "Richtig."),
+                F("Die Anzahl der Treffer", "Das ist die absolute Häufigkeit."),
+                F("Gesamtzahl geteilt durch Treffer", "Vertauscht — dann käme eine Zahl über 1 heraus.")]},
+     {frage:`Was ergibt <b>${z(treffer)} : ${z(g)}</b>?`,
+      tipp:"Teile die Treffer durch die Anzahl der Würfe.",
+      tipp2:`${z(treffer)} : ${z(g)} = ${z(Math.round(treffer / g * 10000) / 10000)}.`,
+      optionen:[R(`${z(Math.round(treffer / g * 10000) / 10000)}`, "Richtig."),
+                F(`${z(Math.round(g / treffer * 100) / 100)}`, "Vertauscht — das ist größer als 1."),
+                F(`${z(treffer)}`, "Das sind die Treffer, noch kein Anteil.")]},
+     {frage:"Wie kommst du von dort auf <b>Prozent</b>?",
+      tippAntwort: z(anteil),
+      tipp:"Ein Anteil wird mit 100 malgenommen.",
+      tipp2:`${z(Math.round(treffer / g * 10000) / 10000)} · 100 = ${z(anteil)}.`,
+      optionen:[R(`${z(anteil)} %`, "Richtig."),
+                F(`${z(Math.round(treffer / g * 10000) / 10000)} %`, "Der Faktor 100 fehlt noch."),
+                F(`${z(treffer)} %`, "Das sind die Treffer, nicht der Anteil.")]}]};
+ },
+
+ /* Laplace-Wahrscheinlichkeit */
+ () => {
+   const f = pick([
+     {was:"eine gerade Zahl", guenstig:3, alle:6, wo:"beim Würfel"},
+     {was:"eine Zahl größer als 4", guenstig:2, alle:6, wo:"beim Würfel"},
+     {was:"eine rote Karte", guenstig:16, alle:32, wo:"im Skatblatt"},
+     {was:"ein Ass", guenstig:4, alle:32, wo:"im Skatblatt"},
+     {was:"eine blaue Kugel", guenstig:3, alle:10, wo:"in der Urne mit 3 blauen und 7 weißen Kugeln"},
+     {was:"eine Primzahl", guenstig:3, alle:6, wo:"beim Würfel"}
+   ]);
+   const p = Math.round(f.guenstig / f.alle * 10000) / 100;
+   return {
+    typ:"formel",
+    text:`Wie wahrscheinlich ist es, <b>${f.was}</b> zu ziehen — ${f.wo}?<br>Gib die Wahrscheinlichkeit in Prozent an.`,
+    loesung: z(p),
+    schluss:"Bei gleich wahrscheinlichen Ergebnissen gilt: günstige geteilt durch alle. Das nennt man die Laplace-Regel.",
+    schritte:[
+     {frage:"Wie viele Ergebnisse gibt es <b>insgesamt</b>?",
+      tipp:"Zähl alle Möglichkeiten, die es überhaupt gibt.",
+      tipp2:`Es sind ${z(f.alle)}.`,
+      optionen:[R(`${z(f.alle)}`, "Richtig."),
+                F(`${z(f.guenstig)}`, "Das sind die günstigen, nicht alle."),
+                F(`${z(f.alle * 2)}`, "Doppelt so viele gibt es nicht.")]},
+     {frage:`Wie viele davon sind <b>günstig</b>?`,
+      tipp:"Zähl nur die, bei denen das gesuchte Ereignis eintritt.",
+      tipp2:`Es sind ${z(f.guenstig)}.`,
+      optionen:[R(`${z(f.guenstig)}`, "Richtig."),
+                F(`${z(f.alle)}`, "Das sind alle Ergebnisse zusammen."),
+                F(`${z(f.alle - f.guenstig)}`, "Das ist die Gegenzahl — die ungünstigen.")]},
+     {frage:`Was ergibt <b>${z(f.guenstig)} : ${z(f.alle)}</b> in Prozent?`,
+      tippAntwort: z(p),
+      tipp:"Erst teilen, dann mal 100.",
+      tipp2:`${z(f.guenstig)} : ${z(f.alle)} · 100 = ${z(p)}.`,
+      optionen:[R(`${z(p)} %`, "Richtig."),
+                F(`${z(Math.round((100 - p) * 100) / 100)} %`, "Das ist die Gegenwahrscheinlichkeit."),
+                F(`${z(f.guenstig)} %`, "Das ist die Anzahl der günstigen Fälle, kein Prozentsatz.")]}]};
+ }
+],
+
+"Ähnlichkeit":[
+
+ /* Fehlende Seite in ähnlichen Dreiecken */
+ () => {
+   const k = pick([1.5, 2, 2.5, 3, 4]);
+   const a = rnd(3, 12), b = rnd(4, 15);
+   const a2 = Math.round(a * k * 100) / 100;
+   const b2 = Math.round(b * k * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Zwei Dreiecke sind ähnlich. Im kleinen sind die Seiten <b>${z(a)} cm</b> und <b>${z(b)} cm</b>.<br>Im großen ist die erste Seite <b>${z(a2)} cm</b>. Wie lang ist die zweite, in cm?`,
+    loesung: z(b2),
+    schluss:"Ähnlich heißt: gleiche Form, andere Größe. Alle Seiten wachsen mit demselben Faktor — die Winkel bleiben gleich.",
+    schritte:[
+     {frage:"Was bedeutet <b>ähnlich</b> bei Figuren?",
+      tipp:"Denk an ein Foto, das vergrößert wird.",
+      tipp2:"Gleiche Winkel, und alle Seiten im selben Verhältnis.",
+      optionen:[R("Gleiche Winkel, alle Seiten im selben Verhältnis", "Richtig."),
+                F("Gleiche Fläche", "Bei Ähnlichkeit ändert sich die Fläche gerade."),
+                F("Gleich lange Seiten", "Dann wären sie kongruent, nicht nur ähnlich.")]},
+     {frage:`Wie groß ist der <b>Streckfaktor</b>? (${z(a2)} : ${z(a)})`,
+      tipp:"Große Seite geteilt durch die entsprechende kleine.",
+      tipp2:`${z(a2)} : ${z(a)} = ${z(k)}.`,
+      optionen:[R(`${z(k)}`, "Richtig."),
+                F(`${z(Math.round(a / a2 * 1000) / 1000)}`, "Vertauscht — das wäre die Verkleinerung."),
+                F(`${z(Math.round((a2 - a) * 100) / 100)}`, "Der Faktor wird geteilt, nicht abgezogen.")]},
+     {frage:`Was ergibt <b>${z(b)} · ${z(k)}</b>?`,
+      tippAntwort: z(b2),
+      tipp:"Die zweite Seite wird mit demselben Faktor malgenommen.",
+      tipp2:`Rechne ${z(b)} · ${z(k)}.`,
+      optionen:[R(`${z(b2)} cm`, "Richtig."),
+                F(`${z(Math.round(b / k * 100) / 100)} cm`, "Hier wird malgenommen, nicht geteilt."),
+                F(`${z(Math.round((b + (a2 - a)) * 100) / 100)} cm`, "Bei Ähnlichkeit wird malgenommen, nicht dieselbe Länge dazugezählt.")]}]};
+ },
+
+ /* Fläche bei Vergrößerung */
+ () => {
+   const k = pick([2, 3, 4, 5]);
+   const f1 = pick([6, 12, 20, 24, 35]);
+   const f2 = f1 * k * k;
+   return {
+    typ:"formel",
+    text:`Eine Figur wird mit dem Faktor <b>${z(k)}</b> vergrößert. Ihre Fläche betrug <b>${z(f1)} cm²</b>.<br>Wie groß ist die Fläche danach, in cm²?`,
+    loesung: z(f2),
+    schluss:"Bei Längen zählt der Faktor einmal, bei Flächen zweimal, bei Körpern dreimal. Deshalb wird doppelt so groß gleich viermal so viel Fläche.",
+    schritte:[
+     {frage:`Wie oft geht der Faktor <b>${z(k)}</b> in eine <b>Fläche</b> ein?`,
+      tipp:"Eine Fläche entsteht aus zwei Längen.",
+      tipp2:"Zweimal — Länge mal Breite, und beide werden gestreckt.",
+      optionen:[R("Zweimal", "Richtig — deshalb wird mit dem Quadrat des Faktors gerechnet."),
+                F("Einmal", "Das gilt für Längen."),
+                F("Dreimal", "Das gilt für Volumen.")]},
+     {frage:`Was ergibt <b>${z(k)} · ${z(k)}</b>?`,
+      tipp:"Der Faktor mit sich selbst.",
+      tipp2:`${z(k)}² = ${z(k * k)}.`,
+      optionen:[R(`${z(k * k)}`, "Richtig."),
+                F(`${z(k * 2)}`, "Das ist verdoppelt, nicht quadriert."),
+                F(`${z(k * k * k)}`, "Das wäre der Faktor für Volumen.")]},
+     {frage:`Was ergibt <b>${z(f1)} · ${z(k * k)}</b>?`,
+      tippAntwort: z(f2),
+      tipp:"Alte Fläche mal dem quadrierten Faktor.",
+      tipp2:`Rechne ${z(f1)} · ${z(k * k)}.`,
+      optionen:[R(`${z(f2)} cm²`, "Richtig."),
+                F(`${z(f1 * k)} cm²`, "Hier wurde nur einmal mit dem Faktor gerechnet — das gilt für Längen."),
+                F(`${z(f1 * k * k * k)} cm²`, "Dreimal wäre das Volumen.")]}]};
+ }
+],
+
+"Vierecke und Vielecke":[
+
+ /* Innenwinkelsumme eines Vielecks */
+ () => {
+   const n = rnd(3, 12);
+   const summe = (n - 2) * 180;
+   return {
+    typ:"formel",
+    text:`Ein Vieleck hat <b>${z(n)} Ecken</b>.<br>Wie groß ist die Summe seiner Innenwinkel, in Grad?`,
+    loesung: z(summe),
+    schluss:"Jedes Vieleck lässt sich in Dreiecke zerlegen — zwei weniger als es Ecken hat. Jedes Dreieck steuert 180° bei.",
+    schritte:[
+     {frage:`In wie viele <b>Dreiecke</b> lässt sich ein ${z(n)}-Eck zerlegen?`,
+      tipp:"Zieh von einer Ecke aus alle Diagonalen.",
+      tipp2:`Es sind immer zwei weniger als Ecken: ${z(n)} − 2 = ${z(n - 2)}.`,
+      optionen:[R(`${z(n - 2)}`, "Richtig."),
+                F(`${z(n)}`, "So viele Dreiecke entstehen nicht — zwei Ecken bleiben ohne eigenes Dreieck."),
+                F(`${z(n - 1)}`, "Eines zu viel.")]},
+     {frage:"Wie viel Grad hat die Winkelsumme <b>eines</b> Dreiecks?",
+      tipp:"Die Grundregel für jedes Dreieck.",
+      tipp2:"Immer 180°, egal wie das Dreieck aussieht.",
+      optionen:[R("180°", "Richtig."),
+                F("360°", "Das ist der Vollwinkel — die Winkelsumme im Viereck."),
+                F("90°", "Das ist ein einzelner rechter Winkel.")]},
+     {frage:`Was ergibt <b>${z(n - 2)} · 180</b>?`,
+      tippAntwort: z(summe),
+      tipp:"Anzahl der Dreiecke mal 180.",
+      tipp2:`Rechne ${z(n - 2)} · 180.`,
+      optionen:[R(`${z(summe)}°`, "Richtig."),
+                F(`${z(n * 180)}°`, "Hier wurde mit der Eckenzahl gerechnet statt mit der Dreieckszahl."),
+                F(`${z(360)}°`, "360° gilt nur für das Viereck.")]}]};
+ },
+
+ /* Welches Viereck ist es? */
+ () => {
+   const f = pick([
+     {name:"Quadrat", eig:"vier gleich lange Seiten und vier rechte Winkel", andere:["Raute","Rechteck"]},
+     {name:"Rechteck", eig:"vier rechte Winkel, gegenüberliegende Seiten gleich lang", andere:["Quadrat","Parallelogramm"]},
+     {name:"Raute", eig:"vier gleich lange Seiten, aber keine rechten Winkel", andere:["Quadrat","Parallelogramm"]},
+     {name:"Parallelogramm", eig:"gegenüberliegende Seiten parallel und gleich lang, keine rechten Winkel", andere:["Trapez","Raute"]},
+     {name:"Trapez", eig:"genau ein Paar paralleler Seiten", andere:["Parallelogramm","Drachen"]},
+     {name:"Drachen", eig:"zwei Paare benachbarter gleich langer Seiten, Diagonalen stehen senkrecht", andere:["Raute","Trapez"]}
+   ]);
+   return {
+    typ:"text",
+    text:`Ein Viereck hat <b>${f.eig}</b>.<br>Wie heißt es? Schreib den Namen.`,
+    loesung: f.name,
+    schluss:"Die Vierecke bauen aufeinander auf: Jedes Quadrat ist eine Raute und ein Rechteck, jedes Rechteck ein Parallelogramm, jedes Parallelogramm ein Trapez.",
+    schritte:[
+     {frage:"Woran unterscheidet man Vierecke?",
+      tipp:"Es sind zwei Dinge, auf die man schaut.",
+      tipp2:"An den Seiten (Länge, parallel) und an den Winkeln.",
+      optionen:[R("An Seitenlängen, Parallelität und Winkeln", "Richtig."),
+                F("Nur an der Fläche", "Zwei ganz verschiedene Vierecke können dieselbe Fläche haben."),
+                F("An der Anzahl der Ecken", "Vierecke haben alle vier Ecken.")]},
+     {frage:`Wie heißt das Viereck mit ${f.eig}?`,
+      tippAntwort: f.name,
+      tipp:"Geh die Namen durch und prüfe die Eigenschaften.",
+      tipp2:`Es ist das ${f.name}.`,
+      optionen: zieheVerschiedene([
+        R(f.name, "Richtig."),
+        F(f.andere[0], `Beim ${f.andere[0]} stimmt eine der beiden Bedingungen nicht.`),
+        F(f.andere[1], `Das ${f.andere[1]} ist anders gebaut.`)], 3)}]};
+ }
+],
+
+"Zinseszins":[
+
+ /* Guthaben nach mehreren Jahren */
+ () => {
+   const k = pick([500, 1000, 2000, 2500, 5000]);
+   const p = pick([1, 1.5, 2, 2.5, 3, 4]);
+   const n = rnd(2, 12);
+   const end = Math.round(k * Math.pow(1 + p / 100, n) * 100) / 100;
+   const ohne = Math.round((k + k * p / 100 * n) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`<b>${eur(k)}</b> werden mit <b>${z(p)} %</b> verzinst, ${z(n)} Jahre lang. Die Zinsen bleiben auf dem Konto.<br>Wie viel Geld ist am Ende da?`,
+    loesung: eur(end),
+    schluss:`Ohne Zinseszins wären es ${eur(ohne)}. Der Unterschied entsteht, weil die Zinsen selbst wieder Zinsen bringen.`,
+    schritte:[
+     {frage:`Wie heißt der <b>Faktor</b> für ein Jahr bei ${z(p)} %?`,
+      tipp:"100 % plus Zinssatz, geteilt durch 100.",
+      tipp2:`(100 + ${z(p)}) : 100 = ${z(1 + p / 100)}.`,
+      optionen:[R(`${z(1 + p / 100)}`, "Richtig."),
+                F(`${z(p / 100)}`, "Das ist nur der Zinsanteil — das Kapital fehlt."),
+                F(`${z(p)}`, "Das ist der Zinssatz in Prozent, kein Faktor.")]},
+     {frage:`Wie oft wird dieser Faktor angewendet?`,
+      tipp:"Für jedes Jahr einmal.",
+      tipp2:`${z(n)}-mal — also hoch ${z(n)}.`,
+      optionen:[R(`${z(n)}-mal`, "Richtig — deshalb steht die Jahreszahl als Hochzahl."),
+                F("Einmal", "Dann wäre es nur ein Jahr."),
+                F(`${z(n)}-mal addiert`, "Die Faktoren werden malgenommen, nicht addiert — genau das ist der Zinseszins.")]},
+     {frage:`Was ergibt <b>${z(k)} · ${z(1 + p / 100)} hoch ${z(n)}</b>?`,
+      tippAntwort: eur(end),
+      tipp:"Kapital mal Faktor hoch Jahreszahl.",
+      tipp2:`${z(k)} · ${z(Math.round(Math.pow(1 + p / 100, n) * 1e6) / 1e6)} = ${z(end)}.`,
+      optionen:[R(eur(end), "Richtig."),
+                F(eur(ohne), "So wäre es ohne Zinseszins — dann brächten die Zinsen selbst keine Zinsen."),
+                F(eur(k), "Das ist das Startkapital.")]}]};
+ },
+
+ /* Wie lange bis zur Verdopplung? */
+ () => {
+   const p = pick([1, 2, 3, 4, 5, 6, 8]);
+   const jahre = Math.ceil(Math.log(2) / Math.log(1 + p / 100));
+   const faust = Math.round(70 / p * 10) / 10;
+   return {
+    typ:"formel",
+    text:`Ein Guthaben wird mit <b>${z(p)} %</b> verzinst, die Zinsen bleiben stehen.<br>Nach wie vielen <b>vollen Jahren</b> hat es sich verdoppelt?`,
+    loesung: z(jahre),
+    schluss:`Als Faustregel dient die 70er-Regel: 70 geteilt durch den Zinssatz. Hier wären das ${z(faust)} Jahre — nah dran an den ${z(jahre)}.`,
+    schritte:[
+     {frage:"Was heißt <b>verdoppelt</b> als Faktor?",
+      tipp:"Aus 100 % werden 200 %.",
+      tipp2:"Der Faktor ist 2.",
+      optionen:[R("Faktor 2", "Richtig."),
+                F("Faktor 100", "Das wäre das Hundertfache."),
+                F(`Faktor ${z(1 + p / 100)}`, "Das ist der Faktor für ein einzelnes Jahr.")]},
+     {frage:`Reicht ein Jahr mit dem Faktor ${z(1 + p / 100)} dafür aus?`,
+      tipp:"Vergleiche den Jahresfaktor mit 2.",
+      tipp2:`${z(1 + p / 100)} ist viel kleiner als 2 — es braucht viele Jahre.`,
+      optionen:[R("Nein, bei Weitem nicht", "Richtig — deshalb wird der Faktor immer wieder angewendet."),
+                F("Ja", `${z(1 + p / 100)} ist deutlich kleiner als 2.`),
+                F("Genau zur Hälfte", "So lässt sich das nicht rechnen — die Faktoren werden malgenommen.")]},
+     {frage:`Nach wie vielen vollen Jahren ist der Faktor erstmals über 2?`,
+      tippAntwort: z(jahre),
+      tipp:`Probier es aus: ${z(1 + p / 100)} immer wieder mit sich selbst malnehmen.`,
+      tipp2:`Nach ${z(jahre)} Jahren ist der Faktor ${z(Math.round(Math.pow(1 + p / 100, jahre) * 1000) / 1000)}, nach ${z(jahre - 1)} erst ${z(Math.round(Math.pow(1 + p / 100, jahre - 1) * 1000) / 1000)}.`,
+      optionen:[R(`${z(jahre)} Jahre`, `Richtig — die 70er-Regel schätzt ${z(faust)}.`),
+                F(`${z(jahre - 1)} Jahre`, `Da ist der Faktor erst ${z(Math.round(Math.pow(1 + p / 100, jahre - 1) * 1000) / 1000)} — noch unter 2.`),
+                F(`${z(Math.round(100 / p))} Jahre`, "Das wäre die Rechnung ohne Zinseszins — sie dauert länger.")]}]};
+ }
+],
+
+"Sinuskurve":[
+
+ /* Periodendauer aus der Frequenz */
+ () => {
+   const f = pick([0.5, 1, 2, 4, 5, 10, 50]);
+   const T = Math.round(1 / f * 10000) / 10000;
+   return {
+    typ:"formel",
+    text:`Eine Sinuskurve hat die Frequenz <b>${z(f)} Hz</b>.<br>Wie lang ist eine volle Schwingung, in Sekunden?`,
+    loesung: z(T),
+    schluss:"Frequenz und Periodendauer sind Kehrwerte. Doppelte Frequenz heißt halbe Dauer — mehr steckt nicht dahinter.",
+    schritte:[
+     {frage:"Was sagt die <b>Frequenz</b>?",
+      tipp:"Sie zählt etwas pro Sekunde.",
+      tipp2:"Wie viele volle Schwingungen in einer Sekunde passieren.",
+      optionen:[R("Wie viele Schwingungen pro Sekunde", "Richtig."),
+                F("Wie lange eine Schwingung dauert", "Das ist die Periodendauer."),
+                F("Wie hoch der Ausschlag ist", "Das ist die Amplitude.")]},
+     {frage:"Wie hängen Frequenz und Periodendauer zusammen?",
+      tipp:"Das eine ist der Kehrwert des anderen.",
+      tipp2:"T = 1 : f.",
+      optionen:[R("T = 1 : f", "Richtig."),
+                F("T = f", "Dann wären beide gleich groß — das stimmt nur bei 1 Hz."),
+                F("T = f · 2", "Der Faktor 2 hat hier nichts zu suchen.")]},
+     {frage:`Was ergibt <b>1 : ${z(f)}</b>?`,
+      tippAntwort: z(T),
+      tipp:"Eins geteilt durch die Frequenz.",
+      tipp2:`1 : ${z(f)} = ${z(T)}.`,
+      optionen:[R(`${z(T)} s`, "Richtig."),
+                F(`${z(f)} s`, "Das ist die Frequenz, nicht die Dauer."),
+                F(`${z(Math.round(f * 2 * 10000) / 10000)} s`, "Hier wird geteilt, nicht malgenommen.")]}]};
+ },
+
+ /* Amplitude und Streckung ablesen */
+ () => {
+   const a = pick([1, 2, 3, 0.5, 4]);
+   /* keine 1 vor dem x: dann wäre die Periode 360° und fiele mit dem
+      Ablenker „360°" zusammen — es bliebe nur noch eine Antwort übrig */
+   const b = pick([2, 3, 4, 5, 6]);
+   const T = Math.round(360 / b * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Gegeben ist <b>y = ${z(a)} · sin(${z(b)} · x)</b>.<br>Nach wie vielen Grad wiederholt sich die Kurve?`,
+    loesung: z(T),
+    schluss:"Die Zahl vor dem x staucht die Kurve. Die Zahl vor dem Sinus dehnt sie nach oben — sie ändert die Periode nicht.",
+    schritte:[
+     {frage:`Was macht die <b>${z(a)}</b> vor dem Sinus?`,
+      tipp:"Sie wirkt auf die Höhe des Ausschlags.",
+      tipp2:`Sie ist die Amplitude: Die Kurve geht bis ${z(a)} hoch und bis −${z(a)} runter.`,
+      optionen:[R(`Sie legt den größten Ausschlag auf ${z(a)} fest`, "Richtig — das ist die Amplitude."),
+                F("Sie verschiebt die Kurve nach rechts", "Dafür bräuchte es einen Summanden im Klammerausdruck."),
+                F("Sie ändert die Periodenlänge", "Das macht nur die Zahl vor dem x.")]},
+     {frage:`Und die <b>${z(b)}</b> vor dem x?`,
+      tipp:"Sie wirkt auf die Länge einer Schwingung.",
+      tipp2:`Sie staucht die Kurve um den Faktor ${z(b)} — die Periode wird ${z(b)}-mal kürzer.`,
+      optionen:[R(`Sie staucht die Kurve auf ein ${z(b)}-tel`, "Richtig."),
+                F("Sie erhöht den Ausschlag", "Das macht die Zahl vor dem Sinus."),
+                F("Sie verschiebt die Kurve nach oben", "Dafür bräuchte es einen Summanden hinter dem Sinus.")]},
+     {frage:`Was ergibt <b>360 : ${z(b)}</b>?`,
+      tippAntwort: z(T),
+      tipp:"Die Grundperiode 360° geteilt durch die Zahl vor dem x.",
+      tipp2:`360 : ${z(b)} = ${z(T)}.`,
+      optionen:[R(`${z(T)}°`, "Richtig."),
+                F(`${z(360 * b)}°`, "Hier wird geteilt, nicht malgenommen — sonst würde die Kurve gedehnt."),
+                F("360°", "Das gilt nur, wenn vor dem x eine 1 steht.")]}]};
+ }
+],
+
+"Kredite und Raten":[
+
+ /* Was kostet der Kredit insgesamt? */
+ () => {
+   /* Ratenzahl und Rate müssen zusammen genau die Gesamtsumme ergeben — sonst
+      passt die Aufgabe nicht zu ihrer eigenen Lösung. Gezogen wird deshalb so
+      lange, bis die Rückzahlung 5 bis 30 Prozent über der Kreditsumme liegt. */
+   let summe, echteMonate, rate, g;
+   do {
+     summe = pick([1200, 2400, 3600, 6000, 9000]);
+     echteMonate = pick([12, 24, 36, 48]);
+     rate = pick([60, 75, 90, 120, 150, 200, 250, 300]);
+     g = echteMonate * rate;
+   } while (!(g > summe * 1.05 && g < summe * 1.30));
+   const kosten = g - summe;
+   const proz = Math.round(kosten / summe * 10000) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Kredit über <b>${eur(summe)}</b> wird in <b>${z(echteMonate)} Raten</b> zu je <b>${eur(rate)}</b> zurückgezahlt.<br>Wie viel zahlst du insgesamt?`,
+    loesung: eur(g),
+    schluss:`Die Differenz zur Kreditsumme sind die Kosten: ${eur(kosten)}, also ${z(proz)} % obendrauf.`,
+    schritte:[
+     {frage:"Wie rechnest du die Gesamtsumme aus?",
+      tipp:"Alle Raten zusammen.",
+      tipp2:"Anzahl der Raten mal Höhe einer Rate.",
+      optionen:[R("Anzahl der Raten mal Ratenhöhe", "Richtig."),
+                F("Kreditsumme plus eine Rate", "Es sind viele Raten, nicht eine."),
+                F("Kreditsumme geteilt durch die Ratenzahl", "Das ergibt die Rate, nicht die Gesamtsumme.")]},
+     {frage:`Was ergibt <b>${z(echteMonate)} · ${eur(rate)}</b>?`,
+      tippAntwort: eur(g),
+      tipp:"Ratenzahl mal Ratenhöhe.",
+      tipp2:`Rechne ${z(echteMonate)} · ${z(rate)}.`,
+      optionen:[R(eur(g), "Richtig."),
+                F(eur(summe), "Das ist die Kreditsumme — die Kosten fehlen."),
+                F(eur(rate * 12), "Das wären nur die Raten eines Jahres.")]}]};
+ },
+
+ /* Effektivkosten in Prozent */
+ () => {
+   const summe = pick([1000, 2000, 3000, 5000]);
+   const aufschlag = pick([5, 8, 10, 12, 15, 20]);
+   const kosten = Math.round(summe * aufschlag) / 100;
+   const gesamt = summe + kosten;
+   return {
+    typ:"formel",
+    text:`Ein Kredit über <b>${eur(summe)}</b> kostet insgesamt <b>${eur(gesamt)}</b>.<br>Wie viel Prozent der Kreditsumme sind die Kosten?`,
+    loesung: z(aufschlag),
+    schluss:"Zum Vergleichen von Angeboten taugt nur der Prozentsatz. Absolute Beträge sagen nichts, solange die Kreditsumme verschieden ist.",
+    schritte:[
+     {frage:"Wie hoch sind die <b>Kosten</b> in Euro?",
+      tipp:"Gesamtsumme minus Kreditsumme.",
+      tipp2:`${z(gesamt)} − ${z(summe)} = ${z(kosten)}.`,
+      optionen:[R(eur(kosten), "Richtig."),
+                F(eur(gesamt), "Das ist alles zusammen, inklusive der geliehenen Summe."),
+                F(eur(summe), "Das ist die Kreditsumme selbst.")]},
+     {frage:"Welcher Wert ist der <b>Grundwert</b>, also die 100 %?",
+      tipp:"Worauf beziehen sich die Kosten?",
+      tipp2:`Auf die geliehene Summe, hier ${eur(summe)}.`,
+      optionen:[R(`${eur(summe)} — die Kreditsumme`, "Richtig."),
+                F(`${eur(gesamt)} — die Gesamtsumme`, "Damit käme ein zu kleiner Prozentsatz heraus."),
+                F(`${eur(kosten)} — die Kosten`, "Die Kosten sind das, was in Prozent ausgedrückt wird.")]},
+     {frage:`Wie viel Prozent sind <b>${eur(kosten)}</b> von <b>${eur(summe)}</b>?`,
+      tippAntwort: z(aufschlag),
+      tipp:"Kosten geteilt durch Kreditsumme, mal 100.",
+      tipp2:`${z(kosten)} : ${z(summe)} · 100 = ${z(aufschlag)}.`,
+      optionen:[R(`${z(aufschlag)} %`, "Richtig."),
+                F(`${z(Math.round(kosten / gesamt * 10000) / 100)} %`, "Hier wurde durch die Gesamtsumme geteilt statt durch die Kreditsumme."),
+                F(`${z(kosten)} %`, "Das sind Euro, noch keine Prozent.")]}]};
+ }
 ]
 
 };
@@ -9395,6 +9811,667 @@ Object.assign(AUFGABEN, {
 const SVG_STIL = `style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto"`;
 
 const ERKLAERUNGEN = {
+
+"Zufall und Häufigkeit": {
+  worum:"Die Wahrscheinlichkeit sagt, was zu erwarten ist. Die relative Häufigkeit sagt, was tatsächlich passiert ist. Beides stimmt nie ganz überein.",
+  wozu:[
+    "In der Qualitätsprüfung wird stichprobenartig geprüft: Von 200 Bauteilen sind drei fehlerhaft. Ob das im Rahmen liegt oder ein Alarmzeichen ist, entscheidet der Vergleich mit der erwarteten Ausfallrate.",
+    "Auch bei der Instandhaltung geht es um Wahrscheinlichkeiten: Wie oft fällt ein Bauteil im Jahr aus, und lohnt sich der vorbeugende Tausch?"
+  ],
+  rezept:[
+    "Zähl alle möglichen Ergebnisse — das ist der Nenner.",
+    "Zähl die günstigen Ergebnisse — das ist der Zähler.",
+    "Sind alle Ergebnisse gleich wahrscheinlich, teile günstige durch alle.",
+    "Für Prozent noch mit 100 malnehmen.",
+    "Bei mehreren Versuchen hintereinander die Wahrscheinlichkeiten malnehmen, nicht addieren.",
+    "Prüf am Ende: Das Ergebnis muss zwischen 0 und 1 liegen (oder zwischen 0 und 100 %)."
+  ],
+  fehler:[
+    ["Wahrscheinlichkeiten addiert statt malgenommen", "Zweimal hintereinander eine Sechs ist nicht 1/6 + 1/6, sondern 1/6 · 1/6 — also viel unwahrscheinlicher."],
+    ["Ein Ergebnis über 1 herausbekommen", "Eine Wahrscheinlichkeit kann nie größer als 1 sein. Kommt mehr heraus, wurden Zähler und Nenner vertauscht."],
+    ["Vom Würfel erwartet, dass er sich erinnert", "Nach fünf Sechsen ist die sechste genauso wahrscheinlich wie vorher. Der Würfel weiß nichts von den letzten Würfen."],
+    ["Relative Häufigkeit mit Wahrscheinlichkeit gleichgesetzt", "Bei 60 Würfen kommen selten genau 10 Sechsen. Erst bei sehr vielen Versuchen nähern sich die beiden an."]
+  ],
+  einfach:[
+    "Bei einem Zufallsversuch weiß man vorher nicht, was herauskommt — aber man weiß, was herauskommen kann.",
+    "Alle möglichen Ergebnisse zusammen nennt man den Ergebnisraum. Beim Würfel sind das die Zahlen 1 bis 6.",
+    "Ein Ereignis ist das, wonach gefragt wird — zum Beispiel „eine gerade Zahl“.",
+    "Sind alle Ergebnisse gleich wahrscheinlich, rechnest du: günstige geteilt durch alle.",
+    "Beim Würfel sind drei der sechs Zahlen gerade, also 3 : 6 = 0,5 oder 50 %.",
+    "Diese Regel heißt Laplace-Regel. Sie gilt nur, wenn wirklich alle Ergebnisse gleich wahrscheinlich sind.",
+    "Die relative Häufigkeit ist etwas anderes: Sie zählt, was beim Ausprobieren tatsächlich passiert ist.",
+    "Bei 100 Würfen 14-mal eine Sechs sind 14 : 100 = 14 %. Erwartet hätte man rund 16,7 %.",
+    "Je öfter du wirfst, desto näher kommen sich die beiden. Das nennt man das Gesetz der großen Zahlen.",
+    "Bei mehreren Versuchen hintereinander werden die Wahrscheinlichkeiten malgenommen: zweimal Sechs ist 1/6 · 1/6 = 1/36."
+  ],
+  begriffe:[
+    ["Ergebnisraum","Alle möglichen Ergebnisse eines Versuchs."],
+    ["Ereignis","Das, wonach gefragt wird — oft mehrere Ergebnisse zusammen."],
+    ["Laplace-Regel","Günstige geteilt durch alle, wenn alle gleich wahrscheinlich sind."],
+    ["Relative Häufigkeit","Treffer geteilt durch Versuche — gemessen, nicht gerechnet."],
+    ["Gegenereignis","Alles, was nicht das Ereignis ist. Beide zusammen ergeben 1."]
+  ],
+  tabelle:{
+    titel:"Wahrscheinlichkeiten beim Würfel",
+    kopf:["Ereignis","Günstige","Wahrscheinlichkeit"],
+    zeilen:[
+      ["eine 6","1 von 6","16,7 %"],
+      ["eine gerade Zahl","3 von 6","50 %"],
+      ["eine Zahl größer als 4","2 von 6","33,3 %"],
+      ["eine Primzahl (2, 3, 5)","3 von 6","50 %"],
+      ["keine 6","5 von 6","83,3 %"],
+      ["zweimal hintereinander eine 6","1 von 36","2,8 %"],
+      ["mindestens einmal 6 bei 2 Würfen","11 von 36","30,6 %"]
+    ],
+    fuss:"Die letzten beiden Zeilen sind zwei verschiedene Fragen — sie werden am häufigsten verwechselt."
+  },
+  regeln:[
+    "Wahrscheinlichkeit = günstige : alle (bei gleich wahrscheinlichen Ergebnissen).",
+    "Relative Häufigkeit = Treffer : Versuche.",
+    "Jede Wahrscheinlichkeit liegt zwischen 0 und 1.",
+    "Ereignis und Gegenereignis ergeben zusammen 1.",
+    "Mehrere Versuche hintereinander: malnehmen.",
+    "Je mehr Versuche, desto näher liegt die Häufigkeit an der Wahrscheinlichkeit."
+  ],
+  beispiel:{aufgabe:"In einer Urne sind 3 blaue und 7 weiße Kugeln. Wie wahrscheinlich ist eine blaue?",
+    schritte:["Alle Ergebnisse: 3 + 7 = 10","Günstige: 3","3 : 10 = 0,3"],
+    ergebnis:"30 %"},
+  spiel:{
+    titel:"Viele Versuche, wenig Zufall",
+    hinweis:"Schieb die Zahl der Versuche hoch und sieh, wie sich die Häufigkeit der Wahrscheinlichkeit nähert.",
+    regler:[
+      {id:"n", name:"Versuche", von:10, bis:5000, schritt:10, start:60},
+      {id:"p", name:"Wahrscheinlichkeit", einheit:"%", von:5, bis:95, schritt:5, start:50}
+    ],
+    ausgabe:(w) => {
+      /* Kein Zufall im Modell — gezeigt wird die typische Streuung, die bei
+         dieser Versuchszahl zu erwarten ist (Standardabweichung des Anteils). */
+      const p = w.p / 100;
+      const streuung = Math.sqrt(p * (1 - p) / w.n) * 100;
+      const von = Math.max(0, w.p - 2 * streuung), bis = Math.min(100, w.p + 2 * streuung);
+      const skala = (x) => 24 + x / 100 * 330;
+      return {
+        bild:`<svg viewBox="0 0 380 90" ${SVG_STIL} role="img" aria-label="Erwarteter Bereich der relativen Häufigkeit">
+          <line x1="24" y1="58" x2="354" y2="58" stroke="currentColor" stroke-width="1.2"/>
+          <rect x="${skala(von).toFixed(1)}" y="40" width="${(skala(bis) - skala(von)).toFixed(1)}" height="36"
+                rx="5" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="1.5"/>
+          <line x1="${skala(w.p).toFixed(1)}" y1="30" x2="${skala(w.p).toFixed(1)}" y2="80" stroke="#b3382f" stroke-width="2"/>
+          <text x="${skala(w.p).toFixed(1)}" y="24" text-anchor="middle" font-size="10" fill="currentColor">erwartet ${z(w.p)} %</text>
+          <text x="24" y="88" font-size="9" fill="currentColor">0 %</text>
+          <text x="354" y="88" text-anchor="end" font-size="9" fill="currentColor">100 %</text>
+        </svg>`,
+        werte:[
+          {name:"Erwartet", text:z(w.p) + " %"},
+          {name:"Erwartete Treffer", text:z(Math.round(w.n * p)) + " von " + z(w.n)},
+          {name:"Typische Schwankung", text:"± " + z(Math.round(streuung * 10) / 10) + " Prozentpunkte"},
+          {name:"Meist zwischen", text:z(Math.round(von * 10) / 10) + " % und " + z(Math.round(bis * 10) / 10) + " %"}
+        ],
+        satz: w.n <= 50
+          ? `Bei nur ${z(w.n)} Versuchen schwankt das Ergebnis um <b>± ${z(Math.round(2 * streuung))} Prozentpunkte</b>. Aus so wenigen Versuchen lässt sich fast nichts schließen.`
+          : w.n >= 1000 ? `Bei ${z(w.n)} Versuchen wird der Bereich schmal — hier nähert sich die Häufigkeit der Wahrscheinlichkeit wirklich an.`
+          : `Vervierfachst du die Versuche, halbiert sich die Schwankung. Deshalb sind große Stichproben so viel aussagekräftiger.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="Würfel mit sechs Augen, drei davon gerade">
+    ${[1,2,3,4,5,6].map((n, i) => {
+      const x = 18 + i * 63, gerade = n % 2 === 0;
+      return `<rect x="${x}" y="34" width="52" height="52" rx="9" fill="${gerade ? "#10a37f" : "none"}" fill-opacity=".3" stroke="${gerade ? "#10a37f" : "currentColor"}" stroke-width="2"/>
+        <text x="${x + 26}" y="68" text-anchor="middle" font-size="22" font-weight="800" fill="currentColor">${n}</text>`;
+    }).join("")}
+    <text x="200" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Ereignis: eine gerade Zahl</text>
+    <text x="200" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3 günstige von 6 möglichen</text>
+    <text x="200" y="134" text-anchor="middle" font-size="13" fill="currentColor">3 : 6 = 0,5 = 50 %</text>
+  </svg>`
+},
+
+"Ähnlichkeit": {
+  worum:"Ähnlich heißt: gleiche Form, andere Größe. Alle Winkel bleiben, alle Seiten werden mit demselben Faktor gestreckt.",
+  wozu:[
+    "Jede Zeichnung im Maßstab beruht auf Ähnlichkeit. Auch das Messen unzugänglicher Höhen über den Schatten funktioniert nur deshalb.",
+    "In der Technik werden Bauteile skaliert. Dabei ist entscheidend zu wissen, dass die Fläche quadratisch und das Volumen kubisch mitwächst — ein doppelt so großer Behälter fasst achtmal so viel."
+  ],
+  rezept:[
+    "Prüf, ob die Figuren wirklich ähnlich sind: alle Winkel gleich.",
+    "Such ein Paar einander entsprechender Seiten, bei dem beide Längen bekannt sind.",
+    "Teile die große durch die kleine — das ist der Streckfaktor k.",
+    "Jede andere Seite der kleinen Figur mal k ergibt die entsprechende große.",
+    "Für Flächen mit k² rechnen, für Volumen mit k³.",
+    "Prüf zum Schluss die Größenordnung: Bei k = 2 muss alles etwa doppelt so lang sein."
+  ],
+  fehler:[
+    ["Den Faktor addiert statt multipliziert", "Wird aus 4 cm 6 cm, sind das nicht „plus 2“ für alle Seiten, sondern mal 1,5. Die 8-cm-Seite wird dann 12 cm, nicht 10 cm."],
+    ["Bei Flächen mit k statt k² gerechnet", "Doppelte Kantenlänge heißt vierfache Fläche. Genau das unterschätzt fast jeder."],
+    ["Nicht entsprechende Seiten verglichen", "Man muss die Seiten vergleichen, die an denselben Winkeln liegen — sonst kommt Unsinn heraus."],
+    ["Ähnlich mit kongruent verwechselt", "Kongruent heißt deckungsgleich, also k = 1. Ähnlich ist der allgemeinere Fall."]
+  ],
+  einfach:[
+    "Zwei Figuren sind ähnlich, wenn sie dieselbe Form haben, aber verschieden groß sind.",
+    "Denk an ein Foto, das man vergrößert: Alles wird größer, aber nichts verzerrt.",
+    "Bei ähnlichen Figuren sind alle entsprechenden Winkel gleich groß.",
+    "Und alle entsprechenden Seiten stehen im selben Verhältnis zueinander.",
+    "Dieses Verhältnis heißt Streckfaktor, meist k genannt.",
+    "Du findest ihn, indem du eine große Seite durch die entsprechende kleine teilst.",
+    "Ist k = 3, dann ist jede Seite der großen Figur dreimal so lang wie die entsprechende kleine.",
+    "Für Flächen gilt etwas anderes: Sie wachsen mit k · k, also mit k².",
+    "Bei k = 3 ist die Fläche also neunmal so groß, nicht dreimal.",
+    "Bei Körpern kommt der Faktor dreimal vor: Das Volumen wächst mit k³, bei k = 3 also 27-fach."
+  ],
+  begriffe:[
+    ["Ähnlich","Gleiche Winkel, alle Seiten im selben Verhältnis."],
+    ["Kongruent","Deckungsgleich — der Sonderfall k = 1."],
+    ["Streckfaktor k","Das Verhältnis entsprechender Seiten."],
+    ["Entsprechende Seiten","Die Seiten, die an denselben Winkeln liegen."],
+    ["Zentrische Streckung","Die Abbildung, die eine ähnliche Figur erzeugt."]
+  ],
+  tabelle:{
+    titel:"Was der Streckfaktor mit was macht",
+    kopf:["Streckfaktor k","Längen","Flächen (k²)","Volumen (k³)"],
+    zeilen:[
+      ["1","gleich","gleich","gleich"],
+      ["1,5","1,5-fach","2,25-fach","3,375-fach"],
+      ["2","doppelt","4-fach","8-fach"],
+      ["3","3-fach","9-fach","27-fach"],
+      ["10","10-fach","100-fach","1000-fach"],
+      ["0,5","halb","Viertel","Achtel"]
+    ],
+    fuss:"Die letzte Zeile erklärt, warum ein Modellauto im Maßstab 1 : 2 nur ein Achtel des Materials braucht."
+  },
+  regeln:[
+    "Ähnlich: gleiche Winkel, Seiten im selben Verhältnis.",
+    "Streckfaktor k = große Seite : entsprechende kleine Seite.",
+    "Jede Länge wird mit k malgenommen.",
+    "Flächen wachsen mit k².",
+    "Volumen wachsen mit k³.",
+    "k = 1 bedeutet kongruent."
+  ],
+  beispiel:{aufgabe:"Zwei ähnliche Dreiecke: klein 4 cm und 7 cm, groß 10 cm und ? cm.",
+    schritte:["Streckfaktor: 10 : 4 = 2,5","Zweite Seite: 7 · 2,5"],
+    ergebnis:"17,5 cm"},
+  spiel:{
+    titel:"Strecken und zusehen",
+    hinweis:"Zieh den Streckfaktor und achte darauf, wie unterschiedlich Länge, Fläche und Volumen wachsen.",
+    regler:[
+      {id:"k", name:"Streckfaktor k", von:0.5, bis:5, schritt:0.1, start:2},
+      {id:"a", name:"Kantenlänge", einheit:"cm", von:1, bis:10, schritt:0.5, start:4}
+    ],
+    ausgabe:(w) => {
+      const neu = Math.round(w.a * w.k * 100) / 100;
+      const f1 = w.a * w.a, f2 = neu * neu;
+      const v1 = Math.pow(w.a, 3), v2 = Math.pow(neu, 3);
+      const s = 26;
+      const g1 = Math.min(90, w.a * s / 2), g2 = Math.min(120, neu * s / 2);
+      return {
+        bild:`<svg viewBox="0 0 300 140" ${SVG_STIL} role="img" aria-label="Zwei ähnliche Quadrate im Vergleich">
+          <rect x="14" y="${(126 - g1).toFixed(1)}" width="${g1.toFixed(1)}" height="${g1.toFixed(1)}"
+                fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+          <rect x="${(24 + g1).toFixed(1)}" y="${(126 - g2).toFixed(1)}" width="${g2.toFixed(1)}" height="${g2.toFixed(1)}"
+                fill="#3b82f6" fill-opacity=".22" stroke="#3b82f6" stroke-width="2"/>
+          <text x="${(14 + g1 / 2).toFixed(1)}" y="138" text-anchor="middle" font-size="9" fill="currentColor">${z(w.a)}</text>
+          <text x="${(24 + g1 + g2 / 2).toFixed(1)}" y="138" text-anchor="middle" font-size="9" fill="currentColor">${z(neu)}</text>
+        </svg>`,
+        werte:[
+          {name:"Kante", text:z(w.a) + " cm → " + z(neu) + " cm  (· " + z(w.k) + ")"},
+          {name:"Fläche", text:z(Math.round(f1 * 100) / 100) + " → " + z(Math.round(f2 * 100) / 100) + " cm²  (· " + z(Math.round(w.k * w.k * 100) / 100) + ")"},
+          {name:"Volumen", text:z(Math.round(v1 * 100) / 100) + " → " + z(Math.round(v2 * 100) / 100) + " cm³  (· " + z(Math.round(Math.pow(w.k, 3) * 100) / 100) + ")"}
+        ],
+        satz: w.k === 1 ? "Faktor 1: Die Figuren sind deckungsgleich — kongruent."
+          : w.k < 1 ? `Verkleinern: Die Kante wird auf das ${z(w.k)}-fache, die Fläche nur noch auf das ${z(Math.round(w.k * w.k * 100) / 100)}-fache.`
+          : `Die Kante wächst um den Faktor ${z(w.k)}, die Fläche um <b>${z(Math.round(w.k * w.k * 100) / 100)}</b> und das Volumen um <b>${z(Math.round(Math.pow(w.k, 3) * 100) / 100)}</b>. Genau das unterschätzt fast jeder.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Zwei ähnliche Dreiecke mit dem Streckfaktor 2">
+    <path d="M24 130L104 130L104 78Z" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+    <text x="64" y="144" text-anchor="middle" font-size="11" fill="currentColor">4 cm</text>
+    <text x="112" y="108" font-size="11" fill="currentColor">3 cm</text>
+    <path d="M180 130L340 130L340 26Z" fill="#3b82f6" fill-opacity=".22" stroke="#3b82f6" stroke-width="2"/>
+    <text x="260" y="144" text-anchor="middle" font-size="11" fill="currentColor">8 cm</text>
+    <text x="348" y="82" font-size="11" fill="currentColor">6 cm</text>
+    <text x="200" y="18" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">k = 2 · Winkel gleich · Fläche 4-fach</text>
+  </svg>`
+},
+
+"Vierecke und Vielecke": {
+  worum:"Vierecke unterscheiden sich an Seiten und Winkeln. Bei Vielecken lässt sich die Winkelsumme immer aus der Eckenzahl bestimmen.",
+  wozu:[
+    "Blechzuschnitte, Rahmen und Grundrisse sind Vielecke. Wer weiß, wie sich die Winkelsumme berechnet, kann eine Zeichnung auf Stimmigkeit prüfen, bevor gesägt wird.",
+    "Beim Verlegen und Zuschneiden hilft die Kenntnis der Vierecksarten: Ein Parallelogramm lässt sich anders zerlegen als ein Trapez."
+  ],
+  rezept:[
+    "Zähl die Ecken des Vielecks.",
+    "Zieh 2 ab — so viele Dreiecke entstehen beim Zerlegen von einer Ecke aus.",
+    "Nimm das Ergebnis mal 180° — das ist die Innenwinkelsumme.",
+    "Beim regelmäßigen Vieleck: Summe durch Eckenzahl ergibt einen einzelnen Innenwinkel.",
+    "Für die Art eines Vierecks zuerst auf parallele Seiten schauen, dann auf gleiche Längen, zuletzt auf rechte Winkel.",
+    "Prüf gegen die Übersicht: Jedes Quadrat ist auch Raute, Rechteck, Parallelogramm und Trapez."
+  ],
+  fehler:[
+    ["Mit der Eckenzahl statt der Dreieckszahl gerechnet", "Ein Fünfeck hat 5 Ecken, aber nur 3 Dreiecke. Die Winkelsumme ist 540°, nicht 900°."],
+    ["Innen- und Außenwinkel verwechselt", "Die Außenwinkelsumme ist bei jedem Vieleck 360° — egal wie viele Ecken es hat. Nur die Innenwinkelsumme wächst."],
+    ["Quadrat und Raute verwechselt", "Beide haben vier gleich lange Seiten. Nur das Quadrat hat zusätzlich rechte Winkel."],
+    ["Trapez zu eng gefasst", "Ein Trapez braucht nur ein Paar paralleler Seiten. Ein Parallelogramm ist deshalb auch ein Trapez."]
+  ],
+  einfach:[
+    "Ein Viereck hat vier Ecken und vier Seiten. Seine Innenwinkel ergeben zusammen immer 360°.",
+    "Die Vierecke unterscheiden sich daran, welche Seiten parallel und gleich lang sind und ob es rechte Winkel gibt.",
+    "Ein Trapez hat mindestens ein Paar paralleler Seiten.",
+    "Ein Parallelogramm hat zwei Paare paralleler Seiten, die auch gleich lang sind.",
+    "Eine Raute ist ein Parallelogramm mit vier gleich langen Seiten.",
+    "Ein Rechteck ist ein Parallelogramm mit vier rechten Winkeln.",
+    "Ein Quadrat ist beides zugleich: vier gleich lange Seiten und vier rechte Winkel.",
+    "Bei Vielecken mit mehr Ecken lässt sich die Winkelsumme ausrechnen: (Eckenzahl − 2) mal 180°.",
+    "Beim Fünfeck sind das (5 − 2) · 180° = 540°, beim Sechseck 720°.",
+    "Ist das Vieleck regelmäßig, teilst du die Summe durch die Eckenzahl — beim Sechseck 720 : 6 = 120° je Winkel."
+  ],
+  begriffe:[
+    ["Innenwinkelsumme","Alle Innenwinkel zusammen: (n − 2) · 180°."],
+    ["Außenwinkelsumme","Immer 360°, bei jedem Vieleck."],
+    ["Regelmäßiges Vieleck","Alle Seiten gleich lang, alle Winkel gleich groß."],
+    ["Diagonale","Verbindung zweier nicht benachbarter Ecken."],
+    ["Parallelogramm","Zwei Paare paralleler, gleich langer Seiten."],
+    ["Trapez","Mindestens ein Paar paralleler Seiten."]
+  ],
+  tabelle:{
+    titel:"Vierecke im Überblick",
+    kopf:["Viereck","Seiten","Winkel","Diagonalen"],
+    zeilen:[
+      ["Quadrat","alle vier gleich","vier rechte","gleich lang, senkrecht"],
+      ["Rechteck","gegenüber gleich","vier rechte","gleich lang"],
+      ["Raute","alle vier gleich","gegenüber gleich","senkrecht"],
+      ["Parallelogramm","gegenüber gleich","gegenüber gleich","halbieren sich"],
+      ["Trapez","ein Paar parallel","—","—"],
+      ["Drachen","zwei Paare benachbart gleich","ein Paar gleich","senkrecht"]
+    ],
+    fuss:"Von oben nach unten werden die Bedingungen schwächer. Jede Zeile erfüllt auch alles, was darunter steht."
+  },
+  regeln:[
+    "Innenwinkelsumme = (n − 2) · 180°.",
+    "Beim Viereck sind das 360°.",
+    "Außenwinkelsumme ist immer 360°.",
+    "Regelmäßiges Vieleck: ein Innenwinkel = Summe : n.",
+    "Quadrat = Raute + Rechteck.",
+    "Jedes Parallelogramm ist auch ein Trapez."
+  ],
+  beispiel:{aufgabe:"Wie groß ist ein einzelner Innenwinkel im regelmäßigen Achteck?",
+    schritte:["Winkelsumme: (8 − 2) · 180° = 1080°","Je Winkel: 1080 : 8"],
+    ergebnis:"135°"},
+  spiel:{
+    titel:"Ecken zählen, Winkel berechnen",
+    hinweis:"Zieh die Eckenzahl und sieh, wie Winkelsumme und Einzelwinkel mitwachsen.",
+    regler:[
+      {id:"n", name:"Ecken", von:3, bis:14, schritt:1, start:6}
+    ],
+    ausgabe:(w) => {
+      const summe = (w.n - 2) * 180;
+      const einzel = Math.round(summe / w.n * 100) / 100;
+      const r = 44, cx = 68, cy = 62;
+      const punkte = Array.from({length: w.n}, (_, i) => {
+        const a = -Math.PI / 2 + i * 2 * Math.PI / w.n;
+        return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
+      }).join(" ");
+      return {
+        bild:`<svg viewBox="0 0 300 124" ${SVG_STIL} role="img" aria-label="Regelmäßiges Vieleck mit ${w.n} Ecken">
+          <polygon points="${punkte}" fill="#10a37f" fill-opacity=".25" stroke="#10a37f" stroke-width="2"/>
+          <text x="150" y="46" font-size="12" fill="currentColor">${z(w.n)} Ecken</text>
+          <text x="150" y="68" font-size="12" fill="currentColor">${z(w.n - 2)} Dreiecke</text>
+          <text x="150" y="90" font-size="12" font-weight="700" fill="currentColor">Summe ${z(summe)}°</text>
+        </svg>`,
+        werte:[
+          {name:"Dreiecke beim Zerlegen", text:z(w.n - 2)},
+          {name:"Innenwinkelsumme", text:z(summe) + "°"},
+          {name:"Ein Winkel (regelmäßig)", text:z(einzel) + "°"},
+          {name:"Außenwinkelsumme", text:"360° — immer"}
+        ],
+        satz: w.n === 3 ? "Beim Dreieck bleibt genau ein Dreieck übrig: 180°."
+          : w.n === 4 ? "Beim Viereck sind es zwei Dreiecke — deshalb 360°."
+          : `Jede weitere Ecke bringt <b>180° dazu</b>. Der einzelne Winkel nähert sich dabei immer mehr den 180° an — deshalb sieht ein Vieleck mit vielen Ecken fast rund aus.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Fünfeck von einer Ecke aus in drei Dreiecke zerlegt">
+    <polygon points="200,20 320,88 274,150 126,150 80,88" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="2"/>
+    <path d="M200 20L274 150" stroke="#b3382f" stroke-width="1.6" stroke-dasharray="5 3"/>
+    <path d="M200 20L126 150" stroke="#b3382f" stroke-width="1.6" stroke-dasharray="5 3"/>
+    <text x="238" y="96" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">1</text>
+    <text x="200" y="118" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">2</text>
+    <text x="150" y="96" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3</text>
+    <text x="200" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">5 Ecken → 3 Dreiecke → 3 · 180° = 540°</text>
+  </svg>`
+},
+
+"Zinseszins": {
+  worum:"Beim Zinseszins bringen die Zinsen selbst wieder Zinsen. Deshalb wächst das Guthaben nicht geradlinig, sondern immer schneller.",
+  wozu:[
+    "Jedes Sparkonto, jeder Kredit und jede Altersvorsorge rechnet so. Wer den Unterschied zwischen einfachen Zinsen und Zinseszins nicht kennt, unterschätzt beides — den Gewinn beim Sparen und die Kosten beim Leihen.",
+    "Auch Preissteigerungen wirken so: 3 % Inflation im Jahr klingen wenig, halbieren die Kaufkraft aber in gut zwanzig Jahren."
+  ],
+  rezept:[
+    "Rechne den Zinssatz in einen Faktor um: (100 + p) : 100.",
+    "Zähl die Jahre — sie werden zur Hochzahl.",
+    "Kapital mal Faktor hoch Jahreszahl ergibt das Endkapital.",
+    "Für die reinen Zinsen das Startkapital abziehen.",
+    "Für die Frage nach der Dauer: Faktor so oft anwenden, bis der Zielwert erreicht ist.",
+    "Zur Kontrolle die 70er-Regel: 70 durch den Zinssatz ergibt ungefähr die Verdopplungszeit."
+  ],
+  fehler:[
+    ["Zinsen einfach mal die Jahre gerechnet", "Bei 5 % und 10 Jahren sind es nicht 50 %, sondern rund 63 %. Der Unterschied kommt von den Zinsen auf die Zinsen."],
+    ["Den Zinssatz statt des Faktors potenziert", "Gerechnet wird mit 1,05 hoch n, nicht mit 0,05 hoch n oder 5 hoch n."],
+    ["Bei mehreren Änderungen addiert", "Plus 10 % und noch einmal plus 10 % ergibt 21 %, nicht 20 %. Faktoren werden multipliziert."],
+    ["Auf- und Abschlag für umkehrbar gehalten", "Minus 20 % und dann plus 20 % führt nicht zurück: 100 · 0,8 · 1,2 = 96."]
+  ],
+  einfach:[
+    "Bei einfachen Zinsen bekommst du jedes Jahr denselben Betrag, weil immer vom Startkapital gerechnet wird.",
+    "Beim Zinseszins bleiben die Zinsen auf dem Konto und werden im nächsten Jahr mitverzinst.",
+    "Deshalb wird der Zuwachs jedes Jahr etwas größer.",
+    "Gerechnet wird mit einem Faktor: Bei 3 % ist das 1,03.",
+    "Für jedes Jahr wird einmal mit diesem Faktor malgenommen.",
+    "Nach n Jahren also: Kapital · Faktor hoch n.",
+    "Beispiel: 1000 € bei 3 % für 10 Jahre sind 1000 · 1,03¹⁰ = 1343,92 €.",
+    "Mit einfachen Zinsen wären es nur 1300 € gewesen — die Differenz sind die Zinsen auf die Zinsen.",
+    "Je länger die Laufzeit, desto größer wird dieser Unterschied.",
+    "Faustregel für die Verdopplung: 70 geteilt durch den Zinssatz ergibt ungefähr die Anzahl der Jahre."
+  ],
+  begriffe:[
+    ["Kapital","Der Betrag, der verzinst wird."],
+    ["Zinssatz","Der jährliche Prozentsatz."],
+    ["Zinsfaktor","(100 + p) : 100 — die Zahl, mit der malgenommen wird."],
+    ["Laufzeit","Die Anzahl der Jahre, also die Hochzahl."],
+    ["Einfache Zinsen","Immer vom Startkapital gerechnet, ohne Zinseszins."],
+    ["70er-Regel","70 : Zinssatz ≈ Verdopplungszeit in Jahren."]
+  ],
+  tabelle:{
+    titel:"1000 € über die Jahre",
+    kopf:["Jahre","bei 2 %","bei 4 %","bei 6 %"],
+    zeilen:[
+      ["1","1020,00 €","1040,00 €","1060,00 €"],
+      ["5","1104,08 €","1216,65 €","1338,23 €"],
+      ["10","1218,99 €","1480,24 €","1790,85 €"],
+      ["20","1485,95 €","2191,12 €","3207,14 €"],
+      ["30","1811,36 €","3243,40 €","5743,49 €"],
+      ["Verdopplung nach","35 Jahren","18 Jahren","12 Jahren"]
+    ],
+    fuss:"Der Unterschied zwischen 2 % und 6 % sieht im ersten Jahr klein aus. Nach 30 Jahren ist es mehr als das Dreifache."
+  },
+  regeln:[
+    "Endkapital = Kapital · Faktor hoch Jahre.",
+    "Faktor = (100 + p) : 100.",
+    "Zinsen = Endkapital − Startkapital.",
+    "Faktoren werden multipliziert, nicht addiert.",
+    "70er-Regel: 70 : p ≈ Verdopplungszeit.",
+    "Auf- und Abschlag gleichen sich nicht aus."
+  ],
+  beispiel:{aufgabe:"2000 € zu 4 % für 5 Jahre, Zinsen bleiben stehen.",
+    schritte:["Faktor: 1,04","Hochzahl: 5","2000 · 1,04⁵ = 2000 · 1,216653"],
+    ergebnis:"2433,31 €"},
+  spiel:{
+    titel:"Mit und ohne Zinseszins",
+    hinweis:"Zieh Zinssatz und Laufzeit und vergleiche die beiden Kurven.",
+    regler:[
+      {id:"k", name:"Startkapital", einheit:"€", von:100, bis:10000, schritt:100, start:1000},
+      {id:"p", name:"Zinssatz", einheit:"%", von:0.5, bis:10, schritt:0.5, start:4},
+      {id:"n", name:"Jahre", von:1, bis:40, schritt:1, start:20}
+    ],
+    ausgabe:(w) => {
+      const f = 1 + w.p / 100;
+      const mit = w.k * Math.pow(f, w.n);
+      const ohne = w.k + w.k * w.p / 100 * w.n;
+      const hoch = Math.max(mit, ohne);
+      const pkt = (fn) => Array.from({length: w.n + 1}, (_, i) =>
+        `${(24 + i / w.n * 330).toFixed(1)},${(96 - (fn(i) - w.k) / Math.max(1, hoch - w.k) * 74).toFixed(1)}`).join(" ");
+      const verdopp = Math.ceil(Math.log(2) / Math.log(f));
+      return {
+        bild:`<svg viewBox="0 0 380 116" ${SVG_STIL} role="img" aria-label="Zinseszins gegen einfache Zinsen">
+          <line x1="24" y1="98" x2="366" y2="98" stroke="currentColor" stroke-width="1.2"/>
+          <polyline points="${pkt(i => w.k + w.k * w.p / 100 * i)}" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 3"/>
+          <polyline points="${pkt(i => w.k * Math.pow(f, i))}" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+          <text x="24" y="112" font-size="9" fill="currentColor">0</text>
+          <text x="366" y="112" text-anchor="end" font-size="9" fill="currentColor">${z(w.n)} Jahre</text>
+        </svg>`,
+        werte:[
+          {name:"Mit Zinseszins", text:eur(Math.round(mit * 100) / 100)},
+          {name:"Ohne Zinseszins", text:eur(Math.round(ohne * 100) / 100)},
+          {name:"Unterschied", text:eur(Math.round((mit - ohne) * 100) / 100)},
+          {name:"Verdoppelt nach", text:z(verdopp) + " Jahren  (70er-Regel: " + z(Math.round(70 / w.p * 10) / 10) + ")"}
+        ],
+        satz: w.n <= 3
+          ? "In den ersten Jahren liegen beide Kurven fast übereinander — der Zinseszins braucht Zeit."
+          : `Nach ${z(w.n)} Jahren macht der Zinseszins <b>${eur(Math.round((mit - ohne) * 100) / 100)}</b> aus. Die gestrichelte Linie zeigt, wie es ohne ihn liefe.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Guthaben mit Zinseszins wächst schneller als mit einfachen Zinsen">
+    <line x1="30" y1="140" x2="376" y2="140" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="30" y1="16" x2="30" y2="140" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M30 130L370 74" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6 4"/>
+    <path d="M30 130C140 124 250 104 370 26" fill="none" stroke="#10a37f" stroke-width="3"/>
+    <text x="300" y="66" font-size="11" fill="currentColor">ohne Zinseszins</text>
+    <text x="240" y="36" font-size="11" font-weight="700" fill="currentColor">mit Zinseszins</text>
+    <text x="200" y="160" text-anchor="middle" font-size="11" fill="currentColor">Der Abstand wächst mit jedem Jahr — das ist der ganze Unterschied.</text>
+  </svg>`
+},
+
+"Sinuskurve": {
+  worum:"Die Sinuskurve beschreibt alles, was gleichmäßig schwingt — vom Wechselstrom bis zum Pendel. Drei Zahlen legen sie fest: Amplitude, Frequenz und Nullphase.",
+  wozu:[
+    "Die Netzspannung ist eine Sinuskurve: 230 V Effektivwert, 50 Hz, also 20 ms für eine volle Schwingung. Wer die Kurve lesen kann, versteht Spitzenwert, Effektivwert und Phasenverschiebung.",
+    "Auch am Oszilloskop steht immer eine Sinuskurve. Frequenz und Amplitude liest man direkt ab — vorausgesetzt, man weiß, was welche Achse anzeigt."
+  ],
+  rezept:[
+    "Lies die Amplitude ab: der größte Ausschlag nach oben.",
+    "Miss die Länge einer vollen Schwingung — das ist die Periodendauer T.",
+    "Die Frequenz ist ihr Kehrwert: f = 1 : T.",
+    "In der Gleichung y = a · sin(b · x) ist a die Amplitude.",
+    "Das b staucht die Kurve: Die Periode wird 360° : b.",
+    "Ein Summand in der Klammer verschiebt die Kurve nach links oder rechts."
+  ],
+  fehler:[
+    ["Amplitude und Periode verwechselt", "Die Amplitude ist die Höhe, die Periode die Länge einer Schwingung. Die Zahl vor dem Sinus ändert nur die Höhe."],
+    ["Frequenz und Periodendauer gleichgesetzt", "Sie sind Kehrwerte. 50 Hz bedeuten 0,02 s, nicht 50 s."],
+    ["Bei der Netzspannung mit 230 V als Spitzenwert gerechnet", "230 V ist der Effektivwert. Der Spitzenwert liegt bei 325 V — das 1,41-fache."],
+    ["Grad und Bogenmaß vermischt", "Der Taschenrechner muss im richtigen Modus stehen. sin(30) ist 0,5 im Gradmaß, aber −0,988 im Bogenmaß."]
+  ],
+  einfach:[
+    "Eine Sinuskurve schwingt gleichmäßig auf und ab, immer im selben Takt.",
+    "Der größte Ausschlag nach oben heißt Amplitude.",
+    "Die Länge einer vollen Schwingung heißt Periodendauer, abgekürzt T.",
+    "Wie oft das pro Sekunde passiert, ist die Frequenz f, gemessen in Hertz.",
+    "Beide hängen zusammen: T = 1 : f. Doppelte Frequenz heißt halbe Dauer.",
+    "Beim deutschen Stromnetz sind es 50 Hz, also T = 1 : 50 = 0,02 s = 20 ms.",
+    "In der Gleichung y = a · sin(b · x) macht das a die Kurve höher oder flacher.",
+    "Das b staucht sie in die Breite: Bei b = 2 passt eine Schwingung in 180° statt in 360°.",
+    "Die Grundkurve y = sin(x) beginnt bei 0, steigt bis 1 bei 90°, ist wieder 0 bei 180° und bei −1 bei 270°.",
+    "Der Kosinus ist dieselbe Kurve, nur um 90° verschoben — er beginnt bei 1."
+  ],
+  begriffe:[
+    ["Amplitude","Der größte Ausschlag, die Zahl vor dem Sinus."],
+    ["Periodendauer T","Die Zeit für eine volle Schwingung."],
+    ["Frequenz f","Schwingungen pro Sekunde, in Hertz. f = 1 : T."],
+    ["Nullphase","Wie weit die Kurve nach links oder rechts verschoben ist."],
+    ["Effektivwert","Der Wert, der dieselbe Wirkung hat wie Gleichspannung — Spitzenwert : 1,41."],
+    ["Scheitelwert","Der Spitzenwert, also die Amplitude."]
+  ],
+  tabelle:{
+    titel:"Frequenz und Periodendauer",
+    kopf:["Frequenz","Periodendauer","Wo das vorkommt"],
+    zeilen:[
+      ["0,5 Hz","2 s","langsames Blinken"],
+      ["1 Hz","1 s","Sekundentakt"],
+      ["50 Hz","20 ms","Stromnetz in Europa"],
+      ["60 Hz","16,7 ms","Stromnetz in den USA"],
+      ["440 Hz","2,27 ms","Kammerton a"],
+      ["1 kHz","1 ms","Prüfton"],
+      ["1 MHz","1 µs","Mittelwelle"]
+    ],
+    fuss:"Die Netzfrequenz von 50 Hz bedeutet: Die Spannung wechselt hundertmal in der Sekunde ihr Vorzeichen."
+  },
+  regeln:[
+    "T = 1 : f und f = 1 : T.",
+    "Amplitude ist die Zahl vor dem Sinus.",
+    "In y = a · sin(b · x) ist die Periode 360° : b.",
+    "Netz: 50 Hz, T = 20 ms.",
+    "Spitzenwert = Effektivwert · 1,41.",
+    "Der Kosinus ist der um 90° verschobene Sinus."
+  ],
+  beispiel:{aufgabe:"Eine Schwingung dauert 4 ms. Wie groß ist die Frequenz?",
+    schritte:["4 ms = 0,004 s","f = 1 : T","f = 1 : 0,004"],
+    ergebnis:"250 Hz"},
+  spiel:{
+    titel:"Kurve einstellen",
+    hinweis:"Zieh Amplitude und Frequenz und schau, was mit Höhe und Breite der Kurve passiert.",
+    regler:[
+      {id:"a", name:"Amplitude", von:0.5, bis:4, schritt:0.25, start:2},
+      {id:"b", name:"Zahl vor dem x", von:0.5, bis:5, schritt:0.5, start:1}
+    ],
+    ausgabe:(w) => {
+      const punkte = [];
+      for (let i = 0; i <= 120; i++){
+        const x = i / 120 * 720;                       /* zwei Grundperioden */
+        const y = w.a * Math.sin(w.b * x * Math.PI / 180);
+        punkte.push(`${(20 + i / 120 * 340).toFixed(1)},${(60 - y * 11).toFixed(1)}`);
+      }
+      const periode = Math.round(360 / w.b * 100) / 100;
+      return {
+        bild:`<svg viewBox="0 0 380 120" ${SVG_STIL} role="img" aria-label="Sinuskurve mit Amplitude ${w.a} und Faktor ${w.b}">
+          <line x1="14" y1="60" x2="366" y2="60" stroke="currentColor" stroke-width="1"/>
+          <line x1="20" y1="12" x2="20" y2="108" stroke="currentColor" stroke-width="1"/>
+          <line x1="14" y1="${(60 - w.a * 11).toFixed(1)}" x2="366" y2="${(60 - w.a * 11).toFixed(1)}" stroke="currentColor" stroke-dasharray="4 3" opacity=".4"/>
+          <text x="366" y="${(56 - w.a * 11).toFixed(1)}" text-anchor="end" font-size="9" fill="currentColor">${z(w.a)}</text>
+          <polyline points="${punkte.join(" ")}" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+          <text x="20" y="118" font-size="9" fill="currentColor">0°</text>
+          <text x="360" y="118" text-anchor="end" font-size="9" fill="currentColor">720°</text>
+        </svg>`,
+        werte:[
+          {name:"Gleichung", text:`y = ${z(w.a)} · sin(${z(w.b)} · x)`},
+          {name:"Amplitude", text:z(w.a)},
+          {name:"Periode", text:z(periode) + "°"},
+          {name:"Im Bild sichtbar", text:z(Math.round(720 / periode * 100) / 100) + " volle Schwingungen"}
+        ],
+        satz: w.b === 1
+          ? "Mit einer 1 vor dem x hat die Kurve ihre Grundperiode von 360°."
+          : w.b > 1 ? `Die ${z(w.b)} vor dem x staucht die Kurve: Eine Schwingung passt jetzt in <b>${z(periode)}°</b> statt in 360°.`
+          : `Eine Zahl unter 1 dehnt die Kurve: Eine Schwingung braucht <b>${z(periode)}°</b> statt 360°.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Sinuskurve mit Amplitude und Periodendauer beschriftet">
+    <line x1="20" y1="90" x2="380" y2="90" stroke="currentColor" stroke-width="1.2"/>
+    <path d="M30 90C60 30 100 30 130 90C160 150 200 150 230 90C260 30 300 30 330 90" fill="none" stroke="#10a37f" stroke-width="3"/>
+    <line x1="30" y1="90" x2="30" y2="42" stroke="#b3382f" stroke-width="1.6" stroke-dasharray="4 3"/>
+    <line x1="30" y1="42" x2="80" y2="42" stroke="#b3382f" stroke-width="1.6" stroke-dasharray="4 3"/>
+    <text x="86" y="46" font-size="11" fill="currentColor">Amplitude</text>
+    <line x1="30" y1="120" x2="230" y2="120" stroke="#3b82f6" stroke-width="1.6"/>
+    <path d="M36 116l-6 4 6 4" fill="#3b82f6"/><path d="M224 116l6 4-6 4" fill="#3b82f6"/>
+    <text x="130" y="136" text-anchor="middle" font-size="11" fill="currentColor">eine volle Schwingung = Periodendauer T</text>
+    <text x="200" y="162" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">f = 1 : T · beim Netz: 50 Hz → 20 ms</text>
+  </svg>`
+},
+
+"Kredite und Raten": {
+  worum:"Ein Kredit kostet mehr als er einbringt. Wie viel mehr, zeigt erst der Vergleich von Gesamtsumme und Kreditsumme.",
+  wozu:[
+    "Ratenkäufe und Kredite begegnen dir spätestens beim ersten Auto. Wer nur auf die Monatsrate schaut, übersieht, was der Kredit insgesamt kostet — und genau darauf zielt jede Werbung.",
+    "Auch im Betrieb wird finanziert: Leasing, Ratenzahlung für Werkzeug, Kredit für eine Maschine. Der Vergleich lohnt sich, und er ist einfacher als er aussieht."
+  ],
+  rezept:[
+    "Rechne die Gesamtsumme aus: Anzahl der Raten mal Ratenhöhe.",
+    "Zieh die Kreditsumme ab — das sind die Kosten.",
+    "Teile die Kosten durch die Kreditsumme und nimm mal 100: der Aufschlag in Prozent.",
+    "Für einen fairen Vergleich immer denselben Zeitraum betrachten.",
+    "Schau, ob Gebühren oder eine Restschuldversicherung dazukommen.",
+    "Vergleiche Angebote nur über den effektiven Jahreszins, nie über die Monatsrate."
+  ],
+  fehler:[
+    ["Nur auf die Rate geschaut", "Eine niedrige Rate bei langer Laufzeit kostet oft mehr als eine hohe bei kurzer. Die Werbung zeigt deshalb fast immer nur die Rate."],
+    ["Kosten auf die Gesamtsumme bezogen", "Der Prozentsatz gehört auf die Kreditsumme gerechnet, nicht auf das, was man am Ende zahlt."],
+    ["Null-Prozent-Finanzierung für kostenlos gehalten", "Oft ist der Barzahlungsrabatt größer als die eingesparten Zinsen. Dann ist der Kredit doch nicht umsonst."],
+    ["Nebenkosten übersehen", "Bearbeitungsgebühr, Kontoführung und Restschuldversicherung stehen selten in der Werbung, aber immer im Vertrag."]
+  ],
+  einfach:[
+    "Bei einem Kredit leihst du dir Geld und zahlst es in Raten zurück.",
+    "Zurück zahlst du mehr, als du bekommen hast — die Differenz sind die Kosten.",
+    "Die Gesamtsumme rechnest du so aus: Anzahl der Raten mal Höhe einer Rate.",
+    "Beispiel: 36 Raten zu je 120 € sind 4320 €.",
+    "Waren es 3600 € Kredit, hast du 720 € draufgezahlt.",
+    "In Prozent: 720 : 3600 · 100 = 20 %.",
+    "Wichtig: Der Prozentsatz wird auf die Kreditsumme gerechnet, nicht auf die Gesamtsumme.",
+    "Für den Vergleich verschiedener Angebote gibt es den effektiven Jahreszins. Er enthält auch die Gebühren.",
+    "Vorsicht bei langen Laufzeiten: Die Rate wird kleiner, die Gesamtkosten aber größer.",
+    "Und bei „0 % Finanzierung“: Frag nach dem Rabatt bei Barzahlung. Oft ist er größer als die gesparten Zinsen."
+  ],
+  begriffe:[
+    ["Kreditsumme","Der Betrag, den du bekommst."],
+    ["Rate","Was du monatlich zahlst."],
+    ["Laufzeit","Über wie viele Monate gezahlt wird."],
+    ["Gesamtsumme","Alle Raten zusammen."],
+    ["Effektiver Jahreszins","Die Vergleichszahl — enthält Zinsen und Gebühren."],
+    ["Restschuld","Was nach den bisherigen Raten noch offen ist."]
+  ],
+  tabelle:{
+    titel:"3000 € Kredit — was die Laufzeit ausmacht",
+    kopf:["Laufzeit","Rate","Gesamt","Kosten"],
+    zeilen:[
+      ["12 Monate","262,50 €","3150,00 €","150,00 €"],
+      ["24 Monate","135,00 €","3240,00 €","240,00 €"],
+      ["36 Monate","92,50 €","3330,00 €","330,00 €"],
+      ["48 Monate","71,25 €","3420,00 €","420,00 €"],
+      ["60 Monate","58,50 €","3510,00 €","510,00 €"]
+    ],
+    fuss:"Beispielwerte bei rund 5 % effektivem Jahreszins. Die Rate sinkt auf ein Viertel, die Kosten verdreifachen sich."
+  },
+  regeln:[
+    "Gesamtsumme = Anzahl der Raten · Ratenhöhe.",
+    "Kosten = Gesamtsumme − Kreditsumme.",
+    "Aufschlag in Prozent = Kosten : Kreditsumme · 100.",
+    "Längere Laufzeit heißt kleinere Rate, aber höhere Kosten.",
+    "Vergleichen nur über den effektiven Jahreszins.",
+    "Bei 0 % nach dem Barzahlungsrabatt fragen."
+  ],
+  beispiel:{aufgabe:"2400 € Kredit, 24 Raten zu 115 €. Wie hoch ist der Aufschlag in Prozent?",
+    schritte:["Gesamt: 24 · 115 = 2760 €","Kosten: 2760 − 2400 = 360 €","360 : 2400 · 100"],
+    ergebnis:"15 %"},
+  spiel:{
+    titel:"Rate gegen Gesamtkosten",
+    hinweis:"Zieh die Laufzeit länger und sieh, wie die Rate sinkt — und was das insgesamt kostet.",
+    regler:[
+      {id:"s", name:"Kreditsumme", einheit:"€", von:500, bis:20000, schritt:500, start:3000},
+      {id:"p", name:"Effektivzins", einheit:"%", von:0, bis:15, schritt:0.5, start:5},
+      {id:"m", name:"Laufzeit", einheit:"Monate", von:6, bis:84, schritt:6, start:36}
+    ],
+    ausgabe:(w) => {
+      /* Vereinfachte Rechnung mit dem Zins auf die mittlere Restschuld —
+         so wird bei Ratenkrediten überschlägig gerechnet. */
+      const jahre = w.m / 12;
+      const kosten = Math.round(w.s * (w.p / 100) * jahre / 2 * 2 * 100) / 100;
+      const gesamt = w.s + kosten;
+      const rate = Math.round(gesamt / w.m * 100) / 100;
+      const aufschlag = Math.round(kosten / w.s * 10000) / 100;
+      return {
+        werte:[
+          {name:"Monatsrate", text:eur(rate)},
+          {name:"Gesamtsumme", text:eur(Math.round(gesamt * 100) / 100)},
+          {name:"Kosten", text:eur(kosten)},
+          {name:"Aufschlag", text:z(aufschlag) + " % der Kreditsumme"}
+        ],
+        satz: w.p === 0
+          ? "Bei 0 % kostet der Kredit nichts — vorausgesetzt, es gibt keine Gebühren und keinen Barzahlungsrabatt, auf den du verzichtest."
+          : `Zieh die Laufzeit länger: Die Rate sinkt, aber die Kosten steigen. Bei ${z(w.m)} Monaten zahlst du <b>${eur(kosten)}</b> obendrauf — die Werbung zeigt davon nur die ${eur(rate)}.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Kreditsumme und Kosten im Vergleich">
+    <text x="20" y="20" font-size="11" fill="currentColor">Du bekommst</text>
+    <rect x="20" y="28" width="250" height="30" rx="5" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="1.8"/>
+    <text x="145" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3000 €</text>
+    <text x="20" y="82" font-size="11" fill="currentColor">Du zahlst zurück — 36 Raten zu 92,50 €</text>
+    <rect x="20" y="90" width="250" height="30" rx="5" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="1.8"/>
+    <rect x="270" y="90" width="28" height="30" rx="5" fill="#b3382f" fill-opacity=".45" stroke="#b3382f" stroke-width="1.8"/>
+    <text x="145" y="110" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">3000 €</text>
+    <text x="308" y="110" font-size="12" font-weight="700" fill="currentColor">+ 330 €</text>
+    <text x="200" y="146" text-anchor="middle" font-size="11" fill="currentColor">Der rote Teil sind die Kosten. Er wächst mit jeder zusätzlichen Rate.</text>
+  </svg>`
+},
+
 
 "Aktiv und Passiv": {
   worum:"Aktiv sagt, wer etwas tut. Passiv sagt, was mit etwas geschieht. Dieselbe Sache, zwei Blickwinkel.",

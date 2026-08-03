@@ -2054,7 +2054,155 @@ const deutschProben2 = {
   }
 };
 
-const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...deutschProben, ...deutschProben2,
+/* --------------------------------------------------------- MATHE V */
+
+const matheProben5 = {
+
+  "Zufall und Häufigkeit": (a) => {
+    const t = vorne(a), l = loes(a);
+
+    /* relative Häufigkeit */
+    const h = t.match(/([\d.,]+) Würfen fiel ([\d.,]+)-mal/);
+    if (h) {
+      const g = dz(h[1]), tr = dz(h[2]);
+      if (tr > g) return `${tr} Treffer bei ${g} Würfen sind unmöglich`;
+      return stimmt(Math.round(tr / g * 10000) / 100, l, 1e-6);
+    }
+
+    /* Laplace: die Anzahl der günstigen Fälle unabhängig nachschlagen */
+    const LAPLACE = {
+      "eine gerade Zahl": [3, 6], "eine Zahl größer als 4": [2, 6], "eine Primzahl": [3, 6],
+      "eine rote Karte": [16, 32], "ein Ass": [4, 32], "eine blaue Kugel": [3, 10]
+    };
+    const name = Object.keys(LAPLACE).find(k => t.includes(k));
+    if (!name) return "konnte das Ereignis nicht einordnen: " + t.slice(0, 90);
+    const [guenstig, alle] = LAPLACE[name];
+    const soll = Math.round(guenstig / alle * 10000) / 100;
+    if (!(soll > 0 && soll < 100)) return `${soll} % ist keine sinnvolle Wahrscheinlichkeit`;
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Ähnlichkeit": (a) => {
+    const t = vorne(a) + " " + hinten(a), l = loes(a);
+
+    /* fehlende Seite */
+    const s = t.match(/Seiten ([\d.,]+) cm und ([\d.,]+) cm.*?erste Seite ([\d.,]+) cm/);
+    if (s) {
+      const a1 = dz(s[1]), b1 = dz(s[2]), a2 = dz(s[3]);
+      if (!(a1 > 0)) return "die erste Seite muss größer als null sein";
+      const k = a2 / a1;
+      if (k <= 1) return `der Streckfaktor ${Math.round(k * 100) / 100} vergrößert nicht`;
+      return stimmt(Math.round(b1 * k * 100) / 100, l, 1e-6);
+    }
+
+    /* Fläche bei Vergrößerung — der Faktor muss quadratisch eingehen */
+    const f = t.match(/Faktor ([\d.,]+) vergrößert.*?betrug ([\d.,]+) cm²/);
+    if (!f) return "konnte die Aufgabe nicht einordnen: " + t.slice(0, 90);
+    const k = dz(f[1]), f1 = dz(f[2]);
+    const soll = f1 * k * k;
+    /* Gegenprobe: linear gerechnet käme etwas anderes heraus */
+    if (Math.abs(f1 * k - soll) < 1e-9) return "bei diesem Faktor ist linear und quadratisch dasselbe — dann übt die Aufgabe nichts";
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Vierecke und Vielecke": (a) => {
+    const t = vorne(a), l = roh(a.loesung).trim();
+
+    /* Innenwinkelsumme */
+    const n = dz((t.match(/([\d.,]+) Ecken/) || [])[1]);
+    if (isFinite(n)) {
+      if (n < 3) return `ein Vieleck mit ${n} Ecken gibt es nicht`;
+      const soll = (n - 2) * 180;
+      /* Gegenprobe an einem bekannten Fall */
+      if (n === 4 && soll !== 360) return "beim Viereck müssten 360° herauskommen";
+      return stimmt(soll, loes(a));
+    }
+
+    /* Vierecksart aus den Eigenschaften — gegen eine eigene Tabelle */
+    const ARTEN = {
+      "vier gleich lange Seiten und vier rechte Winkel": "Quadrat",
+      "vier rechte Winkel, gegenüberliegende Seiten gleich lang": "Rechteck",
+      "vier gleich lange Seiten, aber keine rechten Winkel": "Raute",
+      "gegenüberliegende Seiten parallel und gleich lang, keine rechten Winkel": "Parallelogramm",
+      "genau ein Paar paralleler Seiten": "Trapez",
+      "zwei Paare benachbarter gleich langer Seiten, Diagonalen stehen senkrecht": "Drachen"
+    };
+    const eig = Object.keys(ARTEN).find(k => t.includes(k));
+    if (!eig) return "konnte die Eigenschaften nicht einordnen: " + t.slice(0, 90);
+    return l === ARTEN[eig] ? null
+      : `zu „${eig}“ gehört das ${ARTEN[eig]}, angegeben ist „${l}“`;
+  },
+
+  "Zinseszins": (a) => {
+    const t = vorne(a);
+
+    /* Endkapital */
+    const k = t.match(/([\d.,]+) € werden mit ([\d.,]+) % verzinst, ([\d.,]+) Jahre/);
+    if (k) {
+      const kap = dz(k[1]), p = dz(k[2]), n = dz(k[3]);
+      const soll = Math.round(kap * Math.pow(1 + p / 100, n) * 100) / 100;
+      const ohne = kap + kap * p / 100 * n;
+      /* Zinseszins muss mehr ergeben als einfache Zinsen — sonst wurde falsch gerechnet */
+      if (!(soll > ohne)) return `mit Zinseszins (${soll}) müsste mehr herauskommen als ohne (${Math.round(ohne * 100) / 100})`;
+      return stimmt(soll, geldLoes(a), 0.02);
+    }
+
+    /* Verdopplungszeit */
+    const v = t.match(/mit ([\d.,]+) % verzinst/);
+    if (!v) return "konnte die Aufgabe nicht einordnen: " + t.slice(0, 90);
+    const p = dz(v[1]);
+    const soll = Math.ceil(Math.log(2) / Math.log(1 + p / 100));
+    /* unabhängige Gegenprobe: ein Jahr weniger darf noch nicht reichen */
+    if (Math.pow(1 + p / 100, soll) < 2) return `nach ${soll} Jahren ist noch nicht verdoppelt`;
+    if (Math.pow(1 + p / 100, soll - 1) >= 2) return `schon nach ${soll - 1} Jahren wäre verdoppelt`;
+    return stimmt(soll, loes(a));
+  },
+
+  "Sinuskurve": (a) => {
+    const t = vorne(a), l = loes(a);
+
+    /* Periodendauer aus der Frequenz */
+    const f = t.match(/Frequenz ([\d.,]+) Hz/);
+    if (f) {
+      const hz = dz(f[1]);
+      if (!(hz > 0)) return "die Frequenz muss größer als null sein";
+      return stimmt(Math.round(1 / hz * 10000) / 10000, l, 1e-6);
+    }
+
+    /* Periode aus der Gleichung */
+    const g = t.match(/y = ([\d.,]+) · sin\(([\d.,]+) · x\)/);
+    if (!g) return "konnte die Gleichung nicht lesen: " + t.slice(0, 90);
+    const b = dz(g[2]);
+    if (!(b > 0)) return "die Zahl vor dem x muss größer als null sein";
+    const soll = Math.round(360 / b * 100) / 100;
+    /* Gegenprobe: bei b = 1 müssen es genau 360° sein */
+    if (b === 1 && soll !== 360) return "bei einer 1 vor dem x müssten 360° herauskommen";
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Kredite und Raten": (a) => {
+    const t = vorne(a);
+
+    /* Gesamtsumme aus Raten */
+    const r = t.match(/über ([\d.,]+) € wird in ([\d.,]+) Raten zu je ([\d.,]+) €/);
+    if (r) {
+      const summe = dz(r[1]), anzahl = dz(r[2]), rate = dz(r[3]);
+      const soll = Math.round(anzahl * rate * 100) / 100;
+      /* zurückgezahlt wird immer mehr als geliehen */
+      if (!(soll > summe)) return `${soll} € Rückzahlung bei ${summe} € Kredit — das wäre ein Geschenk`;
+      return stimmt(soll, geldLoes(a), 0.02);
+    }
+
+    /* Aufschlag in Prozent */
+    const k = t.match(/über ([\d.,]+) € kostet insgesamt ([\d.,]+) €/);
+    if (!k) return "konnte die Aufgabe nicht einordnen: " + t.slice(0, 90);
+    const summe = dz(k[1]), gesamt = dz(k[2]);
+    if (!(gesamt > summe)) return "die Gesamtsumme muss über der Kreditsumme liegen";
+    return stimmt(Math.round((gesamt - summe) / summe * 10000) / 100, loes(a), 1e-6);
+  }
+};
+
+const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2,
                  ...elektroProben, ...elektroProben2, ...elektroProben3, ...elektroProben4 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
