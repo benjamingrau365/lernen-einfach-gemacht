@@ -1217,10 +1217,14 @@ const KATALOG = {
     name:"Elektroniker", bereich:"Ausbildung", stufen:[1,2,3,4], stufenwort:"Lehrjahr",
     langname:"Elektroniker für Betriebstechnik",
     themen:{
-      1:["Ohmsches Gesetz","Elektrische Leistung und Arbeit","Reihenschaltung","Parallelschaltung","Einheiten und Vorsätze"],
-      2:["Spannungsteiler","Frequenz und Periodendauer","Leiterquerschnitt","Schutzmaßnahmen","Gemischte Schaltungen"],
-      3:["Stern und Dreieck","Transformator","Wirkungsgrad","Motor und Drehzahl","Messen im Betrieb"],
-      4:["Kondensator laden","Blindleistung und cos φ","Energiekosten","Logikverknüpfungen","Fehler suchen"]
+      1:["Ohmsches Gesetz","Elektrische Leistung und Arbeit","Reihenschaltung","Parallelschaltung","Einheiten und Vorsätze",
+         "Widerstände und Farbcode","Sicherheitsregeln","Ladung und Strom"],
+      2:["Spannungsteiler","Frequenz und Periodendauer","Leiterquerschnitt","Schutzmaßnahmen","Gemischte Schaltungen",
+         "Spule und Induktivität","Kondensator im Wechselstrom","Diode und Gleichrichter"],
+      3:["Stern und Dreieck","Transformator","Wirkungsgrad","Motor und Drehzahl","Messen im Betrieb",
+         "Netzformen","Frequenzumrichter","Beleuchtung berechnen"],
+      4:["Kondensator laden","Blindleistung und cos φ","Energiekosten","Logikverknüpfungen","Fehler suchen",
+         "Instandhaltung und Verfügbarkeit","Angebot kalkulieren","Anlage prüfen und protokollieren"]
     }
   }
 };
@@ -6344,6 +6348,717 @@ const AUFGABEN = {
                 F(`${z(sortiert[n - 1] + sortiert[0])}`, "Hier wird abgezogen, nicht addiert."),
                 F(`${z(summe)}`, "Das ist die Summe aller Werte.")]}]};
  }
+],
+
+"Widerstände und Farbcode":[
+
+ /* Farbringe ablesen */
+ () => {
+   const FARBEN = [{n:"schwarz", z:0}, {n:"braun", z:1}, {n:"rot", z:2}, {n:"orange", z:3}, {n:"gelb", z:4},
+                   {n:"grün", z:5}, {n:"blau", z:6}, {n:"violett", z:7}, {n:"grau", z:8}, {n:"weiß", z:9}];
+   const r1 = pick(FARBEN.slice(1)), r2 = pick(FARBEN);
+   /* ohne schwarz: bei null Nullen wäre der Wert gleich den beiden Ziffern */
+   const mult = pick([{n:"braun", e:1}, {n:"rot", e:2}, {n:"orange", e:3}, {n:"gelb", e:4}]);
+   const ziffern = r1.z * 10 + r2.z;
+   const wert = ziffern * Math.pow(10, mult.e);
+   return {
+    typ:"text",
+    text:`Ein Widerstand trägt die Ringe <b>${r1.n} – ${r2.n} – ${mult.n} – gold</b>.<br>Welchen Wert hat er in Ohm?`,
+    loesung: z(wert),
+    schluss:"Die ersten beiden Ringe sind die Ziffern, der dritte hängt die Nullen an, der vierte sagt die Toleranz.",
+    schritte:[
+     {frage:"Wofür stehen die <b>ersten beiden</b> Ringe?",
+      tipp:"Sie ergeben zusammen eine zweistellige Zahl.",
+      tipp2:`${r1.n} ist die ${z(r1.z)}, ${r2.n} ist die ${z(r2.z)}. Zusammen ergibt das ${z(ziffern)}.`,
+      optionen:[R("Für die beiden Ziffern des Werts", "Richtig — sie werden einfach nebeneinandergeschrieben."),
+                F("Für die Toleranz", "Die steht ganz am Ende, meist in Gold oder Silber."),
+                F("Für die Belastbarkeit", "Die Belastbarkeit steht nicht im Farbcode, sie hängt von der Bauform ab.")]},
+     {frage:`Was macht der <b>dritte Ring</b> (${mult.n})?`,
+      tipp:"Er sagt, wie viele Nullen angehängt werden.",
+      tipp2:`${mult.n} steht für ${z(mult.e)}, also ${mult.e === 0 ? "keine Null" : z(mult.e) + " Null" + (mult.e > 1 ? "en" : "")} anhängen.`,
+      optionen:[R(`${z(mult.e)} Null${mult.e === 1 ? "" : "en"} anhängen`, "Richtig — der dritte Ring ist der Multiplikator."),
+                F(`Der Wert wird durch ${z(Math.pow(10, mult.e + 1))} geteilt`, "Geteilt wird nur bei Gold oder Silber an dieser Stelle."),
+                F("Er gibt die Toleranz an", "Die Toleranz ist der letzte Ring — hier gold, also ±5 %.")]},
+     {frage:`Welchen <b>Wert</b> hat der Widerstand?`,
+      tippAntwort: z(wert),
+      tipp:`Schreib die beiden Ziffern hin und häng die Nullen an.`,
+      tipp2:`${z(ziffern)} mit ${z(mult.e)} Null${mult.e === 1 ? "" : "en"} dahinter.`,
+      optionen:[R(`${z(wert)} Ω`, "Richtig."),
+                F(`${z(ziffern)} Ω`, "Der Multiplikator fehlt noch."),
+                F(`${z(ziffern * Math.pow(10, mult.e + 1))} Ω`, "Eine Null zu viel.")]}]};
+ },
+
+ /* Vom Wert zum Multiplikator */
+ () => {
+   const paare = [{w:470, z:47, m:"braun", e:1}, {w:4700, z:47, m:"rot", e:2}, {w:47000, z:47, m:"orange", e:3},
+                  {w:220, z:22, m:"braun", e:1}, {w:2200, z:22, m:"rot", e:2}, {w:100, z:10, m:"braun", e:1},
+                  {w:1000, z:10, m:"rot", e:2}, {w:33000, z:33, m:"orange", e:3}, {w:560, z:56, m:"braun", e:1}];
+   const p = pick(paare);
+   const falsch = zieheVerschiedene(["schwarz", "braun", "rot", "orange", "gelb"].filter(x => x !== p.m), 2);
+   return {
+    typ:"text",
+    text:`Du brauchst einen Widerstand mit <b>${z(p.w)} Ω</b>. Die ersten beiden Ringe zeigen die Ziffern ${z(p.z)}.<br>Wie viele Nullen muss der dritte Ring anhängen?`,
+    loesung: z(p.e),
+    schluss:"Der Multiplikator ist einfach die Zahl der Nullen hinter den beiden Ziffern.",
+    schritte:[
+     {frage:`Wie sieht ${z(p.w)} als <b>Ziffern plus Nullen</b> aus?`,
+      tipp:"Schreib die zweistellige Zahl hin und zähl, was dahinter noch kommt.",
+      tipp2:`${z(p.z)} und dahinter ${p.e === 0 ? "nichts" : z(p.e) + " Null" + (p.e > 1 ? "en" : "")} ergibt ${z(p.w)}.`,
+      optionen: zieheVerschiedene([
+        R(`${z(p.z)} mit ${z(p.e)} Null${p.e === 1 ? "" : "en"}`, "Richtig."),
+        F(`${z(p.z)} mit ${z(p.e + 1)} Nullen`, `Das wäre ${z(p.w * 10)} Ω — zehnmal zu viel.`),
+        F(`${z(p.z)} mit ${z(Math.max(0, p.e - 1))} Null${p.e - 1 === 1 ? "" : "en"}`, `Das wäre ${z(p.w / 10)} Ω — zehnmal zu wenig.`)], 3)},
+     {frage:"Welche <b>Farbe</b> hat dieser Multiplikator?",
+      tipp:"Die Farben laufen wie bei den Ziffern: schwarz 0, braun 1, rot 2, orange 3, gelb 4.",
+      tipp2:`Gesucht ist die Farbe für ${z(p.e)} — das ist ${p.m}.`,
+      optionen: zieheVerschiedene([
+        R(p.m, "Richtig."),
+        F(falsch[0], "Diese Farbe steht für eine andere Zahl."),
+        F(falsch[1], "Diese Farbe steht für eine andere Zahl.")], 3)},
+     {frage:"Wie viele <b>Nullen</b> hängt der dritte Ring also an?",
+      tippAntwort: z(p.e),
+      tipp:"Es ist genau die Zahl, für die die Farbe steht.",
+      tipp2:`${p.m} steht für ${z(p.e)}.`,
+      optionen:[R(`${z(p.e)}`, "Richtig."),
+                F(`${z(p.e + 2)}`, "Damit wäre der Widerstand hundertmal zu groß."),
+                F(`${z(p.z)}`, "Das sind die Ziffern, nicht die Zahl der Nullen.")]}]};
+ },
+
+ /* Toleranz: obere Grenze */
+ () => {
+   const wert = pick([100, 220, 470, 1000, 2200, 4700]);
+   const tol = pick([{n:"gold", p:5}, {n:"silber", p:10}, {n:"braun", p:1}, {n:"rot", p:2}]);
+   const ab = Math.round(wert * tol.p / 100 * 100) / 100;
+   const oben = Math.round((wert + ab) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Widerstand mit <b>${z(wert)} Ω</b> hat den Toleranzring <b>${tol.n}</b> (±${z(tol.p)} %).<br>Welchen Wert darf er höchstens haben, in Ohm?`,
+    loesung: z(oben),
+    schluss:"Ein gemessener Wert innerhalb der Toleranz ist kein Fehler — das Bauteil ist in Ordnung.",
+    schritte:[
+     {frage:`Wofür steht der Ring <b>${tol.n}</b>?`,
+      tipp:"Der letzte Ring sagt nichts über den Wert, sondern über die Genauigkeit.",
+      tipp2:`${tol.n} bedeutet ±${z(tol.p)} % — der wirkliche Wert darf um so viel abweichen.`,
+      optionen: zieheVerschiedene([
+        R(`Für die Toleranz von ±${z(tol.p)} %`, "Richtig."),
+        F("Für eine weitere Ziffer", "Ziffern stehen nur in den ersten Ringen."),
+        F("Für die Belastbarkeit in Watt", "Die steht nicht im Farbcode.")], 3)},
+     {frage:`Wie viel Ohm sind <b>${z(tol.p)} % von ${z(wert)} Ω</b>?`,
+      tipp:"Grundwert mal Prozentsatz geteilt durch 100.",
+      tipp2:`Rechne ${z(wert)} · ${z(tol.p)} : 100.`,
+      optionen:[R(`${z(ab)} Ω`, "Richtig — so viel darf er nach oben und nach unten abweichen."),
+                F(`${z(Math.round(wert * tol.p * 100) / 100)} Ω`, "Da fehlt die Division durch 100."),
+                F(`${z(Math.round((wert - ab) * 100) / 100)} Ω`, "Das ist schon die untere Grenze, nicht die Abweichung selbst.")]},
+     {frage:`Was ergibt <b>${z(wert)} + ${z(ab)}</b>?`,
+      tippAntwort: z(oben),
+      tipp:"Die obere Grenze ist der Nennwert plus die Abweichung.",
+      tipp2:`Rechne ${z(wert)} + ${z(ab)}.`,
+      optionen:[R(`${z(oben)} Ω`, "Richtig."),
+                F(`${z(Math.round((wert - ab) * 100) / 100)} Ω`, "Das ist die untere Grenze."),
+                F(`${z(ab)} Ω`, "Das ist nur die Abweichung.")]}]};
+ }
+],
+
+"Sicherheitsregeln":[
+
+ /* Welche Regel kommt als Nächstes? */
+ () => {
+   const REGELN = ["Freischalten",
+                   "Gegen Wiedereinschalten sichern",
+                   "Spannungsfreiheit feststellen",
+                   "Erden und kurzschließen",
+                   "Benachbarte, unter Spannung stehende Teile abdecken oder abschranken"];
+   const nr = rnd(0, 3);
+   const naechste = REGELN[nr + 1];
+   const falsche = zieheVerschiedene(REGELN.filter(x => x !== naechste), 2);
+   return {
+    typ:"text",
+    text:`Du hast gerade <b>„${REGELN[nr]}“</b> erledigt — das ist Regel ${z(nr + 1)} von fünf.<br>An welcher Stelle steht die Regel, die als Nächstes kommt?`,
+    loesung: z(nr + 2),
+    schluss:"Freischalten · Sichern · Spannungsfreiheit feststellen · Erden und kurzschließen · Abdecken. In dieser Reihenfolge, immer.",
+    schritte:[
+     {frage:"Was kommt als <b>Nächstes</b>?",
+      tipp:"Die Reihenfolge ist festgelegt und darf nicht getauscht werden.",
+      tipp2:`Nach „${REGELN[nr]}“ folgt „${naechste}“.`,
+      optionen: zieheVerschiedene([
+        R(naechste, "Richtig."),
+        F(falsche[0], "Diese Regel steht an anderer Stelle."),
+        F(falsche[1], "Diese Regel steht an anderer Stelle.")], 3)},
+     {frage:"Warum ist die <b>Reihenfolge</b> so wichtig?",
+      tipp:"Jede Regel setzt voraus, dass die davor schon erledigt ist.",
+      tipp2:"Erst wenn gesichert ist, dass niemand wieder einschalten kann, hat es Sinn, die Spannungsfreiheit festzustellen. Sonst könnte zwischendurch jemand einschalten.",
+      optionen:[R("Jede Regel baut auf der davor auf", "Richtig — eine Regel zu überspringen macht die vorherigen wertlos."),
+                F("Damit das Protokoll ordentlich aussieht", "Es geht nicht um Papier, es geht um Leben."),
+                F("Die Reihenfolge ist eigentlich egal", "Sie ist verbindlich festgelegt und aus gutem Grund so.")]},
+     {frage:"An welcher <b>Stelle</b> steht diese nächste Regel?",
+      tippAntwort: z(nr + 2),
+      tipp:"Zähl von vorn: Freischalten ist die erste.",
+      tipp2:`Du warst bei Regel ${z(nr + 1)}, also folgt Nummer ${z(nr + 2)}.`,
+      optionen:[R(`${z(nr + 2)}`, "Richtig."),
+                F(`${z(nr + 1)}`, "Das ist die, die du gerade erledigt hast."),
+                F("5", "Die fünfte ist immer das Abdecken benachbarter Teile.")]}]};
+ },
+
+ /* Welche Regel wird beschrieben? */
+ () => {
+   const FAELLE = [
+     {nr:1, name:"Freischalten", was:"Alle Leiter der Anlage werden allpolig vom Netz getrennt.", womit:"Hauptschalter aus, Sicherungen heraus"},
+     {nr:2, name:"Gegen Wiedereinschalten sichern", was:"Der Schalter wird so blockiert, dass niemand ihn versehentlich betätigen kann.", womit:"Schloss anbringen, Warnschild aufhängen"},
+     {nr:3, name:"Spannungsfreiheit feststellen", was:"An allen Leitern wird mit einem geeigneten Messgerät nachgemessen, dass wirklich keine Spannung mehr anliegt.", womit:"zweipoliger Spannungsprüfer, vorher und nachher an bekannter Quelle prüfen"},
+     {nr:4, name:"Erden und kurzschließen", was:"Die Leiter werden mit Erde verbunden und untereinander kurzgeschlossen.", womit:"Erdungs- und Kurzschließvorrichtung"},
+     {nr:5, name:"Benachbarte Teile abdecken", was:"Alles, was in Reichweite noch unter Spannung steht, wird abgedeckt oder abgeschrankt.", womit:"Isolierende Tücher, Abschrankung"}
+   ];
+   const f = pick(FAELLE);
+   const andere = zieheVerschiedene(FAELLE.filter(x => x.nr !== f.nr), 2);
+   return {
+    typ:"text",
+    text:`„${f.was}“<br>Die wievielte der fünf Sicherheitsregeln ist das?`,
+    loesung: z(f.nr),
+    schluss:"Die fünf Sicherheitsregeln kannst du nicht oft genug aufsagen. Sie stehen am Anfang jeder Arbeit an einer elektrischen Anlage.",
+    schritte:[
+     {frage:"Welche <b>Regel</b> ist gemeint?",
+      tipp:"Achte auf das entscheidende Wort in der Beschreibung.",
+      tipp2:`Hier geht es um: ${f.name}. Praktisch heißt das: ${f.womit}.`,
+      optionen: zieheVerschiedene([
+        R(f.name, "Richtig."),
+        F(andere[0].name, `Dabei geht es darum: ${andere[0].was}`),
+        F(andere[1].name, `Dabei geht es darum: ${andere[1].was}`)], 3)},
+     {frage:"Womit wird das in der <b>Praxis</b> gemacht?",
+      tipp:"Denk an das Werkzeug oder das Hilfsmittel, das du dafür brauchst.",
+      tipp2:`Typisch dafür: ${f.womit}.`,
+      optionen: zieheVerschiedene([
+        R(f.womit, "Richtig."),
+        F(andere[0].womit, `Das gehört zu: ${andere[0].name}`),
+        F(andere[1].womit, `Das gehört zu: ${andere[1].name}`)], 3)},
+     {frage:"An welcher <b>Stelle</b> steht diese Regel?",
+      tippAntwort: z(f.nr),
+      tipp:"Freischalten · Sichern · Spannungsfreiheit feststellen · Erden und kurzschließen · Abdecken.",
+      tipp2:`„${f.name}“ ist die Nummer ${z(f.nr)}.`,
+      optionen: zieheVerschiedene([
+        R(`${z(f.nr)}`, "Richtig."),
+        F(`${z(andere[0].nr)}`, `An dieser Stelle steht „${andere[0].name}“.`),
+        F(`${z(andere[1].nr)}`, `An dieser Stelle steht „${andere[1].name}“.`)], 3)}]};
+ }
+],
+
+"Ladung und Strom":[
+
+ /* Q = I · t */
+ () => {
+   const i = pick([0.5, 1, 2, 2.5, 5, 10]);
+   const min = pick([2, 5, 10, 15, 30]);
+   const sek = min * 60;
+   const q = Math.round(i * sek * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Durch einen Leiter fließen ${z(i)} A, ${z(min)} Minuten lang.<br>Welche Ladungsmenge ist geflossen, in Coulomb?`,
+    loesung: z(q),
+    schluss:"Strom ist Ladung je Zeit. Ein Ampere heißt: ein Coulomb pro Sekunde.",
+    schritte:[
+     {frage:"Was ist überhaupt der <b>elektrische Strom</b>?",
+      tipp:"Denk an Wasser in einem Rohr — was fließt da eigentlich?",
+      tipp2:"Strom ist bewegte Ladung. Die Stromstärke sagt, wie viel Ladung in einer Sekunde durch den Querschnitt geht.",
+      optionen:[R("Ladung, die sich pro Sekunde bewegt", "Richtig — 1 A bedeutet 1 Coulomb je Sekunde."),
+                F("Die Spannung im Leiter", "Die Spannung treibt den Strom an, ist aber nicht dasselbe."),
+                F("Die Energie im Leiter", "Energie entsteht erst aus Spannung mal Strom mal Zeit.")]},
+     {frage:`Wie viele <b>Sekunden</b> sind ${z(min)} Minuten?`,
+      tipp:"Eine Minute hat 60 Sekunden.",
+      tipp2:`Rechne ${z(min)} · 60.`,
+      optionen:[R(`${z(sek)} s`, "Richtig."),
+                F(`${z(min * 100)} s`, "Bei der Zeit gilt 60, nicht 100."),
+                F(`${z(min)} s`, "Das sind die Minuten, nicht die Sekunden.")]},
+     {frage:`Was ergibt <b>${z(i)} A · ${z(sek)} s</b>?`,
+      tippAntwort: z(q),
+      tipp:"Stromstärke mal Zeit ergibt die Ladungsmenge.",
+      tipp2:`Rechne ${z(i)} · ${z(sek)}. Ampere mal Sekunden ergibt Coulomb.`,
+      optionen:[R(`${z(q)} C`, "Richtig."),
+                F(`${z(Math.round(i / sek * 10000) / 10000)} C`, "Hier wird malgenommen, nicht geteilt."),
+                F(`${z(Math.round(i * min * 100) / 100)} C`, "Die Zeit muss in Sekunden eingesetzt werden, nicht in Minuten.")]}]};
+ },
+
+ /* Laufzeit eines Akkus */
+ () => {
+   const ah = pick([1.5, 4, 5, 7.5, 10, 12]);
+   const i = pick([0.25, 0.5, 2, 2.5]);
+   const h = Math.round(ah / i * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Akku hat ${z(ah)} Ah. Ein Verbraucher zieht ${z(i)} A.<br>Wie viele Stunden hält der Akku rechnerisch?`,
+    loesung: z(h),
+    schluss:"Amperestunden sind nichts anderes als eine Ladungsmenge — nur in einer praktischeren Einheit als Coulomb.",
+    schritte:[
+     {frage:"Was bedeutet die Angabe <b>Ah</b>?",
+      tipp:"Es sind zwei Einheiten, die malgenommen wurden.",
+      tipp2:"Amperestunde heißt: So viele Ampere kann der Akku eine Stunde lang liefern. 2 Ah sind 2 A für eine Stunde oder 1 A für zwei Stunden.",
+      optionen:[R("Stromstärke mal Zeit — eine Ladungsmenge", "Richtig."),
+                F("Die Spannung des Akkus", "Die steht getrennt daneben, meist 12 V oder 3,7 V."),
+                F("Die Leistung des Akkus", "Die Leistung ergibt sich erst aus Spannung mal Strom.")]},
+     {frage:"Wie kommst du auf die <b>Laufzeit</b>?",
+      tipp:"Die Ladungsmenge wird durch den Strom aufgebraucht.",
+      tipp2:"Teile die Amperestunden durch die Ampere. Übrig bleiben Stunden.",
+      optionen:[R("Ah geteilt durch A", "Richtig — die Ampere kürzen sich weg, es bleiben Stunden."),
+                F("Ah mal A", "Dann käme bei größerem Strom eine längere Laufzeit heraus."),
+                F("A geteilt durch Ah", "Vertauscht — das ergäbe keine Zeit.")]},
+     {frage:`Was ergibt <b>${z(ah)} Ah : ${z(i)} A</b>?`,
+      tippAntwort: z(h),
+      tipp:"Teile die Kapazität durch den Strom.",
+      tipp2:`Rechne ${z(ah)} : ${z(i)}.`,
+      optionen:[R(`${z(h)} h`, "Richtig."),
+                F(`${z(Math.round(ah * i * 100) / 100)} h`, "Hier wird geteilt, nicht malgenommen."),
+                F(`${z(Math.round((ah + i) * 100) / 100)} h`, "Amperestunden und Ampere kann man nicht addieren.")]}]};
+ },
+
+ /* Ladung eines Kondensators */
+ () => {
+   const c = pick([10, 22, 47, 100, 220, 470]);
+   const u = pick([5, 10, 12, 24, 25, 50]);
+   const q = Math.round(c * u * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Kondensator mit ${z(c)} µF liegt an ${z(u)} V.<br>Welche Ladung speichert er, in Mikrocoulomb?`,
+    loesung: z(q),
+    schluss:"Q = C · U. Mehr Kapazität oder mehr Spannung heißt mehr gespeicherte Ladung.",
+    schritte:[
+     {frage:"Was sagt die <b>Kapazität</b> aus?",
+      tipp:"Denk an einen Eimer: Was beschreibt seine Größe?",
+      tipp2:"Die Kapazität sagt, wie viel Ladung der Kondensator je Volt aufnimmt. Ein Farad ist ein Coulomb je Volt.",
+      optionen:[R("Wie viel Ladung er je Volt aufnimmt", "Richtig — 1 F ist 1 C je Volt."),
+                F("Wie viel Spannung er verträgt", "Das ist die Nennspannung, eine getrennte Angabe."),
+                F("Wie schnell er sich lädt", "Die Ladezeit hängt zusätzlich vom Widerstand ab.")]},
+     {frage:"Welche <b>Formel</b> gilt für die gespeicherte Ladung?",
+      tipp:"Kapazität und Spannung wirken zusammen.",
+      tipp2:"Q = C · U. Doppelte Spannung heißt doppelte Ladung, doppelte Kapazität ebenso.",
+      optionen:[R("Q = C · U", "Richtig."),
+                F("Q = C : U", "Dann würde mehr Spannung weniger Ladung bedeuten."),
+                F("Q = U : C", "Vertauscht — das ergäbe keine Ladung.")]},
+     {frage:`Was ergibt <b>${z(c)} µF · ${z(u)} V</b>?`,
+      tippAntwort: z(q),
+      tipp:"Die beiden Zahlen malnehmen.",
+      tipp2:`Rechne ${z(c)} · ${z(u)}. Mikrofarad mal Volt ergibt Mikrocoulomb.`,
+      optionen:[R(`${z(q)} µC`, "Richtig."),
+                F(`${z(Math.round(c / u * 1000) / 1000)} µC`, "Hier wird malgenommen, nicht geteilt."),
+                F(`${z(c + u)} µC`, "Farad und Volt darf man nicht addieren.")]}]};
+ }
+],
+
+"Spule und Induktivität":[
+
+ /* Induktiver Blindwiderstand */
+ () => {
+   const l = pick([10, 20, 50, 100, 200, 500]);
+   const f = pick([50, 100, 200, 400]);
+   const xl = Math.round(2 * Math.PI * f * l / 1000 * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Spule mit ${z(l)} mH liegt an einer Wechselspannung mit ${z(f)} Hz.<br>Wie groß ist ihr Blindwiderstand in Ohm? (auf zwei Stellen runden)`,
+    loesung: z(xl),
+    schluss:"X L = 2 · π · f · L. Je höher die Frequenz, desto stärker bremst die Spule.",
+    schritte:[
+     {frage:"Wie verhält sich eine <b>Spule</b> bei steigender Frequenz?",
+      tipp:"Die Spule wehrt sich gegen jede Änderung des Stroms.",
+      tipp2:"Je schneller sich der Strom ändert, desto stärker die Gegenwirkung. Bei hoher Frequenz bremst die Spule also mehr.",
+      optionen:[R("Sie bremst stärker", "Richtig — der Blindwiderstand wächst mit der Frequenz."),
+                F("Sie bremst weniger", "Das gilt für den Kondensator, nicht für die Spule."),
+                F("Sie verhält sich immer gleich", "Nur bei Gleichstrom — dort wirkt fast nur der Drahtwiderstand.")]},
+     {frage:`Wie viele <b>Henry</b> sind ${z(l)} mH?`,
+      tipp:"Milli heißt ein Tausendstel.",
+      tipp2:`Teile durch 1000: ${z(l)} : 1000.`,
+      optionen:[R(`${z(l / 1000)} H`, "Richtig."),
+                F(`${z(l * 1000)} H`, "Millihenry sind kleiner als Henry — die Zahl muss kleiner werden."),
+                F(`${z(l)} H`, "Das wäre tausendmal zu viel.")]},
+     {frage:`Was ergibt <b>2 · π · ${z(f)} · ${z(l / 1000)}</b>?`,
+      tippAntwort: z(xl),
+      tipp:"Erst 2 · π · f, dann mit der Induktivität malnehmen.",
+      tipp2:`2 · 3,14159 · ${z(f)} = ${z(Math.round(2 * Math.PI * f * 100) / 100)}. Das mal ${z(l / 1000)}.`,
+      optionen:[R(`${z(xl)} Ω`, "Richtig."),
+                F(`${z(Math.round(1 / (2 * Math.PI * f * l / 1000) * 10000) / 10000)} Ω`, "Das wäre die Formel für den Kondensator."),
+                F(`${z(Math.round(2 * Math.PI * f * l * 100) / 100)} Ω`, "Die Induktivität muss in Henry eingesetzt werden, nicht in Millihenry.")]}]};
+ },
+
+ /* Scheinwiderstand aus R und X L */
+ () => {
+   const paare = [[3, 4, 5], [6, 8, 10], [30, 40, 50], [60, 80, 100], [9, 12, 15], [15, 20, 25]];
+   const p = pick(paare);
+   const r = p[0], xl = p[1], zges = p[2];
+   return {
+    typ:"formel",
+    text:`Ein Widerstand von ${z(r)} Ω liegt in Reihe mit einer Spule mit ${z(xl)} Ω Blindwiderstand.<br>Wie groß ist der Scheinwiderstand in Ohm?`,
+    loesung: z(zges),
+    schluss:"Wirk- und Blindwiderstand addieren sich nicht einfach — sie stehen senkrecht zueinander, also gilt Pythagoras.",
+    schritte:[
+     {frage:"Darfst du die beiden Widerstände einfach <b>addieren</b>?",
+      tipp:"Der Strom durch den Widerstand und der durch die Spule sind zeitlich versetzt.",
+      tipp2:"Weil Spannung und Strom bei der Spule um 90° versetzt sind, stehen die beiden Widerstände senkrecht aufeinander. Addiert wird deshalb wie im rechtwinkligen Dreieck.",
+      optionen:[R("Nein, sie stehen senkrecht zueinander", "Richtig — deshalb wird mit Pythagoras gerechnet."),
+                F("Ja, wie bei zwei Widerständen in Reihe", `Dann käme ${z(r + xl)} Ω heraus — zu viel.`),
+                F("Nein, sie werden malgenommen", "Malnehmen ergibt keinen Widerstand.")]},
+     {frage:"Welche <b>Formel</b> gilt für den Scheinwiderstand?",
+      tipp:"Es ist derselbe Satz wie beim rechtwinkligen Dreieck.",
+      tipp2:"Z ist die Hypotenuse: Z² = R² + X². Am Ende die Wurzel ziehen.",
+      optionen:[R("Z = √(R² + X²)", "Richtig."),
+                F("Z = R + X", "Das gilt nur, wenn beide in Phase wären."),
+                F("Z = R · X", "Malnehmen ergibt keinen Widerstand.")]},
+     {frage:`Was ergibt <b>√(${z(r)}² + ${z(xl)}²)</b>?`,
+      tippAntwort: z(zges),
+      tipp:"Beide quadrieren, addieren, dann die Wurzel ziehen.",
+      tipp2:`${z(r)}² = ${z(r * r)} und ${z(xl)}² = ${z(xl * xl)}. Zusammen ${z(r * r + xl * xl)} — davon die Wurzel.`,
+      optionen:[R(`${z(zges)} Ω`, "Richtig."),
+                F(`${z(r + xl)} Ω`, "So einfach addiert werden dürfen sie nicht."),
+                F(`${z(r * r + xl * xl)} Ω`, "Die Wurzel fehlt noch.")]}]};
+ }
+],
+
+"Kondensator im Wechselstrom":[
+
+ /* Kapazitiver Blindwiderstand */
+ () => {
+   const c = pick([1, 2, 5, 10, 20, 50]);
+   const f = pick([50, 100, 200]);
+   const xc = Math.round(1 / (2 * Math.PI * f * c / 1e6) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Kondensator mit ${z(c)} µF liegt an einer Wechselspannung mit ${z(f)} Hz.<br>Wie groß ist sein Blindwiderstand in Ohm? (auf zwei Stellen runden)`,
+    loesung: z(xc),
+    schluss:"X C = 1 : (2 · π · f · C). Beim Kondensator ist es genau andersherum als bei der Spule: höhere Frequenz, kleinerer Widerstand.",
+    schritte:[
+     {frage:"Wie verhält sich ein <b>Kondensator</b> bei steigender Frequenz?",
+      tipp:"Bei Gleichspannung sperrt er ganz.",
+      tipp2:"Je schneller die Spannung wechselt, desto öfter wird umgeladen und desto mehr Strom fließt. Der Blindwiderstand wird also kleiner.",
+      optionen:[R("Er lässt mehr durch", "Richtig — der Blindwiderstand sinkt mit steigender Frequenz."),
+                F("Er bremst stärker", "Das gilt für die Spule."),
+                F("Er verhält sich immer gleich", "Bei Gleichspannung sperrt er sogar völlig.")]},
+     {frage:"Welche <b>Formel</b> gilt hier?",
+      tipp:"Die Frequenz steht diesmal unter dem Bruchstrich.",
+      tipp2:"X C = 1 : (2 · π · f · C). Weil f und C im Nenner stehen, wird der Widerstand kleiner, wenn eines von beiden größer wird.",
+      optionen:[R("X C = 1 : (2 · π · f · C)", "Richtig."),
+                F("X C = 2 · π · f · C", "Das ist die Formel für die Spule, nur mit C statt L."),
+                F("X C = 2 · π · f : C", "Die Kapazität gehört mit in den Nenner.")]},
+     {frage:`Was ergibt <b>1 : (2 · π · ${z(f)} · ${z(c)} µF)</b>?`,
+      tippAntwort: z(xc),
+      tipp:"Erst den ganzen Nenner ausrechnen, dann 1 dadurch teilen.",
+      tipp2:`${z(c)} µF sind ${z(c / 1e6)} F. Nenner: 2 · 3,14159 · ${z(f)} · ${z(c / 1e6)}.`,
+      optionen:[R(`${z(xc)} Ω`, "Richtig."),
+                F(`${z(Math.round(2 * Math.PI * f * c / 1e6 * 1e6) / 1e6)} Ω`, "Das ist nur der Nenner — der Kehrwert fehlt."),
+                F(`${z(Math.round(1 / (2 * Math.PI * f * c) * 1e6) / 1e6)} Ω`, "Die Kapazität muss in Farad eingesetzt werden, nicht in Mikrofarad.")]}]};
+ },
+
+ /* Warum sperrt der Kondensator Gleichstrom? */
+ () => {
+   const c = pick([10, 47, 100, 220]);
+   const u = pick([12, 24, 230]);
+   return {
+    typ:"text",
+    text:`Ein Kondensator mit ${z(c)} µF wird an ${z(u)} V <b>Gleichspannung</b> gelegt.<br>Wie groß ist der Strom nach langer Zeit, in Ampere?`,
+    loesung: "0",
+    schluss:"Für Gleichstrom ist ein geladener Kondensator eine Unterbrechung. Genau deshalb trennt ein Koppelkondensator Gleich- von Wechselanteil.",
+    schritte:[
+     {frage:"Was passiert direkt nach dem <b>Einschalten</b>?",
+      tipp:"Der Kondensator ist zu Beginn leer.",
+      tipp2:"Solange er leer ist, wirkt er fast wie ein Kurzschluss — es fließt ein großer Ladestrom, der dann abnimmt.",
+      optionen:[R("Es fließt ein Ladestrom, der abnimmt", "Richtig — anfangs viel, dann immer weniger."),
+                F("Es fließt sofort gar nichts", "Zu Beginn fließt sogar der größte Strom."),
+                F("Es fließt dauerhaft derselbe Strom", "Der Strom nimmt mit der Zeit ab.")]},
+     {frage:"Was ist, wenn der Kondensator <b>voll</b> ist?",
+      tipp:"Eine volle Ladung kann nicht weiter zunehmen.",
+      tipp2:"Ist die Spannung am Kondensator gleich der Quellenspannung, treibt nichts mehr Ladung nach. Der Strom wird null.",
+      optionen:[R("Es fließt kein Strom mehr", "Richtig — für Gleichstrom ist er dann eine Unterbrechung."),
+                F("Der Strom bleibt konstant", "Dann würde die Ladung immer weiter steigen — das geht nicht."),
+                F("Der Strom kehrt sich um", "Das passiert erst beim Entladen.")]},
+     {frage:"Wie groß ist der <b>Strom</b> nach langer Zeit?",
+      tippAntwort: "0",
+      tipp:"Nach etwa fünf Zeitkonstanten ist der Vorgang beendet.",
+      tipp2:"Der Kondensator ist geladen, es fließt nichts mehr. Der Strom ist null.",
+      optionen:[R("0 A", "Richtig."),
+                F(`${z(Math.round(u / 1000 * 1000) / 1000)} A`, "Ein Reststrom fließt beim idealen Kondensator nicht."),
+                F(`${z(u)} A`, "Das ist die Spannung, kein Strom.")]}]};
+ }
+],
+
+"Netzformen":[
+
+ /* Netzform aus der Beschreibung erkennen */
+ () => {
+   const NETZE = [
+     {name:"TN-S", was:"Neutralleiter und Schutzleiter sind im ganzen Netz getrennt geführt.", leiter:5,
+      merkmal:"Das ist die heute übliche Ausführung in Neuanlagen."},
+     {name:"TN-C", was:"Neutralleiter und Schutzleiter sind zu einem gemeinsamen PEN-Leiter zusammengefasst.", leiter:4,
+      merkmal:"In Neuanlagen hinter dem Zähler nicht mehr zulässig."},
+     {name:"TT", was:"Der Körper der Anlage ist über einen eigenen Erder geerdet, nicht über den Schutzleiter des Versorgers.", leiter:4,
+      merkmal:"Typisch für ältere Anlagen im ländlichen Raum."},
+     {name:"IT", was:"Die Stromquelle ist gar nicht oder nur hochohmig geerdet.", leiter:4,
+      merkmal:"Verwendet, wo ein erster Fehler nicht sofort abschalten darf — etwa im Operationssaal."}
+   ];
+   const n = pick(NETZE);
+   const andere = zieheVerschiedene(NETZE.filter(x => x.name !== n.name), 2);
+   return {
+    typ:"text",
+    text:`„${n.was}“<br>Um welche Netzform handelt es sich?`,
+    loesung: n.name,
+    schluss:"Der erste Buchstabe sagt, wie die Stromquelle geerdet ist. Der zweite sagt, wie die Körper der Anlage geerdet sind.",
+    schritte:[
+     {frage:"Was sagt der <b>erste Buchstabe</b> einer Netzform?",
+      tipp:"Er beschreibt die Seite des Versorgers.",
+      tipp2:"T steht für direkte Erdung der Stromquelle (terre = Erde), I für isoliert oder nur hochohmig geerdet.",
+      optionen:[R("Wie die Stromquelle geerdet ist", "Richtig — T heißt geerdet, I heißt isoliert."),
+                F("Wie viele Leiter das Netz hat", "Die Leiterzahl steht nicht im Namen."),
+                F("Welche Sicherung eingebaut ist", "Die Schutzeinrichtung ergibt sich erst aus der Netzform.")]},
+     {frage:"Und der <b>zweite Buchstabe</b>?",
+      tipp:"Er beschreibt die Seite der Verbraucheranlage.",
+      tipp2:"T bedeutet: Der Körper hat einen eigenen Erder. N bedeutet: Der Körper ist mit dem geerdeten Punkt der Quelle verbunden.",
+      optionen:[R("Wie die Körper der Anlage geerdet sind", "Richtig — T eigener Erder, N über den Schutzleiter zur Quelle."),
+                F("Ob ein RCD eingebaut ist", "Das ist eine getrennte Frage."),
+                F("Die Spannungsebene", "Die steht nicht im Namen der Netzform.")]},
+     {frage:"Welche <b>Netzform</b> ist beschrieben?",
+      tippAntwort: n.name,
+      tipp:"Geh die Beschreibung noch einmal Wort für Wort durch.",
+      tipp2:`${n.merkmal}`,
+      optionen: zieheVerschiedene([
+        R(n.name, `Richtig. ${n.merkmal}`),
+        F(andere[0].name, `Dort gilt: ${andere[0].was}`),
+        F(andere[1].name, `Dort gilt: ${andere[1].was}`)], 3)}]};
+ },
+
+ /* Wie viele Leiter braucht das Netz? */
+ () => {
+   const faelle = [
+     {name:"TN-S", leiter:5, aus:"L1, L2, L3, N und PE", warum:"N und PE sind getrennt geführt"},
+     {name:"TN-C", leiter:4, aus:"L1, L2, L3 und PEN", warum:"N und PE sind zum PEN zusammengefasst"}
+   ];
+   const f = pick(faelle);
+   const g = faelle.find(x => x.name !== f.name);
+   return {
+    typ:"formel",
+    text:`Ein Drehstromnetz ist als <b>${f.name}</b> ausgeführt.<br>Wie viele Leiter werden verlegt?`,
+    loesung: z(f.leiter),
+    schluss:"TN-S braucht einen Leiter mehr als TN-C — dafür ist der Schutzleiter dort nie stromführend.",
+    schritte:[
+     {frage:`Was bedeutet der Zusatz <b>${f.name.slice(3)}</b>?`,
+      tipp:"S steht für separat, C für combined.",
+      tipp2:`Bei ${f.name} gilt: ${f.warum}.`,
+      optionen: zieheVerschiedene([
+        R(f.warum.charAt(0).toUpperCase() + f.warum.slice(1), "Richtig."),
+        F(g.warum.charAt(0).toUpperCase() + g.warum.slice(1), `Das gilt für ${g.name}.`),
+        F("Die Stromquelle ist nicht geerdet", "Das wäre ein IT-Netz.")], 3)},
+     {frage:"Welche <b>Leiter</b> werden dabei verlegt?",
+      tipp:"Drei Außenleiter sind immer dabei.",
+      tipp2:`Bei ${f.name} sind es ${f.aus}.`,
+      optionen: zieheVerschiedene([
+        R(f.aus, "Richtig."),
+        F(g.aus, `Das wäre ${g.name}.`),
+        F("L1, L2 und L3", "Ohne Rückleiter funktioniert ein Verbraucher zwischen Außenleiter und N nicht.")], 3)},
+     {frage:"Wie viele sind das <b>zusammen</b>?",
+      tippAntwort: z(f.leiter),
+      tipp:"Zähl die eben genannten Leiter ab.",
+      tipp2:`${f.aus} — das sind ${z(f.leiter)}.`,
+      optionen:[R(`${z(f.leiter)}`, "Richtig."),
+                F(`${z(g.leiter)}`, `So viele wären es bei ${g.name}.`),
+                F("3", "Drei Außenleiter allein reichen für einen Wechselstromverbraucher nicht.")]}]};
+ }
+],
+
+"Frequenzumrichter":[
+
+ /* Drehzahl bei geänderter Frequenz */
+ () => {
+   const p = pick([1, 2, 3]);
+   /* ohne 50 Hz: dort wäre das Ergebnis dasselbe wie am festen Netz */
+   const f = pick([20, 25, 30, 40, 60, 75]);
+   const n = Math.round(60 * f / p);
+   return {
+    typ:"formel",
+    text:`Ein Motor mit ${z(p)} Polpaar${p > 1 ? "en" : ""} wird über einen Frequenzumrichter mit ${z(f)} Hz betrieben.<br>Wie groß ist die Synchrondrehzahl in 1/min?`,
+    loesung: z(n),
+    schluss:"Der Frequenzumrichter macht aus der festen Netzfrequenz eine einstellbare — und damit die Drehzahl regelbar.",
+    schritte:[
+     {frage:"Warum kann man mit einem <b>Frequenzumrichter</b> die Drehzahl ändern?",
+      tipp:"Schau dir an, wovon die Synchrondrehzahl abhängt.",
+      tipp2:"In n = 60 · f : p sind die Polpaare fest eingebaut. Änderbar ist nur die Frequenz — also stellt man genau die ein.",
+      optionen:[R("Weil die Drehzahl direkt an der Frequenz hängt", "Richtig — die Polpaarzahl lässt sich nicht ändern, die Frequenz schon."),
+                F("Weil er die Spannung ändert", "Die Spannung wird zwar mitgeführt, die Drehzahl bestimmt aber die Frequenz."),
+                F("Weil er den Strom begrenzt", "Strombegrenzung schützt den Motor, ändert aber nicht die Drehzahl.")]},
+     {frage:"Welche <b>Formel</b> gilt weiterhin?",
+      tipp:"Es ist dieselbe wie am festen Netz.",
+      tipp2:"n = 60 · f : p. Nur ist f jetzt keine feste 50 Hz mehr.",
+      optionen:[R("n = 60 · f : p", "Richtig."),
+                F("n = 60 · p : f", "Vertauscht — mehr Polpaare machen den Motor langsamer, nicht schneller."),
+                F("n = f · p", "Ohne die 60 käme eine Drehzahl je Sekunde heraus.")]},
+     {frage:`Was ergibt <b>60 · ${z(f)} : ${z(p)}</b>?`,
+      tippAntwort: z(n),
+      tipp:"Erst 60 mal die Frequenz, dann durch die Polpaarzahl.",
+      tipp2:`60 · ${z(f)} = ${z(60 * f)}. Das durch ${z(p)}.`,
+      optionen:[R(`${z(n)} 1/min`, "Richtig."),
+                F(`${z(Math.round(f / p * 100) / 100)} 1/min`, "Ohne die 60 wäre das die Drehzahl je Sekunde."),
+                F(`${z(Math.round(3000 / p))} 1/min`, "Das wäre die Drehzahl am festen 50-Hz-Netz.")]}]};
+ },
+
+ /* Welche Frequenz für eine gewünschte Drehzahl? */
+ () => {
+   /* ohne ein einzelnes Polpaar: dort wäre n · p dasselbe wie n */
+   const p = pick([2, 3, 4]);
+   const f = pick([10, 20, 25, 30, 40, 60]);
+   const n = 60 * f / p;
+   return {
+    typ:"formel",
+    text:`Ein Motor mit ${z(p)} Polpaar${p > 1 ? "en" : ""} soll mit ${z(n)} 1/min laufen.<br>Auf welche Frequenz stellst du den Umrichter, in Hertz?`,
+    loesung: z(f),
+    schluss:"So arbeitet man in der Praxis: Die gewünschte Drehzahl steht fest, die Frequenz rechnest du dir dazu aus.",
+    schritte:[
+     {frage:"Wie stellst du <b>n = 60 · f : p</b> nach f um?",
+      tipp:"Erst mit p malnehmen, dann durch 60 teilen.",
+      tipp2:"Aus n · p = 60 · f wird f = n · p : 60.",
+      optionen:[R("f = n · p : 60", "Richtig."),
+                F("f = 60 · n : p", "Vertauscht — dann käme bei mehr Polpaaren eine kleinere Frequenz heraus."),
+                F("f = n : p", "Die 60 darf nicht verschwinden.")]},
+     {frage:`Was ergibt <b>${z(n)} · ${z(p)}</b>?`,
+      tipp:"Drehzahl mal Polpaarzahl.",
+      tipp2:`Rechne ${z(n)} · ${z(p)}.`,
+      optionen:[R(`${z(n * p)}`, "Richtig."),
+                F(`${z(Math.round(n / p * 100) / 100)}`, "Hier wird malgenommen, nicht geteilt."),
+                F(`${z(n)}`, "Die Polpaarzahl fehlt noch.")]},
+     {frage:`Was ergibt <b>${z(n * p)} : 60</b>?`,
+      tippAntwort: z(f),
+      tipp:"Jetzt noch durch 60 teilen.",
+      tipp2:`Rechne ${z(n * p)} : 60.`,
+      optionen:[R(`${z(f)} Hz`, "Richtig."),
+                F("50 Hz", "Das ist die Netzfrequenz — die brauchst du hier gerade nicht."),
+                F(`${z(n * p)} Hz`, "Die Division durch 60 fehlt.")]}]};
+ }
+],
+
+"Instandhaltung und Verfügbarkeit":[
+
+ /* Verfügbarkeit aus MTBF und MTTR */
+ () => {
+   const paare = [[99, 1], [95, 5], [90, 10], [196, 4], [180, 20], [475, 25]];
+   const p = pick(paare);
+   const mtbf = p[0], mttr = p[1];
+   const v = Math.round(mtbf / (mtbf + mttr) * 10000) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Maschine läuft im Schnitt ${z(mtbf)} Stunden zwischen zwei Ausfällen und ist danach ${z(mttr)} Stunden in Reparatur.<br>Wie groß ist die Verfügbarkeit in Prozent?`,
+    loesung: z(v),
+    schluss:"Verfügbarkeit ist der Anteil der Zeit, in dem die Maschine produzieren kann. In der Fertigung wird darum hart gerungen.",
+    schritte:[
+     {frage:"Was bedeutet <b>MTBF</b>?",
+      tipp:"Es ist eine mittlere Zeit zwischen zwei Ereignissen.",
+      tipp2:"Mean Time Between Failures — die durchschnittliche Laufzeit zwischen zwei Ausfällen.",
+      optionen:[R("Die mittlere Laufzeit zwischen zwei Ausfällen", "Richtig."),
+                F("Die mittlere Reparaturdauer", "Das ist die MTTR."),
+                F("Die Gesamtlaufzeit im Jahr", "Die ergibt sich erst aus beidem zusammen.")]},
+     {frage:"Wie lang ist ein <b>vollständiger Zyklus</b>?",
+      tipp:"Laufzeit plus Reparaturzeit.",
+      tipp2:`Rechne ${z(mtbf)} + ${z(mttr)}.`,
+      optionen:[R(`${z(mtbf + mttr)} h`, "Richtig — so lange dauert Laufen plus Reparieren zusammen."),
+                F(`${z(mtbf)} h`, "Die Reparaturzeit fehlt."),
+                F(`${z(Math.abs(mtbf - mttr))} h`, "Hier wird addiert, nicht abgezogen.")]},
+     {frage:`Was ergibt <b>${z(mtbf)} : ${z(mtbf + mttr)} · 100</b>?`,
+      tippAntwort: z(v),
+      tipp:"Laufzeit geteilt durch Gesamtzeit, mal 100.",
+      tipp2:`Rechne ${z(mtbf)} : ${z(mtbf + mttr)} und nimm das Ergebnis mal 100.`,
+      optionen:[R(`${z(v)} %`, "Richtig."),
+                F(`${z(Math.round(mttr / (mtbf + mttr) * 10000) / 100)} %`, "Das ist der Anteil der Ausfallzeit."),
+                F("100 %", "Solange es Reparaturen gibt, wird die Verfügbarkeit nie 100 %.")]}]};
+ },
+
+ /* Ausfallzeit im Jahr */
+ () => {
+   const v = pick([90, 95, 98, 99, 99.5]);
+   const stunden = Math.round(8760 * (100 - v) / 100 * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Anlage hat eine Verfügbarkeit von ${z(v)} %.<br>Wie viele Stunden steht sie im Jahr still?`,
+    loesung: z(stunden),
+    schluss:"Der Unterschied zwischen 99 % und 99,5 % klingt klein — er sind 44 Stunden Stillstand im Jahr.",
+    schritte:[
+     {frage:`Wie viel Prozent der Zeit steht die Anlage <b>still</b>?`,
+      tipp:"Verfügbar und nicht verfügbar ergeben zusammen 100 %.",
+      tipp2:`Rechne 100 − ${z(v)}.`,
+      optionen:[R(`${z(Math.round((100 - v) * 100) / 100)} %`, "Richtig."),
+                F(`${z(v)} %`, "Das ist der Anteil, in dem sie läuft."),
+                F("100 %", "Dann liefe sie nie.")]},
+     {frage:"Wie viele <b>Stunden</b> hat ein Jahr?",
+      tipp:"365 Tage mit je 24 Stunden.",
+      tipp2:"365 · 24 ergibt 8760.",
+      optionen:[R("8.760 h", "Richtig."),
+                F("365 h", "Das sind die Tage."),
+                F("2.080 h", "Das ist ungefähr eine Jahresarbeitszeit, nicht die Kalenderzeit.")]},
+     {frage:`Was ergibt <b>8.760 · ${z(Math.round((100 - v) * 100) / 100)} : 100</b>?`,
+      tippAntwort: z(stunden),
+      tipp:"Jahresstunden mal Ausfallanteil geteilt durch 100.",
+      tipp2:`Rechne 8760 · ${z(Math.round((100 - v) * 100) / 100)} : 100.`,
+      optionen:[R(`${z(stunden)} h`, "Richtig."),
+                F(`${z(Math.round(8760 * v / 100 * 100) / 100)} h`, "Das ist die Laufzeit, nicht die Ausfallzeit."),
+                F(`${z(Math.round((100 - v) * 100) / 100)} h`, "Das ist der Prozentsatz, noch keine Stundenzahl.")]}]};
+ }
+],
+
+"Angebot kalkulieren":[
+
+ /* Lohn, Material, Netto */
+ () => {
+   const std = pick([4, 6, 8, 12, 16, 20]);
+   const satz = pick([45, 55, 60, 65, 75]);
+   const material = pick([120, 250, 380, 640, 900]);
+   const lohn = std * satz;
+   const netto = lohn + material;
+   return {
+    typ:"formel",
+    text:`Für einen Auftrag rechnest du ${z(std)} Stunden zu ${eur(satz)} je Stunde und ${eur(material)} Material.<br>Wie hoch ist der Nettobetrag in Euro?`,
+    loesung: z(netto),
+    schluss:"Netto ist die Summe ohne Mehrwertsteuer — das ist die Zahl, mit der intern gerechnet wird.",
+    schritte:[
+     {frage:"Wie hoch sind die <b>Lohnkosten</b>?",
+      tipp:"Stunden mal Stundensatz.",
+      tipp2:`Rechne ${z(std)} · ${z(satz)}.`,
+      optionen:[R(`${eur(lohn)}`, "Richtig."),
+                F(`${eur(satz)}`, "Das ist der Satz für eine einzige Stunde."),
+                F(`${eur(Math.round(satz / std * 100) / 100)}`, "Hier wird malgenommen, nicht geteilt.")]},
+     {frage:"Was gehört noch <b>dazu</b>?",
+      tipp:"Neben der Arbeitszeit fällt noch etwas an.",
+      tipp2:`Das Material für ${eur(material)} kommt dazu.`,
+      optionen:[R("Das Material", "Richtig — Lohn und Material ergeben zusammen den Nettobetrag."),
+                F("Nur die Mehrwertsteuer", "Die kommt erst danach, auf die Nettosumme."),
+                F("Nichts weiter", "Das Material darfst du nicht vergessen, sonst arbeitest du umsonst.")]},
+     {frage:`Was ergibt <b>${eur(lohn)} + ${eur(material)}</b>?`,
+      tippAntwort: z(netto),
+      tipp:"Lohn und Material addieren.",
+      tipp2:`Rechne ${z(lohn)} + ${z(material)}.`,
+      optionen:[R(`${eur(netto)}`, "Richtig."),
+                F(`${eur(lohn)}`, "Das Material fehlt."),
+                F(`${eur(material)}`, "Der Lohn fehlt.")]}]};
+ },
+
+ /* Brutto mit Mehrwertsteuer */
+ () => {
+   const netto = pick([200, 350, 480, 600, 850, 1200]);
+   const mwst = Math.round(netto * 0.19 * 100) / 100;
+   const brutto = Math.round((netto + mwst) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Angebot liegt netto bei ${eur(netto)}.<br>Wie hoch ist der Bruttobetrag mit 19 % Mehrwertsteuer, in Euro?`,
+    loesung: z(brutto),
+    schluss:"Brutto ist das, was der Kunde bezahlt. Die Mehrwertsteuer gehört dir nicht — sie geht ans Finanzamt.",
+    schritte:[
+     {frage:"Worauf wird die <b>Mehrwertsteuer</b> gerechnet?",
+      tipp:"Auf die Summe, die noch ohne Steuer ist.",
+      tipp2:"Immer auf den Nettobetrag. Der Bruttobetrag enthält sie schon.",
+      optionen:[R("Auf den Nettobetrag", "Richtig."),
+                F("Auf den Bruttobetrag", "Dann würdest du die Steuer doppelt rechnen."),
+                F("Nur auf das Material", "Sie gilt für die ganze Leistung, auch für die Arbeitszeit.")]},
+     {frage:`Wie viel sind <b>19 % von ${eur(netto)}</b>?`,
+      tipp:"Grundwert mal Prozentsatz geteilt durch 100.",
+      tipp2:`Rechne ${z(netto)} · 19 : 100 — oder kürzer ${z(netto)} · 0,19.`,
+      optionen:[R(`${eur(mwst)}`, "Richtig."),
+                F(`${eur(Math.round(netto * 19 * 100) / 100)}`, "Da fehlt die Division durch 100."),
+                F(`${eur(Math.round(netto / 19 * 100) / 100)}`, "Hier wird malgenommen, nicht geteilt.")]},
+     {frage:`Was ergibt <b>${eur(netto)} + ${eur(mwst)}</b>?`,
+      tippAntwort: z(brutto),
+      tipp:"Netto plus Steuer ergibt brutto.",
+      tipp2:`Rechne ${z(netto)} + ${z(mwst)}.`,
+      optionen:[R(`${eur(brutto)}`, "Richtig."),
+                F(`${eur(netto)}`, "Das ist der Nettobetrag ohne Steuer."),
+                F(`${eur(mwst)}`, "Das ist nur die Steuer.")]}]};
+ }
 ]
 
 };
@@ -11369,6 +12084,725 @@ const ERKLAERUNGEN = {
     <text x="340" y="102" text-anchor="middle" font-size="11" fill="currentColor">Ausreißer</text>
     <text x="200" y="194" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Ein Ausreißer zieht den Mittelwert weg — den Median nicht</text>
   </svg>`
+},
+
+"Widerstände und Farbcode": {
+  worum:"Auf kleinen Widerständen ist kein Platz für Zahlen. Deshalb steht der Wert in Farbringen — und die kann man lesen lernen.",
+  wozu:[
+    "Du greifst in die Sortierbox und musst wissen, welcher Widerstand das ist. Aufdrucke gibt es bei bedrahteten Bauteilen nicht, nur Ringe.",
+    "Auch beim Prüfen einer Baugruppe brauchst du das: Erst am Farbcode ablesen, was verbaut sein soll, dann nachmessen, ob es stimmt."
+  ],
+  einfach:[
+    "Ein bedrahteter Widerstand trägt meist vier farbige Ringe. Sie werden von links gelesen — die Seite, auf der die Ringe enger zusammenstehen.",
+    "Die ersten beiden Ringe sind einfach Ziffern. Braun ist 1, rot ist 2, orange ist 3 und so weiter.",
+    "Der dritte Ring sagt, wie viele Nullen dahinter kommen. Er heißt Multiplikator.",
+    "Der vierte Ring gibt die Toleranz an. Gold heißt ±5 %, Silber ±10 %, Braun ±1 %.",
+    "Beispiel: gelb – violett – rot – gold. Gelb ist 4, violett ist 7, rot heißt zwei Nullen. Also 4700 Ω, also 4,7 kΩ, mit ±5 % Toleranz.",
+    "Die Farbreihenfolge ist immer dieselbe: schwarz, braun, rot, orange, gelb, grün, blau, violett, grau, weiß — von 0 bis 9.",
+    "Bei genaueren Widerständen gibt es fünf Ringe. Dann sind die ersten drei Ziffern und der vierte ist der Multiplikator.",
+    "Wenn du unsicher bist, miss nach. Der Farbcode sagt den Sollwert, das Messgerät den wirklichen."
+  ],
+  begriffe:[
+    ["Multiplikator","Der dritte Ring: Er sagt, wie viele Nullen angehängt werden."],
+    ["Toleranz","Wie weit der wirkliche Wert vom Nennwert abweichen darf."],
+    ["Nennwert","Der Wert, den der Farbcode angibt."],
+    ["E-Reihe","Die Reihe der üblichen Widerstandswerte — 10, 15, 22, 33, 47, 68 und ihre Vielfachen."]
+  ],
+  tabelle:{
+    titel:"Der Farbcode",
+    kopf:["Farbe","Ziffer","Multiplikator","Toleranz"],
+    zeilen:[
+      ["schwarz","0","× 1","—"],
+      ["braun","1","× 10","±1 %"],
+      ["rot","2","× 100","±2 %"],
+      ["orange","3","× 1 000","—"],
+      ["gelb","4","× 10 000","—"],
+      ["grün","5","× 100 000","±0,5 %"],
+      ["blau","6","× 1 000 000","±0,25 %"],
+      ["violett","7","—","±0,1 %"],
+      ["grau","8","—","—"],
+      ["weiß","9","—","—"],
+      ["gold","—","× 0,1","±5 %"],
+      ["silber","—","× 0,01","±10 %"]
+    ],
+    fuss:"Gelesen wird von der Seite, auf der die Ringe enger beieinanderstehen. Gold und Silber stehen fast immer ganz rechts — daran erkennst du die Leserichtung."
+  },
+  regeln:[
+    "Ring 1 und 2: die beiden Ziffern.",
+    "Ring 3: so viele Nullen anhängen.",
+    "Ring 4: die Toleranz — gold ±5 %, silber ±10 %.",
+    "Farbreihe von 0 bis 9: schwarz, braun, rot, orange, gelb, grün, blau, violett, grau, weiß.",
+    "Bei fünf Ringen sind die ersten drei Ziffern.",
+    "Von der Seite lesen, auf der die Ringe enger stehen.",
+    "Im Zweifel nachmessen — der Farbcode kann verblasst sein."
+  ],
+  rezept:[
+    "Dreh den Widerstand so, dass der Gold- oder Silberring rechts liegt.",
+    "Lies die ersten beiden Ringe als Ziffern ab und schreib sie nebeneinander.",
+    "Schau auf den dritten Ring und häng so viele Nullen an.",
+    "Rechne den Wert bei Bedarf in kΩ oder MΩ um.",
+    "Lies zuletzt die Toleranz ab und rechne aus, in welchem Bereich der Wert liegen darf.",
+    "Miss nach, wenn es darauf ankommt."
+  ],
+  fehler:[
+    ["Von der falschen Seite gelesen", "Aus braun–schwarz–rot wird sonst rot–schwarz–braun. Der Toleranzring gehört nach rechts."],
+    ["Multiplikator als dritte Ziffer gelesen", "Der dritte Ring ist keine Ziffer, sondern die Zahl der Nullen. Aus rot wird nicht 2, sondern zwei Nullen."],
+    ["Gold als Ziffer gedeutet", "Gold und Silber sind an dritter Stelle Teiler und an vierter Toleranz — nie Ziffern."],
+    ["Toleranz für einen Fehler gehalten", "Ein 1000-Ω-Widerstand mit ±5 % darf zwischen 950 und 1050 Ω liegen. Das ist in Ordnung, kein Defekt."]
+  ],
+  beispiel:{aufgabe:"Ringe: gelb – violett – rot – gold. Welcher Wert?",
+    schritte:["gelb = 4, violett = 7 → die Ziffern 47","rot als Multiplikator = zwei Nullen","47 mit zwei Nullen = 4700","gold = ±5 %"],
+    ergebnis:"4700 Ω = 4,7 kΩ, zulässig zwischen 4465 und 4935 Ω"},
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Widerstand mit vier Farbringen und ihrer Bedeutung">
+    <path d="M20 92h48M332 92h48" stroke="currentColor" stroke-width="2"/>
+    <rect x="68" y="62" width="264" height="60" rx="26" fill="#10a37f" fill-opacity=".12" stroke="currentColor" stroke-width="2"/>
+    <rect x="108" y="62" width="22" height="60" fill="#c9a227"/>
+    <rect x="146" y="62" width="22" height="60" fill="#7a4fbf"/>
+    <rect x="184" y="62" width="22" height="60" fill="#c0392b"/>
+    <rect x="286" y="62" width="22" height="60" fill="#d4af37"/>
+    <g font-size="11" fill="currentColor" text-anchor="middle">
+      <text x="119" y="52">gelb</text><text x="157" y="52">violett</text>
+      <text x="195" y="52">rot</text><text x="297" y="52">gold</text>
+    </g>
+    <g font-size="11" fill="currentColor" text-anchor="middle">
+      <text x="119" y="142">4</text><text x="157" y="142">7</text>
+      <text x="195" y="142">00</text><text x="297" y="142">±5 %</text>
+    </g>
+    <text x="200" y="166" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">4 7 00 Ω = 4,7 kΩ</text>
+    <text x="200" y="184" text-anchor="middle" font-size="11" fill="currentColor">Zwei Ziffern, dann die Nullen, dann die Toleranz</text>
+  </svg>`
+},
+
+"Sicherheitsregeln": {
+  worum:"Fünf Regeln, immer in derselben Reihenfolge, bevor an einer elektrischen Anlage gearbeitet wird. Sie sind kein Ritual, sondern der Grund, warum du abends heil nach Hause kommst.",
+  wozu:[
+    "Sie stehen am Anfang jeder Arbeit an einer elektrischen Anlage — im Betrieb, in der Prüfung und in jedem Unfallbericht, in dem sie nicht eingehalten wurden.",
+    "In der Zwischen- und Abschlussprüfung wirst du danach gefragt. Und dein Ausbilder wird sie dich aufsagen lassen, bis du sie im Schlaf kannst."
+  ],
+  einfach:[
+    "Die Regeln heißen: Freischalten. Gegen Wiedereinschalten sichern. Spannungsfreiheit feststellen. Erden und kurzschließen. Benachbarte, unter Spannung stehende Teile abdecken oder abschranken.",
+    "Freischalten heißt: allpolig trennen. Alle aktiven Leiter, nicht nur der Außenleiter.",
+    "Sichern heißt: Der Schalter wird blockiert und beschildert. Ein Schloss und ein Schild — damit niemand aus Versehen wieder einschaltet.",
+    "Spannungsfreiheit feststellen heißt: nachmessen. An allen Leitern, mit einem geeigneten Prüfer, und der Prüfer wird vorher und nachher an einer bekannten Spannung getestet.",
+    "Erden und kurzschließen ist bei Niederspannung nicht immer vorgeschrieben, bei Hochspannung immer. Es schützt davor, dass die Anlage überraschend wieder Spannung führt.",
+    "Abdecken heißt: Was in Reichweite noch unter Spannung steht, wird abgedeckt oder abgeschrankt.",
+    "Die Reihenfolge ist verbindlich. Jede Regel setzt voraus, dass die davor schon erledigt ist.",
+    "Nach der Arbeit werden die Regeln in umgekehrter Reihenfolge aufgehoben — und erst dann wird wieder eingeschaltet."
+  ],
+  begriffe:[
+    ["Freischalten","Allpolig vom Netz trennen — alle aktiven Leiter."],
+    ["Allpolig","Nicht nur der Außenleiter, sondern auch der Neutralleiter."],
+    ["Spannungsprüfer","Ein zweipoliges Messgerät, kein Phasenprüfer-Schraubendreher."],
+    ["Abschranken","Den Bereich abgrenzen, damit niemand versehentlich hineinlangt."]
+  ],
+  tabelle:{
+    titel:"Die fünf Sicherheitsregeln",
+    kopf:["Nr.","Regel","In der Praxis"],
+    zeilen:[
+      ["1","Freischalten","Hauptschalter aus, Sicherungen heraus — allpolig"],
+      ["2","Gegen Wiedereinschalten sichern","Schloss anbringen, Warnschild aufhängen, Sicherungen mitnehmen"],
+      ["3","Spannungsfreiheit feststellen","Zweipolig messen, Prüfer vorher und nachher testen"],
+      ["4","Erden und kurzschließen","Erdungs- und Kurzschließvorrichtung anlegen"],
+      ["5","Benachbarte Teile abdecken","Isolierende Tücher, Abschrankung"]
+    ],
+    fuss:"Nach der Arbeit werden die Regeln in umgekehrter Reihenfolge aufgehoben — erst abdecken weg, zuletzt einschalten. Verbindlich sind DIN VDE 0105-100 und die Vorgaben deines Betriebs."
+  },
+  regeln:[
+    "1. Freischalten — allpolig.",
+    "2. Gegen Wiedereinschalten sichern — Schloss und Schild.",
+    "3. Spannungsfreiheit feststellen — an allen Leitern nachmessen.",
+    "4. Erden und kurzschließen.",
+    "5. Benachbarte, unter Spannung stehende Teile abdecken oder abschranken.",
+    "Die Reihenfolge ist verbindlich und darf nicht getauscht werden.",
+    "Den Spannungsprüfer vor und nach der Messung an bekannter Spannung testen.",
+    "Aufheben in umgekehrter Reihenfolge."
+  ],
+  rezept:[
+    "Kläre den Arbeitsauftrag und den Umfang: Was genau wird freigeschaltet?",
+    "Regel 1: Allpolig freischalten. Nicht nur den Außenleiter.",
+    "Regel 2: Sichern. Schloss anbringen, Schild aufhängen, Sicherungen mitnehmen.",
+    "Regel 3: An allen Leitern nachmessen — und den Prüfer vorher und nachher testen.",
+    "Regel 4 und 5 je nach Anlage und Vorschrift ausführen.",
+    "Erst danach mit der eigentlichen Arbeit beginnen."
+  ],
+  fehler:[
+    ["Reihenfolge getauscht", "Wer misst, bevor gegen Wiedereinschalten gesichert ist, kann während der Messung wieder Spannung bekommen."],
+    ["Nur einpolig geprüft", "Ein Phasenprüfer-Schraubendreher ist kein zulässiges Prüfmittel. Es braucht einen zweipoligen Spannungsprüfer."],
+    ["Prüfer nicht getestet", "Ein defekter Prüfer zeigt keine Spannung — auch wenn welche da ist. Deshalb vorher und nachher an bekannter Quelle testen."],
+    ["Nur den Außenleiter freigeschaltet", "Freischalten heißt allpolig. Auch der Neutralleiter kann Spannung führen."]
+  ],
+  beispiel:{aufgabe:"Du sollst eine Steckdose in einem Verteiler tauschen. Was tust du zuerst?",
+    schritte:["Regel 1: Den zugehörigen Stromkreis allpolig freischalten.","Regel 2: Sicherungseinsatz mitnehmen, Schild an den Verteiler.","Regel 3: Mit dem zweipoligen Prüfer an allen Leitern nachmessen, Prüfer vorher und nachher testen.","Erst dann anfangen."],
+    ergebnis:"Reihenfolge einhalten — nie abkürzen, auch nicht bei kleinen Arbeiten"},
+  bild:`<svg viewBox="0 0 400 210" ${SVG_STIL} role="img" aria-label="Die fünf Sicherheitsregeln als nummerierte Kette">
+    <g font-size="12" fill="currentColor">
+      <circle cx="34" cy="26" r="14" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+      <text x="34" y="31" text-anchor="middle" font-weight="700">1</text>
+      <text x="58" y="31">Freischalten</text>
+      <circle cx="34" cy="66" r="14" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+      <text x="34" y="71" text-anchor="middle" font-weight="700">2</text>
+      <text x="58" y="71">Gegen Wiedereinschalten sichern</text>
+      <circle cx="34" cy="106" r="14" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+      <text x="34" y="111" text-anchor="middle" font-weight="700">3</text>
+      <text x="58" y="111">Spannungsfreiheit feststellen</text>
+      <circle cx="34" cy="146" r="14" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+      <text x="34" y="151" text-anchor="middle" font-weight="700">4</text>
+      <text x="58" y="151">Erden und kurzschließen</text>
+      <circle cx="34" cy="186" r="14" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+      <text x="34" y="191" text-anchor="middle" font-weight="700">5</text>
+      <text x="58" y="191">Benachbarte Teile abdecken</text>
+    </g>
+    <path d="M34 40v12M34 80v12M34 120v12M34 160v12" stroke="#10a37f" stroke-width="2"/>
+  </svg>`
+},
+
+"Ladung und Strom": {
+  worum:"Strom ist nichts anderes als bewegte Ladung. Wer das einmal verstanden hat, versteht auch, was eine Amperestunde ist.",
+  wozu:[
+    "Akkus werden in Amperestunden angegeben. Wie lange ein Gerät damit läuft, rechnest du mit genau diesem Zusammenhang aus.",
+    "Auch beim Kondensator brauchst du die Ladung: Wie viel Energie steckt in einem Zwischenkreiskondensator, und wie gefährlich ist er nach dem Abschalten noch?"
+  ],
+  einfach:[
+    "In einem Leiter bewegen sich Elektronen. Jedes trägt eine winzige Ladung.",
+    "Die Ladungsmenge Q misst man in Coulomb. Ein Coulomb sind etwa 6,24 Trillionen Elektronen — eine unhandliche Zahl, deshalb rechnet man lieber mit Ampere.",
+    "Die Stromstärke I sagt, wie viel Ladung in einer Sekunde durch den Querschnitt fließt. 1 Ampere ist 1 Coulomb je Sekunde.",
+    "Daraus folgt direkt: Q = I · t. Ladung ist Strom mal Zeit.",
+    "In der Praxis rechnet man bei Akkus mit Amperestunden statt mit Coulomb. 1 Ah sind 3600 C — aber damit rechnet niemand.",
+    "Ein Akku mit 5 Ah kann rechnerisch 5 A für eine Stunde liefern, oder 1 A für fünf Stunden, oder 0,5 A für zehn Stunden.",
+    "In Wirklichkeit ist es etwas weniger: Bei hohem Strom sinkt die entnehmbare Kapazität.",
+    "Beim Kondensator gilt Q = C · U. Die Kapazität sagt, wie viel Ladung er je Volt aufnimmt."
+  ],
+  begriffe:[
+    ["Ladung Q","Die Menge an Elektrizität. Einheit: Coulomb (C)."],
+    ["Stromstärke I","Ladung je Sekunde. Einheit: Ampere (A)."],
+    ["Amperestunde Ah","Praktische Einheit für Akkukapazität. 1 Ah = 3600 C."],
+    ["Kapazität C","Wie viel Ladung ein Kondensator je Volt speichert. Einheit: Farad (F)."]
+  ],
+  tabelle:{
+    titel:"Ladung, Strom und Zeit",
+    kopf:["Gesucht","Formel","Einheit"],
+    zeilen:[
+      ["Ladung","Q = I · t","Coulomb (C)"],
+      ["Stromstärke","I = Q : t","Ampere (A)"],
+      ["Zeit","t = Q : I","Sekunde (s)"],
+      ["Ladung im Kondensator","Q = C · U","Coulomb (C)"],
+      ["Akkulaufzeit","t = Kapazität : Strom","Stunde (h)"],
+      ["Umrechnung","1 Ah = 3600 C",""]
+    ],
+    fuss:"Rechnest du mit Amperestunden und Ampere, kommt die Zeit direkt in Stunden heraus — das erspart die Umrechnung in Sekunden."
+  },
+  regeln:[
+    "Q = I · t   — Ladung ist Strom mal Zeit",
+    "1 A = 1 C je Sekunde",
+    "1 Ah = 3600 C",
+    "Q = C · U   — Ladung im Kondensator",
+    "Bei Coulomb muss die Zeit in Sekunden eingesetzt werden.",
+    "Bei Amperestunden darf die Zeit in Stunden bleiben.",
+    "Die tatsächliche Akkulaufzeit ist kürzer als die rechnerische."
+  ],
+  rezept:[
+    "Kläre, in welcher Einheit das Ergebnis stehen soll — Coulomb oder Amperestunden.",
+    "Bring die Zeit in die passende Einheit: Sekunden für Coulomb, Stunden für Amperestunden.",
+    "Setz in Q = I · t ein oder stell die Formel nach der gesuchten Größe um.",
+    "Beim Kondensator stattdessen Q = C · U verwenden.",
+    "Prüf die Größenordnung: Ein Handyakku hat rund 3 Ah, kein 3000 Ah."
+  ],
+  fehler:[
+    ["Zeit in Minuten eingesetzt", "Für Coulomb muss die Zeit in Sekunden stehen. 5 Minuten sind 300 Sekunden."],
+    ["Amperestunden mit Wattstunden verwechselt", "Ah ist eine Ladung, Wh eine Energie. Erst mit der Spannung malgenommen wird aus Ah eine Wh."],
+    ["Rechnerische Laufzeit für garantiert gehalten", "Bei hohem Entladestrom liefert ein Akku weniger als die aufgedruckte Kapazität."],
+    ["Ladung und Kapazität verwechselt", "Die Kapazität ist eine Eigenschaft des Bauteils, die Ladung hängt zusätzlich von der Spannung ab."]
+  ],
+  beispiel:{aufgabe:"Ein Akku hat 4 Ah, der Verbraucher zieht 0,5 A. Wie lange hält er?",
+    schritte:["Kapazität und Strom stehen beide in Ampere-Einheiten.","t = 4 Ah : 0,5 A","Die Ampere kürzen sich weg, es bleiben Stunden."],
+    ergebnis:"8 Stunden rechnerisch — in der Praxis etwas weniger"},
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Ladung fließt durch einen Leiterquerschnitt">
+    <rect x="40" y="62" width="320" height="52" rx="10" fill="#10a37f" fill-opacity=".1" stroke="#10a37f" stroke-width="2"/>
+    <path d="M200 52v72" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"/>
+    <text x="200" y="42" text-anchor="middle" font-size="11" fill="currentColor">Querschnitt</text>
+    <g fill="#10a37f">
+      <circle cx="70" cy="88" r="7"/><circle cx="106" cy="88" r="7"/><circle cx="142" cy="88" r="7"/>
+      <circle cx="178" cy="88" r="7"/>
+    </g>
+    <g fill="#10a37f" fill-opacity=".45">
+      <circle cx="240" cy="88" r="7"/><circle cx="276" cy="88" r="7"/><circle cx="312" cy="88" r="7"/>
+    </g>
+    <path d="M96 138h208" stroke="#10a37f" stroke-width="2"/>
+    <path d="M298 133l9 5-9 5" fill="#10a37f"/>
+    <text x="200" y="160" text-anchor="middle" font-size="12" fill="currentColor">Wie viel Ladung je Sekunde vorbeikommt, ist die Stromstärke</text>
+    <text x="200" y="182" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">Q = I · t</text>
+  </svg>`
+},
+
+"Spule und Induktivität": {
+  worum:"Eine Spule wehrt sich gegen jede Änderung des Stroms. Bei Wechselstrom wirkt sie deshalb wie ein Widerstand, der mit der Frequenz wächst.",
+  wozu:[
+    "Drosseln, Schütze, Motorwicklungen und Transformatoren sind alles Spulen. Wenn ein Schütz beim Abschalten Funken zieht, steckt genau dieser Effekt dahinter.",
+    "In Filtern und Netzteilen bestimmt der Blindwiderstand, welche Frequenzen durchkommen. Und bei der Blindleistungskompensation rechnest du damit gegen die Kondensatoren auf."
+  ],
+  einfach:[
+    "Fließt Strom durch eine Spule, entsteht ein Magnetfeld. Ändert sich der Strom, ändert sich das Feld.",
+    "Ein sich änderndes Magnetfeld erzeugt in derselben Spule wieder eine Spannung — und die wirkt der Änderung entgegen. Das nennt man Selbstinduktion.",
+    "Deshalb bremst eine Spule jede Stromänderung. Bei Gleichstrom, der sich nicht ändert, bremst sie fast gar nicht.",
+    "Bei Wechselstrom ändert sich der Strom ständig. Je höher die Frequenz, desto schneller die Änderung, desto stärker die Gegenwirkung.",
+    "Diese frequenzabhängige Bremswirkung heißt induktiver Blindwiderstand X L. Sie wird in Ohm gemessen, verbraucht aber keine Leistung.",
+    "Die Formel: X L = 2 · π · f · L. Frequenz und Induktivität stehen beide oben — beides größer heißt mehr Blindwiderstand.",
+    "Liegen ein normaler Widerstand und eine Spule in Reihe, darf man nicht einfach addieren. Sie stehen senkrecht zueinander, also gilt Z = √(R² + X L²).",
+    "Der Grund: Bei der Spule eilt die Spannung dem Strom um 90° voraus. Deshalb das rechtwinklige Dreieck."
+  ],
+  begriffe:[
+    ["Induktivität L","Wie stark eine Spule sich gegen Stromänderungen wehrt. Einheit: Henry (H)."],
+    ["Blindwiderstand X L","Der frequenzabhängige Widerstand der Spule, in Ohm."],
+    ["Scheinwiderstand Z","Wirk- und Blindwiderstand zusammen, in Ohm."],
+    ["Selbstinduktion","Die Spannung, die eine Spule in sich selbst erzeugt, wenn sich ihr Strom ändert."]
+  ],
+  tabelle:{
+    titel:"Spule und Kondensator im Vergleich",
+    kopf:["","Spule","Kondensator"],
+    zeilen:[
+      ["Formel","X L = 2 · π · f · L","X C = 1 : (2 · π · f · C)"],
+      ["Höhere Frequenz","bremst stärker","lässt mehr durch"],
+      ["Bei Gleichstrom","fast kein Widerstand","sperrt vollständig"],
+      ["Phasenlage","Spannung eilt vor","Strom eilt vor"],
+      ["Speichert Energie","im Magnetfeld","im elektrischen Feld"],
+      ["Typisch verbaut als","Drossel, Schützspule, Motorwicklung","Entstörglied, Anlaufkondensator, Netzteil"]
+    ],
+    fuss:"Die beiden verhalten sich genau umgekehrt. Genau deshalb heben sie sich in einem Schwingkreis bei einer bestimmten Frequenz gegenseitig auf."
+  },
+  regeln:[
+    "X L = 2 · π · f · L   — Blindwiderstand in Ohm, L in Henry",
+    "Höhere Frequenz heißt größerer Blindwiderstand.",
+    "Bei Gleichstrom wirkt praktisch nur der Drahtwiderstand.",
+    "Z = √(R² + X L²)   — Wirk- und Blindwiderstand nach Pythagoras",
+    "Der Blindwiderstand verbraucht keine Wirkleistung.",
+    "Bei der Spule eilt die Spannung dem Strom um 90° voraus.",
+    "Millihenry vor dem Rechnen in Henry umrechnen."
+  ],
+  rezept:[
+    "Rechne die Induktivität in Henry um — Millihenry durch 1000.",
+    "Setz in X L = 2 · π · f · L ein.",
+    "Rechne erst 2 · π · f aus, dann mit L malnehmen.",
+    "Liegt ein Wirkwiderstand in Reihe, rechne Z = √(R² + X L²).",
+    "Prüf die Richtung: Bei höherer Frequenz muss X L größer werden."
+  ],
+  fehler:[
+    ["Millihenry nicht umgerechnet", "100 mH sind 0,1 H. Sonst ist das Ergebnis tausendmal zu groß."],
+    ["R und X einfach addiert", "Sie stehen senkrecht zueinander. 3 Ω und 4 Ω ergeben 5 Ω, nicht 7 Ω."],
+    ["Formel mit der des Kondensators verwechselt", "Bei der Spule steht f oben, beim Kondensator unten."],
+    ["Blindwiderstand für einen Verbraucher gehalten", "Er begrenzt den Strom, setzt aber keine Wirkleistung um — er wird nicht warm davon."]
+  ],
+  beispiel:{aufgabe:"Spule mit 100 mH an 50 Hz. Wie groß ist X L?",
+    schritte:["100 mH = 0,1 H","2 · π · 50 = 314,16","314,16 · 0,1"],
+    ergebnis:"31,42 Ω"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Blindwiderstand der Spule wächst mit der Frequenz">
+    <path d="M50 160h300M50 160V30" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M50 160L330 50" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <text x="200" y="182" text-anchor="middle" font-size="12" fill="currentColor">Frequenz f</text>
+    <text x="24" y="96" text-anchor="middle" font-size="12" fill="currentColor" transform="rotate(-90 24 96)">X L</text>
+    <text x="240" y="86" font-size="12" font-weight="700" fill="#10a37f">X L = 2 · π · f · L</text>
+    <g stroke="#10a37f" stroke-width="2.5" fill="none">
+      <path d="M62 44q0-14 13-14t13 14M88 44q0-14 13-14t13 14M114 44q0-14 13-14t13 14"/>
+      <path d="M56 44h90"/>
+    </g>
+    <text x="101" y="66" text-anchor="middle" font-size="11" fill="currentColor">Spule</text>
+  </svg>`
+},
+
+"Kondensator im Wechselstrom": {
+  worum:"Ein Kondensator sperrt Gleichstrom vollständig, lässt Wechselstrom aber durch — und zwar umso besser, je höher die Frequenz ist.",
+  wozu:[
+    "Entstörkondensatoren, Anlaufkondensatoren am Wechselstrommotor, Kompensationsanlagen im Betrieb: Überall wird mit dem kapazitiven Blindwiderstand gerechnet.",
+    "Auch bei der Fehlersuche wichtig: Ein Koppelkondensator, der Gleichspannung durchlässt, ist defekt. Ein intakter darf das nicht."
+  ],
+  einfach:[
+    "Ein Kondensator besteht aus zwei Platten mit einem Isolator dazwischen. Strom fließt nie wirklich hindurch.",
+    "Trotzdem fließt beim Laden und Entladen Strom im Kreis — die Ladung wird von einer Platte zur anderen umgeschichtet.",
+    "Bei Gleichspannung passiert das genau einmal. Danach ist der Kondensator voll, und es fließt nichts mehr.",
+    "Bei Wechselspannung wird ständig umgeladen. Es fließt also dauernd Strom, obwohl nichts hindurchgeht.",
+    "Je höher die Frequenz, desto öfter wird umgeladen und desto mehr Strom fließt. Der Widerstand wird also kleiner.",
+    "Diese Bremswirkung heißt kapazitiver Blindwiderstand X C. Die Formel: X C = 1 : (2 · π · f · C).",
+    "Frequenz und Kapazität stehen im Nenner. Beides größer heißt kleinerer Blindwiderstand.",
+    "Der Kondensator verhält sich damit genau umgekehrt zur Spule. Deshalb kann man mit Kondensatoren die Blindleistung von Motoren kompensieren."
+  ],
+  begriffe:[
+    ["Kapazität C","Wie viel Ladung der Kondensator je Volt aufnimmt. Einheit: Farad (F), meist µF."],
+    ["Blindwiderstand X C","Der frequenzabhängige Widerstand des Kondensators, in Ohm."],
+    ["Umladen","Der ständige Wechsel der Ladung zwischen den Platten bei Wechselspannung."],
+    ["Kompensation","Kondensatoren parallel zu Motoren, um die Blindleistung auszugleichen."]
+  ],
+  tabelle:{
+    titel:"Blindwiderstand bei verschiedenen Frequenzen (10 µF)",
+    kopf:["Frequenz","X C","Verhalten"],
+    zeilen:[
+      ["0 Hz (Gleichstrom)","unendlich","sperrt vollständig"],
+      ["50 Hz","318,3 Ω","bremst stark"],
+      ["100 Hz","159,2 Ω","bremst weniger"],
+      ["500 Hz","31,8 Ω","lässt gut durch"],
+      ["1000 Hz","15,9 Ω","lässt sehr gut durch"]
+    ],
+    fuss:"Doppelte Frequenz heißt halber Blindwiderstand. Genau umgekehrt zur Spule, bei der doppelte Frequenz doppelten Blindwiderstand bedeutet."
+  },
+  regeln:[
+    "X C = 1 : (2 · π · f · C)   — C in Farad einsetzen",
+    "Höhere Frequenz heißt kleinerer Blindwiderstand.",
+    "Bei Gleichstrom sperrt der Kondensator vollständig.",
+    "Größere Kapazität heißt ebenfalls kleinerer Blindwiderstand.",
+    "Beim Kondensator eilt der Strom der Spannung um 90° voraus.",
+    "Z = √(R² + X C²) bei Reihenschaltung mit einem Wirkwiderstand.",
+    "Mikrofarad vor dem Rechnen in Farad umrechnen: durch 1 000 000."
+  ],
+  rezept:[
+    "Rechne die Kapazität in Farad um — Mikrofarad durch 1 000 000.",
+    "Rechne den Nenner aus: 2 · π · f · C.",
+    "Bilde den Kehrwert — das ist X C.",
+    "Prüf die Richtung: Höhere Frequenz muss einen kleineren Wert ergeben.",
+    "Bei Reihenschaltung mit einem Widerstand zusätzlich Z = √(R² + X C²) rechnen."
+  ],
+  fehler:[
+    ["Mikrofarad nicht umgerechnet", "10 µF sind 0,00001 F. Wer 10 einsetzt, liegt um den Faktor eine Million daneben."],
+    ["Kehrwert vergessen", "Das Ergebnis des Nenners ist noch nicht X C. Der letzte Schritt ist 1 geteilt durch diesen Wert."],
+    ["Formel mit der Spule verwechselt", "Beim Kondensator steht f unten, bei der Spule oben."],
+    ["Kondensator für einen Leiter gehalten", "Es fließt nie Strom durch ihn hindurch. Bei Wechselstrom wird nur ständig umgeladen."]
+  ],
+  beispiel:{aufgabe:"Kondensator mit 10 µF an 50 Hz. Wie groß ist X C?",
+    schritte:["10 µF = 0,00001 F","Nenner: 2 · π · 50 · 0,00001 = 0,00314","X C = 1 : 0,00314"],
+    ergebnis:"rund 318,3 Ω"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Blindwiderstand des Kondensators fällt mit steigender Frequenz">
+    <path d="M50 160h300M50 160V30" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M64 40C110 40 96 130 330 148" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <text x="200" y="182" text-anchor="middle" font-size="12" fill="currentColor">Frequenz f</text>
+    <text x="24" y="96" text-anchor="middle" font-size="12" fill="currentColor" transform="rotate(-90 24 96)">X C</text>
+    <text x="196" y="72" font-size="12" font-weight="700" fill="#10a37f">X C = 1 : (2 · π · f · C)</text>
+    <g stroke="#10a37f" stroke-width="2.5">
+      <path d="M232 108h26M284 108h26"/><path d="M262 92v32M276 92v32"/>
+    </g>
+    <text x="271" y="142" text-anchor="middle" font-size="11" fill="currentColor">Kondensator</text>
+  </svg>`
+},
+
+"Netzformen": {
+  worum:"TN, TT, IT — zwei Buchstaben sagen dir, wie Stromquelle und Anlage geerdet sind. Davon hängt ab, welche Schutzmaßnahme greift.",
+  wozu:[
+    "Bevor du eine Schutzmaßnahme auswählst oder eine Anlage prüfst, musst du die Netzform kennen. Im TT-Netz ist ein RCD praktisch zwingend, im TN-Netz reicht oft die Überstromschutzeinrichtung.",
+    "Beim Umbau alter Anlagen triffst du auf TN-C und musst wissen, warum hinter dem Zähler kein PEN-Leiter mehr aufgeteilt werden darf, nachdem er einmal getrennt wurde."
+  ],
+  einfach:[
+    "Der Name einer Netzform besteht aus zwei Buchstaben, manchmal mit einem Zusatz dahinter.",
+    "Der erste Buchstabe beschreibt die Stromquelle, also den Transformator des Versorgers. T heißt: direkt geerdet. I heißt: isoliert oder nur hochohmig geerdet.",
+    "Der zweite Buchstabe beschreibt die Verbraucheranlage. T heißt: eigener Erder. N heißt: über den Schutzleiter mit dem geerdeten Punkt der Quelle verbunden.",
+    "TN heißt also: Quelle geerdet, Körper über den Schutzleiter mit ihr verbunden. Das ist bei uns der Normalfall.",
+    "Beim TN gibt es Zusätze. TN-S: Neutralleiter und Schutzleiter sind im ganzen Netz getrennt. TN-C: Beide sind zu einem PEN-Leiter zusammengefasst.",
+    "TN-C-S ist die Mischung: Bis zum Hausanschluss ein PEN-Leiter, danach getrennt. So sieht es in vielen Bestandsgebäuden aus.",
+    "TT heißt: Die Anlage hat ihren eigenen Erder. Dann ist die Fehlerschleife hochohmig, und die Sicherung schaltet oft nicht schnell genug ab — deshalb der RCD.",
+    "IT heißt: Die Quelle ist nicht geerdet. Ein erster Fehler führt nicht zum Abschalten, wird aber gemeldet. Das braucht man dort, wo ein Ausfall gefährlicher wäre als der Fehler — im Operationssaal zum Beispiel.",
+    "Wichtig: Ein einmal aufgeteilter PEN-Leiter darf nicht wieder zusammengeführt werden."
+  ],
+  begriffe:[
+    ["PEN-Leiter","Ein Leiter, der Schutzleiter und Neutralleiter zugleich ist."],
+    ["Schutzleiter PE","Verbindet die Körper der Betriebsmittel mit Erde. Führt im Normalbetrieb keinen Strom."],
+    ["Erder","Ein leitendes Teil im Erdreich, das die Verbindung zur Erde herstellt."],
+    ["Fehlerschleife","Der Weg, den ein Fehlerstrom von der Quelle bis zur Fehlerstelle und zurück nimmt."]
+  ],
+  tabelle:{
+    titel:"Die Netzformen im Überblick",
+    kopf:["Netzform","Stromquelle","Körper der Anlage","Typische Schutzeinrichtung"],
+    zeilen:[
+      ["TN-S","direkt geerdet","über getrennten PE","Überstromschutz, oft zusätzlich RCD"],
+      ["TN-C","direkt geerdet","über PEN","Überstromschutz"],
+      ["TN-C-S","direkt geerdet","PEN, ab Hausanschluss getrennt","Überstromschutz und RCD"],
+      ["TT","direkt geerdet","eigener Erder","RCD praktisch zwingend"],
+      ["IT","nicht oder hochohmig geerdet","eigener Erder","Isolationsüberwachung"]
+    ],
+    fuss:"Erster Buchstabe: Stromquelle. Zweiter Buchstabe: Körper der Anlage. T = geerdet (terre), I = isoliert, N = mit dem Sternpunkt verbunden. Verbindlich ist DIN VDE 0100-410."
+  },
+  regeln:[
+    "Erster Buchstabe: wie die Stromquelle geerdet ist (T oder I).",
+    "Zweiter Buchstabe: wie die Körper der Anlage geerdet sind (T oder N).",
+    "TN-S: N und PE getrennt — fünf Leiter im Drehstromnetz.",
+    "TN-C: N und PE als PEN zusammengefasst — vier Leiter.",
+    "TT: eigener Erder, RCD praktisch zwingend.",
+    "IT: Quelle nicht geerdet, erster Fehler wird nur gemeldet.",
+    "Ein aufgeteilter PEN-Leiter darf nie wieder zusammengeführt werden."
+  ],
+  rezept:[
+    "Schau nach, wie die Stromquelle geerdet ist — das gibt den ersten Buchstaben.",
+    "Schau nach, wie die Körper der Anlage geerdet sind — das gibt den zweiten.",
+    "Prüf beim TN, ob N und PE getrennt (S) oder zusammengefasst (C) sind.",
+    "Leite daraus ab, welche Schutzeinrichtung nötig ist.",
+    "Prüf, ob die Abschaltbedingung mit dieser Einrichtung erfüllt wird."
+  ],
+  fehler:[
+    ["Buchstaben vertauscht", "Der erste gilt der Quelle, der zweite der Anlage. Wer das dreht, kommt auf die falsche Netzform."],
+    ["PEN nach der Aufteilung wieder verbunden", "Das ist unzulässig. Ist der PEN einmal in N und PE getrennt, bleibt er getrennt."],
+    ["Im TT-Netz auf den Überstromschutz vertraut", "Die Fehlerschleife ist dort hochohmig. Ohne RCD wird die Abschaltzeit meist nicht eingehalten."],
+    ["TN-C in Neuanlagen verlegt", "Hinter dem Zähler ist der PEN-Leiter in Neuanlagen nicht mehr zulässig."]
+  ],
+  beispiel:{aufgabe:"In einer Anlage sind N und PE ab dem Hausanschlusskasten getrennt geführt, davor gemeinsam. Welche Netzform?",
+    schritte:["Die Quelle ist geerdet → erster Buchstabe T.","Die Körper hängen am Schutzleiter der Quelle → zweiter Buchstabe N.","Vorher gemeinsam (C), danach getrennt (S)."],
+    ergebnis:"TN-C-S"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="TN-S mit getrenntem PE und TT mit eigenem Erder im Vergleich">
+    <text x="100" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">TN-S</text>
+    <rect x="30" y="34" width="42" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="51" y="59" text-anchor="middle" font-size="10" fill="currentColor">Trafo</text>
+    <rect x="130" y="34" width="42" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="151" y="59" text-anchor="middle" font-size="10" fill="currentColor">Gerät</text>
+    <path d="M72 46h58M72 62h58" stroke="#10a37f" stroke-width="2.5"/>
+    <text x="101" y="42" text-anchor="middle" font-size="9" fill="#10a37f">L / N</text>
+    <text x="101" y="76" text-anchor="middle" font-size="9" fill="#10a37f">PE</text>
+    <path d="M51 74v22M33 96h36M39 104h24M45 112h12" stroke="currentColor" stroke-width="2"/>
+    <text x="100" y="140" text-anchor="middle" font-size="11" fill="currentColor">PE kommt vom Trafo,</text>
+    <text x="100" y="156" text-anchor="middle" font-size="11" fill="currentColor">getrennt vom N</text>
+    <path d="M200 24v150" stroke="currentColor" stroke-width="1" opacity=".35"/>
+    <text x="300" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">TT</text>
+    <rect x="230" y="34" width="42" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="251" y="59" text-anchor="middle" font-size="10" fill="currentColor">Trafo</text>
+    <rect x="330" y="34" width="42" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="351" y="59" text-anchor="middle" font-size="10" fill="currentColor">Gerät</text>
+    <path d="M272 46h58M272 62h58" stroke="#10a37f" stroke-width="2.5"/>
+    <path d="M251 74v22M233 96h36M239 104h24M245 112h12" stroke="currentColor" stroke-width="2"/>
+    <path d="M351 74v22M333 96h36M339 104h24M345 112h12" stroke="currentColor" stroke-width="2"/>
+    <text x="300" y="140" text-anchor="middle" font-size="11" fill="currentColor">Die Anlage hat ihren</text>
+    <text x="300" y="156" text-anchor="middle" font-size="11" fill="currentColor">eigenen Erder</text>
+    <text x="200" y="190" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Erster Buchstabe: die Quelle · Zweiter: die Anlage</text>
+  </svg>`
+},
+
+"Frequenzumrichter": {
+  worum:"Ein Frequenzumrichter macht aus der festen Netzfrequenz eine einstellbare — und damit wird die Drehzahl eines Drehstrommotors regelbar.",
+  wozu:[
+    "Pumpen, Lüfter, Förderbänder und Aufzüge laufen heute fast alle über Umrichter. Sanft anfahren, Drehzahl regeln, Energie sparen — das ist Alltag im Betrieb.",
+    "Beim Einstellen und beim Fehlersuchen musst du zwischen Frequenz und Drehzahl umrechnen können. Auf dem Display steht Hertz, auf dem Typenschild 1/min."
+  ],
+  einfach:[
+    "Die Drehzahl eines Drehstrommotors hängt an der Frequenz: n = 60 · f : p. Die Polpaarzahl ist fest eingebaut, die Frequenz nicht.",
+    "Am festen Netz sind es immer 50 Hz. Der Motor läuft also mit 3000, 1500, 1000 oder 750 1/min, je nach Polpaarzahl.",
+    "Ein Frequenzumrichter erzeugt daraus eine Wechselspannung mit einstellbarer Frequenz — etwa 5 Hz zum Anfahren und 60 Hz für den Schnelllauf.",
+    "Er arbeitet in drei Stufen: Gleichrichter, Zwischenkreis, Wechselrichter. Aus Wechselspannung wird Gleichspannung und daraus wieder Wechselspannung mit der gewünschten Frequenz.",
+    "Wichtig ist, dass die Spannung mitgeführt wird. Bei halber Frequenz braucht der Motor auch etwa die halbe Spannung, sonst wird die Wicklung zu heiß. Das nennt man U/f-Kennlinie.",
+    "Unter etwa 25 Hz reicht die Kühlung eines eigenbelüfteten Motors oft nicht mehr aus — dann braucht er einen Fremdlüfter.",
+    "Über die Netzfrequenz hinaus lässt sich die Drehzahl auch steigern. Dann sinkt allerdings das Drehmoment, weil die Spannung nicht weiter mitwachsen kann.",
+    "Im Zwischenkreis stehen große Kondensatoren. Die bleiben nach dem Abschalten noch minutenlang geladen — Entladezeit abwarten, bevor du hineingreifst."
+  ],
+  begriffe:[
+    ["Frequenzumrichter","Gerät, das die Frequenz für einen Drehstrommotor einstellbar macht."],
+    ["Zwischenkreis","Der Gleichspannungsteil im Umrichter, mit großen Kondensatoren."],
+    ["U/f-Kennlinie","Der feste Zusammenhang, mit dem die Spannung der Frequenz folgt."],
+    ["Sanftanlauf","Langsames Hochfahren der Frequenz, damit der Anlaufstrom klein bleibt."]
+  ],
+  tabelle:{
+    titel:"Frequenz und Drehzahl (Synchrondrehzahl)",
+    kopf:["Frequenz","1 Polpaar","2 Polpaare","3 Polpaare"],
+    zeilen:[
+      ["10 Hz","600 1/min","300 1/min","200 1/min"],
+      ["25 Hz","1500 1/min","750 1/min","500 1/min"],
+      ["50 Hz","3000 1/min","1500 1/min","1000 1/min"],
+      ["60 Hz","3600 1/min","1800 1/min","1200 1/min"],
+      ["75 Hz","4500 1/min","2250 1/min","1500 1/min"]
+    ],
+    fuss:"Die Läuferdrehzahl liegt jeweils um den Schlupf darunter. Über 50 Hz sinkt das verfügbare Drehmoment, weil die Spannung nicht weiter steigen kann."
+  },
+  regeln:[
+    "n = 60 · f : p   — Synchrondrehzahl aus der eingestellten Frequenz",
+    "Nach f umgestellt: f = n · p : 60",
+    "Die Spannung muss der Frequenz folgen (U/f-Kennlinie).",
+    "Unter etwa 25 Hz reicht die Eigenkühlung oft nicht mehr.",
+    "Über 50 Hz sinkt das Drehmoment.",
+    "Der Zwischenkreis bleibt nach dem Abschalten geladen — Entladezeit abwarten.",
+    "Umrichter erzeugen Oberschwingungen; geschirmte Motorleitung verwenden."
+  ],
+  rezept:[
+    "Kläre, was gegeben ist: Frequenz oder gewünschte Drehzahl.",
+    "Lies die Polpaarzahl vom Typenschild ab oder rechne sie aus der Nenndrehzahl zurück.",
+    "Für die Drehzahl: n = 60 · f : p.",
+    "Für die Frequenz: f = n · p : 60.",
+    "Prüf, ob die Frequenz im zulässigen Bereich liegt und ob die Kühlung reicht."
+  ],
+  fehler:[
+    ["Mit 50 Hz gerechnet statt mit der eingestellten Frequenz", "Am Umrichter ist die Frequenz gerade nicht fest. Genau darum geht es."],
+    ["Polzahl statt Polpaarzahl eingesetzt", "Vier Pole sind zwei Polpaare. In die Formel gehört die Polpaarzahl."],
+    ["Spannung nicht mitgeführt", "Bei niedriger Frequenz und voller Spannung wird die Wicklung zu heiß. Die U/f-Kennlinie muss passen."],
+    ["Zwischenkreis nicht entladen", "Auch nach dem Abschalten stehen dort noch gefährliche Spannungen. Wartezeit einhalten und nachmessen."]
+  ],
+  beispiel:{aufgabe:"Motor mit 2 Polpaaren soll mit 900 1/min laufen. Welche Frequenz?",
+    schritte:["f = n · p : 60","900 · 2 = 1800","1800 : 60"],
+    ergebnis:"30 Hz"},
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Frequenzumrichter aus Gleichrichter, Zwischenkreis und Wechselrichter">
+    <rect x="26" y="60" width="76" height="54" rx="9" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="2"/>
+    <text x="64" y="83" text-anchor="middle" font-size="11" fill="currentColor">Gleich-</text>
+    <text x="64" y="98" text-anchor="middle" font-size="11" fill="currentColor">richter</text>
+    <rect x="122" y="60" width="76" height="54" rx="9" fill="#10a37f" fill-opacity=".26" stroke="#10a37f" stroke-width="2"/>
+    <text x="160" y="83" text-anchor="middle" font-size="11" fill="currentColor">Zwischen-</text>
+    <text x="160" y="98" text-anchor="middle" font-size="11" fill="currentColor">kreis</text>
+    <rect x="218" y="60" width="76" height="54" rx="9" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="2"/>
+    <text x="256" y="83" text-anchor="middle" font-size="11" fill="currentColor">Wechsel-</text>
+    <text x="256" y="98" text-anchor="middle" font-size="11" fill="currentColor">richter</text>
+    <circle cx="342" cy="87" r="28" fill="none" stroke="currentColor" stroke-width="2"/>
+    <text x="342" y="92" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">M</text>
+    <g stroke="currentColor" stroke-width="2">
+      <path d="M6 87h20M102 87h20M198 87h20M294 87h20"/>
+    </g>
+    <text x="12" y="76" font-size="10" fill="currentColor">50 Hz</text>
+    <text x="304" y="76" font-size="10" fill="#10a37f">f frei</text>
+    <text x="200" y="146" text-anchor="middle" font-size="12" fill="currentColor">Aus fester Netzfrequenz wird eine einstellbare</text>
+    <text x="200" y="170" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">n = 60 · f : p</text>
+  </svg>`
+},
+
+"Instandhaltung und Verfügbarkeit": {
+  worum:"Verfügbarkeit sagt, welchen Anteil der Zeit eine Anlage tatsächlich produzieren kann. Instandhaltung ist die Arbeit, die diesen Anteil hochhält.",
+  wozu:[
+    "In der Fertigung wird die Verfügbarkeit gemessen und ausgewertet. Wenn du in der Instandhaltung arbeitest, wird deine Arbeit genau an dieser Zahl gemessen.",
+    "Auch für die Entscheidung reparieren oder ersetzen brauchst du sie: Eine Maschine mit 90 % Verfügbarkeit steht 876 Stunden im Jahr still. Das kann teurer sein als eine neue."
+  ],
+  einfach:[
+    "Instandhaltung besteht aus vier Teilen: Wartung, Inspektion, Instandsetzung und Verbesserung.",
+    "Wartung heißt vorbeugen — schmieren, reinigen, nachziehen. Inspektion heißt feststellen, wie der Zustand ist.",
+    "Instandsetzung heißt reparieren, nachdem etwas ausgefallen ist. Verbesserung heißt, die Anlage so zu ändern, dass der Fehler nicht wiederkommt.",
+    "Man unterscheidet zwei Strategien. Ausfallbedingt heißt: reparieren, wenn es kaputt ist. Vorbeugend heißt: tauschen, bevor es kaputt geht.",
+    "Vorbeugend ist teurer im Material, aber billiger im Stillstand. Bei einer Produktionsanlage lohnt sich das fast immer.",
+    "Die MTBF ist die mittlere Laufzeit zwischen zwei Ausfällen. Die MTTR ist die mittlere Reparaturdauer.",
+    "Die Verfügbarkeit ist der Anteil der Laufzeit an der Gesamtzeit: V = MTBF : (MTBF + MTTR).",
+    "Wichtig zum Einordnen: Ein Jahr hat 8760 Stunden. 99 % Verfügbarkeit bedeuten trotzdem noch 88 Stunden Stillstand.",
+    "Deshalb wird um jedes Zehntelprozent gerungen — der Unterschied zwischen 99 % und 99,5 % sind 44 Stunden im Jahr."
+  ],
+  begriffe:[
+    ["MTBF","Mean Time Between Failures — mittlere Laufzeit zwischen zwei Ausfällen."],
+    ["MTTR","Mean Time To Repair — mittlere Reparaturdauer."],
+    ["Verfügbarkeit","Anteil der Zeit, in dem die Anlage einsatzbereit ist, in Prozent."],
+    ["Vorbeugende Instandhaltung","Bauteile tauschen, bevor sie ausfallen."]
+  ],
+  tabelle:{
+    titel:"Was Verfügbarkeit im Jahr bedeutet",
+    kopf:["Verfügbarkeit","Stillstand im Jahr","Einordnung"],
+    zeilen:[
+      ["90 %","876 h","über einen Monat Stillstand"],
+      ["95 %","438 h","gut zwei Wochen"],
+      ["98 %","175 h","gut eine Woche"],
+      ["99 %","88 h","knapp vier Tage"],
+      ["99,5 %","44 h","knapp zwei Tage"],
+      ["99,9 %","8,8 h","ein Arbeitstag"]
+    ],
+    fuss:"Gerechnet auf 8760 Stunden im Jahr, also Dauerbetrieb. Jedes Zehntelprozent mehr halbiert den Stillstand fast."
+  },
+  regeln:[
+    "V = MTBF : (MTBF + MTTR)   — Verfügbarkeit als Anteil",
+    "Für Prozent mit 100 malnehmen.",
+    "Ausfallzeit im Jahr = 8760 h · (100 % − V) : 100",
+    "MTBF groß und MTTR klein heißt hohe Verfügbarkeit.",
+    "Vorbeugende Instandhaltung erhöht die MTBF, gute Ersatzteilhaltung senkt die MTTR.",
+    "Die Verfügbarkeit erreicht nie 100 %.",
+    "Ein Jahr hat 8760 Stunden."
+  ],
+  rezept:[
+    "Schreib MTBF und MTTR mit derselben Zeiteinheit auf.",
+    "Rechne die Zyklusdauer aus: MTBF + MTTR.",
+    "Teile die MTBF durch die Zyklusdauer.",
+    "Für Prozent mit 100 malnehmen.",
+    "Für die Ausfallzeit im Jahr: 8760 h mal Ausfallanteil.",
+    "Prüf: Das Ergebnis muss unter 100 % liegen."
+  ],
+  fehler:[
+    ["Durch die MTBF statt durch die Summe geteilt", "Im Nenner steht die gesamte Zykluszeit, also Laufzeit plus Reparaturzeit."],
+    ["Verschiedene Zeiteinheiten gemischt", "MTBF in Stunden und MTTR in Minuten geht nicht. Erst auf dieselbe Einheit bringen."],
+    ["100 % als Ergebnis akzeptiert", "Solange es Reparaturen gibt, ist die Verfügbarkeit kleiner als 100 %."],
+    ["Ausfallzeit unterschätzt", "1 % klingt wenig — im Dauerbetrieb sind das 88 Stunden im Jahr."]
+  ],
+  beispiel:{aufgabe:"MTBF 95 h, MTTR 5 h. Wie hoch ist die Verfügbarkeit?",
+    schritte:["Zyklus: 95 + 5 = 100 h","95 : 100 = 0,95","mal 100"],
+    ergebnis:"95 % — das sind 438 Stunden Stillstand im Jahr"},
+  bild:`<svg viewBox="0 0 400 180" ${SVG_STIL} role="img" aria-label="Zeitstrahl aus Laufzeit und Reparaturzeit">
+    <rect x="30" y="56" width="266" height="34" rx="6" fill="#10a37f" fill-opacity=".4" stroke="#10a37f" stroke-width="2"/>
+    <rect x="296" y="56" width="74" height="34" rx="6" fill="#10a37f" fill-opacity=".1" stroke="#10a37f" stroke-width="2" stroke-dasharray="5 4"/>
+    <text x="163" y="79" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">MTBF — läuft</text>
+    <text x="333" y="79" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">MTTR</text>
+    <path d="M30 106h340" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M38 101l-8 5 8 5M362 101l8 5-8 5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <text x="200" y="126" text-anchor="middle" font-size="11" fill="currentColor">ein vollständiger Zyklus</text>
+    <text x="200" y="156" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">V = MTBF : (MTBF + MTTR)</text>
+  </svg>`
+},
+
+"Angebot kalkulieren": {
+  worum:"Ein Angebot besteht aus Material, Arbeitszeit und Zuschlägen. Am Ende steht ein Preis, mit dem du selbst noch etwas verdienst.",
+  wozu:[
+    "Sobald du einen Auftrag selbstständig abwickelst, musst du wissen, was er kostet. Wer zu knapp kalkuliert, arbeitet umsonst.",
+    "In der Prüfung ist die Kalkulation ein fester Bestandteil des kaufmännischen Teils — und im späteren Meisterbetrieb ist sie täglich Brot."
+  ],
+  einfach:[
+    "Ein Angebot hat zwei große Blöcke: Material und Lohn.",
+    "Die Lohnkosten rechnest du aus Stunden mal Stundenverrechnungssatz. Der Satz enthält schon Lohn, Lohnnebenkosten und einen Anteil an den Gemeinkosten.",
+    "Beim Material rechnest du mit dem Einkaufspreis und schlägst einen Prozentsatz auf — für Lagerung, Beschaffung und Verschnitt.",
+    "Lohn und Material zusammen ergeben die Nettosumme. Das ist die Zahl, mit der intern gerechnet wird.",
+    "Auf die Nettosumme kommt die Mehrwertsteuer, derzeit 19 %. Das Ergebnis ist der Bruttobetrag — das, was der Kunde bezahlt.",
+    "Die Mehrwertsteuer gehört nicht dir. Sie wird ans Finanzamt weitergegeben.",
+    "Gibst du einen Rabatt, wird er vom Nettobetrag abgezogen, bevor die Mehrwertsteuer gerechnet wird.",
+    "Vergiss die Anfahrt und die kleinen Verbrauchsmaterialien nicht. Sie summieren sich."
+  ],
+  begriffe:[
+    ["Stundenverrechnungssatz","Was eine Arbeitsstunde dem Kunden berechnet wird — mehr als der reine Lohn."],
+    ["Netto","Der Betrag ohne Mehrwertsteuer."],
+    ["Brutto","Der Betrag mit Mehrwertsteuer — das, was der Kunde zahlt."],
+    ["Materialzuschlag","Aufschlag auf den Einkaufspreis für Beschaffung, Lagerung und Verschnitt."]
+  ],
+  tabelle:{
+    titel:"Aufbau eines Angebots",
+    kopf:["Position","Rechnung","Beispiel"],
+    zeilen:[
+      ["Lohn","Stunden · Stundensatz","8 h · 60 € = 480 €"],
+      ["Material","Einkauf + Zuschlag","250 € + 10 % = 275 €"],
+      ["Summe netto","Lohn + Material","755 €"],
+      ["Mehrwertsteuer","netto · 19 %","143,45 €"],
+      ["Summe brutto","netto + MwSt","898,45 €"]
+    ],
+    fuss:"Rabatte werden vom Nettobetrag abgezogen, bevor die Mehrwertsteuer gerechnet wird. Der Mehrwertsteuersatz kann sich ändern — prüf den aktuellen Wert."
+  },
+  regeln:[
+    "Lohnkosten = Stunden · Stundenverrechnungssatz",
+    "Materialkosten = Einkaufspreis + Zuschlag",
+    "Netto = Lohn + Material",
+    "Mehrwertsteuer = Netto · 19 : 100",
+    "Brutto = Netto + Mehrwertsteuer",
+    "Rabatt wird vom Netto abgezogen, vor der Mehrwertsteuer.",
+    "Die Mehrwertsteuer gehört dem Finanzamt, nicht dem Betrieb.",
+    "Anfahrt und Kleinmaterial nicht vergessen."
+  ],
+  rezept:[
+    "Schätz die benötigten Arbeitsstunden ehrlich ein — lieber etwas großzügig.",
+    "Rechne die Lohnkosten: Stunden mal Stundenverrechnungssatz.",
+    "Liste das Material auf und rechne den Zuschlag darauf.",
+    "Addiere Lohn und Material zur Nettosumme.",
+    "Rechne die Mehrwertsteuer auf die Nettosumme.",
+    "Addiere beides zum Bruttobetrag — das ist der Angebotspreis."
+  ],
+  fehler:[
+    ["Mehrwertsteuer auf den Bruttobetrag gerechnet", "Sie wird immer auf den Nettobetrag gerechnet. Sonst zahlst du sie doppelt."],
+    ["Nur den reinen Lohn angesetzt", "Der Stundenverrechnungssatz enthält Lohnnebenkosten und Gemeinkosten. Der reine Stundenlohn reicht nicht."],
+    ["Material ohne Zuschlag weitergegeben", "Beschaffung, Lagerung und Verschnitt kosten Geld. Ohne Zuschlag legst du drauf."],
+    ["Anfahrt und Kleinmaterial vergessen", "Ein paar Klemmen, Kabelbinder und die Fahrzeit summieren sich über einen Auftrag deutlich."]
+  ],
+  beispiel:{aufgabe:"8 Stunden zu 60 €, Material 250 €. Wie hoch ist der Bruttobetrag?",
+    schritte:["Lohn: 8 · 60 = 480 €","Netto: 480 + 250 = 730 €","MwSt: 730 · 0,19 = 138,70 €","Brutto: 730 + 138,70"],
+    ergebnis:"868,70 €"},
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Angebot aus Lohn, Material, Netto und Brutto">
+    <rect x="24" y="40" width="96" height="42" rx="9" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="2"/>
+    <text x="72" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Lohn</text>
+    <text x="72" y="75" text-anchor="middle" font-size="12" fill="currentColor">480 €</text>
+    <rect x="24" y="96" width="96" height="42" rx="9" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="2"/>
+    <text x="72" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Material</text>
+    <text x="72" y="131" text-anchor="middle" font-size="12" fill="currentColor">250 €</text>
+    <path d="M124 61h30v50h-30M154 86h24" stroke="#10a37f" stroke-width="2" fill="none"/>
+    <path d="M174 81l9 5-9 5" fill="#10a37f"/>
+    <rect x="188" y="64" width="90" height="44" rx="9" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+    <text x="233" y="84" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Netto</text>
+    <text x="233" y="99" text-anchor="middle" font-size="12" fill="currentColor">730 €</text>
+    <path d="M282 86h20" stroke="#10a37f" stroke-width="2"/>
+    <path d="M298 81l9 5-9 5" fill="#10a37f"/>
+    <rect x="312" y="64" width="76" height="44" rx="9" fill="#10a37f" fill-opacity=".42" stroke="#10a37f" stroke-width="2"/>
+    <text x="350" y="84" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Brutto</text>
+    <text x="350" y="99" text-anchor="middle" font-size="11" fill="currentColor">868,70 €</text>
+    <text x="298" y="126" text-anchor="middle" font-size="10" fill="currentColor">+ 19 % MwSt</text>
+    <text x="200" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Die Mehrwertsteuer kommt zuletzt — und gehört dem Finanzamt</text>
+  </svg>`
 }
 
 };
@@ -14703,7 +16137,7 @@ function render(gewaehlt){
         <div class="begriffe">${e.begriffe.map(([w,b]) => `<div class="begriff"><b>${w}</b><span>${b}</span></div>`).join("")}</div>
       </div>` : ""}
       ${e.wozu ? `<div class="card wozukarte">
-        <p class="ueberschrift">${SYM.ziel} Wozu brauchst du das?</p>
+        <p class="ueberschrift"><span aria-hidden="true">${SYM.ziel}</span> Wozu brauchst du das?</p>
         ${(Array.isArray(e.wozu) ? e.wozu : [e.wozu]).map(t => `<p class="einfachtext">${t}</p>`).join("")}
       </div>` : ""}
       ${e.bild ? `<div class="card"><p class="ueberschrift">Zum Anschauen</p>${e.bild}</div>` : ""}
