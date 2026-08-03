@@ -967,6 +967,8 @@
   .fusslink{background:none;border:none;padding:5px 0;font:inherit;font-size:15px;
     color:var(--ink);text-align:left;cursor:pointer}
   .fusslink:hover{color:var(--ac-dark);text-decoration:underline}
+  .fussstand{max-width:1140px;margin:8px auto 0;font-size:12.5px;color:var(--soft);
+    opacity:.75;text-align:center}
   .fussschluss{max-width:1140px;margin:26px auto 0;padding-top:20px;border-top:1px solid var(--line);
     font-size:13.5px;color:var(--soft);text-align:center}
   .card.faellig{border-color:var(--ac)}
@@ -14224,6 +14226,10 @@ function fussleisteHtml(){
         </div>
       </div>
       <p class="fussschluss">Endlich kapiert · Ein Lernprojekt aus Deutschland</p>
+      ${/* Damit man auf einen Blick sieht, welche Fassung gerade geladen ist.
+            Sonst rätselt man, ob eine Änderung schon draußen ist oder ob der
+            Browser noch die alte Seite aus dem Zwischenspeicher zeigt. */""}
+      <p class="fussstand">Fassung ${STAND} · ${baustelleStand().fertig} von ${baustelleStand().gesamt} Themen fertig</p>
     </footer>`;
 }
 /* ---------- Startseite der App (Übersicht) ---------- */
@@ -14522,6 +14528,9 @@ function uebersichtHtml(){
    Mehr musst du nicht ändern.
    ================================================================ */
 
+/* Datum der zuletzt veröffentlichten Fassung. Steht unten in der Fußleiste,
+   damit man sofort sieht, ob der Browser die aktuelle Seite geladen hat. */
+const STAND = "3. August 2026";
 const WARTUNG      = true;
 const WARTUNG_HART = false;
 

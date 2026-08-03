@@ -1,6 +1,6 @@
 /* Service Worker für „Endlich kapiert" — macht die App installierbar
    und offline-tauglich (nur die App selbst wird gecacht, Supabase bleibt live). */
-const CACHE = "ek-app-v2";   /* hochzählen, wenn sich der Service Worker ändert */
+const CACHE = "ek-app-v3";   /* hochzählen, wenn sich der Service Worker ändert */
 
 self.addEventListener("install", () => self.skipWaiting());
 
