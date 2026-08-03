@@ -869,11 +869,417 @@ const elektroProben = {
   }
 };
 
+/* Zweite Runde Elektroniker — dieselbe Machart: aus dem Aufgabentext
+   noch einmal nachrechnen und mit der angegebenen Lösung vergleichen. */
+
+/* Faktor eines Vorsatzes vor einer Einheit: „kΩ" -> 1000, „mA" -> 0,001 */
+const vorsatzFaktor = (einheit) => {
+  const tabelle = {G:1e9, M:1e6, k:1e3, m:1e-3, "µ":1e-6, "μ":1e-6, n:1e-9, p:1e-12};
+  if (einheit.length > 1 && tabelle[einheit[0]] !== undefined) return tabelle[einheit[0]];
+  return 1;
+};
+/* Normreihe der Leiterquerschnitte */
+const NORMQUERSCHNITTE = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50];
+/* Wie viele der vier Zeilen einer Wahrheitstabelle eine 1 ergeben */
+const LOGIK_EINSEN = {NAND:3, NOR:1, XOR:2, UND:1, ODER:3};
+const logikGatter = (txt) => ["NAND", "NOR", "XOR", "UND", "ODER"].find(n => txt.includes(n)) || null;
+
+const elektroProben2 = {
+
+  "Einheiten und Vorsätze": (a) => {
+    const t = vorne(a), l = loes(a);
+    const m = t.match(/Wandle ([\d.,]+) (\S+) in (\S+) um/);
+    if (!m) return "konnte die Umrechnung nicht lesen: " + t;
+    const wert = dz(m[1]), von = m[2], nach = m[3].replace(/[.,]$/, "");
+    if (von.replace(/^[GMkmµμnp]/, "") !== nach.replace(/^[GMkmµμnp]/, ""))
+      return `die Grundeinheiten passen nicht zusammen: ${von} und ${nach}`;
+    const soll = wert * vorsatzFaktor(von) / vorsatzFaktor(nach);
+    return stimmt(soll, l, Math.abs(soll) * 1e-9 + 1e-9);
+  },
+
+  "Leiterquerschnitt": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const laenge = groesse(t, "m"), i = groesse(t, "A"), duz = groesse(t, "V");
+    const flaeche = groesse(t, "mm²");
+    if (laenge === null) return "Länge nicht gefunden: " + t;
+    if (i === null && flaeche !== null)                              // Leitungswiderstand
+      return stimmt(Math.round(laenge / (56 * flaeche) * 1000) / 1000, l, 1e-6);
+    if (i !== null && flaeche !== null)                              // Spannungsfall
+      return stimmt(Math.round(2 * laenge * i / (56 * flaeche) * 100) / 100, l, 1e-6);
+    if (i !== null && duz !== null) {                                // Mindestquerschnitt
+      const roh = 2 * laenge * i / (56 * duz);
+      const norm = NORMQUERSCHNITTE.find(n => n >= roh - 1e-9);
+      if (!norm) return `der gerechnete Querschnitt ${roh} mm² liegt über der Normreihe`;
+      if (!/Normquerschnitt/.test(f)) return "die Frage passt nicht zum Aufgabentyp: " + f;
+      return stimmt(norm, l);
+    }
+    return "konnte die Angaben nicht lesen: " + t;
+  },
+
+  "Schutzmaßnahmen": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    if (/Schleifenimpedanz/.test(t)) {                               // Kurzschlussstrom
+      const zs = groesse(t, "Ω");
+      if (zs === null) return "Schleifenimpedanz nicht lesbar: " + t;
+      return stimmt(Math.round(230 / zs * 100) / 100, l, 1e-6);
+    }
+    const ma = groesse(t, "mA");
+    if (ma === null) return "Auslösestrom nicht lesbar: " + t;
+    const idn = ma / 1000;
+    if (/Erder hat/.test(t)) {                                       // Berührungsspannung
+      const ra = groesse(t, "Ω");
+      if (ra === null) return "Erderwiderstand nicht lesbar: " + t;
+      return stimmt(Math.round(ra * idn * 100) / 100, l, 1e-6);
+    }
+    if (!/50 V/.test(f)) return "in der Frage fehlt der Grenzwert 50 V: " + f;
+    return stimmt(Math.round(50 / idn * 100) / 100, l, 1e-6);        // höchster Erderwiderstand
+  },
+
+  "Gemischte Schaltungen": (a) => {
+    const t = vorne(a), l = loes(a);
+    const r1 = dz((t.match(/R1 = ([\d.,]+)/) || [])[1]);
+    const r2 = dz((t.match(/R2 = ([\d.,]+)/) || [])[1]);
+    const r3 = dz((t.match(/R3 = ([\d.,]+)/) || [])[1]);
+    if (![r1, r2, r3].every(Number.isFinite)) return "konnte die Widerstände nicht lesen: " + t;
+    const rp = Math.round(r2 * r3 / (r2 + r3) * 1000) / 1000;
+    const rg = Math.round((r1 + rp) * 1000) / 1000;
+    if (rg <= r1) return "der Gesamtwiderstand muss größer sein als der Reihenanteil allein";
+    const u = groesse(t, "V");
+    if (u === null) return stimmt(rg, l, 1e-6);                      // Gesamtwiderstand
+    return stimmt(Math.round(u / rg * 1000) / 1000, l, 1e-3);        // Gesamtstrom
+  },
+
+  "Wirkungsgrad": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const watt = alleGroessen(t, "W");
+    const proz = dz((t.match(/([\d.,]+)\s*%/) || [])[1]);
+    if (isFinite(proz)) {                                            // aufgenommene Leistung
+      if (watt.length < 1) return "abgegebene Leistung nicht lesbar: " + t;
+      return stimmt(Math.round(watt[0] / (proz / 100) * 100) / 100, l, 1e-6);
+    }
+    if (watt.length < 2) return "es fehlt eine der beiden Leistungen: " + t;
+    const [pzu, pab] = watt;
+    if (pab >= pzu) return "die abgegebene Leistung ist nicht kleiner als die aufgenommene";
+    if (/Verlustleistung/.test(f)) return stimmt(Math.round((pzu - pab) * 100) / 100, l, 1e-6);
+    return stimmt(Math.round(pab / pzu * 10000) / 100, l, 1e-6);     // Wirkungsgrad in Prozent
+  },
+
+  "Motor und Drehzahl": (a) => {
+    const t = vorne(a), l = loes(a);
+    if (/Polpaar/.test(t)) {                                         // Synchrondrehzahl
+      const p = dz((t.match(/hat ([\d.,]+) Polpaar/) || [])[1]);
+      if (!isFinite(p)) return "Polpaarzahl nicht lesbar: " + t;
+      return stimmt(60 * 50 / p, l);
+    }
+    const n = alleGroessen(t, "1/min");
+    if (/Synchrondrehzahl/.test(t)) {                                // Schlupf
+      if (n.length < 2) return "es fehlt eine der beiden Drehzahlen: " + t;
+      const [ns, nl] = n;
+      if (nl >= ns) return "der Läufer darf nicht schneller sein als das Drehfeld";
+      return stimmt(Math.round((ns - nl) / ns * 10000) / 100, l, 1e-6);
+    }
+    const pkw = groesse(t, "kW");                                    // Drehmoment
+    if (pkw === null || !n.length) return "Leistung oder Drehzahl nicht lesbar: " + t;
+    return stimmt(Math.round(9550 * pkw / n[0] * 100) / 100, l, 1e-6);
+  },
+
+  "Messen im Betrieb": (a) => {
+    const t = vorne(a), l = loes(a);
+    if (/Klasse/.test(t)) {                                          // Messabweichung
+      const klasse = dz((t.match(/Klasse ([\d.,]+)/) || [])[1]);
+      const ende = dz((t.match(/Messbereich ([\d.,]+)/) || [])[1]);
+      if (!isFinite(klasse) || !isFinite(ende)) return "Klasse oder Bereich nicht lesbar: " + t;
+      return stimmt(Math.round(klasse * ende / 100 * 1000) / 1000, l, 1e-6);
+    }
+    const ri = dz((t.match(/([\d.,]+) Ω Innenwiderstand/) || [])[1]);
+    if (!isFinite(ri)) return "Innenwiderstand nicht lesbar: " + t;
+    const ganz = roh(a.text);
+    if (/Spannungsmesser/.test(t)) {                                 // Vorwiderstand
+      const u = alleGroessen(ganz, "V");
+      if (u.length < 2) return "die beiden Messbereiche fehlen: " + t;
+      const n = u[1] / u[0];
+      if (n <= 1) return "der neue Bereich muss größer sein als der alte";
+      return stimmt(ri * (n - 1), l, 1e-6);
+    }
+    const i = alleGroessen(ganz, "A");                               // Nebenwiderstand
+    if (i.length < 2) return "die beiden Messbereiche fehlen: " + t;
+    const n = i[1] / i[0];
+    if (n <= 1) return "der neue Bereich muss größer sein als der alte";
+    const soll = Math.round(ri / (n - 1) * 10000) / 10000;
+    if (soll >= ri) return "der Nebenwiderstand muss kleiner sein als der Innenwiderstand";
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Energiekosten": (a) => {
+    const t = vorne(a), l = loes(a);
+    const preis = dz((t.match(/([\d.,]+)\s*€/) || [])[1]);
+    const watt = alleGroessen(t, "W");
+    if (!isFinite(preis) || !watt.length) return "Preis oder Leistung nicht lesbar: " + t;
+    if (/rund um die Uhr/.test(t))                                   // Dauerverbraucher
+      return stimmt(Math.round(Math.round(watt[0] / 1000 * 8760 * 1000) / 1000 * preis * 100) / 100, l, 1e-6);
+    if (/altes Gerät/.test(t)) {                                     // Ersparnis
+      const h = groesse(t, "Stunden");
+      if (watt.length < 2 || h === null) return "Leistungen oder Stunden nicht lesbar: " + t;
+      if (watt[1] >= watt[0]) return "das neue Gerät müsste weniger verbrauchen als das alte";
+      const kwh = Math.round((watt[0] - watt[1]) / 1000 * h * 1000) / 1000;
+      return stimmt(Math.round(kwh * preis * 100) / 100, l, 1e-6);
+    }
+    const h = groesse(t, "Stunden"), tage = groesse(t, "Tage");      // Kosten über einen Zeitraum
+    if (h === null || tage === null) return "Stunden oder Tage nicht lesbar: " + t;
+    const kwh = Math.round(watt[0] / 1000 * h * tage * 1000) / 1000;
+    return stimmt(Math.round(kwh * preis * 100) / 100, l, 1e-6);
+  },
+
+  "Logikverknüpfungen": (a) => {
+    const t = vorne(a), l = loes(a);
+    if (/Eingänge/.test(t) && /Eingangskombinationen/.test(hinten(a)) && !logikGatter(t)) {
+      const n = dz((t.match(/hat ([\d.,]+) Eingänge/) || [])[1]);    // 2 hoch n
+      if (!isFinite(n)) return "Zahl der Eingänge nicht lesbar: " + t;
+      return stimmt(Math.pow(2, n), l);
+    }
+    const quelle = t + " " + a.schritte.map(s => ((s.optionen.find(o => o.ok) || {}).t) || "").join(" ");
+    const gatter = logikGatter(quelle);
+    if (!gatter) return "konnte das Gatter nicht bestimmen: " + quelle.slice(0, 120);
+    /* Wahrheitstabelle unabhängig aufstellen, statt der Angabe zu glauben */
+    const regel = {UND:(x, y) => x && y, ODER:(x, y) => x || y, NAND:(x, y) => !(x && y),
+                   NOR:(x, y) => !(x || y), XOR:(x, y) => x !== y}[gatter];
+    let einsen = 0;
+    for (const x of [false, true]) for (const y of [false, true]) if (regel(x, y)) einsen++;
+    if (einsen !== LOGIK_EINSEN[gatter]) return `interner Widerspruch bei ${gatter}`;
+    return stimmt(einsen, l);
+  },
+
+  "Fehler suchen": (a) => {
+    const t = vorne(a), l = loes(a);
+    if (/Gemessen werden/.test(t)) {                                 // überbrückter Widerstand
+      const r = alleGroessen(t, "Ω");
+      if (r.length !== 4) return "es sollten drei Widerstände und ein Messwert sein: " + t;
+      const soll = r[0] + r[1] + r[2], gemessen = r[3];
+      const weg = Math.round((soll - gemessen) * 1000) / 1000;
+      if (!r.slice(0, 3).some(x => Math.abs(x - weg) < 1e-9))
+        return `die Differenz ${weg} Ω ist keiner der drei Widerstände`;
+      return stimmt(weg, l, 1e-6);
+    }
+    const u = groesse(t, "V");
+    if (u === null) return "Betriebsspannung nicht lesbar: " + t;
+    if (/unterbrochen/.test(t)) return stimmt(u, l);                 // volle Spannung am Fehler
+    const teile = alleGroessen(t, "V").slice(1);                     // schlechte Klemmstelle
+    if (teile.length < 2) return "die beiden Teilspannungen fehlen: " + t;
+    const rest = Math.round((u - teile[0] - teile[1]) * 100) / 100;
+    if (rest <= 0) return "an der Klemmstelle bliebe nichts übrig — dann gäbe es keinen Fehler";
+    return stimmt(rest, l, 1e-6);
+  }
+};
+
+/* -------------------------------------------------------------- MATHE II
+   Die neun nachgereichten Mathe-Themen werden genauso nachgerechnet wie
+   die Elektroniker-Themen: aus dem Aufgabentext heraus, ohne die Angaben
+   des Erzeugers zu übernehmen. */
+
+/* Zahlenreihe hinter einem Doppelpunkt einsammeln: „Noten: 3, 2, 5" -> [3,2,5] */
+const zahlenListe = (t) => {
+  const nach = t.split(":").slice(1).join(":");
+  return (nach.match(/-?[\d.,]*\d/g) || []).map(dz).filter(Number.isFinite);
+};
+const PI = Math.PI;
+
+const matheProben2 = {
+
+  "Zuordnungen": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    if (/Arbeiter/.test(t)) {                                        // antiproportional
+      const a1 = dz((t.match(/([\d.,]+) Arbeiter/) || [])[1]);
+      const t1 = groesse(t, "Tage");
+      const a2 = dz((f.match(/brauchen ([\d.,]+) Arbeiter/) || [])[1]);
+      if (![a1, t1, a2].every(Number.isFinite)) return "konnte die Angaben nicht lesen: " + t;
+      if (a1 === a2) return "alte und neue Arbeiterzahl sind gleich — dann gibt es nichts zu rechnen";
+      return stimmt(a1 * t1 / a2, l, 1e-6);
+    }
+    if (/Wertetabelle/.test(t)) {                                    // proportional über den Faktor
+      const paare = (t.match(/([\d.,]+) → ([\d.,]+)/g) || []).map(s => s.split("→").map(x => dz(x.trim())));
+      if (paare.length < 2) return "die Wertetabelle ist nicht lesbar: " + t;
+      const k = paare[0][1] / paare[0][0];
+      for (const [x, y] of paare)
+        if (Math.abs(y / x - k) > 1e-9) return `die Tabelle ist gar nicht proportional: ${x} → ${y}`;
+      const x4 = dz((f.match(/gehört zu ([\d.,]+)/) || [])[1]);
+      if (!Number.isFinite(x4)) return "gesuchter Wert nicht lesbar: " + f;
+      return stimmt(Math.round(k * x4 * 100) / 100, l, 1e-6);
+    }
+    const m = t.match(/^([\d.,]+) (.+?) kosten ([\d.,]+)/);           // proportional über den Stückpreis
+    const n2 = dz((f.match(/Was kosten ([\d.,]+)/) || [])[1]);
+    if (!m || !Number.isFinite(n2)) return "konnte die Angaben nicht lesen: " + t;
+    const n1 = dz(m[1]), p1 = dz(m[3]);
+    if (n1 === n2) return "alte und neue Stückzahl sind gleich";
+    return stimmt(Math.round(p1 / n1 * n2 * 100) / 100, l, 1e-6);
+  },
+
+  "Dreiecke": (a) => {
+    const t = vorne(a), l = loes(a);
+    if (/Spitze/.test(t)) {                                          // Basiswinkel
+      const spitze = groesse(t, "°");
+      if (spitze === null) return "Spitzenwinkel nicht lesbar: " + t;
+      const basis = (180 - spitze) / 2;
+      if (basis <= 0) return "der Spitzenwinkel ist zu groß für ein Dreieck";
+      return stimmt(basis, l);
+    }
+    if (/α =/.test(t)) {                                             // dritter Winkel
+      const w = alleGroessen(t, "°");
+      if (w.length < 2) return "die beiden Winkel sind nicht lesbar: " + t;
+      const dritter = 180 - w[0] - w[1];
+      if (dritter <= 0) return `die beiden Winkel ergeben schon ${w[0] + w[1]}° — kein Dreieck möglich`;
+      return stimmt(dritter, l);
+    }
+    const s = alleGroessen(t, "cm");                                 // Umfang
+    if (s.length !== 3) return "es sollten drei Seiten sein: " + t;
+    const [x, y, zz] = [...s].sort((p, q) => p - q);
+    if (x + y <= zz) return `mit ${s.join(", ")} lässt sich kein Dreieck bilden`;
+    return stimmt(s[0] + s[1] + s[2], l);
+  },
+
+  "Wahrscheinlichkeit": (a) => {
+    const t = vorne(a), l = loes(a);
+    if (/Versuchen/.test(hinten(a))) {                               // erwartete Anzahl
+      const m = t.match(/([\d.,]+) von ([\d.,]+)/);
+      const versuche = dz((hinten(a).match(/bei ([\d.,]+) Versuchen/) || [])[1]);
+      if (!m || !Number.isFinite(versuche)) return "konnte die Angaben nicht lesen: " + t;
+      const g = dz(m[1]), moeglich = dz(m[2]);
+      if (g > moeglich) return "es kann nicht mehr günstige als mögliche Fälle geben";
+      return stimmt(Math.round(versuche * g / moeglich * 100) / 100, l, 1e-6);
+    }
+    if (/davon sind/.test(t)) {                                      // Gegenwahrscheinlichkeit
+      const gesamt = dz((t.match(/([\d.,]+) Kugeln/) || [])[1]);
+      const rot = dz((t.match(/davon sind ([\d.,]+)/) || [])[1]);
+      if (![gesamt, rot].every(Number.isFinite)) return "konnte die Angaben nicht lesen: " + t;
+      if (rot > gesamt) return "es können nicht mehr rote als Kugeln insgesamt sein";
+      return stimmt(Math.round((gesamt - rot) / gesamt * 10000) / 100, l, 1e-6);
+    }
+    const rot = dz((t.match(/([\d.,]+) rote/) || [])[1]);            // Laplace
+    const blau = dz((t.match(/([\d.,]+) blaue/) || [])[1]);
+    const gruen = dz((t.match(/([\d.,]+) grüne/) || [])[1]);
+    if (![rot, blau, gruen].every(Number.isFinite)) return "konnte die Kugeln nicht zählen: " + t;
+    return stimmt(Math.round(rot / (rot + blau + gruen) * 10000) / 100, l, 1e-6);
+  },
+
+  "Kreis": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const d = dz((t.match(/([\d.,]+) m Durchmesser/) || [])[1]);
+    if (Number.isFinite(d)) {                                        // Umfang aus dem Durchmesser
+      if (!/Einfassung/.test(f)) return "die Frage passt nicht zum Aufgabentyp: " + f;
+      return stimmt(Math.round(PI * d * 100) / 100, l, 1e-6);
+    }
+    const r = dz((t.match(/Radius ([\d.,]+)/) || [])[1]);
+    if (!Number.isFinite(r)) return "Radius nicht lesbar: " + t;
+    if (/Flächeninhalt/.test(f)) return stimmt(Math.round(PI * r * r * 100) / 100, l, 1e-6);
+    if (/Umfang/.test(f)) return stimmt(Math.round(2 * PI * r * 100) / 100, l, 1e-6);
+    return "unbekannte Fragestellung: " + f;
+  },
+
+  "Gleichungssysteme": (a) => {
+    const t = roh(a.text), l = loes(a);
+    if (/Karten/.test(t)) {                                          // Textaufgabe
+      const anzahl = dz((t.match(/([\d.,]+) Karten/) || [])[1]);
+      const summe = dz((t.match(/zusammen ([\d.,]+)/) || [])[1]);
+      const pe = dz((t.match(/Erwachsenenkarte kostet ([\d.,]+)/) || [])[1]);
+      const pk = dz((t.match(/Kinderkarte ([\d.,]+)/) || [])[1]);
+      if (![anzahl, summe, pe, pk].every(Number.isFinite)) return "konnte die Angaben nicht lesen: " + t;
+      if (pe === pk) return "beide Kartenarten kosten gleich viel — dann ist die Aufgabe nicht lösbar";
+      const e = (summe - pk * anzahl) / (pe - pk);
+      if (e < 0 || e > anzahl || Math.abs(e - Math.round(e)) > 1e-9)
+        return `es kommen ${e} Erwachsenenkarten heraus — das kann nicht stimmen`;
+      return stimmt(e, l);
+    }
+    const einsetz = t.match(/y = ([\d.,]+)x \+ ([\d.,]+)/);
+    if (einsetz) {                                                   // Einsetzungsverfahren
+      const koeff = t.match(/([\d.,]+)x \+ y = ([\d.,]+)/);
+      if (!koeff) return "die zweite Gleichung ist nicht lesbar: " + t;
+      const av = dz(einsetz[1]), bv = dz(einsetz[2]), c = dz(koeff[1]), d2 = dz(koeff[2]);
+      const x = (d2 - bv) / (av + c);
+      /* Probe in beiden Gleichungen, nicht nur Formel nachbauen */
+      const y = av * x + bv;
+      if (Math.abs(c * x + y - d2) > 1e-9) return "die gefundene Lösung erfüllt Gleichung II nicht";
+      return stimmt(x, l, 1e-9);
+    }
+    const g1 = t.match(/x \+ y = ([\d.,]+)/);                        // Additionsverfahren
+    const g2 = t.match(/2x - y = (-?[\d.,]+)/);
+    if (!g1 || !g2) return "die beiden Gleichungen sind nicht lesbar: " + t;
+    const s = dz(g1[1]), tt = dz(g2[1]);
+    const x = (s + tt) / 3, y = s - x;
+    if (Math.abs(2 * x - y - tt) > 1e-9) return "die gefundene Lösung erfüllt Gleichung II nicht";
+    return stimmt(x, l, 1e-9);
+  },
+
+  "Körper berechnen": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const masse = alleGroessen(t, "cm");
+    if (/Zylinder/.test(t)) {                                        // Zylindervolumen
+      if (masse.length < 2) return "Radius oder Höhe nicht lesbar: " + t;
+      const [r, h] = masse;
+      return stimmt(Math.round(PI * r * r * h * 100) / 100, l, 1e-6);
+    }
+    if (masse.length !== 3) return "es sollten drei Kantenlängen sein: " + t;
+    const [x, y, zz] = masse;
+    if (/Oberfläche/.test(f)) return stimmt(2 * (x * y + x * zz + y * zz), l);
+    if (/Volumen/.test(f)) return stimmt(x * y * zz, l);
+    return "unbekannte Fragestellung: " + f;
+  },
+
+  "Strahlensätze": (a) => {
+    const t = vorne(a), l = loes(a);
+    if (/Stab/.test(t)) {                                            // Schattenmessung
+      const m = alleGroessen(t, "m");
+      if (m.length < 3) return "Stab, Stabschatten oder Baumschatten fehlen: " + t;
+      const [stab, schattenStab, schattenBaum] = m;
+      if (schattenStab <= 0) return "der Stabschatten darf nicht null sein";
+      return stimmt(Math.round(stab * schattenBaum / schattenStab * 100) / 100, l, 1e-6);
+    }
+    const cm = alleGroessen(t, "cm");                                // Verhältnisgleichung
+    if (cm.length < 3) return "es sollten drei Strecken gegeben sein: " + t;
+    const [s1, s2, s3] = cm;
+    if (s1 <= 0) return "die erste Strecke darf nicht null sein";
+    const soll = Math.round(s3 * (s2 / s1) * 100) / 100;
+    /* Probe: das Verhältnis muss auf beiden Strahlen gleich sein */
+    if (Math.abs(s2 / s1 - soll / s3) > 1e-6) return "die Verhältnisse stimmen nicht überein";
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Kugel und Kegel": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const masse = alleGroessen(t, "cm");
+    if (/Kegel/.test(t)) {                                           // Kegelvolumen
+      if (masse.length < 2) return "Radius oder Höhe nicht lesbar: " + t;
+      const [r, h] = masse;
+      return stimmt(Math.round(1 / 3 * PI * r * r * h * 100) / 100, l, 1e-6);
+    }
+    if (!masse.length) return "Radius nicht lesbar: " + t;
+    const r = masse[0];
+    if (/Oberfläche/.test(f)) return stimmt(Math.round(4 * PI * r * r * 100) / 100, l, 1e-6);
+    if (/Volumen/.test(f)) return stimmt(Math.round(4 / 3 * PI * r * r * r * 100) / 100, l, 1e-6);
+    return "unbekannte Fragestellung: " + f;
+  },
+
+  "Statistik": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    const werte = zahlenListe(t);
+    if (werte.length < 4) return "die Werteliste ist nicht lesbar: " + t;
+    const sortiert = [...werte].sort((p, q) => p - q);
+    if (/Spannweite/.test(f)) return stimmt(sortiert[sortiert.length - 1] - sortiert[0], l);
+    if (/Median/.test(f)) {
+      if (werte.length % 2 === 0) return "bei gerader Anzahl ist der Median nicht eindeutig ablesbar";
+      return stimmt(sortiert[(werte.length - 1) / 2], l);
+    }
+    if (/Durchschnitt/.test(f)) {
+      const summe = werte.reduce((s, w) => s + w, 0);
+      return stimmt(Math.round(summe / werte.length * 100) / 100, l, 1e-6);
+    }
+    return "unbekannte Fragestellung: " + f;
+  }
+};
+
 /* --------------------------------------------------------------- LAUF */
 const NICHT_PRUEFBAR = {
 };
 
-const proben = { ...matheProben, ...deutschProben, ...elektroProben };
+const proben = { ...matheProben, ...matheProben2, ...deutschProben, ...elektroProben, ...elektroProben2 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
   const probe = proben[thema];

@@ -1,0 +1,6 @@
+# Screenshots aus den Playwright-Prüfläufen. Die entstehen beim Testen im
+# Projektordner und gehören nicht ins Repository — die App besteht nur aus
+# index.html, sw.js, icon.svg und den Prüfskripten.
+*.png
+*.jpg
+node_modules/
