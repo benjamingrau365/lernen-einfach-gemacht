@@ -231,6 +231,23 @@
   .btn.ghost:hover{color:var(--ac-dark);border-color:var(--ac);background:none}
   .btn.full{display:block;width:100%;text-align:center}
 
+  .vokeinstieg{border:1.5px solid var(--englisch);background:var(--englisch-soft)}
+  .vokeinstieg .tag{background:var(--englisch);color:#fff}
+  /* Vokabeltrainer */
+  .vokwahl{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .vokknopf{padding:9px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);
+    color:var(--ink);font-size:14.5px;font-weight:600;cursor:pointer;font-family:inherit}
+  .vokknopf:hover{border-color:var(--ac)}
+  .vokknopf.an{background:var(--ac-soft);border-color:var(--ac);color:var(--ac-dark)}
+  .vokkarte{text-align:center;padding-top:26px;padding-bottom:26px}
+  .vokwort{font-size:clamp(26px,7vw,36px);font-weight:800;line-height:1.2;margin:10px 0;color:var(--ink)}
+  .vokkopf{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .vokhilfe{margin:12px 0 0;padding:11px 13px;border-radius:11px;background:var(--bg);font-size:14.5px}
+  .vokergebnis{margin:0;font-size:19px;font-weight:800}
+  .vokgut{border-color:var(--gut)}
+  .vokgut .vokergebnis{color:var(--gut-dark)}
+  .vokschlecht{border-color:var(--red)}
+  .vokschlecht .vokergebnis{color:var(--red)}
   .fortschritt{display:flex;gap:5px;margin-bottom:18px}
   .fortschritt i{flex:1;height:5px;border-radius:3px;background:var(--line)}
   .fortschritt i.an{background:var(--fach)}
@@ -1240,6 +1257,21 @@ const KATALOG = {
       8:["Konjunktiv","Satzreihe und Satzgefüge","Kommas bei Infinitivgruppen","Erörterung","Sachtexte auswerten"],
       9:["Stilmittel erkennen","Gedichte deuten","Bewerbung schreiben","Textgebundene Erörterung","Fremdwörter"],
       10:["Literaturepochen","Interpretation","Sprachwandel","Rede und Rhetorik","Facharbeit"]
+    }
+  },
+  /* Englisch ist zweigeteilt: Die Grammatik läuft wie jedes andere Fach über
+     Themen und Aufgaben. Die Vokabeln haben einen eigenen Bereich mit eigenem
+     Trainer — Wörter lernt man anders als Regeln. */
+  englisch: {
+    name:"Englisch", bereich:"Schule", stufen:[5,6,7,8,9,10], stufenwort:"Klasse",
+    vokabeln:true,
+    themen:{
+      5:["Simple Present","to be und to have got","Fragen bilden","Verneinung","Plural und Artikel"],
+      6:["Simple Past","Present Progressive","Steigerung von Adjektiven","some und any","Possessivbegleiter"],
+      7:["Present Perfect","will future und going to","Modalverben","Adverbien bilden","Mengenangaben"],
+      8:["Past Progressive","Bedingungssätze Typ 1 und 2","Passiv","Relativsätze","Reflexivpronomen"],
+      9:["Past Perfect","Indirekte Rede","Gerundium und Infinitiv","Bedingungssätze Typ 3","Präpositionen"],
+      10:["Alle Zeiten im Überblick","Partizipialkonstruktionen","Passiv in allen Zeiten","Wortbildung","Falsche Freunde"]
     }
   },
   /* Ausbildung: dieselbe Mechanik, nur heißen die Stufen Lehrjahr statt Klasse.
@@ -10204,6 +10236,386 @@ Object.assign(AUFGABEN, {
         F(String(t.nr === 1 ? 6 : t.nr - 1), "Eine Stelle zu früh.")], 3)}]};
  }
 ]
+,
+
+/* ===================== ENGLISCH · KLASSE 5 ===================== */
+
+"Simple Present":[
+
+ /* Das -s in der dritten Person */
+ () => {
+   const f = pick([
+     {wer:"He", verb:"play", form:"plays", rest:"football every Saturday.", dritte:true},
+     {wer:"She", verb:"work", form:"works", rest:"in a bakery.", dritte:true},
+     {wer:"My brother", verb:"read", form:"reads", rest:"a book every week.", dritte:true},
+     {wer:"The dog", verb:"sleep", form:"sleeps", rest:"under the table.", dritte:true},
+     {wer:"We", verb:"play", form:"play", rest:"football every Saturday.", dritte:false},
+     {wer:"They", verb:"work", form:"work", rest:"in a bakery.", dritte:false},
+     {wer:"I", verb:"read", form:"read", rest:"a book every week.", dritte:false},
+     {wer:"My friends", verb:"sleep", form:"sleep", rest:"in a tent.", dritte:false}
+   ]);
+   return {
+    typ:"text",
+    text:`Setz das Verb <b>${f.verb}</b> richtig ein:<br><i>${f.wer} <span class='luecke'>___</span> ${f.rest}</i>`,
+    loesung: f.form,
+    schluss:"Merksatz: he, she, it — das s muss mit. Bei allen anderen bleibt das Verb, wie es ist.",
+    schritte:[
+     {frage:`Steht <b>${f.wer}</b> für he, she oder it?`,
+      tipp:"Ersetz das Subjekt durch he, she, it, we oder they.",
+      tipp2:f.dritte ? `${f.wer} lässt sich durch he, she oder it ersetzen.`
+                     : `${f.wer} lässt sich nicht durch he, she oder it ersetzen — es sind mehrere oder es bist du selbst.`,
+      optionen:[R(f.dritte ? "Ja" : "Nein", f.dritte ? "Richtig — dann kommt das s dran." : "Richtig — dann bleibt das Verb unverändert."),
+                F(f.dritte ? "Nein" : "Ja", "Schau noch einmal hin, wer da handelt."),
+                F("Das spielt keine Rolle", "Doch — genau daran hängt das s.")]},
+     {frage:`Wie heißt <b>${f.verb}</b> hier also?`,
+      tippAntwort: f.form,
+      tipp:f.dritte ? "he, she, it — das s muss mit." : "Ohne he, she, it bleibt das Verb, wie es ist.",
+      tipp2:`Es heißt „${f.form}“.`,
+      optionen:[R(f.form, "Richtig."),
+                F(f.dritte ? f.verb : f.verb + "s", f.dritte ? "Hier fehlt das s." : "Das s gehört nur zu he, she, it."),
+                F(f.verb + "ing", "Das wäre die Verlaufsform, die kommt erst später dran.")]}]};
+ },
+
+ /* Signalwörter erkennen */
+ () => {
+   const f = pick([
+     {satz:"every day", passt:true},
+     {satz:"always", passt:true},
+     {satz:"usually", passt:true},
+     {satz:"on Mondays", passt:true},
+     {satz:"never", passt:true},
+     {satz:"yesterday", passt:false},
+     {satz:"last week", passt:false},
+     {satz:"two years ago", passt:false}
+   ]);
+   return {
+    typ:"text",
+    text:`Passt das Signalwort <b>„${f.satz}“</b> zum Simple Present?<br>Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+    loesung: f.passt ? "ja" : "nein",
+    schluss:"Das Simple Present steht für alles, was regelmäßig passiert. Signalwörter wie yesterday zeigen dagegen auf die Vergangenheit.",
+    schritte:[
+     {frage:"Wofür benutzt man das <b>Simple Present</b>?",
+      tipp:"Es geht nicht um einen einzelnen Moment.",
+      tipp2:"Für alles, was regelmäßig oder immer wieder passiert.",
+      optionen:[R("Für regelmäßige Handlungen und Tatsachen", "Richtig."),
+                F("Für etwas, das gerade jetzt passiert", "Dafür gibt es das Present Progressive."),
+                F("Für etwas, das vorbei ist", "Dafür gibt es das Simple Past.")]},
+     {frage:`Und „${f.satz}“?`,
+      tippAntwort: f.passt ? "ja" : "nein",
+      tipp:"Zeigt das Wort auf etwas Regelmäßiges oder auf die Vergangenheit?",
+      tipp2:f.passt ? `„${f.satz}“ beschreibt etwas Wiederkehrendes — das passt.`
+                    : `„${f.satz}“ zeigt in die Vergangenheit — das passt nicht zum Simple Present.`,
+      optionen:[R(f.passt ? "ja" : "nein", f.passt ? "Richtig." : "Richtig — das gehört zum Simple Past."),
+                F(f.passt ? "nein" : "ja", "Schau noch einmal hin, worauf das Wort zeigt."),
+                F("manchmal", "Hier ist es eindeutig.")]}]};
+ }
+],
+
+"to be und to have got":[
+
+ /* Die richtige Form von to be */
+ () => {
+   const f = pick([
+     {wer:"I", form:"am"}, {wer:"He", form:"is"}, {wer:"She", form:"is"}, {wer:"It", form:"is"},
+     {wer:"You", form:"are"}, {wer:"We", form:"are"}, {wer:"They", form:"are"},
+     {wer:"My sister", form:"is"}, {wer:"My parents", form:"are"}, {wer:"The cat", form:"is"}
+   ]);
+   const rest = pick(["at home.", "very tired.", "in the garden.", "from Germany.", "twelve years old."]);
+   return {
+    typ:"text",
+    text:`Setz die richtige Form von <b>to be</b> ein:<br><i>${f.wer} <span class='luecke'>___</span> ${rest}</i>`,
+    loesung: f.form,
+    schluss:"to be hat nur drei Formen: am, is, are. I am, he/she/it is, alles andere are.",
+    schritte:[
+     {frage:"Wie viele Formen hat <b>to be</b> im Present?",
+      tipp:"Zähl sie auf: am, …",
+      tipp2:"Drei: am, is und are.",
+      optionen:[R("Drei: am, is, are", "Richtig."),
+                F("Eine: be", "„be“ ist die Grundform, sie steht nie allein im Satz."),
+                F("Zwei: is und are", "Für „I“ gibt es noch eine eigene Form.")]},
+     {frage:`Welche gehört zu <b>${f.wer}</b>?`,
+      tippAntwort: f.form,
+      tipp:"I am, he/she/it is, alles andere are.",
+      tipp2:`Zu ${f.wer} gehört „${f.form}“.`,
+      optionen: zieheVerschiedene([
+        R(f.form, "Richtig."),
+        F(f.form === "am" ? "is" : "am", f.form === "am" ? "„is“ gehört zu he, she, it." : "„am“ gehört nur zu I."),
+        F(f.form === "are" ? "is" : "are", "Das gehört zu einem anderen Subjekt.")], 3)}]};
+ },
+
+ /* have got oder has got */
+ () => {
+   const f = pick([
+     {wer:"He", form:"has got", dritte:true}, {wer:"She", form:"has got", dritte:true},
+     {wer:"My friend", form:"has got", dritte:true}, {wer:"The school", form:"has got", dritte:true},
+     {wer:"I", form:"have got", dritte:false}, {wer:"We", form:"have got", dritte:false},
+     {wer:"They", form:"have got", dritte:false}, {wer:"My parents", form:"have got", dritte:false}
+   ]);
+   const rest = pick(["a new bike.", "two dogs.", "a big garden.", "no time today."]);
+   return {
+    typ:"text",
+    text:`Setz <b>have got</b> oder <b>has got</b> ein:<br><i>${f.wer} <span class='luecke'>___</span> ${rest}</i>`,
+    loesung: f.form,
+    schluss:"have got heißt „haben“ im Sinn von besitzen. Auch hier gilt: he, she, it — das s muss mit, hier als has.",
+    schritte:[
+     {frage:`Steht <b>${f.wer}</b> für he, she oder it?`,
+      tipp:"Ersetz das Subjekt durch he, she, it, we oder they.",
+      tipp2:f.dritte ? `${f.wer} lässt sich durch he, she oder it ersetzen.`
+                     : `${f.wer} lässt sich nicht durch he, she oder it ersetzen.`,
+      optionen:[R(f.dritte ? "Ja" : "Nein", f.dritte ? "Richtig — dann heißt es has got." : "Richtig — dann heißt es have got."),
+                F(f.dritte ? "Nein" : "Ja", "Schau noch einmal hin, wer da etwas hat."),
+                F("Beides möglich", "Nein, es ist eindeutig.")]},
+     {frage:"Wie heißt es also?",
+      tippAntwort: f.form,
+      tipp:"he, she, it — das s muss mit.",
+      tipp2:`Es heißt „${f.form}“.`,
+      optionen:[R(f.form, "Richtig."),
+                F(f.dritte ? "have got" : "has got", f.dritte ? "„have got“ gehört zu I, you, we und they." : "„has got“ gehört nur zu he, she, it."),
+                F("haves got", "Diese Form gibt es nicht.")]}]};
+ }
+],
+
+"Fragen bilden":[
+
+ /* do oder does */
+ () => {
+   const f = pick([
+     {wer:"he", hilf:"Does", dritte:true}, {wer:"she", hilf:"Does", dritte:true},
+     {wer:"your brother", hilf:"Does", dritte:true}, {wer:"the bus", hilf:"Does", dritte:true},
+     {wer:"you", hilf:"Do", dritte:false}, {wer:"they", hilf:"Do", dritte:false},
+     {wer:"we", hilf:"Do", dritte:false}, {wer:"your parents", hilf:"Do", dritte:false}
+   ]);
+   const verb = pick(["like", "play", "know", "need", "want"]);
+   const rest = pick(["football?", "the answer?", "more time?", "this song?"]);
+   return {
+    typ:"text",
+    text:`Setz <b>do</b> oder <b>does</b> ein:<br><i><span class='luecke'>___</span> ${f.wer} ${verb} ${rest}</i>`,
+    loesung: f.hilf,
+    schluss:"Im Simple Present braucht jede Frage do oder does. Und Achtung: Steht does vorn, verliert das Verb sein s.",
+    schritte:[
+     {frage:"Womit beginnt eine Frage im Simple Present?",
+      tipp:"Es ist ein Hilfsverb.",
+      tipp2:"Mit do oder does — je nach Subjekt.",
+      optionen:[R("Mit do oder does", "Richtig."),
+                F("Mit dem Verb", "Das geht nur bei to be und den Modalverben."),
+                F("Mit dem Subjekt", "Dann wäre es keine Frage, sondern eine Aussage.")]},
+     {frage:`Welches gehört zu <b>${f.wer}</b>?`,
+      tipp:"he, she, it — das s muss mit, hier als does.",
+      tipp2:`Zu ${f.wer} gehört „${f.hilf}“.`,
+      optionen:[R(f.hilf, "Richtig."),
+                F(f.dritte ? "Do" : "Does", f.dritte ? "„Do“ gehört zu I, you, we und they." : "„Does“ gehört nur zu he, she, it."),
+                F("Are", "„Are“ steht bei to be, nicht bei einem Vollverb.")]},
+     {frage:`Wie heißt das Verb in dieser Frage — <b>${verb}</b> oder <b>${verb}s</b>?`,
+      tippAntwort: verb,
+      tipp:"Das s steckt schon im Hilfsverb.",
+      tipp2:`Nach ${f.hilf.toLowerCase()} bleibt das Verb in der Grundform: ${verb}.`,
+      optionen:[R(verb, "Richtig — das s steht nur einmal, nämlich im does."),
+                F(verb + "s", "Doppelt gemoppelt: Das s steckt schon in does."),
+                F(verb + "ing", "Das wäre die Verlaufsform.")]}]};
+ },
+
+ /* Das passende Fragewort */
+ () => {
+   const f = pick([
+     {frage:"___ is your English teacher?", antwort:"Mrs Brown.", wort:"Who", was:"nach einer Person"},
+     {frage:"___ do you live?", antwort:"In Hamburg.", wort:"Where", was:"nach dem Ort"},
+     {frage:"___ does the film start?", antwort:"At eight o'clock.", wort:"When", was:"nach der Zeit"},
+     {frage:"___ are you late?", antwort:"Because I missed the bus.", wort:"Why", was:"nach dem Grund"},
+     {frage:"___ do you go to school?", antwort:"By bike.", wort:"How", was:"nach der Art und Weise"},
+     {frage:"___ is your favourite subject?", antwort:"Maths.", wort:"What", was:"nach einer Sache"}
+   ]);
+   return {
+    typ:"text",
+    text:`Welches Fragewort passt?<br><i><span class='luecke'>___</span> ${f.frage.replace("___ ", "")}</i><br>Antwort: <i>${f.antwort}</i>`,
+    loesung: f.wort,
+    schluss:"Das Fragewort richtet sich nach der Antwort. Schau, wonach gefragt wird — Person, Ort, Zeit, Grund oder Art und Weise.",
+    schritte:[
+     {frage:"Woran erkennst du das richtige Fragewort?",
+      tipp:"Schau auf die Antwort.",
+      tipp2:"An der Antwort: Ist es eine Person, ein Ort, eine Zeit, ein Grund?",
+      optionen:[R("An dem, wonach gefragt wird", "Richtig."),
+                F("An der Länge der Frage", "Damit hat es nichts zu tun."),
+                F("Am Verb", "Das Verb ändert sich nicht mit dem Fragewort.")]},
+     {frage:`Die Antwort lautet „${f.antwort}“ — wonach wird also gefragt?`,
+      tipp:"Ordne die Antwort ein.",
+      tipp2:`Es wird ${f.was} gefragt.`,
+      optionen: zieheVerschiedene([
+        R(f.was, "Richtig."),
+        F(f.was === "nach dem Ort" ? "nach der Zeit" : "nach dem Ort", "Das passt nicht zur Antwort."),
+        F(f.was === "nach einer Person" ? "nach dem Grund" : "nach einer Person", "Das passt nicht zur Antwort.")], 3)},
+     {frage:"Wie heißt das Fragewort?",
+      tippAntwort: f.wort,
+      tipp:"Who, where, when, why, how oder what?",
+      tipp2:`Es ist „${f.wort}“.`,
+      optionen: zieheVerschiedene([
+        R(f.wort, "Richtig."),
+        F(f.wort === "Who" ? "What" : "Who", "Das fragt nach etwas anderem."),
+        F(f.wort === "Where" ? "When" : "Where", "Das fragt nach etwas anderem.")], 3)}]};
+ }
+],
+
+"Verneinung":[
+
+ /* don't oder doesn't */
+ () => {
+   const f = pick([
+     {wer:"He", kurz:"doesn't", lang:"does not", dritte:true},
+     {wer:"She", kurz:"doesn't", lang:"does not", dritte:true},
+     {wer:"My brother", kurz:"doesn't", lang:"does not", dritte:true},
+     {wer:"The shop", kurz:"doesn't", lang:"does not", dritte:true},
+     {wer:"I", kurz:"don't", lang:"do not", dritte:false},
+     {wer:"We", kurz:"don't", lang:"do not", dritte:false},
+     {wer:"They", kurz:"don't", lang:"do not", dritte:false},
+     {wer:"My friends", kurz:"don't", lang:"do not", dritte:false}
+   ]);
+   const verb = pick(["like", "play", "know", "eat", "watch"]);
+   const rest = pick(["tennis.", "meat.", "the answer.", "that film."]);
+   return {
+    typ:"text",
+    text:`Verneine den Satz. Setz die Kurzform ein:<br><i>${f.wer} <span class='luecke'>___</span> ${verb} ${rest}</i>`,
+    loesung: f.kurz,
+    schluss:"Die Verneinung im Simple Present braucht immer do oder does. Das Vollverb bleibt dabei in der Grundform.",
+    schritte:[
+     {frage:"Was braucht die Verneinung im Simple Present?",
+      tipp:"Dasselbe Hilfsverb wie die Frage.",
+      tipp2:"do oder does, dazu not.",
+      optionen:[R("do not oder does not", "Richtig."),
+                F("Nur not", "„not“ allein steht nur bei to be und den Modalverben."),
+                F("no", "„no“ verneint ein Nomen, kein Verb.")]},
+     {frage:`Und das Verb — <b>${verb}</b> oder <b>${verb}s</b>?`,
+      tipp:"Das s steckt schon im Hilfsverb.",
+      tipp2:`Nach ${f.kurz} bleibt das Verb in der Grundform: ${verb}.`,
+      optionen:[R(verb, "Richtig."),
+                F(verb + "s", "Doppelt: Das s steht schon im doesn't."),
+                F(verb + "ing", "Das wäre die Verlaufsform.")]},
+     /* Die Kurzform steht bewusst am Schluss: Nur der letzte Schritt wird
+        eingetippt, und genau sie soll man selbst hinschreiben. */
+     {frage:`Welche Kurzform gehört zu <b>${f.wer}</b>?`,
+      tippAntwort: f.kurz,
+      tipp:"he, she, it — das s muss mit, hier als doesn't.",
+      tipp2:`Zu ${f.wer} gehört „${f.kurz}“ (${f.lang}).`,
+      optionen:[R(f.kurz, "Richtig."),
+                F(f.dritte ? "don't" : "doesn't", f.dritte ? "„don't“ gehört zu I, you, we und they." : "„doesn't“ gehört nur zu he, she, it."),
+                F("not", "Allein steht „not“ hier nicht.")]}]};
+ },
+
+ /* Verneinung von to be */
+ () => {
+   const f = pick([
+     {wer:"I", form:"am not", kurz:"'m not"}, {wer:"He", form:"is not", kurz:"isn't"},
+     {wer:"She", form:"is not", kurz:"isn't"}, {wer:"It", form:"is not", kurz:"isn't"},
+     {wer:"You", form:"are not", kurz:"aren't"}, {wer:"We", form:"are not", kurz:"aren't"},
+     {wer:"They", form:"are not", kurz:"aren't"}
+   ]);
+   const rest = pick(["at home.", "ready yet.", "from England.", "tired."]);
+   return {
+    typ:"text",
+    text:`Verneine mit <b>to be</b>. Schreib die <b>Langform</b>:<br><i>${f.wer} <span class='luecke'>___</span> ${rest}</i>`,
+    loesung: f.form,
+    schluss:"Bei to be braucht es kein do. Das not steht einfach hinter am, is oder are.",
+    schritte:[
+     {frage:"Braucht <b>to be</b> ein do zum Verneinen?",
+      tipp:"Probier es im Kopf: „He does not be“ — klingt das richtig?",
+      tipp2:"Nein. to be verneint sich allein, das not steht direkt dahinter.",
+      optionen:[R("Nein, not steht direkt dahinter", "Richtig."),
+                F("Ja, wie bei allen Verben", "to be ist die Ausnahme."),
+                F("Nur in Fragen", "Auch dort nicht.")]},
+     {frage:`Wie heißt die Langform bei <b>${f.wer}</b>?`,
+      tippAntwort: f.form,
+      tipp:"Erst die Form von to be, dann not.",
+      tipp2:`Es heißt „${f.form}“ — kurz „${f.kurz}“.`,
+      optionen: zieheVerschiedene([
+        R(f.form, `Richtig — kurz „${f.kurz}“.`),
+        F(f.form === "am not" ? "is not" : "am not", "Das gehört zu einem anderen Subjekt."),
+        F(f.form === "are not" ? "is not" : "are not", "Das gehört zu einem anderen Subjekt.")], 3)}]};
+ }
+],
+
+"Plural und Artikel":[
+
+ /* Pluralbildung */
+ () => {
+   const f = pick([
+     {ein:"book", viele:"books", regel:"einfach -s"},
+     {ein:"bus", viele:"buses", regel:"nach s, x, ch, sh kommt -es"},
+     {ein:"box", viele:"boxes", regel:"nach s, x, ch, sh kommt -es"},
+     {ein:"watch", viele:"watches", regel:"nach s, x, ch, sh kommt -es"},
+     {ein:"city", viele:"cities", regel:"Konsonant + y wird zu -ies"},
+     {ein:"baby", viele:"babies", regel:"Konsonant + y wird zu -ies"},
+     {ein:"boy", viele:"boys", regel:"Vokal + y bleibt, nur -s"},
+     {ein:"child", viele:"children", regel:"unregelmäßig"},
+     {ein:"man", viele:"men", regel:"unregelmäßig"},
+     {ein:"woman", viele:"women", regel:"unregelmäßig"},
+     {ein:"foot", viele:"feet", regel:"unregelmäßig"},
+     {ein:"tooth", viele:"teeth", regel:"unregelmäßig"}
+   ]);
+   return {
+    typ:"text",
+    text:`Wie heißt der <b>Plural</b> von <b>${f.ein}</b>?`,
+    loesung: f.viele,
+    schluss:"Die meisten Wörter bekommen nur ein -s. Die Ausnahmen sind überschaubar — und die unregelmäßigen muss man auswendig lernen.",
+    schritte:[
+     {frage:`Worauf endet <b>${f.ein}</b>?`,
+      tipp:"Schau auf den letzten Buchstaben.",
+      tipp2:`Es endet auf „${f.ein.slice(-1)}“ — ${f.regel}.`,
+      optionen: zieheVerschiedene([
+        R(`auf „${f.ein.slice(-1)}“`, "Richtig."),
+        F(`auf „${f.ein.slice(0, 1)}“`, "Das ist der erste Buchstabe, nicht der letzte."),
+        F("auf einen Vokal", f.ein.slice(-1).match(/[aeiou]/) ? "Stimmt zwar, aber das ist nicht der entscheidende Punkt." : "Nein, das ist ein Mitlaut.")], 3)},
+     {frage:"Welche Regel gilt hier?",
+      tipp:"Einfach -s, -es, -ies oder unregelmäßig?",
+      tipp2:f.regel,
+      optionen: zieheVerschiedene([
+        R(f.regel, "Richtig."),
+        F(f.regel === "einfach -s" ? "unregelmäßig" : "einfach -s", "Das trifft hier nicht zu."),
+        F(f.regel === "Konsonant + y wird zu -ies" ? "nach s, x, ch, sh kommt -es" : "Konsonant + y wird zu -ies", "Das trifft hier nicht zu.")], 3)},
+     {frage:`Wie heißt der Plural also?`,
+      tippAntwort: f.viele,
+      tipp:"Wende die Regel an.",
+      tipp2:`Es heißt „${f.viele}“.`,
+      optionen: zieheVerschiedene([
+        R(f.viele, "Richtig."),
+        F(f.ein + "s", f.viele === f.ein + "s" ? "" : "So einfach ist es hier nicht."),
+        F(f.ein + "es", f.viele === f.ein + "es" ? "" : "Das gilt nur nach s, x, ch und sh.")], 3)}]};
+ },
+
+ /* a oder an */
+ () => {
+   const f = pick([
+     {wort:"apple", art:"an", laut:"Vokal"}, {wort:"orange", art:"an", laut:"Vokal"},
+     {wort:"egg", art:"an", laut:"Vokal"}, {wort:"umbrella", art:"an", laut:"Vokal"},
+     {wort:"hour", art:"an", laut:"stummes h — gesprochen wie ein Vokal"},
+     {wort:"book", art:"a", laut:"Konsonant"}, {wort:"dog", art:"a", laut:"Konsonant"},
+     {wort:"teacher", art:"a", laut:"Konsonant"}, {wort:"school", art:"a", laut:"Konsonant"},
+     {wort:"university", art:"a", laut:"gesprochen wie ju — also ein Konsonantenlaut"}
+   ]);
+   return {
+    typ:"text",
+    text:`Setz <b>a</b> oder <b>an</b> ein:<br><i>This is <span class='luecke'>___</span> ${f.wort}.</i>`,
+    loesung: f.art,
+    schluss:"Entscheidend ist nicht der Buchstabe, sondern der Laut. Deshalb heißt es „an hour“, aber „a university“.",
+    schritte:[
+     {frage:"Wonach richtet sich <b>a</b> oder <b>an</b>?",
+      tipp:"Sprich das Wort einmal laut aus.",
+      tipp2:"Nach dem ersten Laut, nicht nach dem ersten Buchstaben.",
+      optionen:[R("Nach dem ersten Laut des Wortes", "Richtig — deshalb „an hour“, aber „a university“."),
+                F("Nach dem ersten Buchstaben", "Meistens passt das, aber nicht immer — genau da liegen die Fallen."),
+                F("Nach der Wortart", "Damit hat es nichts zu tun.")]},
+     {frage:`Womit beginnt <b>${f.wort}</b> beim Sprechen?`,
+      tipp:"Sprich es laut aus und hör auf den Anfang.",
+      tipp2:f.laut,
+      optionen: zieheVerschiedene([
+        R(f.laut, "Richtig."),
+        F(f.art === "an" ? "Konsonant" : "Vokal", "Sprich es noch einmal laut aus.")], 2)},
+     {frage:"Also a oder an?",
+      tippAntwort: f.art,
+      tipp:"Vokallaut → an. Konsonantenlaut → a.",
+      tipp2:`Es heißt „${f.art} ${f.wort}“.`,
+      optionen:[R(f.art, "Richtig."),
+                F(f.art === "a" ? "an" : "a", "Andersherum — hör noch einmal auf den Anfangslaut."),
+                F("the", "„the“ ist der bestimmte Artikel, hier ist der unbestimmte gefragt.")]}]};
+ }
+]
 });
 /* ---------- Erklärungen ----------
    Aufbau: worum · einfach (von ganz vorn) · begriffe (Wörter, die man kennen muss)
@@ -10211,7 +10623,775 @@ Object.assign(AUFGABEN, {
 
 const SVG_STIL = `style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto"`;
 
+/* ---------- Vokabeln ----------
+   Wörter lernt man anders als Regeln: nicht durch Herleiten, sondern durch
+   Wiedersehen. Deshalb haben sie einen eigenen Bereich mit eigenem Trainer.
+   Aufbau je Eintrag: [englisch, deutsch, Beispielsatz mit ___ für das Wort].
+   Der Beispielsatz ist die dritte Hilfestufe — er zeigt das Wort im Zusammen-
+   hang, ohne es zu verraten. */
+const VOKABELN = {
+  5: {
+    "Schule und Klassenzimmer": [
+      ["blackboard", "die Tafel", "The teacher writes on the ___."],
+      ["pencil", "der Bleistift", "Can I borrow your ___, please?"],
+      ["rubber", "der Radiergummi", "I need a ___ to correct my mistake."],
+      ["exercise book", "das Heft", "Open your ___ on page ten."],
+      ["break", "die Pause", "We play football during the ___."],
+      ["timetable", "der Stundenplan", "On Monday my ___ says maths first."],
+      ["homework", "die Hausaufgaben", "I do my ___ after dinner."],
+      ["classmate", "der Mitschüler", "My ___ helped me with the exercise."]
+    ],
+    "Familie und Zuhause": [
+      ["aunt", "die Tante", "My ___ is my mother's sister."],
+      ["uncle", "der Onkel", "My ___ drives a lorry."],
+      ["grandparents", "die Großeltern", "We visit my ___ every Sunday."],
+      ["kitchen", "die Küche", "Mum is cooking in the ___."],
+      ["garden", "der Garten", "We grow tomatoes in the ___."],
+      ["neighbour", "der Nachbar", "Our ___ has a very loud dog."],
+      ["bedroom", "das Schlafzimmer", "I share a ___ with my brother."]
+    ],
+    "Zahlen, Zeit und Wochentage": [
+      ["Wednesday", "der Mittwoch", "We have sports on ___."],
+      ["Thursday", "der Donnerstag", "___ comes after Wednesday."],
+      ["half past", "halb (nach)", "It is ___ seven — 7:30."],
+      ["quarter to", "Viertel vor", "It is a ___ nine — 8:45."],
+      ["month", "der Monat", "February is a short ___."],
+      ["year", "das Jahr", "There are twelve months in a ___."],
+      ["always", "immer", "She is ___ on time."]
+    ]
+  },
+  6: {
+    "Essen und Einkaufen": [
+      ["vegetables", "das Gemüse", "Eat your ___ — they are healthy."],
+      ["strawberry", "die Erdbeere", "A ___ is red and sweet."],
+      ["bakery", "die Bäckerei", "We buy fresh bread at the ___."],
+      ["expensive", "teuer", "These shoes are too ___ for me."],
+      ["cheap", "billig", "The market is ___ er than the shop."],
+      ["to order", "bestellen", "Shall we ___ a pizza tonight?"],
+      ["receipt", "der Kassenbon", "Keep the ___ in case it breaks."]
+    ],
+    "Freizeit und Hobbys": [
+      ["to practise", "üben", "You have to ___ every day to get better."],
+      ["swimming pool", "das Schwimmbad", "We go to the ___ on hot days."],
+      ["to collect", "sammeln", "My brother likes to ___ old coins."],
+      ["boring", "langweilig", "The film was really ___."],
+      ["exciting", "spannend", "The last minute of the match was ___."],
+      ["to join", "beitreten", "I want to ___ the football club."],
+      ["hiking", "das Wandern", "___ in the mountains is hard work."]
+    ],
+    "Wetter und Jahreszeiten": [
+      ["cloudy", "bewölkt", "It is grey and ___ today."],
+      ["thunderstorm", "das Gewitter", "We stayed inside during the ___."],
+      ["autumn", "der Herbst", "In ___ the leaves turn brown."],
+      ["fog", "der Nebel", "You cannot see far in this ___."],
+      ["to freeze", "frieren", "The lake will ___ tonight."],
+      ["temperature", "die Temperatur", "The ___ dropped below zero."]
+    ]
+  },
+  7: {
+    "Reisen und Verkehr": [
+      ["luggage", "das Gepäck", "Do not leave your ___ unattended."],
+      ["platform", "der Bahnsteig", "The train leaves from ___ four."],
+      ["to book", "buchen", "We should ___ the tickets early."],
+      ["abroad", "im Ausland", "She spent a year ___."],
+      ["journey", "die Reise", "The ___ takes about five hours."],
+      ["delay", "die Verspätung", "There is a ___ of twenty minutes."],
+      ["return ticket", "die Rückfahrkarte", "One ___ to Manchester, please."]
+    ],
+    "Umwelt": [
+      ["rubbish", "der Müll", "Please put the ___ in the bin."],
+      ["to waste", "verschwenden", "Do not ___ water."],
+      ["pollution", "die Verschmutzung", "Air ___ is worse in big cities."],
+      ["renewable", "erneuerbar", "Wind is a ___ source of energy."],
+      ["to recycle", "wiederverwerten", "We ___ paper and glass."],
+      ["climate", "das Klima", "The ___ is changing fast."],
+      ["endangered", "gefährdet", "Many species are ___."]
+    ],
+    "Gefühle und Meinungen": [
+      ["to agree", "zustimmen", "I ___ with what you said."],
+      ["to complain", "sich beschweren", "He likes to ___ about everything."],
+      ["worried", "besorgt", "She looked ___ before the test."],
+      ["proud", "stolz", "My parents are ___ of me."],
+      ["annoying", "nervig", "That noise is really ___."],
+      ["to suggest", "vorschlagen", "Can I ___ something else?"]
+    ]
+  },
+  8: {
+    "Arbeit und Beruf": [
+      ["apprenticeship", "die Ausbildung", "He started an ___ as an electrician."],
+      ["employer", "der Arbeitgeber", "My ___ pays for the training."],
+      ["employee", "der Arbeitnehmer", "Every ___ gets 25 days of holiday."],
+      ["wages", "der Lohn", "The ___ are paid at the end of the month."],
+      ["shift", "die Schicht", "I work the early ___ this week."],
+      ["to apply", "sich bewerben", "I want to ___ for that job."],
+      ["experience", "die Erfahrung", "She has ten years of ___."]
+    ],
+    "Technik und Werkzeug": [
+      ["screwdriver", "der Schraubendreher", "Pass me the ___, please."],
+      ["pliers", "die Zange", "Cut the wire with the ___."],
+      ["voltage", "die Spannung", "Check the ___ before you touch it."],
+      ["current", "die Stromstärke", "The ___ is measured in amperes."],
+      ["fuse", "die Sicherung", "The ___ blew when I switched it on."],
+      ["socket", "die Steckdose", "There is no ___ in this room."],
+      ["to switch off", "ausschalten", "Always ___ the power first."],
+      ["wire", "das Kabel", "The blue ___ is the neutral one."]
+    ],
+    "Medien": [
+      ["headline", "die Schlagzeile", "The ___ was on every front page."],
+      ["source", "die Quelle", "Always check your ___."],
+      ["to share", "teilen", "Do not ___ that photo."],
+      ["advertisement", "die Werbung", "The ___ before the video is annoying."],
+      ["reliable", "verlässlich", "Is that website ___?"],
+      ["privacy", "die Privatsphäre", "Think about your ___ online."]
+    ]
+  },
+  9: {
+    "Gesellschaft": [
+      ["equality", "die Gleichberechtigung", "They are fighting for ___."],
+      ["poverty", "die Armut", "___ is still a problem here."],
+      ["opportunity", "die Gelegenheit", "This is a great ___ for you."],
+      ["to volunteer", "sich ehrenamtlich engagieren", "She likes to ___ at the shelter."],
+      ["prejudice", "das Vorurteil", "We should fight ___."],
+      ["to belong", "gehören zu", "Everyone wants to ___ somewhere."]
+    ],
+    "Redewendungen": [
+      ["to make up your mind", "sich entscheiden", "You have to ___ before Friday."],
+      ["to take part in", "teilnehmen an", "Will you ___ the competition?"],
+      ["to look forward to", "sich freuen auf", "I ___ seeing you again."],
+      ["to get used to", "sich gewöhnen an", "You will ___ the early shift."],
+      ["to put up with", "ertragen", "I cannot ___ that noise any longer."],
+      ["by heart", "auswendig", "She knows the poem ___."]
+    ],
+    "Falsche Freunde": [
+      ["actually", "eigentlich, tatsächlich", "___ , I meant something else."],
+      ["eventually", "schließlich", "He ___ agreed after an hour."],
+      ["to become", "werden", "She wants to ___ an engineer."],
+      ["gift", "das Geschenk", "Thank you for the lovely ___."],
+      ["chef", "der Koch", "The ___ prepared the whole menu."],
+      ["handy", "praktisch", "That tool is really ___."]
+    ]
+  },
+  10: {
+    "Bewerbung auf Englisch": [
+      ["cover letter", "das Anschreiben", "Attach your CV and a short ___."],
+      ["curriculum vitae", "der Lebenslauf", "Send your ___ as a PDF."],
+      ["reference", "das Zeugnis, die Referenz", "Could you write me a ___?"],
+      ["to hire", "einstellen", "They decided to ___ two apprentices."],
+      ["skills", "die Fähigkeiten", "List your practical ___."],
+      ["position", "die Stelle", "I am applying for the ___ advertised."]
+    ],
+    "Diskutieren und Argumentieren": [
+      ["on the one hand", "einerseits", "___ it is cheaper."],
+      ["on the other hand", "andererseits", "___ it takes much longer."],
+      ["however", "jedoch", "It is expensive; ___ , it lasts longer."],
+      ["therefore", "deshalb", "The line is too long; ___ we need a thicker wire."],
+      ["to point out", "hinweisen auf", "I would like to ___ one problem."],
+      ["in my opinion", "meiner Meinung nach", "___ , that is the better solution."]
+    ],
+    "Technisches Englisch": [
+      ["maintenance", "die Instandhaltung", "Regular ___ prevents breakdowns."],
+      ["circuit", "der Stromkreis", "The ___ is open — nothing flows."],
+      ["earthing", "die Erdung", "Check the ___ before you start."],
+      ["measurement", "die Messung", "Write every ___ into the report."],
+      ["safety regulations", "die Sicherheitsvorschriften", "Follow the five ___ ."],
+      ["failure", "der Ausfall", "The ___ cost us eight hours."]
+    ]
+  }
+};
+
+/* Alle Wörter einer Klasse — oder aller Klassen — als flache Liste */
+function vokabelListe(klasse, thema){
+  const raus = [];
+  const klassen = klasse === "alle" ? Object.keys(VOKABELN) : [String(klasse)];
+  klassen.forEach(k => {
+    const themen = VOKABELN[k] || {};
+    Object.entries(themen).forEach(([t, woerter]) => {
+      if (thema && thema !== "alle" && t !== thema) return;
+      woerter.forEach(w => raus.push({en:w[0], de:w[1], satz:w[2], klasse:Number(k), thema:t}));
+    });
+  });
+  return raus;
+}
+/* Wie viele Wörter gibt es insgesamt? Steht auf der Übersichtsseite. */
+function vokabelAnzahl(){ return vokabelListe("alle").length; }
+
 const ERKLAERUNGEN = {
+
+"Simple Present": {
+  worum:"Das Simple Present ist die Zeitform für alles, was regelmäßig passiert. Die einzige Hürde ist das kleine s in der dritten Person.",
+  wozu:[
+    "Es ist die Zeitform, in der du über dich selbst sprichst: Wo du wohnst, was du machst, was dir gefällt. Fast jedes Gespräch auf Englisch fängt damit an.",
+    "Auch Bedienungsanleitungen, Datenblätter und Beschreibungen stehen im Simple Present. Wer die Form sicher hat, liest sie schneller."
+  ],
+  rezept:[
+    "Frag: Passiert das regelmäßig oder ist es eine Tatsache? Dann Simple Present.",
+    "Schau auf das Subjekt: Lässt es sich durch he, she oder it ersetzen?",
+    "Wenn ja, hängst du -s an das Verb.",
+    "Bei allen anderen bleibt das Verb unverändert.",
+    "Endet das Verb auf s, x, ch, sh oder o, wird aus dem -s ein -es: he watches, she goes.",
+    "Endet es auf Konsonant + y, wird daraus -ies: he tries."
+  ],
+  fehler:[
+    ["Das s vergessen", "„He play football“ ist der häufigste Fehler überhaupt. Merksatz: he, she, it — das s muss mit."],
+    ["Das s doppelt gesetzt", "In der Frage und in der Verneinung steckt das s schon im does. „Does he plays?“ ist falsch — es heißt „Does he play?“."],
+    ["Das s bei mehreren Personen angehängt", "„My parents works“ ist falsch. Das s gehört nur zur Einzahl der dritten Person."],
+    ["Simple Present und Present Progressive verwechselt", "„I play“ heißt: regelmäßig. „I am playing“ heißt: gerade jetzt."]
+  ],
+  einfach:[
+    "Das Simple Present benutzt du für alles, was immer wieder passiert.",
+    "Zum Beispiel: I play football every Saturday.",
+    "Auch für Tatsachen, die einfach so sind: Water boils at 100 degrees.",
+    "Das Verb bleibt in der Grundform — außer bei he, she und it.",
+    "Dort kommt ein s ans Ende: he plays, she works, it rains.",
+    "Merksatz: he, she, it — das s muss mit.",
+    "Bei I, you, we und they bleibt das Verb, wie es ist.",
+    "Endet das Verb auf s, x, ch, sh oder o, wird aus dem s ein es: he watches, she goes.",
+    "Endet es auf einen Mitlaut und y, wird daraus ies: he tries, she studies.",
+    "Signalwörter sind always, usually, often, sometimes, never, every day und on Mondays."
+  ],
+  begriffe:[
+    ["Simple Present","Die einfache Gegenwart — für Regelmäßiges und Tatsachen."],
+    ["Dritte Person Einzahl","he, she, it — und alles, was sich dadurch ersetzen lässt."],
+    ["Grundform","Das Verb ohne Endung: play, work, read."],
+    ["Signalwort","Ein Wort, das die Zeitform verrät: always, every day, never."]
+  ],
+  tabelle:{
+    titel:"Das Verb „to play“ im Simple Present",
+    kopf:["Person","Form","Warum"],
+    zeilen:[
+      ["I","play","keine Endung"],
+      ["you","play","keine Endung"],
+      ["he / she / it","plays","dritte Person Einzahl → s"],
+      ["we","play","keine Endung"],
+      ["they","play","keine Endung"],
+      ["my brother","plays","lässt sich durch he ersetzen"],
+      ["my brothers","play","Mehrzahl → wie they"]
+    ],
+    fuss:"Nur eine einzige Zeile hat eine Endung. Genau die wird am häufigsten vergessen."
+  },
+  regeln:[
+    "Simple Present für Regelmäßiges und Tatsachen.",
+    "he, she, it — das s muss mit.",
+    "Bei allen anderen bleibt das Verb unverändert.",
+    "Nach s, x, ch, sh, o kommt -es.",
+    "Konsonant + y wird zu -ies.",
+    "In Frage und Verneinung steht das s im do/does, nicht am Verb."
+  ],
+  beispiel:{aufgabe:"Setz „work“ richtig ein: My sister ___ in a bakery.",
+    schritte:["„My sister“ lässt sich durch „she“ ersetzen","Also dritte Person Einzahl","Das s muss mit"],
+    ergebnis:"works"},
+  spiel:{
+    titel:"Wer bekommt das s?",
+    hinweis:"Schieb durch die Personen und sieh, wo das s dazukommt.",
+    regler:[
+      {id:"p", name:"Person", von:0, bis:6, schritt:1, start:2},
+      {id:"v", name:"Verb", von:0, bis:4, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const P = [["I", false], ["you", false], ["he", true], ["she", true], ["it", true], ["we", false], ["they", false]];
+      const V = [["play", "plays"], ["work", "works"], ["watch", "watches"], ["go", "goes"], ["try", "tries"]];
+      const [person, dritte] = P[w.p];
+      const [grund, mitS] = V[w.v];
+      const form = dritte ? mitS : grund;
+      const besonders = dritte && mitS !== grund + "s";
+      return {
+        werte:[
+          {name:"Person", text:person},
+          {name:"Dritte Person Einzahl?", text: dritte ? "ja" : "nein"},
+          {name:"So heißt es", text:"<b>" + person + " " + form + "</b>"},
+          {name:"Endung", text: dritte ? (besonders ? "besondere Schreibung" : "-s") : "keine"}
+        ],
+        satz: !dritte ? `Bei <b>${person}</b> bleibt das Verb, wie es ist — kein s.`
+          : besonders ? `Bei <b>${person}</b> kommt das s dran, aber „${grund}“ verlangt eine besondere Schreibung: <b>${mitS}</b>.`
+          : `he, she, it — das s muss mit: <b>${form}</b>.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 170" ${SVG_STIL} role="img" aria-label="Nur he, she und it bekommen ein s">
+    ${[["I","play",false],["you","play",false],["he","plays",true],["she","plays",true],
+       ["it","plays",true],["we","play",false],["they","play",false]]
+      .map((r, i) => {
+        const y = 10 + i * 22;
+        return `<rect x="24" y="${y}" width="352" height="18" rx="4" fill="${r[2] ? "#10a37f" : "#94a3b8"}" fill-opacity="${r[2] ? ".28" : ".12"}" stroke="${r[2] ? "#10a37f" : "#94a3b8"}" stroke-width="1.2"/>
+          <text x="40" y="${y + 13}" font-size="11" font-weight="${r[2] ? "800" : "600"}" fill="currentColor">${r[0]}</text>
+          <text x="140" y="${y + 13}" font-size="11" font-weight="${r[2] ? "800" : "600"}" fill="currentColor">${r[1]}</text>
+          ${r[2] ? `<text x="360" y="${y + 13}" text-anchor="end" font-size="10" fill="currentColor">← das s</text>` : ""}`;
+      }).join("")}
+    <text x="200" y="166" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">he, she, it — das s muss mit.</text>
+  </svg>`
+},
+
+"to be und to have got": {
+  worum:"to be heißt „sein“, to have got heißt „haben“. Beide sind unregelmäßig — und beide brauchst du in fast jedem Satz.",
+  wozu:[
+    "Ohne to be kannst du nicht sagen, wer du bist, wie alt du bist oder wo du herkommst. Es ist das erste Verb, das man wirklich sicher können muss.",
+    "have got brauchst du für alles, was du besitzt oder dabeihast — vom Werkzeug bis zur Zeit."
+  ],
+  rezept:[
+    "Für to be: I am, he/she/it is, alle anderen are.",
+    "Für have got: he/she/it has got, alle anderen have got.",
+    "In der Verneinung braucht keins von beiden ein do.",
+    "to be: das not steht direkt dahinter — is not, are not.",
+    "have got: das not steht zwischen have und got — has not got.",
+    "In der Frage rückt die Form nach vorn: Are you ready? Have you got a pen?"
+  ],
+  fehler:[
+    ["do bei to be benutzt", "„He doesn't be tired“ gibt es nicht. Es heißt „He isn't tired“."],
+    ["have got mit haves gebildet", "„He haves got“ ist falsch. Die dritte Person heißt has got."],
+    ["to be und have got verwechselt", "Beim Alter sagt man auf Englisch „I am twelve“, nicht „I have twelve“."],
+    ["Bei Mehrzahl is benutzt", "„My parents is at home“ ist falsch. Mehrere Personen bekommen are."]
+  ],
+  einfach:[
+    "to be heißt „sein“. Es hat drei Formen: am, is und are.",
+    "I am, he is, she is, it is — und you, we, they bekommen are.",
+    "Auch ein Name oder ein Nomen zählt: My sister is, my parents are.",
+    "Verneint wird ohne do: I am not, he is not, they are not.",
+    "Kurzformen: I'm not, he isn't, they aren't.",
+    "In der Frage rückt die Form nach vorn: Are you tired? Is she at home?",
+    "to have got heißt „haben“ im Sinn von besitzen.",
+    "Es heißt have got — außer bei he, she, it, dort has got.",
+    "Verneint wird auch hier ohne do: I haven't got, he hasn't got.",
+    "Beim Alter benutzt man im Englischen to be: I am twelve years old."
+  ],
+  begriffe:[
+    ["to be","sein — die Formen am, is, are."],
+    ["to have got","haben, besitzen — have got und has got."],
+    ["Kurzform","I'm, he's, isn't, aren't, haven't."],
+    ["Hilfsverb","Ein Verb, das beim Fragen und Verneinen hilft."]
+  ],
+  tabelle:{
+    titel:"to be und to have got nebeneinander",
+    kopf:["Person","to be","to have got"],
+    zeilen:[
+      ["I","am","have got"],
+      ["you","are","have got"],
+      ["he / she / it","is","has got"],
+      ["we","are","have got"],
+      ["they","are","have got"],
+      ["Verneinung","is not / isn't","has not got / hasn't got"],
+      ["Frage","Is he …?","Has he got …?"]
+    ],
+    fuss:"Beide kommen ohne do aus. Genau das unterscheidet sie von allen anderen Verben."
+  },
+  regeln:[
+    "to be: I am, he/she/it is, alle anderen are.",
+    "have got: he/she/it has got, alle anderen have got.",
+    "Beide verneinen ohne do.",
+    "not steht direkt hinter am, is, are.",
+    "Bei have got steht not zwischen have und got.",
+    "Beim Alter: I am twelve, nicht I have twelve."
+  ],
+  beispiel:{aufgabe:"Setz ein: My parents ___ at home and they ___ two dogs.",
+    schritte:["„My parents“ ist Mehrzahl → are","Mehrzahl bei have got → have got"],
+    ergebnis:"are … have got"},
+  spiel:{
+    titel:"Beide Verben durchschieben",
+    hinweis:"Wähl die Person und sieh, welche Form von to be und have got dazugehört.",
+    regler:[
+      {id:"p", name:"Person", von:0, bis:7, schritt:1, start:2},
+      {id:"f", name:"Form (0 = Aussage, 1 = Verneinung, 2 = Frage)", von:0, bis:2, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const P = [["I","am","have got"], ["you","are","have got"], ["he","is","has got"],
+                 ["she","is","has got"], ["it","is","has got"], ["we","are","have got"],
+                 ["they","are","have got"], ["my parents","are","have got"]];
+      const [person, be, have] = P[w.p];
+      const haveTeil = have.split(" ")[0];
+      const beSatz = w.f === 0 ? `${person} ${be} tired.`
+        : w.f === 1 ? `${person} ${be} not tired.`
+        : `${be.charAt(0).toUpperCase() + be.slice(1)} ${person} tired?`;
+      const haveSatz = w.f === 0 ? `${person} ${have} a bike.`
+        : w.f === 1 ? `${person} ${haveTeil} not got a bike.`
+        : `${haveTeil.charAt(0).toUpperCase() + haveTeil.slice(1)} ${person} got a bike?`;
+      const NAMEN = ["Aussage", "Verneinung", "Frage"];
+      return {
+        werte:[
+          {name:"Form", text:NAMEN[w.f]},
+          {name:"to be", text:"<b>" + beSatz + "</b>"},
+          {name:"to have got", text:"<b>" + haveSatz + "</b>"},
+          {name:"Braucht es ein do?", text:"nein — nie"}
+        ],
+        satz: w.f === 0 ? `Bei <b>${person}</b> heißt es <b>${be}</b> und <b>${have}</b>.`
+          : w.f === 1 ? "Verneint wird ohne do: Das not steht direkt hinter der Form."
+          : "In der Frage rückt die Form nach vorn — auch hier ohne do."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Die Formen von to be und have got">
+    <text x="126" y="20" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">to be</text>
+    <text x="290" y="20" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">have got</text>
+    ${[["I","am","have got"],["you","are","have got"],["he / she / it","is","has got"],
+       ["we","are","have got"],["they","are","have got"]]
+      .map((r, i) => {
+        const y = 30 + i * 24;
+        const hebt = i === 2;
+        return `<rect x="20" y="${y}" width="356" height="20" rx="4" fill="${hebt ? "#10a37f" : "#94a3b8"}" fill-opacity="${hebt ? ".26" : ".1"}" stroke="${hebt ? "#10a37f" : "#94a3b8"}" stroke-width="1.2"/>
+          <text x="32" y="${y + 14}" font-size="11" font-weight="${hebt ? "800" : "600"}" fill="currentColor">${r[0]}</text>
+          <text x="150" y="${y + 14}" font-size="11" font-weight="${hebt ? "800" : "600"}" fill="currentColor">${r[1]}</text>
+          <text x="250" y="${y + 14}" font-size="11" font-weight="${hebt ? "800" : "600"}" fill="currentColor">${r[2]}</text>`;
+      }).join("")}
+    <text x="200" y="160" text-anchor="middle" font-size="12" fill="currentColor">Nur eine Zeile fällt aus der Reihe — und die ist immer dieselbe.</text>
+  </svg>`
+},
+
+"Fragen bilden": {
+  worum:"Eine Frage im Simple Present beginnt mit do oder does. Nur to be und die Modalverben kommen ohne aus.",
+  wozu:[
+    "Fragen stellen zu können ist im Gespräch wichtiger als lange Antworten geben. Wer fragt, führt.",
+    "Und in der Klassenarbeit ist es fast immer eine eigene Aufgabe: Aus einer Aussage eine Frage machen."
+  ],
+  rezept:[
+    "Schau, welches Verb im Satz steht.",
+    "Ist es to be oder ein Modalverb? Dann rückt es einfach nach vorn.",
+    "Sonst brauchst du do oder does am Anfang.",
+    "Bei he, she, it heißt es does, sonst do.",
+    "Das Vollverb bleibt danach in der Grundform — ohne s.",
+    "Willst du nach etwas Bestimmtem fragen, stell ein Fragewort davor."
+  ],
+  fehler:[
+    ["Das s doppelt gesetzt", "„Does he plays?“ ist falsch. Das s steckt schon im does — das Verb bleibt in der Grundform."],
+    ["do bei to be benutzt", "„Do you are ready?“ gibt es nicht. Es heißt „Are you ready?“."],
+    ["do vergessen", "„You like football?“ ist gesprochenes Englisch, aber in der Arbeit falsch. Es braucht das Do."],
+    ["Fragewort und Hilfsverb vertauscht", "Erst das Fragewort, dann do/does: „Where do you live?“, nicht „Do where you live?“."]
+  ],
+  einfach:[
+    "Im Deutschen tauschen wir für eine Frage einfach die Wortstellung: Du spielst → Spielst du?",
+    "Im Englischen geht das nicht. Dort braucht es ein Hilfsverb.",
+    "Bei den meisten Verben ist das do oder does.",
+    "Do you play football? — Does he play football?",
+    "Bei he, she und it heißt es does, sonst do.",
+    "Wichtig: Nach does bleibt das Verb in der Grundform. Das s steht nur einmal, nämlich im does.",
+    "Ausnahme sind to be und die Modalverben. Die rücken einfach nach vorn.",
+    "Are you tired? Can you help me? — ganz ohne do.",
+    "Ein Fragewort steht immer ganz vorn: Where do you live?",
+    "Die wichtigsten sind who (wer), what (was), where (wo), when (wann), why (warum) und how (wie)."
+  ],
+  begriffe:[
+    ["Hilfsverb","do oder does — es macht aus der Aussage eine Frage."],
+    ["Entscheidungsfrage","Eine Frage, auf die man mit ja oder nein antwortet."],
+    ["Fragewort","who, what, where, when, why, how."],
+    ["Grundform","Das Verb ohne Endung — so steht es nach do und does."]
+  ],
+  tabelle:{
+    titel:"Aussage und Frage",
+    kopf:["Aussage","Frage"],
+    zeilen:[
+      ["You play football.","Do you play football?"],
+      ["He plays football.","Does he play football?"],
+      ["They know the answer.","Do they know the answer?"],
+      ["She is tired.","Is she tired?"],
+      ["You can swim.","Can you swim?"],
+      ["He has got a bike.","Has he got a bike?"],
+      ["You live in Hamburg.","Where do you live?"]
+    ],
+    fuss:"In Zeile 2 verliert das Verb sein s — es ist ins does gewandert. Die Zeilen 4 bis 6 kommen ohne do aus."
+  },
+  regeln:[
+    "Frage im Simple Present: do oder does an den Anfang.",
+    "he, she, it → does, sonst do.",
+    "Nach do/does bleibt das Verb in der Grundform.",
+    "to be und Modalverben rücken selbst nach vorn.",
+    "Das Fragewort steht ganz am Anfang.",
+    "Nie zweimal ein s."
+  ],
+  beispiel:{aufgabe:"Mach eine Frage aus: „Your brother plays the guitar.“",
+    schritte:["Das Verb ist „plays“ — kein to be, kein Modalverb","„Your brother“ = he → does","Das Verb zurück in die Grundform"],
+    ergebnis:"Does your brother play the guitar?"},
+  spiel:{
+    titel:"Aussage zur Frage machen",
+    hinweis:"Wähl Person und Verb und sieh, wie die Frage gebaut wird.",
+    regler:[
+      {id:"p", name:"Person", von:0, bis:5, schritt:1, start:2},
+      {id:"v", name:"Verb", von:0, bis:3, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const P = [["I", false], ["you", false], ["he", true], ["she", true], ["we", false], ["they", false]];
+      const V = [["play", "football"], ["like", "this song"], ["know", "the answer"], ["need", "more time"]];
+      const [person, dritte] = P[w.p];
+      const [verb, rest] = V[w.v];
+      const hilf = dritte ? "Does" : "Do";
+      const aussage = `${person.charAt(0).toUpperCase() + person.slice(1)} ${dritte ? verb + "s" : verb} ${rest}.`;
+      return {
+        werte:[
+          {name:"Aussage", text:aussage},
+          {name:"Hilfsverb", text:hilf + (dritte ? "  (he, she, it)" : "")},
+          {name:"Verb in der Frage", text:verb + "  — ohne s"},
+          {name:"Frage", text:`<b>${hilf} ${person} ${verb} ${rest}?</b>`}
+        ],
+        satz: dritte
+          ? `In der Aussage steht das s am Verb (<b>${verb}s</b>). In der Frage wandert es ins <b>does</b> — deshalb heißt es dort wieder <b>${verb}</b>.`
+          : `Ohne he, she, it gibt es kein s — weder in der Aussage noch in der Frage. Nur das <b>Do</b> kommt davor.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Das s wandert vom Verb ins does">
+    <text x="200" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Aussage</text>
+    <rect x="60" y="30" width="70" height="28" rx="5" fill="#94a3b8" fill-opacity=".15" stroke="#94a3b8" stroke-width="1.4"/>
+    <text x="95" y="49" text-anchor="middle" font-size="12" fill="currentColor">He</text>
+    <rect x="140" y="30" width="90" height="28" rx="5" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+    <text x="185" y="49" text-anchor="middle" font-size="12" font-weight="800" fill="currentColor">plays</text>
+    <rect x="240" y="30" width="100" height="28" rx="5" fill="#94a3b8" fill-opacity=".15" stroke="#94a3b8" stroke-width="1.4"/>
+    <text x="290" y="49" text-anchor="middle" font-size="12" fill="currentColor">football.</text>
+    <path d="M185 60C185 78 95 78 95 96" fill="none" stroke="#b3382f" stroke-width="1.8" stroke-dasharray="5 3"/>
+    <path d="M90 90l5 8 5-8" fill="#b3382f"/>
+    <text x="230" y="82" font-size="10" fill="currentColor">das s wandert nach vorn</text>
+    <text x="200" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Frage</text>
+    <rect x="40" y="126" width="80" height="26" rx="5" fill="#10a37f" fill-opacity=".3" stroke="#10a37f" stroke-width="2"/>
+    <text x="80" y="144" text-anchor="middle" font-size="12" font-weight="800" fill="currentColor">Does</text>
+    <rect x="128" y="126" width="60" height="26" rx="5" fill="#94a3b8" fill-opacity=".15" stroke="#94a3b8" stroke-width="1.4"/>
+    <text x="158" y="144" text-anchor="middle" font-size="12" fill="currentColor">he</text>
+    <rect x="196" y="126" width="70" height="26" rx="5" fill="#94a3b8" fill-opacity=".15" stroke="#94a3b8" stroke-width="1.4"/>
+    <text x="231" y="144" text-anchor="middle" font-size="12" fill="currentColor">play</text>
+    <rect x="274" y="126" width="86" height="26" rx="5" fill="#94a3b8" fill-opacity=".15" stroke="#94a3b8" stroke-width="1.4"/>
+    <text x="317" y="144" text-anchor="middle" font-size="12" fill="currentColor">football?</text>
+  </svg>`
+},
+
+"Verneinung": {
+  worum:"Verneinen heißt im Englischen fast immer: do oder does plus not. Nur to be und die Modalverben kommen ohne aus.",
+  wozu:[
+    "Zu sagen, was nicht der Fall ist, brauchst du ständig — im Gespräch wie in jeder schriftlichen Erklärung.",
+    "In der Klassenarbeit ist es die Zwillingsaufgabe zur Frage: Beide funktionieren nach demselben Muster."
+  ],
+  rezept:[
+    "Schau, welches Verb im Satz steht.",
+    "Ist es to be oder ein Modalverb? Dann kommt not direkt dahinter.",
+    "Sonst brauchst du do not oder does not.",
+    "Bei he, she, it heißt es does not, sonst do not.",
+    "Das Vollverb bleibt in der Grundform — ohne s.",
+    "In der gesprochenen Sprache nimmt man die Kurzform: don't, doesn't, isn't, aren't."
+  ],
+  fehler:[
+    ["Das s stehen lassen", "„He doesn't plays“ ist falsch. Das s steckt im doesn't — das Verb bleibt in der Grundform."],
+    ["do bei to be benutzt", "„She doesn't be at home“ gibt es nicht. Es heißt „She isn't at home“."],
+    ["not allein benutzt", "„I not like it“ ist falsch. Ohne do geht es bei einem Vollverb nicht."],
+    ["Doppelte Verneinung", "„I don't know nothing“ heißt streng genommen das Gegenteil. Richtig ist „I don't know anything“."]
+  ],
+  einfach:[
+    "Im Deutschen setzt man einfach ein „nicht“ in den Satz: Ich spiele nicht.",
+    "Im Englischen braucht es dafür ein Hilfsverb.",
+    "Bei den meisten Verben ist das do not oder does not.",
+    "I do not play. — He does not play.",
+    "Bei he, she und it heißt es does not, sonst do not.",
+    "Das Vollverb bleibt danach in der Grundform, genau wie in der Frage.",
+    "Die Kurzformen sind don't und doesn't. Sie sind im Alltag üblich.",
+    "Ausnahme sind to be und die Modalverben: Dort steht not einfach dahinter.",
+    "I am not, he is not, they are not — kurz: I'm not, he isn't, they aren't.",
+    "Bei have got steht not dazwischen: I have not got — kurz I haven't got."
+  ],
+  begriffe:[
+    ["Verneinung","Die Aussage, dass etwas nicht der Fall ist."],
+    ["Kurzform","don't, doesn't, isn't, aren't, haven't."],
+    ["Langform","do not, does not, is not, are not."],
+    ["Vollverb","Das eigentliche Verb — es bleibt in der Grundform."]
+  ],
+  tabelle:{
+    titel:"Aussage und Verneinung",
+    kopf:["Aussage","Verneinung (lang)","kurz"],
+    zeilen:[
+      ["I play tennis.","I do not play tennis.","don't"],
+      ["He plays tennis.","He does not play tennis.","doesn't"],
+      ["They know it.","They do not know it.","don't"],
+      ["She is tired.","She is not tired.","isn't"],
+      ["We are ready.","We are not ready.","aren't"],
+      ["He has got a bike.","He has not got a bike.","hasn't"],
+      ["You can swim.","You cannot swim.","can't"]
+    ],
+    fuss:"In Zeile 2 verschwindet das s vom Verb — es steckt jetzt im does. Ab Zeile 4 wird kein do gebraucht."
+  },
+  regeln:[
+    "Verneinung im Simple Present: do not oder does not.",
+    "he, she, it → does not, sonst do not.",
+    "Das Vollverb bleibt in der Grundform.",
+    "to be: not steht direkt dahinter.",
+    "have got: not steht zwischen have und got.",
+    "Keine doppelte Verneinung."
+  ],
+  beispiel:{aufgabe:"Verneine: „My sister likes tomatoes.“",
+    schritte:["Das Verb ist „likes“ — kein to be","„My sister“ = she → does not","Das Verb zurück in die Grundform"],
+    ergebnis:"My sister does not like tomatoes."},
+  spiel:{
+    titel:"Verneinen mit und ohne do",
+    hinweis:"Wähl das Verb und sieh, ob ein do gebraucht wird oder nicht.",
+    regler:[
+      {id:"p", name:"Person", von:0, bis:5, schritt:1, start:2},
+      {id:"v", name:"Verb (0–1 Vollverb, 2 to be, 3 have got, 4 can)", von:0, bis:4, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const P = [["I","am","have"], ["you","are","have"], ["he","is","has"],
+                 ["she","is","has"], ["we","are","have"], ["they","are","have"]];
+      const [person, be, have] = P[w.p];
+      const dritte = ["he", "she"].includes(person);
+      const hilf = dritte ? "does not" : "do not";
+      const kurz = dritte ? "doesn't" : "don't";
+      let aussage, verneint, kurzform, braucht;
+      if (w.v <= 1){
+        const verb = w.v === 0 ? "play" : "like";
+        const rest = w.v === 0 ? "tennis" : "tomatoes";
+        aussage = `${person} ${dritte ? verb + "s" : verb} ${rest}.`;
+        verneint = `${person} ${hilf} ${verb} ${rest}.`;
+        kurzform = `${person} ${kurz} ${verb} ${rest}.`;
+        braucht = "ja — do oder does";
+      } else if (w.v === 2){
+        aussage = `${person} ${be} tired.`;
+        verneint = `${person} ${be} not tired.`;
+        kurzform = person === "I" ? "I'm not tired." : `${person} ${be === "is" ? "isn't" : "aren't"} tired.`;
+        braucht = "nein — to be verneint sich allein";
+      } else if (w.v === 3){
+        aussage = `${person} ${have} got a bike.`;
+        verneint = `${person} ${have} not got a bike.`;
+        kurzform = `${person} ${have === "has" ? "hasn't" : "haven't"} got a bike.`;
+        braucht = "nein — not steht zwischen have und got";
+      } else {
+        aussage = `${person} can swim.`;
+        verneint = `${person} cannot swim.`;
+        kurzform = `${person} can't swim.`;
+        braucht = "nein — Modalverben verneinen sich allein";
+      }
+      return {
+        werte:[
+          {name:"Aussage", text:aussage},
+          {name:"Verneint", text:"<b>" + verneint + "</b>"},
+          {name:"Kurzform", text:kurzform},
+          {name:"Braucht es do?", text:braucht}
+        ],
+        satz: w.v <= 1
+          ? `Bei einem gewöhnlichen Verb braucht es <b>${hilf}</b>. Das Verb bleibt danach in der Grundform — das s steckt im ${kurz}.`
+          : "Hier wird kein do gebraucht. Das ist die Ausnahme, die man sich merken muss: to be, have got und die Modalverben."
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="Verneinung mit und ohne do">
+    <rect x="20" y="16" width="170" height="112" rx="10" fill="#10a37f" fill-opacity=".15" stroke="#10a37f" stroke-width="2"/>
+    <text x="105" y="38" text-anchor="middle" font-size="12" font-weight="800" fill="currentColor">mit do</text>
+    <text x="105" y="60" text-anchor="middle" font-size="11" fill="currentColor">alle gewöhnlichen Verben</text>
+    <text x="105" y="82" text-anchor="middle" font-size="11" fill="currentColor">I don't play.</text>
+    <text x="105" y="102" text-anchor="middle" font-size="11" fill="currentColor">He doesn't play.</text>
+    <text x="105" y="120" text-anchor="middle" font-size="10" fill="currentColor">Verb in der Grundform</text>
+    <rect x="210" y="16" width="170" height="112" rx="10" fill="#f59e0b" fill-opacity=".2" stroke="#f59e0b" stroke-width="2"/>
+    <text x="295" y="38" text-anchor="middle" font-size="12" font-weight="800" fill="currentColor">ohne do</text>
+    <text x="295" y="60" text-anchor="middle" font-size="11" fill="currentColor">to be · have got · can</text>
+    <text x="295" y="82" text-anchor="middle" font-size="11" fill="currentColor">He isn't tired.</text>
+    <text x="295" y="102" text-anchor="middle" font-size="11" fill="currentColor">He hasn't got a bike.</text>
+    <text x="295" y="120" text-anchor="middle" font-size="10" fill="currentColor">not steht direkt dahinter</text>
+  </svg>`
+},
+
+"Plural und Artikel": {
+  worum:"Die Mehrzahl bekommt fast immer ein -s. Und ob a oder an davorsteht, entscheidet der Laut — nicht der Buchstabe.",
+  wozu:[
+    "Falsche Plurale und ein falsches a fallen sofort auf. Beides sind kleine Regeln mit großer Wirkung auf den Eindruck.",
+    "Im technischen Englisch begegnen dir viele Mehrzahlformen: tools, wires, measurements. Wer die Regeln kennt, muss sie nicht einzeln lernen."
+  ],
+  rezept:[
+    "Für den Plural: In den allermeisten Fällen kommt einfach ein -s dran.",
+    "Endet das Wort auf s, x, ch oder sh, wird daraus -es.",
+    "Endet es auf Konsonant + y, wird das y zu -ies.",
+    "Endet es auf Vokal + y, bleibt es und bekommt nur -s.",
+    "Die unregelmäßigen Formen muss man auswendig können — es sind nicht viele.",
+    "Für a oder an: Sprich das Wort laut aus. Vokallaut → an, Konsonantenlaut → a."
+  ],
+  fehler:[
+    ["Bei y immer -ies gebildet", "„boy“ wird zu „boys“, nicht „boies“. Die -ies-Regel gilt nur nach einem Mitlaut."],
+    ["Unregelmäßige Plurale regelmäßig gebildet", "„childs“, „mans“ und „foots“ gibt es nicht. Es heißt children, men, feet."],
+    ["a und an nach dem Buchstaben entschieden", "„an hour“ hat ein h am Anfang, aber der Laut ist ein Vokal. Umgekehrt „a university“ — das u klingt wie ju."],
+    ["Bei Stoffnamen einen Plural gebildet", "„informations“ und „advices“ gibt es nicht. Diese Wörter stehen immer in der Einzahl."]
+  ],
+  einfach:[
+    "Die Mehrzahl bildet man im Englischen meistens mit einem -s: book → books.",
+    "Endet das Wort auf s, x, ch oder sh, wird ein -es angehängt: bus → buses, watch → watches.",
+    "Endet es auf einen Mitlaut und y, wird das y zu ies: city → cities, baby → babies.",
+    "Endet es auf einen Selbstlaut und y, bleibt alles: boy → boys, day → days.",
+    "Ein paar Wörter sind unregelmäßig und müssen auswendig gelernt werden.",
+    "Die wichtigsten: child → children, man → men, woman → women, foot → feet, tooth → teeth.",
+    "Der unbestimmte Artikel heißt a oder an — je nachdem, wie das nächste Wort klingt.",
+    "Vor einem Vokallaut steht an: an apple, an egg, an hour.",
+    "Vor einem Konsonantenlaut steht a: a book, a dog, a university.",
+    "Entscheidend ist der Laut, nicht der Buchstabe. Deshalb „an hour“ mit h und „a university“ mit u."
+  ],
+  begriffe:[
+    ["Plural","Die Mehrzahl."],
+    ["Singular","Die Einzahl."],
+    ["Unbestimmter Artikel","a oder an — bei etwas nicht näher Bestimmtem."],
+    ["Bestimmter Artikel","the — für alle Fälle gleich."],
+    ["Unregelmäßiger Plural","Eine Form, die nicht der Regel folgt: children, men, feet."]
+  ],
+  tabelle:{
+    titel:"Pluralbildung",
+    kopf:["Endung","Regel","Beispiel"],
+    zeilen:[
+      ["die meisten","-s","book → books"],
+      ["s, x, ch, sh","-es","bus → buses, watch → watches"],
+      ["Konsonant + y","y wird zu -ies","city → cities"],
+      ["Vokal + y","nur -s","boy → boys"],
+      ["f oder fe","wird zu -ves","knife → knives"],
+      ["unregelmäßig","auswendig","child → children, man → men"],
+      ["unverändert","kein Plural","sheep → sheep, fish → fish"]
+    ],
+    fuss:"Die ersten vier Zeilen decken fast alles ab. Nur die letzten drei muss man sich merken."
+  },
+  regeln:[
+    "Plural meistens mit -s.",
+    "Nach s, x, ch, sh kommt -es.",
+    "Konsonant + y wird zu -ies.",
+    "Vokal + y bleibt und bekommt -s.",
+    "Vor Vokallaut steht an, vor Konsonantenlaut a.",
+    "Entscheidend ist der Laut, nicht der Buchstabe."
+  ],
+  beispiel:{aufgabe:"Bilde den Plural von „city“ und setz den Artikel vor „hour“.",
+    schritte:["city endet auf Konsonant + y → ies","hour beginnt mit einem Vokallaut → an"],
+    ergebnis:"cities · an hour"},
+  spiel:{
+    titel:"Plural bilden",
+    hinweis:"Schieb durch die Wörter und sieh, welche Regel jeweils greift.",
+    regler:[
+      {id:"i", name:"Wort", von:0, bis:9, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const W = [
+        ["book", "books", "die meisten: einfach -s"],
+        ["bus", "buses", "endet auf s → -es"],
+        ["watch", "watches", "endet auf ch → -es"],
+        ["box", "boxes", "endet auf x → -es"],
+        ["city", "cities", "Konsonant + y → -ies"],
+        ["boy", "boys", "Vokal + y → nur -s"],
+        ["knife", "knives", "fe → -ves"],
+        ["child", "children", "unregelmäßig"],
+        ["foot", "feet", "unregelmäßig"],
+        ["sheep", "sheep", "bleibt unverändert"]
+      ];
+      const [ein, viele, regel] = W[w.i];
+      const naiv = ein + "s";
+      return {
+        werte:[
+          {name:"Einzahl", text:ein},
+          {name:"Mehrzahl", text:"<b>" + viele + "</b>"},
+          {name:"Regel", text:regel},
+          {name:"Naiv wäre", text: naiv === viele ? "richtig — " + naiv : naiv + "  ✗"}
+        ],
+        satz: naiv === viele
+          ? `Hier reicht das einfache -s. Das gilt für die allermeisten Wörter.`
+          : `Ein einfaches -s ergäbe „${naiv}“ — falsch. Hier greift: ${regel}.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Regeln der Pluralbildung">
+    ${[["die meisten","-s","book → books","#10a37f"],
+       ["s, x, ch, sh","-es","bus → buses","#3b82f6"],
+       ["Konsonant + y","-ies","city → cities","#f59e0b"],
+       ["Vokal + y","-s","boy → boys","#6b4fd8"],
+       ["unregelmäßig","auswendig","child → children","#b3382f"]]
+      .map((r, i) => {
+        const y = 14 + i * 29;
+        return `<rect x="20" y="${y}" width="360" height="24" rx="6" fill="${r[3]}" fill-opacity=".18" stroke="${r[3]}" stroke-width="1.5"/>
+          <text x="34" y="${y + 16}" font-size="11" font-weight="700" fill="currentColor">${r[0]}</text>
+          <text x="168" y="${y + 16}" font-size="11" font-weight="800" fill="currentColor">${r[1]}</text>
+          <text x="368" y="${y + 16}" text-anchor="end" font-size="10" fill="currentColor">${r[2]}</text>`;
+      }).join("")}
+    <text x="200" y="160" text-anchor="middle" font-size="11" fill="currentColor">Die ersten vier Zeilen decken fast alles ab.</text>
+  </svg>`
+},
+
 
 "Erörterung": {
   worum:"Eine Erörterung wägt ab. Sie sammelt Argumente für und gegen eine These und kommt am Ende zu einem begründeten Urteil.",
@@ -23570,6 +24750,219 @@ function navSnapshot(){
 }
 /* Adresse (URL) für die aktuelle Ansicht */
 /* Adresse zu einer Ansicht (rein, ohne Nebenwirkung) — auch für „Zurück"-Links genutzt */
+/* ---------- Vokabeltrainer ----------
+   Dieselbe Regel wie bei den Aufgaben: Die Lösung wird nie einfach hingelegt.
+   Die Hilfe kommt in vier Stufen — Länge, erster Buchstabe, Beispielsatz und
+   erst danach das Wort selbst, das man aber immer noch abtippen muss. */
+let vokKlasse = "alle";
+let vokThema  = "alle";
+let vokRichtung = "de2en";        /* de2en: deutsch sehen, englisch schreiben */
+let vokStapel = [];               /* die Wörter dieser Runde, gemischt */
+let vokNr = 0;
+let vokHilfe = 0;
+let vokGeschafft = 0;
+let vokFalsch = 0;
+let vokStand = "frage";           /* frage | richtig | falsch */
+let vokEingabe = "";
+
+function vokMischen(liste){
+  const k = liste.slice();
+  for (let i = k.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [k[i], k[j]] = [k[j], k[i]];
+  }
+  return k;
+}
+function vokThemenFuer(klasse){
+  const raus = new Set();
+  const klassen = klasse === "alle" ? Object.keys(VOKABELN) : [String(klasse)];
+  klassen.forEach(k => Object.keys(VOKABELN[k] || {}).forEach(t => raus.add(t)));
+  return [...raus];
+}
+function vokStarten(){
+  const liste = vokabelListe(vokKlasse, vokThema);
+  vokStapel = vokMischen(liste).slice(0, 20);
+  vokNr = 0; vokHilfe = 0; vokGeschafft = 0; vokFalsch = 0;
+  vokStand = "frage"; vokEingabe = "";
+  ansicht = "vokabelnUeben"; render();
+}
+function vokAktuell(){ return vokStapel[vokNr]; }
+/* Was steht auf der Karte, was soll geschrieben werden? */
+function vokFrageWort(){ const v = vokAktuell(); return vokRichtung === "de2en" ? v.de : v.en; }
+function vokLoesung(){   const v = vokAktuell(); return vokRichtung === "de2en" ? v.en : v.de; }
+
+/* Großschreibung und Artikel großzügig behandeln: „die Tafel" und „Tafel"
+   sollen beide gelten, ebenso „to book" und „book". */
+function vokPasst(eingabe, richtig){
+  const putz = (s) => String(s).toLowerCase().trim()
+    .replace(/[.,;!?]/g, "")
+    .replace(/^(der|die|das|to|a|an|the)\s+/, "")
+    .replace(/\s+/g, " ");
+  const e = putz(eingabe), r = putz(richtig);
+  if (!e) return false;
+  if (e === r) return true;
+  /* mehrere zulässige Bedeutungen, durch Komma getrennt */
+  return r.split(",").map(x => putz(x)).includes(e);
+}
+function vokPruefen(){
+  const feld = document.getElementById("vokFeld");
+  if (!feld) return;
+  vokEingabe = feld.value;
+  if (!vokEingabe.trim()) return;
+  if (vokPasst(vokEingabe, vokLoesung())){
+    vokStand = "richtig"; vokGeschafft++;
+    if (typeof merkeGeuebt === "function") merkeGeuebt();
+  } else {
+    vokStand = "falsch"; vokFalsch++;
+  }
+  render();
+}
+function vokHilfeMehr(){ if (vokHilfe < 4) vokHilfe++; render(); }
+function vokWeiter(){
+  if (vokStand === "falsch"){
+    /* falsch beantwortete Wörter kommen am Ende noch einmal dran */
+    vokStapel.push(vokAktuell());
+  }
+  vokNr++; vokHilfe = 0; vokEingabe = ""; vokStand = "frage";
+  if (vokNr >= vokStapel.length) ansicht = "vokabelnFertig";
+  render();
+}
+function vokAbbrechen(){ ansicht = "vokabeln"; render(); }
+function zeigeVokabeln(){ menueOffen = false; ansicht = "vokabeln"; render(); }
+function vokRichtungWechseln(){
+  vokRichtung = vokRichtung === "de2en" ? "en2de" : "de2en";
+  render();
+}
+
+/* ---------- Auswahlseite ---------- */
+function vokabelnHtml(){
+  const themen = vokThemenFuer(vokKlasse);
+  if (vokThema !== "alle" && !themen.includes(vokThema)) vokThema = "alle";
+  const anzahl = vokabelListe(vokKlasse, vokThema).length;
+  return `
+    <div class="card">
+      ${navLink("/englisch", "waehleFach('englisch')", "← Zurück zu Englisch", "zurueck")}
+      <span class="tag">Englisch</span>
+      <h1>Vokabeln üben</h1>
+      <p class="soft" style="margin:10px 0 0">Insgesamt ${z(vokabelAnzahl())} Wörter, nach Klasse und Thema geordnet.
+        Auch hier bekommst du die Lösung nie einfach hingelegt — die Hilfe kommt in Stufen.</p>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Klasse</p>
+      <div class="vokwahl">
+        ${["alle", 5, 6, 7, 8, 9, 10].map(k =>
+          `<button class="vokknopf ${String(vokKlasse) === String(k) ? "an" : ""}"
+                   onclick="vokKlasse='${k}';vokThema='alle';render()">${k === "alle" ? "alle" : "Klasse " + k}</button>`).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Thema</p>
+      <div class="vokwahl">
+        <button class="vokknopf ${vokThema === "alle" ? "an" : ""}" onclick="vokThema='alle';render()">alle Themen</button>
+        ${themen.map(t =>
+          `<button class="vokknopf ${vokThema === t ? "an" : ""}" onclick="vokThema=${JSON.stringify(t).replace(/"/g, "&quot;")};render()">${t}</button>`).join("")}
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Richtung</p>
+      <div class="vokwahl">
+        <button class="vokknopf ${vokRichtung === "de2en" ? "an" : ""}" onclick="vokRichtung='de2en';render()">Deutsch → Englisch</button>
+        <button class="vokknopf ${vokRichtung === "en2de" ? "an" : ""}" onclick="vokRichtung='en2de';render()">Englisch → Deutsch</button>
+      </div>
+      <p class="small soft" style="margin:12px 0 0">Deutsch → Englisch ist schwerer, weil du das Wort selbst
+        hervorbringen musst. Genau das wird in der Arbeit verlangt.</p>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <p class="soft" style="margin:0 0 14px">${anzahl === 0
+        ? "Für diese Auswahl gibt es noch keine Wörter."
+        : `<b>${z(Math.min(20, anzahl))}</b> Wörter in dieser Runde${anzahl > 20 ? ` (aus ${z(anzahl)} zufällig gezogen)` : ""}.`}</p>
+      ${anzahl === 0 ? "" : `<button class="btn full" onclick="vokStarten()">Losgehen</button>`}
+    </div>`;
+}
+
+/* ---------- Übungsseite ---------- */
+function vokUebenHtml(){
+  const v = vokAktuell();
+  if (!v) return `<div class="card"><p>Keine Wörter geladen.</p></div>`;
+  const loesung = vokLoesung();
+  const nackt = loesung.replace(/^(der|die|das|to|a|an|the)\s+/i, "");
+
+  const hilfen = [];
+  if (vokHilfe >= 1) hilfen.push(`<p class="vokhilfe"><b>Länge:</b> ${z(nackt.replace(/\s/g, "").length)} Buchstaben${
+    /\s/.test(nackt) ? ` in ${z(nackt.split(/\s+/).length)} Wörtern` : ""}</p>`);
+  if (vokHilfe >= 2) hilfen.push(`<p class="vokhilfe"><b>Anfang:</b> ${nackt.charAt(0).toUpperCase()}${
+    nackt.slice(1).replace(/[^\s]/g, "·")}</p>`);
+  if (vokHilfe >= 3) hilfen.push(`<p class="vokhilfe"><b>Im Satz:</b> <i>${v.satz}</i></p>`);
+  if (vokHilfe >= 4) hilfen.push(`<p class="vokhilfe"><b>Das Wort heißt:</b> ${loesung}<br>
+    <span class="small soft">Schreib es trotzdem selbst hin — nur dann bleibt es hängen.</span></p>`);
+
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="vokAbbrechen()">← Zurück zur Auswahl</button>
+      <div class="fortschritt">${Array.from({length: vokStapel.length}, (_, i) =>
+        `<i class="${i < vokNr ? "an" : ""}"></i>`).join("")}</div>
+      <div class="vokkopf">
+        <span class="tag">Wort ${z(vokNr + 1)} von ${z(vokStapel.length)}</span>
+        <span class="small soft">${v.thema} · Klasse ${z(v.klasse)}</span>
+      </div>
+    </div>
+
+    <div class="card vokkarte">
+      <p class="small soft" style="margin:0">${vokRichtung === "de2en" ? "Deutsch" : "English"}</p>
+      <p class="vokwort">${vokFrageWort()}</p>
+      <p class="small soft" style="margin:0">${vokRichtung === "de2en" ? "Wie heißt das auf Englisch?" : "Was heißt das auf Deutsch?"}</p>
+    </div>
+
+    ${vokStand === "frage" ? `
+    <div class="card">
+      <div class="eingabezeile">
+        <input class="feld antwortfeld" id="vokFeld" type="text" inputmode="text"
+               autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+               enterkeyhint="done" placeholder="Deine Antwort" value="${vokEingabe.replace(/"/g, "&quot;")}"
+               onkeydown="if(event.key==='Enter')vokPruefen()">
+        <button class="btn" onclick="vokPruefen()">Prüfen</button>
+      </div>
+      ${hilfen.join("")}
+      ${vokHilfe < 4 ? `<button class="btn ghost full" style="margin-top:12px" onclick="vokHilfeMehr()">
+        ${vokHilfe === 0 ? "Ich weiß nicht weiter" : "Noch ein Hinweis"}</button>` : ""}
+    </div>` : `
+    <div class="card ${vokStand === "richtig" ? "vokgut" : "vokschlecht"}">
+      <p class="vokergebnis">${vokStand === "richtig" ? "✓ Richtig" : "✗ Noch nicht"}</p>
+      <p style="margin:8px 0 0">${vokRichtung === "de2en" ? v.de : v.en} &nbsp;→&nbsp; <b>${loesung}</b></p>
+      ${vokStand === "falsch" ? `<p class="small soft" style="margin:10px 0 0">Du hattest „${vokEingabe.replace(/</g, "&lt;")}" geschrieben.
+        Das Wort kommt am Ende noch einmal dran.</p>` : ""}
+      <p class="small soft" style="margin:10px 0 0"><i>${v.satz.replace("___", "<b>" + loesung.replace(/^(der|die|das|to|a|an|the)\s+/i, "") + "</b>")}</i></p>
+      <button class="btn full" style="margin-top:14px" onclick="vokWeiter()">Weiter</button>
+    </div>`}`;
+}
+
+/* ---------- Abschlussseite ---------- */
+function vokFertigHtml(){
+  const gesamt = vokGeschafft + vokFalsch;
+  const quote = gesamt ? Math.round(vokGeschafft / gesamt * 100) : 0;
+  return `
+    <div class="card geschafftkarte">
+      <div class="geschafftkreis">✓</div>
+      <h1>Runde geschafft</h1>
+      <div class="geschafftzahlen">
+        <div><b>${z(vokStapel.length)}</b><span>Wörter</span></div>
+        <div><b>${z(vokGeschafft)}</b><span>auf Anhieb</span></div>
+        <div><b>${z(quote)} %</b><span>Trefferquote</span></div>
+      </div>
+      <p class="geschafftlob">${quote >= 90 ? "Das saß."
+        : quote >= 70 ? "Solide — die Wackelkandidaten kommen beim nächsten Mal wieder."
+        : "Vokabeln brauchen Wiederholung. Morgen noch einmal dieselbe Runde, dann sitzt mehr."}</p>
+    </div>
+    <div class="card">
+      <button class="btn full" onclick="vokStarten()">Noch eine Runde</button>
+      <button class="btn ghost full" style="margin-top:10px" onclick="vokAbbrechen()">Andere Auswahl</button>
+    </div>`;
+}
+
 function pfadFuer(a, f, k){
   switch (a){
     case "willkommen":   return "/";
@@ -23595,6 +24988,9 @@ function pfadFuer(a, f, k){
     case "konto":        return "/konto";
     case "anfragen":     return "/anfragen";
     case "serie":        return "/serie";
+    case "vokabeln":
+    case "vokabelnUeben":
+    case "vokabelnFertig": return "/vokabeln";
     case "dashboard":    return "/dashboard";
     case "baustelle":    return "/baustelle";
     case "passwortNeu":  return "/passwort-neu";
@@ -23616,7 +25012,8 @@ function ansichtAusPfad(){
   const direkt = {anmelden:"anmelden", registrieren:"registrieren", start:"uebersicht",
     faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden", feedback:"feedback",
     faq:"faq", ueber:"ueber", warum:"warum", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
-    konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle"};
+    konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle",
+    vokabeln:"vokabeln"};
   const ziel = direkt[p];
   if (!ziel) return;
   if (ziel === "dashboard" && !istAdmin) return;
@@ -24263,7 +25660,18 @@ function render(gewaehlt){
               <span>${fertig > 0 ? fertig + " von " + themen[k].length + " fertig" : "in Arbeit"}</span></span>
           `, "grosswahl mitfarbe");
         }).join("")}
-      </div>`;
+      </div>
+      ${/* Englisch hat neben der Grammatik einen eigenen Vokabelbereich —
+            Wörter lernt man anders als Regeln. Der Einstieg gehört sichtbar
+            hierher, nicht ins Menü. */
+        KATALOG[fach].vokabeln ? `
+      <div class="card vokeinstieg">
+        <span class="tag">Extra</span>
+        <h2 style="margin:8px 0 6px">Vokabeln üben</h2>
+        <p class="soft" style="margin:0 0 14px">${z(vokabelAnzahl())} Wörter nach Klasse und Thema geordnet —
+          in beide Richtungen, mit Hilfe in Stufen. Unabhängig von der Grammatik.</p>
+        ${navLink("/vokabeln", "zeigeVokabeln()", "Zum Vokabeltrainer", "btn full")}
+      </div>` : ""}`;
     return;
   }
 
@@ -24399,6 +25807,15 @@ function render(gewaehlt){
 
   /* ---- Einstellungen ---- */
   if (ansicht === "serie"){ el.innerHTML = serieHtml(); return; }
+  if (ansicht === "vokabeln"){ el.innerHTML = vokabelnHtml(); return; }
+  if (ansicht === "vokabelnUeben"){
+    el.innerHTML = vokUebenHtml();
+    /* Beim Weiterblättern soll der Finger nicht erst das Feld suchen müssen. */
+    const feld = document.getElementById("vokFeld");
+    if (feld) feld.focus();
+    return;
+  }
+  if (ansicht === "vokabelnFertig"){ el.innerHTML = vokFertigHtml(); return; }
   if (ansicht === "passwortNeu"){ el.innerHTML = passwortNeuHtml(); return; }
 
   if (ansicht === "einstellungen"){
