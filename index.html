@@ -1619,6 +1619,7 @@ const AUFGABEN = {
                 F(z(kand[1]), "Knapp daneben — rechne noch mal nach.")];
       })()},
      {frage:"Welche <b>Einheit</b> gehört dahinter?",
+      tippAntwort:"cm²",
       tipp2:"Beim Umfang bleibt es cm. Werden zwei Längen malgenommen, kommt die kleine Zwei dazu.",
       tipp:"Es wurden zwei Längen miteinander multipliziert.",
       optionen:[R("cm²", "Richtig — Quadratzentimeter."),
@@ -1659,6 +1660,7 @@ const AUFGABEN = {
       optionen:[R("Ja", `Richtig, das ${richtig} ist senkrecht spiegelsymmetrisch.`),
                 F("Nein", `Doch — beim ${richtig} passen beide Hälften genau aufeinander.`)]},
      {frage:"Welcher Buchstabe ist also die Antwort?",
+      tippAntwort: richtig,
       tipp2:"Du hast die drei eben einzeln geprüft — nimm den, bei dem es gepasst hat.",
       tipp:"Nur einer der drei hat die Eigenschaft.",
       optionen:[R(richtig, "Richtig."),
@@ -1851,7 +1853,16 @@ const AUFGABEN = {
       tipp2:"Beim Überschlag rundest du grob und schaust nur, ob die Größenordnung stimmt.",
       tipp:`${z(grund)} ist ungefähr ${Math.round(grund)} — mal ${z(faktor)} sind das etwa ${z(Math.round(grund)*faktor)}.`,
       optionen:[R("Ja, das passt", "Diese Abschätzung solltest du dir angewöhnen — sie fängt fast alle Kommafehler ab."),
-                F("Nein", `Doch: ${z(grund)} · ${z(faktor)} liegt in der Nähe von ${z(Math.round(grund)*faktor)}.`)]}]};
+                F("Nein", `Doch: ${z(grund)} · ${z(faktor)} liegt in der Nähe von ${z(Math.round(grund)*faktor)}.`)]},
+     /* Zum Schluss die Zahl selbst — mit einer Kontrollfrage zu enden hieße,
+        dass das Ergebnis nur angeklickt und nie hingeschrieben wird. */
+     {frage:"Wie lautet das Ergebnis?",
+      tippAntwort: z(erg),
+      tipp2:"Es ist die Zahl, die du zwei Schritte vorher bestimmt hast.",
+      tipp:"Komma verschoben, Nullen aufgefüllt.",
+      optionen:[R(z(erg), "Richtig."),
+                F(z(Math.round(grund / faktor * 10000) / 10000), "Das wäre nach links verschoben, also geteilt."),
+                F(z(grund), "Das ist die Ausgangszahl.")]}]};
  }
 ],
 
@@ -1891,7 +1902,8 @@ const AUFGABEN = {
         : [R("Nein", `Richtig, ${q} liegt zwischen ${Math.floor(q/3)*3} und ${Math.ceil(q/3)*3}.`),
            F("Ja", `Nein, ${q} : 3 geht nicht ohne Rest auf.`),
            F("Nur wenn man aufrundet", "Teilbarkeit hat mit Runden nichts zu tun.")], 3)},
-     {frage:`Also ist ${z(n)} …`,
+     {frage:`Ist ${z(n)} also durch 3 teilbar? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+      tippAntwort: teilbar ? "ja" : "nein",
       tipp2:"Was für die Quersumme gilt, gilt genauso für die ganze Zahl.",
       tipp:"Quersumme teilbar heißt Zahl teilbar.",
       optionen: teilbar
@@ -1931,7 +1943,8 @@ const AUFGABEN = {
         ? [R("Ja", `Ja — 4 · ${letzte/4} = ${letzte}.`), F("Nein", `Doch: ${letzte} : 4 = ${letzte/4}.`)]
         : [R(`Nein, es bleibt ein Rest von ${letzte % 4}`, `Genau — ${letzte} liegt zwischen ${Math.floor(letzte/4)*4} und ${Math.ceil(letzte/4)*4}.`),
            F("Ja", `${letzte} : 4 geht nicht glatt auf.`)]},
-     {frage:`Also ist ${z(n)} …`,
+     {frage:`Ist ${z(n)} also durch 4 teilbar? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+      tippAntwort: teilbar ? "ja" : "nein",
       tipp2:"Der Rest der Zahl muss dafür gar nicht geprüft werden.",
       tipp:"Letzte zwei Ziffern teilbar heißt Zahl teilbar.",
       optionen: teilbar
@@ -2058,7 +2071,8 @@ const AUFGABEN = {
       optionen: zieheVerschiedene([
         R(w < 180 ? "Kleiner als 180°" : "Genau 180°", "Richtig."),
         F(w < 180 ? "Genau 180°" : "Kleiner als 180°", `${w}° noch mal mit 180 vergleichen.`)], 2)},
-     {frage:"Wie heißt so ein Winkel?",
+     {frage:"Wie heißt so ein Winkel? Schreib nur das Eigenschaftswort — spitz, recht, stumpf oder gestreckt.",
+      tippAntwort: art,
       tipp2:"Unter 90° ist spitz, genau 90° ist der rechte Winkel, zwischen 90° und 180° ist stumpf.",
       tipp: art === "spitz" ? "Unter 90°." : art === "recht" ? "Genau 90°."
           : art === "stumpf" ? "Zwischen 90° und 180°." : "Genau 180°.",
@@ -2535,7 +2549,8 @@ const AUFGABEN = {
         R(String(richtig), "Genau."),
         F(String(m*px), `Der Teil ${vz} fehlt noch.`),
         F(String(m + px + b), "Hier wurde addiert statt malgenommen.")], 3)},
-     {frage:`Herausgekommen ist <b>${richtig}</b>, der Punkt hat aber <b>y = ${py}</b>. <b>Liegt er auf der Geraden?</b>`,
+     {frage:`Herausgekommen ist <b>${richtig}</b>, der Punkt hat aber <b>y = ${py}</b>. Liegt er auf der Geraden? Schreib <span class='luecke'>ja</span> oder <span class='luecke'>nein</span>.`,
+      tippAntwort: drauf ? "ja" : "nein",
       tipp2:"Fast gleich reicht nicht. Es muss genau derselbe Wert sein.",
       tipp:"Nur wenn beide Werte genau gleich sind.",
       optionen: drauf
@@ -2935,7 +2950,17 @@ const AUFGABEN = {
       tipp:"Was kann man damit ausrechnen, was vorher nicht ging?",
       optionen:[R("Aus einem Winkel und einer Seite lässt sich eine andere Seite berechnen", "Genau das ist der Sinn — Winkel und Seiten hängen zusammen."),
                 F("Man kann damit den Umfang bestimmen", "Dafür braucht man keine Winkelfunktionen."),
-                F("Man kann damit die Fläche berechnen", "Dafür reichen Grundseite und Höhe.")]}]};
+                F("Man kann damit die Fläche berechnen", "Dafür reichen Grundseite und Höhe.")]},
+     /* Zum Schluss der Name selbst — sonst endet die Aufgabe mit einer
+        Verständnisfrage und es wird nie etwas eingetippt. */
+     {frage:"Wie heißt die gesuchte Winkelfunktion also?",
+      tippAntwort: f.fkt,
+      tipp2:`Sie heißt ${f.fkt} und wird ${f.kurz} abgekürzt.`,
+      tipp:"Sinus, Kosinus oder Tangens?",
+      optionen: zieheVerschiedene([
+        R(f.fkt, "Richtig."),
+        F(andere[0].fkt, `${andere[0].fkt} verbindet ${andere[0].geg} und ${andere[0].anpassend}.`),
+        F(andere[1].fkt, `${andere[1].fkt} verbindet ${andere[1].geg} und ${andere[1].anpassend}.`)], 3)}]};
  },
 
  /* Seite mit Sinus berechnen */
@@ -3122,6 +3147,7 @@ const AUFGABEN = {
         : [R("Es gehört als Begleiter zu einem Nomen", "Genau — es ist ein Artikel."),
            F("Es leitet einen Nebensatz ein", "Dann wäre es „dass“ mit zwei s.")]},
      {frage:"Also: <b>Wie schreibst du es?</b>",
+      tippAntwort: s.loes,
       tipp2:"Test bestanden heißt ein s, Test nicht bestanden heißt zwei s.",
       tipp: istDass ? "Test klappt nicht → zwei s." : "Test klappt → ein s.",
       optionen: zieheVerschiedene([
@@ -3172,7 +3198,8 @@ const AUFGABEN = {
       optionen:[R("Ein Komma", "Ja — und zwar immer."),
                 F("Gar nichts", "Zwischen Haupt- und Nebensatz steht im Deutschen immer ein Komma."),
                 F("Ein Doppelpunkt", "Der käme nur vor einer Aufzählung oder wörtlicher Rede.")]},
-     {frage:"<b>Wo genau</b> steht das Komma?",
+     {frage:"<b>Vor welchem Wort</b> steht das Komma? Schreib nur dieses eine Wort.",
+      tippAntwort: s.wort,
       tipp2:"Vor das Bindewort, nicht dahinter.",
       tipp:"Direkt dort, wo der Nebensatz beginnt.",
       optionen:[R(`Direkt vor „${s.wort}“`, "Genau."),
@@ -3231,7 +3258,15 @@ const AUFGABEN = {
       tipp2:"Das Wort selbst bleibt, wie es ist. Nur der erste Buchstabe ändert sich.",
       tipp:"Artikel davor → Nomen → groß.",
       optionen:[R(`${f.vor} ${f.nomen} ${f.rest}`, "Richtig."),
-                F(`${f.vor} ${f.verb} ${f.rest}`, `Der Artikel in „${f.vor}“ macht daraus ein Nomen.`)]}]};
+                F(`${f.vor} ${f.verb} ${f.rest}`, `Der Artikel in „${f.vor}“ macht daraus ein Nomen.`)]},
+     /* Den ganzen Satz abzutippen wäre eine Fleißaufgabe — gefragt ist das eine
+        Wort, um das es geht. */
+     {frage:`Schreib nur das Wort <b>„${f.verb}“</b> so hin, wie es hier im Satz steht.`,
+      tippAntwort: f.nomen,
+      tipp2:`Mit dem Begleiter „${f.vor}“ davor ist es ein Nomen — also groß.`,
+      tipp:"Nur der erste Buchstabe ändert sich.",
+      optionen:[R(f.nomen, "Richtig."),
+                F(f.verb, `Der Begleiter „${f.vor}“ macht daraus ein Nomen.`)]}]};
  }
 ],
 /* ===================== DEUTSCH · KLASSE 8 ===================== */
@@ -7219,7 +7254,16 @@ const AUFGABEN = {
       tipp2:"Ein Ergebnis, das zehnmal oder hundertmal zu groß ist, deutet fast immer auf einen Fehler bei Komma oder Einheit hin.",
       optionen:[R("Dass es um den Faktor 10 danebenliegt", "Richtig — meist steckt ein Komma- oder Einheitenfehler dahinter."),
                 F("Gar nichts, das sieht man nicht", "Doch — genau dafür ist der Überschlag da."),
-                F("Dass die Formel falsch war", "Die Formel kann stimmen und das Ergebnis trotzdem um den Faktor 10 danebenliegen.")]}]};
+                F("Dass die Formel falsch war", "Die Formel kann stimmen und das Ergebnis trotzdem um den Faktor 10 danebenliegen.")]},
+     /* Zum Schluss die Antwort selbst hinschreiben — sonst endet die Aufgabe
+        mit einer Verständnisfrage und es wird nie etwas eingetippt. */
+     {frage:"Welches der beiden Ergebnisse kann also <b>nicht</b> stimmen?",
+      tippAntwort: f.schlecht,
+      tipp:"Schreib den Wert hin, den du eben ausgeschlossen hast.",
+      tipp2:`Es ist „${f.schlecht}“ — ${f.warum}`,
+      optionen: zieheVerschiedene([
+        R(f.schlecht, "Richtig."),
+        F(f.gut, "Das ist der Wert, der zur Größenordnung passt.")], 2)}]};
  }
 ],
 
@@ -8612,14 +8656,25 @@ Object.assign(AUFGABEN, {
       optionen: zieheVerschiedene([
         R(f.art, "Richtig."),
         F(andereArten[0], `Ein ${andereArten[0]} hat eine andere Aufgabe.`),
-        F(andereArten[1], `Ein ${andereArten[1]} passt hier nicht.`)], 3)},
+        F(andereArten[1], `Ein ${andereArten[1]} passt hier nicht.`)], 3),
+      tippAntwort: f.art},
      {frage:`Woran erkennst du ein <b>${f.art}</b> sicher wieder?`,
       tipp2:"Jede Wortart hat ihre eigene Probe: die Artikelprobe, die Beugeprobe oder die Steigerungsprobe.",
       tipp:"Es gibt für jede Wortart ein typisches Merkmal.",
       optionen: zieheVerschiedene([
         R(f.merkmal, "Genau das ist das Erkennungszeichen."),
         F("Es steht immer am Satzanfang", "Die Stellung im Satz sagt nichts über die Wortart."),
-        F("Es ist immer das längste Wort", "Mit der Länge hat es nichts zu tun.")], 3)}]};
+        F("Es ist immer das längste Wort", "Mit der Länge hat es nichts zu tun.")], 3)},
+     /* Zum Schluss der Name der Wortart — mit einer Verständnisfrage zu enden
+        hieße, dass die Antwort nur angeklickt und nie hingeschrieben wird. */
+     {frage:`Wie heißt die Wortart von <b>„${f.wort}“</b> also?`,
+      tippAntwort: f.art,
+      tipp2:`Es ist ein ${f.art}.`,
+      tipp:"Schreib den Namen der Wortart hin.",
+      optionen: zieheVerschiedene([
+        R(f.art, "Richtig."),
+        F(andereArten[0], `Ein ${andereArten[0]} hat eine andere Aufgabe.`),
+        F(andereArten[1], `Ein ${andereArten[1]} passt hier nicht.`)], 3)}]};
  }
 ],
 
@@ -8672,6 +8727,7 @@ Object.assign(AUFGABEN, {
         F(alle[andere[0]], `Damit fändest du das ${andere[0]}.`),
         F(alle[andere[1]], `Damit fändest du das ${andere[1]}.`)], 3)},
      {frage:"Wie heißt dieses Satzglied?",
+      tippAntwort: f.glied,
       tipp2:"Wer? führt zum Subjekt, Wen oder was? zum Akkusativobjekt, Wem? zum Dativobjekt.",
       tipp:`Die Frage „${f.frage}“ gehört zu einem bestimmten Satzglied.`,
       optionen: zieheVerschiedene([
@@ -8732,6 +8788,7 @@ Object.assign(AUFGABEN, {
         : [R("Weiterhin ein Verb oder Adjektiv", "Richtig — also klein."),
            F("Ein Nomen", "Dafür fehlt der Begleiter davor.")]},
      {frage:"Wie schreibst du es also?",
+      tippAntwort: f.gross,
       tipp2:"Nomen werden im Deutschen ausnahmslos großgeschrieben.",
       tipp: f.istGross ? "Nomen → groß." : "Verb oder Adjektiv → klein.",
       optionen: zieheVerschiedene([
@@ -8803,7 +8860,18 @@ Object.assign(AUFGABEN, {
       optionen: zieheVerschiedene([
         R(loesung, "Richtig."),
         F(f.vorn ? `${f.begleit}, „${f.rede}“` : `„${f.rede}“: ${f.begleit}.`,
-          f.vorn ? "Bei vorangestelltem Begleitsatz steht ein Doppelpunkt." : "Der Doppelpunkt gehört nur nach vorne gestellten Begleitsätzen.")], 2)}]};
+          f.vorn ? "Bei vorangestelltem Begleitsatz steht ein Doppelpunkt." : "Der Doppelpunkt gehört nur nach vorne gestellten Begleitsätzen.")], 2)},
+     /* Den ganzen Satz abzutippen wäre eine Fleißaufgabe. Gefragt ist deshalb
+        das eine Zeichen, an dem hier alles hängt. */
+     {frage:"Welches Satzzeichen entscheidet in diesem Satz? Schreib seinen Namen.",
+      tippAntwort: f.vorn ? "Doppelpunkt" : "Komma",
+      tipp2: f.vorn ? "Steht der Begleitsatz vorn, kündigt ein Doppelpunkt die Rede an."
+                    : "Steht der Begleitsatz hinten, trennt ein Komma die Rede ab.",
+      tipp:"Doppelpunkt oder Komma?",
+      optionen: zieheVerschiedene([
+        R(f.vorn ? "Doppelpunkt" : "Komma", "Richtig."),
+        F(f.vorn ? "Komma" : "Doppelpunkt",
+          f.vorn ? "Das Komma käme, wenn der Begleitsatz hinten stünde." : "Der Doppelpunkt käme, wenn der Begleitsatz vorn stünde.")], 2)}]};
  }
 ],
 
@@ -8850,6 +8918,7 @@ Object.assign(AUFGABEN, {
            F("Es ist Präsens oder Präteritum", "Die bestehen nur aus einem Wort."),
            F("Es ist gar keine Zeitform", "Doch — jede Verbform steht in einer Zeit.")], 3)},
      {frage:"Welche Zeitform ist es genau?",
+      tippAntwort: f.zeit,
       tipp2:"Passiert es gerade, ist es die Gegenwart. Ist es vorbei, die einfache Vergangenheit.",
       tipp: f.hinweis,
       optionen: zieheVerschiedene([
@@ -8909,7 +8978,17 @@ Object.assign(AUFGABEN, {
       tipp:`Ein Komma in der Mitte, keines vor „${f.schluss}“.`,
       optionen: zieheVerschiedene([
         R(richtig, "Richtig."),
-        F(falsch, `Vor „${f.schluss}“ darf kein Komma stehen.`)], 2)}]};
+        F(falsch, `Vor „${f.schluss}“ darf kein Komma stehen.`)], 2)},
+     /* Den ganzen Satz abzutippen wäre eine Fleißaufgabe. Gefragt ist deshalb
+        die Zahl, auf die es ankommt — so wird zum Schluss trotzdem selbst
+        geantwortet statt nur angeklickt. */
+     {frage:"Wie viele Kommas stehen in diesem Satz?",
+      tippAntwort:"1",
+      tipp2:"Drei Glieder, dazwischen zwei Trennstellen — die letzte übernimmt das Bindewort.",
+      tipp:"Zähl die Kommas im richtigen Satz nach.",
+      optionen:[R("1", "Richtig — vor dem Bindewort steht keins."),
+                F("2", `Vor „${f.schluss}“ steht kein Komma.`),
+                F("0", "Zwischen den ersten beiden Gliedern gehört eines hin.")]}]};
  }
 ],
 
@@ -8961,6 +9040,7 @@ Object.assign(AUFGABEN, {
           naiv === f.komp ? "Doppelt gesteigert wird nicht." : `„${naiv}“ ist hier nicht die richtige Form.`),
         F("mehr " + f.grund, "Im Deutschen steigert man nicht mit „mehr“ davor — das ist Englisch.")], 3)},
      {frage:`Und die <b>Höchstform</b>?`,
+      tippAntwort: f.sup,
       tipp2:"Am plus Grundform plus -sten, gegebenenfalls wieder mit Umlaut.",
       tipp:"Sie beginnt mit „am“.",
       optionen: zieheVerschiedene([
