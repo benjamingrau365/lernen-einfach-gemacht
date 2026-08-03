@@ -23,16 +23,19 @@ ${werkzeuge}
 ${aufgaben}
 };
 ${entdopp}
-return {KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln};
+return {KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar};
 `;
 
 let umgebung;
 try { umgebung = new Function(code)(); }
 catch (e) { console.error("SYNTAXFEHLER beim Laden:", e.message); process.exit(1); }
 
-const { KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln } = umgebung;
+const { KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar } = umgebung;
 const RUNDEN = 3000;
 const probleme = [];
+/* Aufgaben, die am Ende nur noch angeklickt werden — als Hinweis gesammelt,
+   nicht als Fehler. Siehe die Erläuterung weiter unten bei istEintippbar. */
+const nurKlicken = new Set();
 const melde = (thema, nr, text) => probleme.push(`${thema} [Variante ${nr}] ${text}`);
 
 const nackt = (s) => String(s).replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
@@ -48,6 +51,15 @@ for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
       if (!a.text || !nackt(a.text)) { melde(thema, nr, "hat keinen Aufgabentext"); break; }
       if (a.loesung === undefined || !nackt(a.loesung)) { melde(thema, nr, "hat keine Lösung"); break; }
       if (!Array.isArray(a.schritte) || !a.schritte.length) { melde(thema, nr, "hat keine Schritte"); break; }
+
+      /* In der Standardeinstellung „gemischt" ist nur der LETZTE Schritt zum
+         Eintippen. Endet eine Aufgabe mit einer Zusammenfassungsfrage, wurde die
+         eigentliche Antwort vorher angeklickt — dann schreibt der Lernende nie
+         selbst etwas hin, und genau darauf läuft die ganze App hinaus.
+         Noch keine harte Regel: etliche ältere Aufgaben sind so gebaut, und der
+         Umbau gehört sauber gemacht, nicht nebenbei. */
+      if (!istEintippbar(a.schritte[a.schritte.length - 1]))
+        nurKlicken.add(`${thema} [Variante ${nr}]`);
 
       a.schritte.forEach((s, si) => {
         if (!s.frage || !nackt(s.frage)) melde(thema, nr, `Schritt ${si + 1}: keine Frage`);
@@ -186,6 +198,13 @@ for (const [fk, f] of Object.entries(KATALOG)) {
   console.log(f.name + "\n" + zeilen.join("\n"));
 }
 console.log(`\nGesamt: ${fertig}/${geplant} Themen fertig`);
+
+if (nurKlicken.size) {
+  console.log(`\n=== ZUM ÜBERARBEITEN ===`);
+  console.log(`${nurKlicken.size} Aufgaben enden mit einer Zusammenfassungsfrage. In der`);
+  console.log(`Standardeinstellung wird dort nur geklickt, nie selbst geschrieben:`);
+  [...nurKlicken].forEach((t) => console.log("  · " + t));
+}
 
 console.log("\n=== PRÜFUNG ===");
 const einzig = [...new Set(probleme)];
