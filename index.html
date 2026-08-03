@@ -843,17 +843,25 @@
   .kopfrechts .serie--mini svg{width:19px;height:19px}
   .kopfrechts .serie--mini b{font-size:16px}
   .kopfrechts .kopfcta{padding:11px 19px;font-size:clamp(14px,3.6vw,15.5px);white-space:nowrap}
+  /* Zweiter Knopf „Anmelden": deutlich sichtbar, aber ruhiger als der grüne
+     Hauptknopf. Umrandet statt gefüllt — so steht er gleichberechtigt daneben,
+     ohne mit dem Üben-Knopf um Aufmerksamkeit zu streiten. */
+  .kopfrechts .kopfzweit{padding:11px 17px;font-size:clamp(14px,3.6vw,15.5px);white-space:nowrap;
+    background:transparent;color:var(--ac-dark);border:1.6px solid var(--ac);box-shadow:none}
+  .kopfrechts .kopfzweit:hover{background:var(--ac-soft)}
   @media(max-width:640px){
     .kopfleiste{padding:14px 14px}
     .marke .slogan{display:none}
     .marke{gap:10px}
     .kopfrechts{gap:7px}
     .kopfrechts .kopfcta{padding:9px 12px;font-size:13px}
+    .kopfrechts .kopfzweit{padding:8px 11px;font-size:13px}
   }
   @media(max-width:400px){
     .kopfrechts .serie--mini{padding:7px 10px}
     .kopfrechts .serie--mini b{font-size:15px}
     .kopfrechts .kopfcta{padding:8px 10px;font-size:12px}
+    .kopfrechts .kopfzweit{padding:7px 9px;font-size:12px}
     .marke .ahabirne{width:48px;height:48px}
     .marke .ekkuerzel{font-size:22px}
   }
@@ -8131,6 +8139,267 @@ const AUFGABEN = {
                 F(`x = ${z(-n)}`, "Das Vorzeichen stimmt nicht — setz die Zahl zur Probe wieder ein."),
                 F(`x = ${z(b)}`, "Das ist der y-Achsenabschnitt, nicht die Nullstelle.")]}]};
  }
+],
+
+"Diode und Gleichrichter":[
+
+ /* Durchlassspannung und Vorwiderstand für eine LED */
+ () => {
+   const ub = pick([5, 9, 12, 24]);
+   const led = pick([{f:2, farbe:"rot"}, {f:2.1, farbe:"gelb"}, {f:3.2, farbe:"blau"}, {f:3.4, farbe:"weiß"}]);
+   const i = pick([5, 10, 15, 20]);
+   const r = Math.round((ub - led.f) / (i / 1000));
+   return {
+    typ:"formel",
+    text:`Eine <b>${led.farbe}e LED</b> mit ${z(led.f)} V Durchlassspannung soll mit ${z(i)} mA an <b>${z(ub)} V</b> betrieben werden.<br>Wie groß muss der Vorwiderstand sein, in Ω?`,
+    loesung: z(r),
+    schluss:"Ohne Vorwiderstand zieht eine LED so viel Strom, wie sie bekommen kann — und ist sofort hinüber. Der Widerstand nimmt die überschüssige Spannung auf.",
+    schritte:[
+     {frage:`Wie viel Spannung bleibt für den <b>Widerstand</b> übrig?`,
+      tipp:"Die LED nimmt ihre Durchlassspannung, der Rest fällt am Widerstand ab.",
+      tipp2:`Rechne ${z(ub)} V − ${z(led.f)} V.`,
+      optionen:[R(`${z(Math.round((ub - led.f) * 100) / 100)} V`, "Richtig."),
+                F(`${z(ub)} V`, "Die LED nimmt selbst schon einen Teil der Spannung."),
+                F(`${z(led.f)} V`, "Das ist die Spannung an der LED, nicht am Widerstand.")]},
+     {frage:`Wie viel <b>Ampere</b> sind ${z(i)} mA?`,
+      tipp:"1000 mA sind 1 A.",
+      tipp2:`Teile durch 1000: ${z(i)} : 1000 = ${z(i / 1000)}.`,
+      optionen:[R(`${z(i / 1000)} A`, "Richtig."),
+                F(`${z(i)} A`, "Milliampere sind Tausendstel-Ampere."),
+                F(`${z(i * 1000)} A`, "Da wurde malgenommen statt geteilt.")]},
+     {frage:`Was ergibt <b>${z(Math.round((ub - led.f) * 100) / 100)} V : ${z(i / 1000)} A</b>?`,
+      tippAntwort: z(r),
+      tipp:"R = U : I, das Ohmsche Gesetz.",
+      tipp2:`Rechne ${z(Math.round((ub - led.f) * 100) / 100)} : ${z(i / 1000)}.`,
+      optionen:[R(`${z(r)} Ω`, "Richtig."),
+                F(`${z(Math.round(ub / (i / 1000)))} Ω`, "Hier wurde mit der vollen Betriebsspannung gerechnet — die Durchlassspannung fehlt."),
+                F(`${z(Math.round((ub - led.f) * (i / 1000) * 1000) / 1000)} Ω`, "Hier wurde malgenommen statt geteilt.")]}]};
+ },
+
+ /* Ausgangsspannung nach der Gleichrichtung */
+ () => {
+   const f = pick([
+     {art:"Einweggleichrichter", dioden:1, formel:"U_eff · 1,41 − 0,7 V", faktor:1},
+     {art:"Brückengleichrichter", dioden:4, formel:"U_eff · 1,41 − 1,4 V", faktor:2}
+   ]);
+   const ueff = pick([6, 9, 12, 24]);
+   const spitze = Math.round(ueff * 1.41 * 100) / 100;
+   const verlust = Math.round(f.faktor * 0.7 * 100) / 100;
+   const ug = Math.round((spitze - verlust) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein <b>${f.art}</b> liegt an ${z(ueff)} V Wechselspannung (Effektivwert).<br>Welche Gleichspannung steht hinter dem Ladekondensator an, in Volt?`,
+    loesung: z(ug),
+    schluss:`Der Kondensator lädt sich auf den <b>Spitzenwert</b> auf, nicht auf den Effektivwert. Deshalb ist die Gleichspannung höher, als viele erwarten.`,
+    schritte:[
+     {frage:`Wie groß ist der <b>Spitzenwert</b> von ${z(ueff)} V?`,
+      tipp:"Der Spitzenwert ist das 1,41-fache des Effektivwerts (Wurzel aus 2).",
+      tipp2:`Rechne ${z(ueff)} · 1,41.`,
+      optionen:[R(`${z(spitze)} V`, "Richtig."),
+                F(`${z(Math.round(ueff / 1.41 * 100) / 100)} V`, "Geteilt statt malgenommen — der Spitzenwert ist größer."),
+                F(`${z(ueff)} V`, "Das ist der Effektivwert.")]},
+     {frage:`Wie viele Dioden liegen beim <b>${f.art}</b> im Strompfad?`,
+      tipp:"Beim Brückengleichrichter fließt der Strom immer durch zwei Dioden gleichzeitig.",
+      tipp2:`Beim ${f.art} sind es ${z(f.faktor)}.`,
+      optionen:[R(`${z(f.faktor)}`, `Richtig — macht ${z(verlust)} V Verlust.`),
+                F(`${z(f.faktor === 1 ? 2 : 1)}`, "Das gilt für die andere Schaltungsart."),
+                F(`${z(f.dioden)}`, f.dioden === 1 ? "Bei einer Diode stimmt die Zahl, aber gefragt ist der Strompfad." : "Die Brücke hat vier Dioden, aber nur zwei liegen gleichzeitig im Strompfad.")]},
+     {frage:`Was ergibt <b>${z(spitze)} V − ${z(verlust)} V</b>?`,
+      tippAntwort: z(ug),
+      tipp:"Je Diode fallen rund 0,7 V ab.",
+      tipp2:`Rechne ${z(spitze)} − ${z(verlust)}.`,
+      optionen:[R(`${z(ug)} V`, "Richtig."),
+                F(`${z(spitze)} V`, "Der Spannungsabfall an den Dioden fehlt."),
+                F(`${z(Math.round((ueff - verlust) * 100) / 100)} V`, "Hier wurde vom Effektivwert abgezogen statt vom Spitzenwert.")]}]};
+ },
+
+ /* Diode richtig herum? */
+ () => {
+   const f = pick([
+     {lage:"Anode am Plus, Kathode am Minus", leitet:true,  fb:"In Durchlassrichtung — der Strom fließt."},
+     {lage:"Kathode am Plus, Anode am Minus", leitet:false, fb:"In Sperrrichtung — es fließt nur ein winziger Sperrstrom."}
+   ]);
+   const u = pick([5, 12, 24]);
+   const r = pick([100, 220, 470, 1000]);
+   const i = f.leitet ? Math.round((u - 0.7) / r * 1000 * 100) / 100 : 0;
+   return {
+    typ:"formel",
+    text:`Eine Silizium-Diode liegt mit ${z(r)} Ω in Reihe an <b>${z(u)} V</b> Gleichspannung.<br>Anschluss: <b>${f.lage}</b>.<br>Wie groß ist der Strom, in mA?`,
+    loesung: z(i),
+    schluss:"Die Diode ist ein Ventil: In eine Richtung lässt sie durch, in die andere sperrt sie. Der Ring auf dem Gehäuse markiert die Kathode.",
+    schritte:[
+     {frage:"Leitet die Diode in dieser Lage?",
+      tipp:"Die Diode leitet, wenn die Anode am Plus liegt.",
+      tipp2:f.fb,
+      optionen:[R(f.leitet ? "Ja, sie leitet" : "Nein, sie sperrt", f.fb),
+                F(f.leitet ? "Nein, sie sperrt" : "Ja, sie leitet", "Andersherum — schau noch mal auf die Anschlüsse."),
+                F("Das hängt von der Spannungshöhe ab", "Erst weit über der Sperrspannung würde die Diode durchbrechen. Hier entscheidet die Richtung.")]},
+     ...(f.leitet ? [
+     {frage:`Wie viel Spannung bleibt für den Widerstand? (Diode: 0,7 V)`,
+      tipp:"An einer leitenden Silizium-Diode fallen etwa 0,7 V ab.",
+      tipp2:`Rechne ${z(u)} − 0,7.`,
+      optionen:[R(`${z(Math.round((u - 0.7) * 100) / 100)} V`, "Richtig."),
+                F(`${z(u)} V`, "Die Diode nimmt selbst 0,7 V."),
+                F(`0,7 V`, "Das ist der Anteil der Diode, nicht der des Widerstands.")]},
+     {frage:`Was ergibt <b>${z(Math.round((u - 0.7) * 100) / 100)} V : ${z(r)} Ω</b> in mA?`,
+      tippAntwort: z(i),
+      tipp:"I = U : R, das Ergebnis dann mal 1000 für Milliampere.",
+      tipp2:`${z(Math.round((u - 0.7) * 100) / 100)} : ${z(r)} = ${z(Math.round((u - 0.7) / r * 100000) / 100000)} A, also ${z(i)} mA.`,
+      optionen:[R(`${z(i)} mA`, "Richtig."),
+                F(`${z(Math.round(u / r * 1000 * 100) / 100)} mA`, "Ohne den Abfall an der Diode gerechnet."),
+                F(`${z(Math.round((u - 0.7) / r * 100000) / 100000)} mA`, "Das ist der Wert in Ampere — mal 1000 fehlt.")]}]
+     : [
+     {frage:"Wie groß ist der Strom dann?",
+      tippAntwort: "0",
+      tipp:"In Sperrrichtung fließt praktisch nichts.",
+      tipp2:"Der Sperrstrom liegt im Bereich von Nanoampere — für die Praxis null.",
+      optionen:[R("0 mA", "Richtig — praktisch fließt nichts."),
+                F(`${z(Math.round(u / r * 1000 * 100) / 100)} mA`, "So wäre es, wenn die Diode leiten würde."),
+                F("0,7 mA", "0,7 ist die Durchlassspannung in Volt, kein Strom.")]}])]};
+ }
+],
+
+"Beleuchtung berechnen":[
+
+ /* Wie viele Leuchten braucht der Raum? */
+ () => {
+   const laenge = pick([6, 8, 10, 12]);
+   const breite = pick([4, 5, 6, 8]);
+   const lux = pick([200, 300, 500]);
+   const lumen = pick([2000, 3000, 4000, 5000]);
+   const flaeche = laenge * breite;
+   const gesamt = flaeche * lux;
+   const anzahl = Math.ceil(gesamt / lumen);
+   return {
+    typ:"formel",
+    text:`Ein Raum ist ${z(laenge)} m × ${z(breite)} m groß und braucht <b>${z(lux)} lx</b>.<br>Eine Leuchte gibt ${z(lumen)} lm ab. Wie viele Leuchten sind nötig?`,
+    loesung: z(anzahl),
+    schluss:"Lux ist Lumen je Quadratmeter. Die Fläche entscheidet also mit — derselbe Raum braucht doppelt so viele Leuchten, wenn er doppelt so groß ist.",
+    schritte:[
+     {frage:`Wie groß ist die <b>Fläche</b>?`,
+      tipp:"Länge mal Breite.",
+      tipp2:`Rechne ${z(laenge)} · ${z(breite)}.`,
+      optionen:[R(`${z(flaeche)} m²`, "Richtig."),
+                F(`${z(2 * (laenge + breite))} m²`, "Das ist der Umfang, nicht die Fläche."),
+                F(`${z(laenge + breite)} m²`, "Hier wird malgenommen, nicht addiert.")]},
+     {frage:`Wie viel <b>Lumen</b> braucht der ganze Raum?`,
+      tipp:"1 lx ist 1 lm je m². Also Fläche mal Beleuchtungsstärke.",
+      tipp2:`Rechne ${z(flaeche)} · ${z(lux)}.`,
+      optionen:[R(`${z(gesamt)} lm`, "Richtig."),
+                F(`${z(lux)} lm`, "Das ist die Beleuchtungsstärke, noch nicht auf die Fläche gerechnet."),
+                F(`${z(Math.round(flaeche / lux * 100) / 100)} lm`, "Hier wird malgenommen, nicht geteilt.")]},
+     {frage:`Wie viele Leuchten à ${z(lumen)} lm sind das? Runde auf.`,
+      tippAntwort: z(anzahl),
+      tipp:"Gesamtlumen durch Lumen je Leuchte — und dann aufrunden.",
+      tipp2:`${z(gesamt)} : ${z(lumen)} = ${z(Math.round(gesamt / lumen * 100) / 100)}, aufgerundet ${z(anzahl)}.`,
+      optionen:[R(`${z(anzahl)}`, "Richtig — es wird immer aufgerundet, halbe Leuchten gibt es nicht."),
+                F(`${z(Math.floor(gesamt / lumen))}`, "Abgerundet wäre es zu dunkel."),
+                F(`${z(anzahl + 2)}`, "Das sind mehr, als nötig sind.")]}]};
+ },
+
+ /* Von der Leistung zur Lichtausbeute */
+ () => {
+   const f = pick([
+     {art:"Glühlampe", eta:12}, {art:"Halogenlampe", eta:18},
+     {art:"Leuchtstofflampe", eta:80}, {art:"LED-Leuchte", eta:120}
+   ]);
+   const p = pick([5, 8, 10, 15, 20, 36, 60]);
+   const lm = p * f.eta;
+   return {
+    typ:"formel",
+    text:`Eine <b>${f.art}</b> hat ${z(p)} W und eine Lichtausbeute von ${z(f.eta)} lm/W.<br>Wie viel Lichtstrom gibt sie ab, in Lumen?`,
+    loesung: z(lm),
+    schluss:"Watt sagt, was die Lampe verbraucht. Lumen sagt, was sie leistet. Nur Lumen gehört auf die Verpackung geschaut.",
+    schritte:[
+     {frage:"Was bedeutet <b>Lumen je Watt</b>?",
+      tipp:"Es ist eine Angabe pro Watt.",
+      tipp2:`${z(f.eta)} lm/W heißt: Jedes Watt bringt ${z(f.eta)} Lumen.`,
+      optionen:[R(`Wie viel Licht jedes Watt bringt`, "Richtig — das ist die Lichtausbeute."),
+                F("Wie viel Strom die Lampe zieht", "Das wäre die Leistung in Watt."),
+                F("Wie hell der Raum wird", "Das wäre die Beleuchtungsstärke in Lux.")]},
+     {frage:`Was ergibt <b>${z(p)} W · ${z(f.eta)} lm/W</b>?`,
+      tippAntwort: z(lm),
+      tipp:"Leistung mal Lichtausbeute.",
+      tipp2:`Rechne ${z(p)} · ${z(f.eta)}.`,
+      optionen:[R(`${z(lm)} lm`, `Richtig. Eine ${f.art} braucht dafür ${z(p)} W.`),
+                F(`${z(Math.round(p / f.eta * 1000) / 1000)} lm`, "Hier wird malgenommen, nicht geteilt."),
+                F(`${z(p)} lm`, "Watt und Lumen sind zwei verschiedene Größen.")]}]};
+ }
+],
+
+"Anlage prüfen und protokollieren":[
+
+ /* Schleifenimpedanz und Abschaltbedingung */
+ () => {
+   const sicherung = pick([{a:16, ia:80}, {a:20, ia:100}, {a:25, ia:125}, {a:10, ia:50}]);
+   const zs = pick([0.8, 1.2, 1.6, 2.0, 2.8, 3.5]);
+   const ik = Math.round(230 / zs);
+   const haelt = ik >= sicherung.ia;
+   return {
+    typ:"formel",
+    text:`Gemessen wurde eine Schleifenimpedanz von <b>${z(zs)} Ω</b>. Abgesichert ist mit einem <b>B${z(sicherung.a)}</b>-Automaten.<br>Wie groß ist der zu erwartende Kurzschlussstrom, in Ampere?`,
+    loesung: z(ik),
+    schluss:`Ein B-Automat muss beim ${z(5)}-fachen seines Nennstroms sicher abschalten. Bei B${z(sicherung.a)} sind das ${z(sicherung.ia)} A.`,
+    schritte:[
+     {frage:"Welche Formel gehört hierher?",
+      tipp:"Spannung geteilt durch Widerstand.",
+      tipp2:"I_k = U₀ : Z_s, mit U₀ = 230 V.",
+      optionen:[R("I_k = 230 V : Z_s", "Richtig — das Ohmsche Gesetz für die Fehlerschleife."),
+                F("I_k = 230 V · Z_s", "Malgenommen würde der Strom mit größerem Widerstand steigen — das ist verkehrt."),
+                F("I_k = Z_s : 230 V", "Vertauscht.")]},
+     {frage:`Was ergibt <b>230 V : ${z(zs)} Ω</b>?`,
+      tippAntwort: z(ik),
+      tipp:"Teile 230 durch die gemessene Impedanz.",
+      tipp2:`Rechne 230 : ${z(zs)}.`,
+      optionen:[R(`${z(ik)} A`, "Richtig."),
+                F(`${z(Math.round(230 * zs))} A`, "Hier wird geteilt, nicht malgenommen."),
+                F(`${z(Math.round(400 / zs))} A`, "Bei einem Einphasenkreis wird mit 230 V gerechnet, nicht mit 400 V.")]},
+     {frage:`Schaltet der B${z(sicherung.a)} damit rechtzeitig ab? (nötig: ${z(sicherung.ia)} A)`,
+      tipp:`Vergleiche ${z(ik)} A mit ${z(sicherung.ia)} A.`,
+      tipp2:haelt ? `${z(ik)} A liegen über ${z(sicherung.ia)} A — die Bedingung ist erfüllt.`
+                  : `${z(ik)} A liegen unter ${z(sicherung.ia)} A — die Bedingung ist nicht erfüllt.`,
+      optionen:[R(haelt ? "Ja, die Bedingung ist erfüllt" : "Nein, die Bedingung ist nicht erfüllt",
+                  haelt ? "Richtig." : "Richtig — hier muss nachgebessert werden: kürzere Leitung, größerer Querschnitt oder ein FI."),
+                F(haelt ? "Nein, die Bedingung ist nicht erfüllt" : "Ja, die Bedingung ist erfüllt", "Vergleich noch einmal die beiden Ströme."),
+                F("Das lässt sich daraus nicht sagen", `Doch — der gemessene Kurzschlussstrom wird mit dem Auslösestrom verglichen.`)]}]};
+ },
+
+ /* Isolationswiderstand bewerten */
+ () => {
+   const f = pick([
+     {netz:"SELV/PELV", u:250, min:0.5}, {netz:"bis 500 V", u:500, min:1.0}, {netz:"über 500 V", u:1000, min:1.0}
+   ]);
+   const gemessen = pick([0.3, 0.4, 0.6, 0.9, 1.5, 3.2, 12, 55]);
+   const ok = gemessen >= f.min;
+   return {
+    typ:"formel",
+    text:`Gemessener Isolationswiderstand: <b>${z(gemessen)} MΩ</b> bei einem Stromkreis <b>${f.netz}</b>.<br>Mindestwert nach DIN VDE 0100-600: ${z(f.min)} MΩ. Wie lautet das Ergebnis der Prüfung? Antworte mit <b>bestanden</b> oder <b>nicht bestanden</b>.`,
+    loesung: ok ? "bestanden" : "nicht bestanden",
+    schluss:"Der Messwert allein ist keine Bewertung. Ins Protokoll gehören der Wert, die Prüfspannung und der Vergleich mit dem Mindestwert.",
+    schritte:[
+     {frage:`Mit welcher <b>Prüfspannung</b> wird hier gemessen?`,
+      tipp:"Die Prüfspannung richtet sich nach der Nennspannung des Stromkreises.",
+      tipp2:`Bei ${f.netz} sind es ${z(f.u)} V Gleichspannung.`,
+      optionen:[R(`${z(f.u)} V DC`, "Richtig."),
+                F(`${z(f.u === 500 ? 250 : 500)} V DC`, "Das gilt für einen anderen Spannungsbereich."),
+                F("230 V AC", "Der Isolationswiderstand wird mit Gleichspannung gemessen, nicht mit Netzspannung.")]},
+     {frage:`Ist ${z(gemessen)} MΩ größer oder kleiner als der Mindestwert ${z(f.min)} MΩ?`,
+      tipp:"Vergleiche die beiden Zahlen.",
+      tipp2:ok ? `${z(gemessen)} ist größer als ${z(f.min)}.` : `${z(gemessen)} ist kleiner als ${z(f.min)}.`,
+      optionen:[R(ok ? "größer" : "kleiner", "Richtig."),
+                F(ok ? "kleiner" : "größer", "Schau noch einmal auf die beiden Zahlen."),
+                F("genau gleich", "Die beiden Werte sind verschieden.")]},
+     {frage:"Wie lautet das Prüfergebnis?",
+      tippAntwort: ok ? "bestanden" : "nicht bestanden",
+      tipp:"Über dem Mindestwert heißt bestanden.",
+      tipp2:ok ? "Der Wert liegt über dem Mindestwert — bestanden."
+               : "Der Wert liegt unter dem Mindestwert — nicht bestanden, der Fehler muss gesucht werden.",
+      optionen:[R(ok ? "bestanden" : "nicht bestanden",
+                  ok ? "Richtig — Wert und Ergebnis kommen so ins Protokoll."
+                     : "Richtig — die Anlage darf so nicht in Betrieb gehen."),
+                F(ok ? "nicht bestanden" : "bestanden", "Vergleich noch einmal mit dem Mindestwert."),
+                F("nur mit Einschränkung", "Die Norm kennt hier kein Dazwischen: entweder der Wert reicht oder nicht.")]}]};
+ }
 ]
 
 };
@@ -8706,6 +8975,353 @@ Object.assign(AUFGABEN, {
 const SVG_STIL = `style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto"`;
 
 const ERKLAERUNGEN = {
+
+"Diode und Gleichrichter": {
+  worum:"Eine Diode lässt Strom nur in eine Richtung durch. Aus dieser einen Eigenschaft wird alles gebaut, was aus Wechselspannung Gleichspannung macht.",
+  wozu:[
+    "Jedes Netzteil im Betrieb arbeitet mit Dioden. Was aus der Steckdose kommt, ist Wechselspannung — was die Steuerung braucht, ist Gleichspannung. Dazwischen sitzt ein Gleichrichter.",
+    "Freilaufdioden an Schützen und Relais fangen die Spannungsspitze ab, die beim Abschalten einer Spule entsteht. Ohne sie brennen Kontakte weg und Halbleiter sterben."
+  ],
+  rezept:[
+    "Kläre die Richtung: Liegt die Anode am Plus, leitet die Diode.",
+    "Rechne mit dem Spannungsabfall: bei Silizium rund 0,7 V, bei Schottky rund 0,3 V.",
+    "Beim Gleichrichter zuerst den Spitzenwert bilden: Effektivwert mal 1,41.",
+    "Davon den Abfall der Dioden abziehen — beim Brückengleichrichter zweimal 0,7 V.",
+    "Für den Vorwiderstand einer LED: Restspannung durch gewünschten Strom.",
+    "Sperrspannung prüfen: Die Diode muss die Spitzenspannung aushalten, nicht nur den Effektivwert."
+  ],
+  fehler:[
+    ["Mit dem Effektivwert statt dem Spitzenwert gerechnet", "Der Ladekondensator lädt sich auf den Spitzenwert auf. Aus 12 V Wechselspannung werden rund 17 V Gleichspannung, nicht 12 V."],
+    ["LED ohne Vorwiderstand angeschlossen", "Eine LED begrenzt ihren Strom nicht selbst. Ohne Vorwiderstand zieht sie, bis sie durchbrennt — meist in Sekundenbruchteilen."],
+    ["Beim Brückengleichrichter nur einmal 0,7 V abgezogen", "Der Strom fließt immer durch zwei Dioden gleichzeitig. Es sind also 1,4 V, nicht 0,7 V."],
+    ["Kathode und Anode verwechselt", "Der Ring auf dem Gehäuse markiert die Kathode — die Seite, die zum Minus zeigt. Falsch herum leitet gar nichts."]
+  ],
+  einfach:[
+    "Eine Diode ist ein Ventil für Strom. In die eine Richtung lässt sie durch, in die andere sperrt sie.",
+    "Sie hat zwei Anschlüsse: die Anode und die Kathode. Der Ring auf dem Gehäuse markiert die Kathode.",
+    "Liegt die Anode am Plus, leitet die Diode. Das nennt man Durchlassrichtung.",
+    "Liegt die Kathode am Plus, sperrt sie. Das ist die Sperrrichtung.",
+    "Auch in Durchlassrichtung ist die Diode nicht widerstandslos: Bei Silizium fallen etwa 0,7 V an ihr ab.",
+    "Mit einer einzelnen Diode kannst du eine Halbwelle der Wechselspannung abschneiden — das ist ein Einweggleichrichter.",
+    "Vier Dioden in einer Brücke nutzen beide Halbwellen. Das ist der Brückengleichrichter, und er ist der Normalfall.",
+    "Hinter dem Gleichrichter sitzt ein Kondensator, der die Lücken auffüllt und die Spannung glättet.",
+    "Dieser Kondensator lädt sich auf den Spitzenwert auf. Der ist das 1,41-fache des Effektivwerts.",
+    "Bei einer LED begrenzt immer ein Vorwiderstand den Strom. Die LED selbst tut das nicht."
+  ],
+  begriffe:[
+    ["Anode","Der Anschluss, der zum Plus zeigt, damit die Diode leitet."],
+    ["Kathode","Der Anschluss mit dem Ring, zeigt zum Minus."],
+    ["Durchlassspannung","Was in Durchlassrichtung an der Diode abfällt — bei Silizium rund 0,7 V."],
+    ["Sperrspannung","Die Spannung, die die Diode in Sperrrichtung aushalten muss."],
+    ["Brückengleichrichter","Vier Dioden, die beide Halbwellen nutzen."],
+    ["Ladekondensator","Glättet die gleichgerichtete Spannung."]
+  ],
+  tabelle:{
+    titel:"Dioden und ihre Werte",
+    kopf:["Bauteil","Durchlassspannung","Wofür"],
+    zeilen:[
+      ["Silizium-Diode","≈ 0,7 V","Standard, Gleichrichter, Freilauf"],
+      ["Schottky-Diode","≈ 0,3 V","schnelle Schaltungen, wenig Verlust"],
+      ["Germanium-Diode","≈ 0,3 V","alt, kaum noch verwendet"],
+      ["LED rot","≈ 1,8 bis 2,0 V","Anzeige"],
+      ["LED gelb / grün","≈ 2,0 bis 2,2 V","Anzeige"],
+      ["LED blau / weiß","≈ 3,0 bis 3,4 V","Anzeige, Beleuchtung"],
+      ["Z-Diode","je nach Typ","Spannung stabilisieren, arbeitet in Sperrrichtung"]
+    ],
+    fuss:"Die Werte sind Anhaltspunkte. Der genaue Wert steht im Datenblatt und hängt vom Strom ab."
+  },
+  regeln:[
+    "Anode am Plus heißt Durchlass, Kathode am Plus heißt Sperren.",
+    "Der Ring markiert die Kathode.",
+    "Silizium: rund 0,7 V Durchlassspannung.",
+    "Spitzenwert = Effektivwert · 1,41.",
+    "Brückengleichrichter: zwei Dioden im Strompfad, also 1,4 V Abfall.",
+    "LED nie ohne Vorwiderstand betreiben."
+  ],
+  beispiel:{aufgabe:"Eine rote LED (2 V) soll mit 20 mA an 12 V laufen. Wie groß ist der Vorwiderstand?",
+    schritte:["Restspannung: 12 V − 2 V = 10 V","Strom in Ampere: 20 mA = 0,02 A","R = 10 V : 0,02 A"],
+    ergebnis:"500 Ω — genommen wird der nächste Normwert, 470 Ω"},
+  spiel:{
+    titel:"Vorwiderstand für eine LED",
+    hinweis:"Zieh Betriebsspannung, LED-Farbe und Strom. Der Widerstand ergibt sich daraus.",
+    regler:[
+      {id:"ub", name:"Betriebsspannung", einheit:"V", von:3, bis:24, schritt:0.5, start:12},
+      {id:"led", name:"LED-Farbe", von:0, bis:3, schritt:1, start:0},
+      {id:"i",  name:"Strom", einheit:"mA", von:2, bis:30, schritt:1, start:20}
+    ],
+    ausgabe:(w) => {
+      const L = [["rot", 2.0], ["gelb", 2.1], ["grün", 2.2], ["blau/weiß", 3.2]];
+      const [farbe, uf] = L[w.led];
+      const rest = w.ub - uf;
+      const NORM = [100,120,150,180,220,270,330,390,470,560,680,820,1000,1200,1500,1800,2200];
+      if (rest <= 0) return {
+        werte:[
+          {name:"LED", text:farbe + " (" + z(uf) + " V)"},
+          {name:"Betriebsspannung", text:z(w.ub) + " V"},
+          {name:"Ergebnis", text:"zu wenig Spannung"}
+        ],
+        satz:`<b>${z(w.ub)} V reichen nicht.</b> Eine ${farbe}e LED braucht allein schon ${z(uf)} V — sie bleibt dunkel.`
+      };
+      const r = rest / (w.i / 1000);
+      const norm = NORM.find(n => n >= r) || "größer als 2200";
+      const pv = rest * (w.i / 1000);
+      return {
+        werte:[
+          {name:"LED " + farbe, text:z(uf) + " V Durchlassspannung"},
+          {name:"Am Widerstand", text:z(Math.round(rest * 100) / 100) + " V"},
+          {name:"Rechnerisch", text:z(Math.round(r)) + " Ω"},
+          {name:"Nächster Normwert", text:typeof norm === "number" ? z(norm) + " Ω" : norm},
+          {name:"Verlust am Widerstand", text:z(Math.round(pv * 1000)) + " mW"}
+        ],
+        satz:`Gerechnet ${z(Math.round(r))} Ω, genommen wird der nächste <b>größere</b> Normwert — lieber etwas weniger Strom als zu viel.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Diode in Durchlass- und in Sperrrichtung">
+    <text x="100" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Durchlassrichtung</text>
+    <line x1="20" y1="60" x2="70" y2="60" stroke="currentColor" stroke-width="2"/>
+    <path d="M70 44l30 16-30 16Z" fill="#10a37f" stroke="#10a37f" stroke-width="2"/>
+    <line x1="100" y1="42" x2="100" y2="78" stroke="currentColor" stroke-width="3"/>
+    <line x1="100" y1="60" x2="180" y2="60" stroke="currentColor" stroke-width="2"/>
+    <text x="26" y="52" font-size="12" font-weight="700" fill="currentColor">+</text>
+    <text x="172" y="52" font-size="12" font-weight="700" fill="currentColor">−</text>
+    <text x="100" y="94" text-anchor="middle" font-size="11" fill="#10a37f">Strom fließt</text>
+    <text x="300" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Sperrrichtung</text>
+    <line x1="220" y1="60" x2="270" y2="60" stroke="currentColor" stroke-width="2"/>
+    <path d="M270 44l30 16-30 16Z" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="300" y1="42" x2="300" y2="78" stroke="currentColor" stroke-width="3"/>
+    <line x1="300" y1="60" x2="380" y2="60" stroke="currentColor" stroke-width="2"/>
+    <text x="226" y="52" font-size="12" font-weight="700" fill="currentColor">−</text>
+    <text x="372" y="52" font-size="12" font-weight="700" fill="currentColor">+</text>
+    <text x="300" y="94" text-anchor="middle" font-size="11" fill="currentColor">kein Strom</text>
+    <text x="200" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Der Strich ist die Kathode — dort sitzt der Ring.</text>
+    <path d="M40 168h60" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="100" y="152" width="80" height="32" rx="4" fill="#333" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="164" y="152" width="8" height="32" fill="#ddd"/>
+    <path d="M180 168h60" stroke="currentColor" stroke-width="1.5"/>
+    <text x="168" y="146" text-anchor="middle" font-size="10" fill="currentColor">Ring = Kathode</text>
+  </svg>`
+},
+
+"Beleuchtung berechnen": {
+  worum:"Wie viel Licht ein Raum braucht, hängt an drei Größen: Lumen, Lux und der Fläche. Wer sie auseinanderhält, rechnet jede Beleuchtung aus.",
+  wozu:[
+    "Für jeden Arbeitsplatz ist eine Beleuchtungsstärke vorgeschrieben — im Flur weniger, an der Werkbank deutlich mehr. Wer eine Beleuchtung plant oder umrüstet, muss das rechnen können.",
+    "Beim Umstieg auf LED ist die Wattzahl kein Maßstab mehr. Eine 8-W-LED ersetzt eine 60-W-Glühlampe. Vergleichbar sind nur die Lumen."
+  ],
+  rezept:[
+    "Fläche des Raums bestimmen: Länge mal Breite.",
+    "Nötige Beleuchtungsstärke in Lux nachschlagen — sie hängt von der Tätigkeit ab.",
+    "Gesamten Lichtstrom rechnen: Fläche mal Lux.",
+    "Lichtstrom einer Leuchte aus dem Datenblatt nehmen.",
+    "Anzahl bestimmen: Gesamtlichtstrom durch Lichtstrom je Leuchte, immer aufrunden.",
+    "In der Praxis noch Wartungs- und Raumwirkungsgrad berücksichtigen — dadurch werden es mehr Leuchten."
+  ],
+  fehler:[
+    ["Watt mit Helligkeit verwechselt", "Watt sagt, was die Lampe verbraucht. Wie hell sie ist, steht in Lumen. Bei LED liegen zwischen beiden Welten."],
+    ["Lux und Lumen vertauscht", "Lumen ist das, was die Leuchte abgibt. Lux ist das, was auf der Fläche ankommt — Lumen je Quadratmeter."],
+    ["Abgerundet statt aufgerundet", "Bei 7,2 Leuchten braucht es acht. Sieben wären zu dunkel, und halbe Leuchten gibt es nicht."],
+    ["Verluste vergessen", "Helle Wände werfen Licht zurück, dunkle schlucken es. Staub und Alterung kosten weitere 20 bis 30 Prozent. Die reine Rechnung ist die Untergrenze."]
+  ],
+  einfach:[
+    "Lumen (lm) sagt, wie viel Licht eine Leuchte insgesamt abgibt.",
+    "Lux (lx) sagt, wie viel davon auf einem Quadratmeter ankommt.",
+    "Der Zusammenhang ist einfach: 1 lx = 1 lm je m².",
+    "Willst du wissen, wie viel Licht ein Raum braucht, rechnest du Fläche mal Lux.",
+    "Beispiel: 20 m² mit 300 lx brauchen 20 · 300 = 6000 lm.",
+    "Wie viele Leuchten das sind, hängt davon ab, wie viel Lumen eine Leuchte abgibt.",
+    "6000 lm mit Leuchten zu je 2000 lm sind drei Leuchten.",
+    "Kommt keine glatte Zahl heraus, wird immer aufgerundet.",
+    "Watt sagt nichts über die Helligkeit. Eine LED mit 8 W ist so hell wie eine Glühlampe mit 60 W.",
+    "Die Lichtausbeute in Lumen je Watt sagt, wie sparsam eine Lampe ist. Bei LED sind über 100 lm/W üblich, bei der alten Glühlampe waren es 12."
+  ],
+  begriffe:[
+    ["Lichtstrom","Was die Leuchte insgesamt abgibt, in Lumen (lm)."],
+    ["Beleuchtungsstärke","Was auf der Fläche ankommt, in Lux (lx)."],
+    ["Lichtausbeute","Lumen je Watt — wie sparsam die Lampe ist."],
+    ["Lichtstärke","Wie viel Licht in eine bestimmte Richtung geht, in Candela (cd)."],
+    ["Wartungsfaktor","Zuschlag für Alterung und Verschmutzung, meist 0,8."]
+  ],
+  tabelle:{
+    titel:"Beleuchtungsstärken nach DIN EN 12464-1",
+    kopf:["Ort oder Tätigkeit","Beleuchtungsstärke"],
+    zeilen:[
+      ["Verkehrsflächen, Flure","100 lx"],
+      ["Treppen","150 lx"],
+      ["Lager, Archiv","200 lx"],
+      ["Pausenraum, Kantine","200 lx"],
+      ["Grobe Montagearbeiten","200 lx"],
+      ["Büro, Schulraum, Werkstatt","500 lx"],
+      ["Feine Montage, Prüfarbeit","750 lx"],
+      ["Sehr feine Arbeiten, Elektronik","1000 lx und mehr"]
+    ],
+    fuss:"Die Werte gelten für den Bereich der Tätigkeit, nicht für den ganzen Raum. Der Umgebungsbereich darf dunkler sein."
+  },
+  regeln:[
+    "1 lx = 1 lm je m².",
+    "Gesamtlichtstrom = Fläche · Beleuchtungsstärke.",
+    "Anzahl der Leuchten = Gesamtlichtstrom : Lichtstrom je Leuchte, aufgerundet.",
+    "Lichtstrom = Leistung · Lichtausbeute.",
+    "Watt sagt nichts über die Helligkeit — nur Lumen zählt.",
+    "In der Praxis Verluste einrechnen: Wartungsfaktor rund 0,8."
+  ],
+  beispiel:{aufgabe:"Eine Werkstatt ist 10 m × 6 m groß und braucht 500 lx. Eine Leuchte gibt 4000 lm ab. Wie viele Leuchten?",
+    schritte:["Fläche: 10 · 6 = 60 m²","Gesamt: 60 · 500 = 30 000 lm","30 000 : 4000 = 7,5","aufgerundet"],
+    ergebnis:"8 Leuchten"},
+  spiel:{
+    titel:"Beleuchtung planen",
+    hinweis:"Zieh Raumgröße, gewünschte Beleuchtungsstärke und Leuchtentyp. Die Anzahl ergibt sich daraus.",
+    regler:[
+      {id:"l",   name:"Länge",  einheit:"m",  von:2, bis:25, schritt:0.5, start:10},
+      {id:"b",   name:"Breite", einheit:"m",  von:2, bis:20, schritt:0.5, start:6},
+      {id:"lux", name:"Nötig",  einheit:"lx", von:100, bis:1000, schritt:50, start:500},
+      {id:"lm",  name:"Je Leuchte", einheit:"lm", von:800, bis:8000, schritt:100, start:4000}
+    ],
+    ausgabe:(w) => {
+      const flaeche = w.l * w.b;
+      const gesamt = flaeche * w.lux;
+      const roh = gesamt / w.lm;
+      const anzahl = Math.ceil(roh);
+      const mitWartung = Math.ceil(roh / 0.8);
+      const leistung = anzahl * (w.lm / 110);        /* LED mit rund 110 lm/W */
+      return {
+        werte:[
+          {name:"Fläche", text:z(Math.round(flaeche * 100) / 100) + " m²"},
+          {name:"Nötiger Lichtstrom", text:z(Math.round(gesamt)) + " lm"},
+          {name:"Rechnerisch", text:z(Math.round(roh * 100) / 100) + " Leuchten"},
+          {name:"Aufgerundet", text:"<b>" + z(anzahl) + "</b>"},
+          {name:"Mit Wartungsfaktor 0,8", text:z(mitWartung) + " Leuchten"},
+          {name:"Anschlussleistung (LED)", text:"rund " + z(Math.round(leistung)) + " W"}
+        ],
+        satz:`Die reine Rechnung ergibt ${z(anzahl)} Leuchten. Mit dem üblichen Wartungsfaktor 0,8 für Alterung und Staub werden daraus <b>${z(mitWartung)}</b> — deshalb liegt die Planung immer über der nackten Rechnung.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Lumen kommt aus der Leuchte, Lux kommt auf der Fläche an">
+    <circle cx="200" cy="34" r="18" fill="#f59e0b" fill-opacity=".7" stroke="#f59e0b" stroke-width="2"/>
+    <text x="200" y="39" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">lm</text>
+    ${[-58,-30,0,30,58].map(d => `<line x1="200" y1="54" x2="${200 + d}" y2="126" stroke="#f59e0b" stroke-width="1.5" opacity=".75"/>`).join("")}
+    <text x="286" y="46" font-size="11" fill="currentColor">Lichtstrom: was herauskommt</text>
+    <rect x="120" y="126" width="160" height="30" rx="4" fill="#10a37f" fill-opacity=".25" stroke="#10a37f" stroke-width="2"/>
+    <text x="200" y="146" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">lx auf der Fläche</text>
+    <text x="200" y="176" text-anchor="middle" font-size="12" fill="currentColor">1 lx = 1 lm auf 1 m² · Doppelte Fläche, halbe Beleuchtungsstärke</text>
+  </svg>`
+},
+
+"Anlage prüfen und protokollieren": {
+  worum:"Vor der Übergabe wird jede Anlage geprüft: erst hinsehen, dann messen, dann erproben. Was nicht im Protokoll steht, gilt als nicht geprüft.",
+  wozu:[
+    "Ohne Prüfprotokoll darf keine Anlage in Betrieb gehen. Es ist der Nachweis, dass du sauber gearbeitet hast — und im Streitfall das Einzige, was für dich spricht.",
+    "In der Abschlussprüfung ist das Protokollieren ein eigener Teil. Gefragt sind nicht nur Messwerte, sondern die Bewertung: Reicht der Wert oder nicht?"
+  ],
+  rezept:[
+    "Besichtigen: Schutzart, Leitungsverlegung, Kennzeichnung, Schutzleiteranschlüsse — vor jedem Messgerät kommt das Auge.",
+    "Durchgängigkeit des Schutzleiters messen.",
+    "Isolationswiderstand messen, mit der zum Spannungsbereich passenden Prüfspannung.",
+    "Schleifenimpedanz messen und den Kurzschlussstrom bestimmen.",
+    "Abschaltbedingung prüfen: Ist der Kurzschlussstrom größer als der Auslösestrom der Sicherung?",
+    "Fehlerstrom-Schutzschalter erproben: Auslösestrom und Auslösezeit.",
+    "Alles ins Protokoll: Messwert, Grenzwert, Bewertung, Gerät, Datum, Unterschrift."
+  ],
+  fehler:[
+    ["Nur gemessen, nicht bewertet", "Ein Messwert allein ist kein Prüfergebnis. Ins Protokoll gehört der Vergleich mit dem Grenzwert und das Wort bestanden oder nicht bestanden."],
+    ["Besichtigen übersprungen", "Die meisten Mängel sieht man, bevor man misst: fehlende Kennzeichnung, gequetschte Leitungen, lose Klemmen. Das Messgerät findet das nicht."],
+    ["Mit der falschen Prüfspannung gemessen", "Der Isolationswiderstand wird mit Gleichspannung geprüft — 250 V, 500 V oder 1000 V je nach Nennspannung des Kreises."],
+    ["Bei 400 V mit 230 V gerechnet", "Für den Kurzschlussstrom im Außenleiter-gegen-N-Kreis gilt 230 V. Zwischen zwei Außenleitern sind es 400 V."]
+  ],
+  einfach:[
+    "Eine Prüfung hat immer drei Teile: besichtigen, erproben, messen. In dieser Reihenfolge.",
+    "Besichtigen heißt hinschauen: Sitzen die Klemmen fest, ist alles beschriftet, passt die Schutzart zum Raum?",
+    "Erst danach kommen die Messgeräte.",
+    "Der Schutzleiter wird auf Durchgängigkeit geprüft — er muss von der Steckdose bis zur Erde durchverbunden sein.",
+    "Der Isolationswiderstand zeigt, ob die Leitungen dicht sind. Gemessen wird mit Gleichspannung, meist 500 V.",
+    "Der Mindestwert liegt bei Stromkreisen bis 500 V bei 1 MΩ.",
+    "Die Schleifenimpedanz sagt, wie groß der Widerstand der Fehlerschleife ist.",
+    "Daraus rechnest du den Kurzschlussstrom: I = 230 V geteilt durch die gemessene Impedanz.",
+    "Dieser Strom muss groß genug sein, damit die Sicherung schnell abschaltet. Ein B-Automat braucht dafür das Fünffache seines Nennstroms.",
+    "Ganz zum Schluss wird alles aufgeschrieben. Messwert, Grenzwert, Bewertung, Prüfgerät, Datum, Unterschrift. Was nicht im Protokoll steht, gilt als nicht geprüft."
+  ],
+  begriffe:[
+    ["Besichtigen","Prüfen mit dem Auge, vor jeder Messung."],
+    ["Schleifenimpedanz Z_s","Der Widerstand der ganzen Fehlerschleife vom Trafo bis zur Fehlerstelle."],
+    ["Kurzschlussstrom I_k","Der Strom, der im Fehlerfall fließt — er muss die Sicherung auslösen."],
+    ["Isolationswiderstand","Wie gut die Leitungen gegeneinander und gegen Erde isoliert sind."],
+    ["Abschaltbedingung","I_k muss größer sein als der Auslösestrom der Schutzeinrichtung."],
+    ["Erstprüfung","Die Prüfung vor der ersten Inbetriebnahme."]
+  ],
+  tabelle:{
+    titel:"Grenzwerte und Auslöseströme",
+    kopf:["Prüfung","Wert","Bemerkung"],
+    zeilen:[
+      ["Isolationswiderstand SELV/PELV","≥ 0,5 MΩ","Prüfspannung 250 V DC"],
+      ["Isolationswiderstand bis 500 V","≥ 1,0 MΩ","Prüfspannung 500 V DC"],
+      ["Isolationswiderstand über 500 V","≥ 1,0 MΩ","Prüfspannung 1000 V DC"],
+      ["FI-Schutzschalter 30 mA","Auslösung ≤ 30 mA","Auslösezeit ≤ 300 ms"],
+      ["B-Automat","5 · I_N","B16 → 80 A"],
+      ["C-Automat","10 · I_N","C16 → 160 A"],
+      ["Abschaltzeit Endstromkreis ≤ 32 A","≤ 0,4 s","TN-System, 230 V"],
+      ["Berührungsspannung","≤ 50 V AC","Grenze für Wechselspannung"]
+    ],
+    fuss:"Maßgebend sind DIN VDE 0100-410 und DIN VDE 0100-600. Im Zweifel gilt die Norm, nicht diese Tabelle."
+  },
+  regeln:[
+    "Reihenfolge: besichtigen, erproben, messen.",
+    "I_k = 230 V : Z_s im Einphasenkreis.",
+    "B-Automat löst beim 5-fachen Nennstrom sicher aus, C beim 10-fachen.",
+    "Isolationswiderstand bis 500 V: mindestens 1 MΩ bei 500 V DC.",
+    "Abschaltzeit im Endstromkreis: höchstens 0,4 s.",
+    "Jeder Messwert braucht eine Bewertung im Protokoll."
+  ],
+  beispiel:{aufgabe:"Gemessen: Z_s = 1,2 Ω, abgesichert mit B16. Ist die Abschaltbedingung erfüllt?",
+    schritte:["I_k = 230 V : 1,2 Ω = 191,7 A","B16 braucht 5 · 16 A = 80 A","191,7 A > 80 A"],
+    ergebnis:"Ja — die Bedingung ist erfüllt"},
+  spiel:{
+    titel:"Abschaltbedingung prüfen",
+    hinweis:"Zieh die gemessene Schleifenimpedanz und die Sicherung. Die Bewertung läuft mit.",
+    regler:[
+      {id:"zs",  name:"Schleifenimpedanz", einheit:"Ω", von:0.2, bis:6, schritt:0.1, start:1.2},
+      {id:"nen", name:"Sicherung", einheit:"A", von:6, bis:32, schritt:2, start:16},
+      {id:"typ", name:"Kennlinie (0 = B, 1 = C)", von:0, bis:1, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const faktor = w.typ ? 10 : 5;
+      const buchstabe = w.typ ? "C" : "B";
+      const ia = w.nen * faktor;
+      const ik = 230 / w.zs;
+      const ok = ik >= ia;
+      const breite = Math.min(1, ik / (ia * 2));
+      return {
+        bild:`<svg viewBox="0 0 400 84" ${SVG_STIL} role="img" aria-label="Vergleich von Kurzschlussstrom und Auslösestrom">
+          <rect x="20" y="26" width="360" height="26" rx="6" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".4"/>
+          <rect x="20" y="26" width="${Math.max(3, 360 * breite).toFixed(1)}" height="26" rx="6" fill="${ok ? "#10a37f" : "#b3382f"}" fill-opacity=".7"/>
+          <line x1="200" y1="18" x2="200" y2="60" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3"/>
+          <text x="200" y="14" text-anchor="middle" font-size="10" fill="currentColor">nötig: ${z(ia)} A</text>
+          <text x="20" y="74" font-size="11" fill="currentColor">0 A</text>
+          <text x="380" y="74" text-anchor="end" font-size="11" fill="currentColor">${z(ia * 2)} A</text>
+        </svg>`,
+        werte:[
+          {name:"Kurzschlussstrom I_k", text:z(Math.round(ik)) + " A"},
+          {name:"Sicherung", text:buchstabe + z(w.nen)},
+          {name:"Nötiger Auslösestrom", text:z(ia) + " A  (" + z(faktor) + " · " + z(w.nen) + " A)"},
+          {name:"Ergebnis", text: ok ? "<b>bestanden</b>" : "<b>nicht bestanden</b>"}
+        ],
+        satz: ok
+          ? `${z(Math.round(ik))} A liegen über den nötigen ${z(ia)} A — die Sicherung schaltet rechtzeitig ab.`
+          : `<b>${z(Math.round(ik))} A reichen nicht.</b> Nötig sind ${z(ia)} A. Abhilfe: kürzere Leitung, größerer Querschnitt, kleinere Sicherung — oder ein Fehlerstrom-Schutzschalter.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 180" ${SVG_STIL} role="img" aria-label="Reihenfolge der Prüfung: besichtigen, erproben, messen, protokollieren">
+    ${[["1. Besichtigen","Augen: Klemmen, Kennzeichnung, Schutzart","#10a37f"],
+       ["2. Erproben","Funktion: FI-Taste, Schalter, Meldungen","#3b82f6"],
+       ["3. Messen","Geräte: Schutzleiter, Isolation, Schleife","#f59e0b"],
+       ["4. Protokollieren","Wert, Grenzwert, Bewertung, Unterschrift","#6b4fd8"]]
+      .map((s, i) => `<rect x="24" y="${10 + i * 42}" width="352" height="34" rx="6" fill="${s[2]}" fill-opacity=".2" stroke="${s[2]}" stroke-width="1.8"/>
+        <text x="38" y="${26 + i * 42}" font-size="12" font-weight="700" fill="currentColor">${s[0]}</text>
+        <text x="38" y="${39 + i * 42}" font-size="10" fill="currentColor">${s[1]}</text>`).join("")}
+  </svg>`
+},
+
 
 "Rechnen mit Zeit": {
   worum:"Zeit rechnet nicht in Zehnern, sondern in 60ern. Wer das übersieht, verrechnet sich auf jedem Stundenzettel.",
@@ -9385,6 +10001,26 @@ const ERKLAERUNGEN = {
     ["Die Nullen weggelassen", "Aus 3.847 wird 3.800, nicht 38. Die Stellen bleiben erhalten, sie werden nur zu Null."],
     ["Rundungsstelle verzählt", "Von rechts: Einer, Zehner, Hunderter, Tausender. Leg den Finger auf und zähl nach."]
   ],
+  spiel:{
+    titel:"Runden zum Anfassen",
+    hinweis:"Zieh die Zahl und schau, wie sie sich auf verschiedenen Stellen rundet.",
+    regler:[
+      {id:"n", name:"Zahl", von:0, bis:99999, schritt:1, start:3847}
+    ],
+    ausgabe:(w) => {
+      const r = (s) => Math.round(w.n / s) * s;
+      return {
+        werte:[
+          {name:"Zahl", text:z(w.n)},
+          {name:"auf Zehner", text:z(r(10))},
+          {name:"auf Hunderter", text:z(r(100))},
+          {name:"auf Tausender", text:z(r(1000))},
+          {name:"auf Zehntausender", text:z(r(10000))}
+        ],
+        satz:`Entscheidend ist immer <b>die Ziffer rechts</b> von der Rundungsstelle: unter 5 abrunden, ab 5 aufrunden. Alles weiter rechts wird nicht mitgezählt.`
+      };
+    }
+  },
   einfach:[
     "Eine Zahl schreiben wir aus Ziffern zusammen: 0, 1, 2, 3 und so weiter. In der Zahl 347 stecken drei Ziffern.",
     "Jede Ziffer hat einen Platz. Ganz rechts stehen die Einer. Links daneben die Zehner. Dann die Hunderter, dann die Tausender.",
@@ -9446,6 +10082,29 @@ const ERKLAERUNGEN = {
     ["Klammer vergessen aufzulösen", "Was in der Klammer steht, muss vollständig ausgerechnet sein, bevor es weitergeht."],
     ["Vorzeichen beim Auflösen verloren", "Vor einer Klammer mit Minus drehen sich innen alle Vorzeichen um: 10 − (3 + 2) = 10 − 3 − 2."]
   ],
+  spiel:{
+    titel:"Dieselben Zahlen, vier Rechenarten",
+    hinweis:"Zieh zwei Zahlen und vergleiche, wie weit die Ergebnisse auseinanderliegen.",
+    regler:[
+      {id:"a", name:"erste Zahl", von:1, bis:100, schritt:1, start:24},
+      {id:"b", name:"zweite Zahl", von:1, bis:100, schritt:1, start:6}
+    ],
+    ausgabe:(w) => {
+      const geteilt = w.a / w.b;
+      const rest = w.a % w.b;
+      return {
+        werte:[
+          {name:"Summe " + z(w.a) + " + " + z(w.b), text:z(w.a + w.b)},
+          {name:"Differenz " + z(w.a) + " − " + z(w.b), text:z(w.a - w.b)},
+          {name:"Produkt " + z(w.a) + " · " + z(w.b), text:z(w.a * w.b)},
+          {name:"Quotient " + z(w.a) + " : " + z(w.b), text:z(Math.round(geteilt * 10000) / 10000) + (rest ? "  (" + z(Math.floor(geteilt)) + " Rest " + z(rest) + ")" : "")}
+        ],
+        satz: w.b === 1 ? "Geteilt durch 1 ändert nichts — und mal 1 auch nicht."
+          : rest === 0 ? `${z(w.a)} ist durch ${z(w.b)} <b>ohne Rest</b> teilbar.`
+          : `${z(w.a)} : ${z(w.b)} geht nicht glatt auf: ${z(Math.floor(geteilt))} Rest ${z(rest)}. Als Dezimalzahl ${z(Math.round(geteilt * 10000) / 10000)}.`
+      };
+    }
+  },
   einfach:[
     "Es gibt vier Grundrechenarten: plus, minus, mal und geteilt.",
     "Plus und minus nennt man Strichrechnung, weil ihre Zeichen aus Strichen bestehen: + und −.",
@@ -9494,6 +10153,27 @@ const ERKLAERUNGEN = {
     ["Zeit dezimal gerechnet", "1,5 Stunden sind 90 Minuten, nicht 150. Bei der Zeit gilt 60, nicht 100."],
     ["Einheit im Ergebnis vergessen", "Eine Zahl ohne Einheit ist bei Größen keine Antwort."]
   ],
+  spiel:{
+    titel:"Komma wandern lassen",
+    hinweis:"Dieselbe Länge in allen Einheiten. Zieh den Wert und schau, welche Schreibweise gerade handlich ist.",
+    regler:[
+      {id:"mm", name:"Länge", einheit:"mm", von:1, bis:1000000, schritt:1, start:2500}
+    ],
+    ausgabe:(w) => {
+      const mm = w.mm;
+      const kurz = (x) => z(Math.round(x * 10000) / 10000);
+      const handlich = mm >= 1e6 ? "km" : mm >= 1000 ? "m" : mm >= 10 ? "cm" : "mm";
+      return {
+        werte:[
+          {name:"in mm", text:kurz(mm) + " mm"},
+          {name:"in cm", text:kurz(mm / 10) + " cm"},
+          {name:"in m",  text:kurz(mm / 1000) + " m"},
+          {name:"in km", text:kurz(mm / 1e6) + " km"}
+        ],
+        satz:`Die Zahl ändert sich, die Länge nicht. Hier liest sich <b>${handlich}</b> am angenehmsten — jeder Schritt zur nächsten Einheit verschiebt das Komma um eine oder drei Stellen.`
+      };
+    }
+  },
   einfach:[
     "Eine Größe ist etwas, das man messen kann: eine Länge, ein Gewicht, eine Zeit.",
     "Damit andere verstehen, wie viel gemeint ist, schreibt man eine Einheit dahinter: 5 Meter, 3 Kilogramm, 20 Minuten.",
@@ -9555,6 +10235,34 @@ const ERKLAERUNGEN = {
     ["Bei zusammengesetzten Figuren die innere Kante mitgezählt", "Setzt du zwei Rechtecke zusammen, verschwindet die gemeinsame Kante aus dem Umfang."],
     ["Beim Quadrat nur zwei Seiten gerechnet", "Der Umfang eines Quadrats ist 4 · a, nicht 2 · a."]
   ],
+  spiel:{
+    titel:"Rechteck ziehen",
+    hinweis:"Umfang und Fläche wachsen nicht gleich schnell. Zieh die Seiten und sieh selbst.",
+    regler:[
+      {id:"a", name:"Länge a", einheit:"m", von:1, bis:20, schritt:0.5, start:6},
+      {id:"b", name:"Breite b", einheit:"m", von:1, bis:20, schritt:0.5, start:4}
+    ],
+    ausgabe:(w) => {
+      const u = 2 * (w.a + w.b), f = w.a * w.b;
+      const skala = 300 / 20;
+      const br = w.a * skala, ho = w.b * skala;
+      return {
+        bild:`<svg viewBox="0 0 340 320" ${SVG_STIL} role="img" aria-label="Rechteck mit den eingestellten Seitenlängen">
+          <rect x="20" y="${(300 - ho).toFixed(1)}" width="${br.toFixed(1)}" height="${ho.toFixed(1)}"
+                fill="#10a37f" fill-opacity=".28" stroke="#10a37f" stroke-width="2"/>
+          <text x="${(20 + br / 2).toFixed(1)}" y="316" text-anchor="middle" font-size="12" fill="currentColor">a = ${z(w.a)} m</text>
+          <text x="14" y="${(300 - ho / 2).toFixed(1)}" text-anchor="end" font-size="12" fill="currentColor">b = ${z(w.b)} m</text>
+        </svg>`,
+        werte:[
+          {name:"Umfang U = 2 · (a + b)", text:z(Math.round(u * 100) / 100) + " m"},
+          {name:"Fläche A = a · b", text:z(Math.round(f * 100) / 100) + " m²"}
+        ],
+        satz: w.a === w.b
+          ? "Bei gleichen Seiten ist es ein Quadrat — bei festem Umfang hat das Quadrat immer die größte Fläche."
+          : `Verdoppelst du <b>beide</b> Seiten, verdoppelt sich der Umfang, aber die Fläche wird <b>viermal</b> so groß. Deshalb ist ein Zimmer mit doppelter Kantenlänge nicht doppelt, sondern viermal so groß.`
+      };
+    }
+  },
   einfach:[
     "Stell dir ein Fußballfeld vor. Wenn du einmal ganz außen an der Linie entlangläufst, ist der Weg, den du zurücklegst, der Umfang.",
     "Der Rasen, auf dem gespielt wird — also die ganze Fläche innerhalb der Linien — ist der Flächeninhalt.",
@@ -9608,6 +10316,42 @@ const ERKLAERUNGEN = {
     ["Punktsymmetrie übersehen", "Manche Figuren haben keine Spiegelachse, sehen aber nach einer halben Drehung gleich aus — das ist Punktsymmetrie."],
     ["Die Achse falsch gelegt", "Die Spiegelachse geht immer durch die Figur, nicht daneben vorbei."]
   ],
+  spiel:{
+    titel:"Spiegeln und drehen",
+    hinweis:"Zieh die Eckenzahl und sieh, wie viele Spiegelachsen ein regelmäßiges Vieleck hat.",
+    regler:[
+      {id:"n", name:"Ecken", von:3, bis:12, schritt:1, start:6}
+    ],
+    ausgabe:(w) => {
+      const n = w.n, r = 52, cx = 80, cy = 66;
+      const ecke = (i) => {
+        const a = -Math.PI / 2 + i * 2 * Math.PI / n;
+        return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+      };
+      const punkte = Array.from({length: n}, (_, i) => ecke(i).map(v => v.toFixed(1)).join(",")).join(" ");
+      const achsen = Array.from({length: n}, (_, i) => {
+        const a = -Math.PI / 2 + i * Math.PI / n;
+        return `<line x1="${(cx - (r + 8) * Math.cos(a)).toFixed(1)}" y1="${(cy - (r + 8) * Math.sin(a)).toFixed(1)}" x2="${(cx + (r + 8) * Math.cos(a)).toFixed(1)}" y2="${(cy + (r + 8) * Math.sin(a)).toFixed(1)}" stroke="#b3382f" stroke-width="1" stroke-dasharray="4 3" opacity=".7"/>`;
+      }).join("");
+      return {
+        bild:`<svg viewBox="0 0 300 132" ${SVG_STIL} role="img" aria-label="Regelmäßiges Vieleck mit ${n} Ecken und seinen Spiegelachsen">
+          ${achsen}
+          <polygon points="${punkte}" fill="#10a37f" fill-opacity=".25" stroke="#10a37f" stroke-width="2"/>
+          <text x="185" y="52" font-size="12" fill="currentColor">${z(n)} Spiegelachsen</text>
+          <text x="185" y="74" font-size="12" fill="currentColor">Drehung um ${z(Math.round(360 / n * 100) / 100)}°</text>
+        </svg>`,
+        werte:[
+          {name:"Ecken", text:z(n)},
+          {name:"Spiegelachsen", text:z(n)},
+          {name:"Kleinster Drehwinkel", text:z(Math.round(360 / n * 100) / 100) + "°"},
+          {name:"Innenwinkel", text:z(Math.round((n - 2) * 180 / n * 100) / 100) + "°"}
+        ],
+        satz: n % 2 === 0
+          ? `Bei gerader Eckenzahl gehen die Achsen entweder durch zwei gegenüberliegende <b>Ecken</b> oder durch zwei <b>Seitenmitten</b>.`
+          : `Bei ungerader Eckenzahl geht jede Achse durch eine Ecke und die gegenüberliegende Seitenmitte.`
+      };
+    }
+  },
   einfach:[
     "Nimm ein Blatt Papier und male eine Figur darauf. Jetzt falte das Blatt einmal in der Mitte.",
     "Wenn beide Hälften der Figur genau übereinanderliegen — kein Stück ragt heraus — dann war die Faltlinie eine Symmetrieachse.",
@@ -9656,6 +10400,41 @@ const ERKLAERUNGEN = {
     ["Beim Multiplizieren gleichnamig gemacht", "Malnehmen geht direkt: Zähler mal Zähler, Nenner mal Nenner. Gleichnamig machen braucht man nur bei plus und minus."],
     ["Nicht gekürzt", "6/8 ist richtig, aber 3/4 ist die Antwort, die erwartet wird."]
   ],
+  spiel:{
+    titel:"Bruch als Balken",
+    hinweis:"Der Nenner sagt, in wie viele Teile geteilt wird. Der Zähler, wie viele davon du nimmst.",
+    regler:[
+      {id:"n", name:"Nenner (Teile insgesamt)", von:2, bis:12, schritt:1, start:4},
+      {id:"z", name:"Zähler (davon genommen)", von:0, bis:12, schritt:1, start:3}
+    ],
+    ausgabe:(w) => {
+      const z1 = Math.min(w.z, w.n);
+      const breite = 340 / w.n;
+      const teile = Array.from({length: w.n}, (_, i) =>
+        `<rect x="${(20 + i * breite).toFixed(1)}" y="20" width="${(breite - 2).toFixed(1)}" height="46" rx="3"
+          fill="${i < z1 ? "#10a37f" : "none"}" fill-opacity=".55" stroke="#10a37f" stroke-width="1.5"/>`).join("");
+      const teiler = (a, b) => b ? teiler(b, a % b) : a;
+      const g = teiler(z1, w.n) || 1;
+      const gekuerzt = `${z1 / g}/${w.n / g}`;
+      const dez = Math.round(z1 / w.n * 10000) / 10000;
+      return {
+        bild:`<svg viewBox="0 0 380 90" ${SVG_STIL} role="img" aria-label="Balken in ${w.n} Teile geteilt, ${z1} davon gefüllt">
+          ${teile}
+          <text x="200" y="84" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">${z1} von ${w.n}</text>
+        </svg>`,
+        werte:[
+          {name:"Bruch", text:`${z1}/${w.n}`},
+          {name:"Gekürzt", text:gekuerzt},
+          {name:"Als Dezimalzahl", text:z(dez)},
+          {name:"In Prozent", text:z(Math.round(dez * 10000) / 100) + " %"}
+        ],
+        satz: w.z > w.n ? "Mehr als der ganze Balken geht nicht — der Zähler wurde auf den Nenner begrenzt."
+          : z1 === w.n ? "Zähler gleich Nenner: Das ist genau eine Ganze."
+          : z1 === 0 ? "Null Teile genommen — der Bruch ist null."
+          : `Je größer der Nenner, desto <b>kleiner</b> jedes einzelne Stück. ${z1}/${w.n} sind ${z(dez)}.`
+      };
+    }
+  },
   einfach:[
     "Stell dir eine Pizza vor. Du schneidest sie in vier gleich große Stücke.",
     "Nimmst du drei davon, hast du drei Viertel. Man schreibt das als 3/4.",
@@ -9725,6 +10504,30 @@ const ERKLAERUNGEN = {
     ["Nullen am Ende für wichtig gehalten", "3,50 und 3,5 sind dieselbe Zahl. Beim Untereinanderschreiben helfen die Nullen trotzdem."],
     ["Überschlag weggelassen", "Ein grober Überschlag findet fast jeden Kommafehler in Sekunden."]
   ],
+  spiel:{
+    titel:"Komma verschieben",
+    hinweis:"Mal 10 heißt: Komma eine Stelle nach rechts. Geteilt durch 10: eine nach links.",
+    regler:[
+      {id:"n", name:"Zahl", von:1, bis:9999, schritt:1, start:425},
+      {id:"e", name:"mal 10 hoch", von:-4, bis:4, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const wert = w.n * Math.pow(10, w.e);
+      const richtung = w.e === 0 ? "nirgendwohin" : w.e > 0 ? `${z(w.e)} nach rechts` : `${z(-w.e)} nach links`;
+      return {
+        werte:[
+          {name:"Ausgangszahl", text:z(w.n)},
+          {name:"Rechnung", text: w.e === 0 ? "unverändert"
+            : w.e > 0 ? "· " + z(Math.pow(10, w.e)) : ": " + z(Math.pow(10, -w.e))},
+          {name:"Komma wandert", text:richtung},
+          {name:"Ergebnis", text:"<b>" + z(Math.round(wert * 1e6) / 1e6) + "</b>"}
+        ],
+        satz: w.e === 0 ? "Hochzahl null: Es wird weder mal- noch geteilt genommen."
+          : w.e > 0 ? "Malnehmen macht die Zahl größer — das Komma wandert nach <b>rechts</b>."
+          : "Teilen macht die Zahl kleiner — das Komma wandert nach <b>links</b>. Fehlen Stellen, kommen Nullen dazu."
+      };
+    }
+  },
   einfach:[
     "Vor dem Komma stehen ganze Stücke, hinter dem Komma die angefangenen.",
     "2,5 Liter heißt: zwei ganze Liter und ein halber.",
@@ -9781,6 +10584,40 @@ const ERKLAERUNGEN = {
     ["ggT und kgV vertauscht", "Der ggT ist der größte gemeinsame Teiler — er ist immer kleiner oder gleich der kleineren Zahl. Das kgV ist größer oder gleich der größeren."],
     ["Die 1 vergessen", "Jede Zahl ist durch 1 teilbar und durch sich selbst. Beide gehören in die Teilerliste."]
   ],
+  spiel:{
+    titel:"Teilbarkeitsregeln prüfen",
+    hinweis:"Zieh eine Zahl und sieh, welche Regeln greifen — und warum.",
+    regler:[
+      {id:"n", name:"Zahl", von:1, bis:9999, schritt:1, start:342}
+    ],
+    ausgabe:(w) => {
+      const n = w.n;
+      const ziffern = String(n).split("").map(Number);
+      const quer = ziffern.reduce((a, b) => a + b, 0);
+      const letzte = n % 10, zwei = n % 100;
+      const regeln = [
+        ["2", n % 2 === 0, "letzte Ziffer ist gerade"],
+        ["3", quer % 3 === 0, "Quersumme " + quer + " ist durch 3 teilbar"],
+        ["4", zwei % 4 === 0, "die letzten beiden Ziffern (" + zwei + ") sind durch 4 teilbar"],
+        ["5", letzte === 0 || letzte === 5, "endet auf 0 oder 5"],
+        ["6", n % 2 === 0 && quer % 3 === 0, "durch 2 und durch 3 teilbar"],
+        ["9", quer % 9 === 0, "Quersumme " + quer + " ist durch 9 teilbar"],
+        ["10", letzte === 0, "endet auf 0"]
+      ];
+      const treffer = regeln.filter(r => r[1]);
+      return {
+        werte:[
+          {name:"Zahl", text:z(n)},
+          {name:"Quersumme", text:z(quer)},
+          {name:"Teilbar durch", text: treffer.length ? "<b>" + treffer.map(r => r[0]).join(", ") + "</b>" : "keine der Regeln greift"},
+          {name:"Warum", text: treffer.length ? treffer.map(r => r[0] + ": " + r[2]).join(" · ") : "weder gerade noch passende Quersumme"}
+        ],
+        satz: treffer.length
+          ? `Für ${z(n)} greifen ${z(treffer.length)} Regeln. Die Quersumme entscheidet über 3 und 9, die letzten Ziffern über 2, 4, 5 und 10.`
+          : `${z(n)} ist durch keine der Grundzahlen teilbar — das kommt bei Primzahlen und ihren Verwandten vor.`
+      };
+    }
+  },
   einfach:[
     "12 Bonbons kannst du gerecht an 3 Kinder verteilen: jedes bekommt 4, nichts bleibt übrig. Also ist 12 durch 3 teilbar.",
     "13 Bonbons gehen nicht auf: eines bleibt liegen. Das übrig gebliebene Stück nennt man Rest.",
@@ -9843,6 +10680,30 @@ const ERKLAERUNGEN = {
     ["Die Paare vertauscht", "Schreib immer gleiche Größen untereinander: Stück unter Stück, Euro unter Euro."],
     ["Ergebnis nicht überschlagen", "Wenn 5 Hefte 10 € kosten, können 8 Hefte nicht 4 € kosten. Ein kurzer Blick fängt das ab."]
   ],
+  spiel:{
+    titel:"Erst auf eins, dann hoch",
+    hinweis:"Das ist der ganze Dreisatz: durch die Anzahl teilen, mit der neuen Anzahl malnehmen.",
+    regler:[
+      {id:"n1", name:"Bekannt: Stückzahl", von:1, bis:50, schritt:1, start:6},
+      {id:"p1", name:"kosten zusammen", einheit:"€", von:1, bis:500, schritt:1, start:45},
+      {id:"n2", name:"Gesucht: Stückzahl", von:1, bis:100, schritt:1, start:14}
+    ],
+    ausgabe:(w) => {
+      const eins = w.p1 / w.n1;
+      const ziel = eins * w.n2;
+      return {
+        werte:[
+          {name:"1. Schritt — ein Stück", text:eur(Math.round(eins * 100) / 100)},
+          {name:"2. Schritt — " + z(w.n2) + " Stück", text:eur(Math.round(ziel * 100) / 100)},
+          {name:"Rechnung", text:`${z(w.p1)} : ${z(w.n1)} · ${z(w.n2)}`}
+        ],
+        satz: w.n2 > w.n1
+          ? `Mehr Stück, mehr Geld — das ist ein <b>gerader</b> Dreisatz. Der Preis je Stück bleibt bei ${eur(Math.round(eins * 100) / 100)}.`
+          : w.n2 < w.n1 ? `Weniger Stück, weniger Geld. Der Preis je Stück ändert sich nicht: ${eur(Math.round(eins * 100) / 100)}.`
+          : "Gleiche Stückzahl — dann kommt natürlich derselbe Preis heraus."
+      };
+    }
+  },
   einfach:[
     "Drei Hefte kosten 4,50 €. Wie viel kosten sieben? Direkt kann man das nicht sehen.",
     "Der Trick: Rechne zuerst aus, was ein einziges Heft kostet. Dazu teilst du durch 3.",
@@ -9901,6 +10762,41 @@ const ERKLAERUNGEN = {
     ["Schenkel zu kurz gezeichnet", "Reicht der Schenkel nicht bis zur Skala, verlängere ihn mit dem Lineal — nicht schätzen."],
     ["Winkelart nicht geprüft", "Ein sichtbar stumpfer Winkel kann nicht 40° sein. Das Auge ist eine gute Kontrolle."]
   ],
+  spiel:{
+    titel:"Winkel aufziehen",
+    hinweis:"Zieh den Winkel und schau, wie er heißt und was der Nebenwinkel macht.",
+    regler:[
+      {id:"a", name:"Winkel", einheit:"°", von:0, bis:360, schritt:1, start:60}
+    ],
+    ausgabe:(w) => {
+      const r = 74, cx = 100, cy = 108;
+      const bogen = Math.min(w.a, 359.99) * Math.PI / 180;
+      const x2 = cx + r * Math.cos(-bogen), y2 = cy + r * Math.sin(-bogen);
+      const gross = w.a > 180 ? 1 : 0;
+      const art = w.a === 0 ? "Nullwinkel" : w.a < 90 ? "spitzer Winkel" : w.a === 90 ? "rechter Winkel"
+        : w.a < 180 ? "stumpfer Winkel" : w.a === 180 ? "gestreckter Winkel"
+        : w.a < 360 ? "überstumpfer Winkel" : "Vollwinkel";
+      return {
+        bild:`<svg viewBox="0 0 300 130" ${SVG_STIL} role="img" aria-label="Winkel von ${w.a} Grad">
+          <path d="M${cx} ${cy}L${(cx + r).toFixed(1)} ${cy}A${r} ${r} 0 ${gross} 0 ${x2.toFixed(1)} ${y2.toFixed(1)}Z"
+                fill="#10a37f" fill-opacity=".22" stroke="none"/>
+          <line x1="${cx}" y1="${cy}" x2="${(cx + r + 16).toFixed(1)}" y2="${cy}" stroke="currentColor" stroke-width="2"/>
+          <line x1="${cx}" y1="${cy}" x2="${(cx + (r + 16) * Math.cos(-bogen)).toFixed(1)}" y2="${(cy + (r + 16) * Math.sin(-bogen)).toFixed(1)}" stroke="#10a37f" stroke-width="2.5"/>
+          <text x="200" y="60" font-size="15" font-weight="800" fill="currentColor">${z(w.a)}°</text>
+          <text x="200" y="82" font-size="12" fill="currentColor">${art}</text>
+        </svg>`,
+        werte:[
+          {name:"Winkel", text:z(w.a) + "°"},
+          {name:"Art", text:art},
+          {name:"Ergänzung zu 180°", text:z(((180 - w.a) % 360 + 360) % 360) + "°"},
+          {name:"Ergänzung zu 360°", text:z((360 - w.a) % 360) + "°"}
+        ],
+        satz: w.a === 90 ? "Genau 90° — der rechte Winkel. Am Geodreieck die wichtigste Marke."
+          : w.a === 180 ? "180° ist eine gerade Linie."
+          : `Ein ${art}. Zusammen mit seinem Nebenwinkel ergibt er immer 180°.`
+      };
+    }
+  },
   einfach:[
     "Zwei Linien treffen sich in einem Punkt. Wie weit sie auseinandergehen, ist der Winkel.",
     "Gemessen wird in Grad, geschrieben mit einem kleinen Kreis: 90°.",
@@ -9957,6 +10853,30 @@ const ERKLAERUNGEN = {
     ["Zu früh geteilt", "Erst alles sortieren, dann durch die Zahl vor der Unbekannten teilen. Sonst wird es unnötig kompliziert."],
     ["Probe weggelassen", "Die Probe dauert zehn Sekunden und findet praktisch jeden Fehler."]
   ],
+  spiel:{
+    titel:"Waage im Gleichgewicht",
+    hinweis:"Was du links tust, musst du rechts auch tun. Sonst kippt die Waage.",
+    regler:[
+      {id:"a", name:"Faktor vor x", von:1, bis:12, schritt:1, start:3},
+      {id:"b", name:"plus", von:-20, bis:20, schritt:1, start:5},
+      {id:"c", name:"ergibt", von:-30, bis:60, schritt:1, start:20}
+    ],
+    ausgabe:(w) => {
+      const x = (w.c - w.b) / w.a;
+      const probe = w.a * x + w.b;
+      return {
+        werte:[
+          {name:"Gleichung", text:`${z(w.a)}x ${w.b < 0 ? "− " + z(-w.b) : "+ " + z(w.b)} = ${z(w.c)}`},
+          {name:"1. Schritt", text:`${w.b < 0 ? "+ " + z(-w.b) : "− " + z(w.b)} auf beiden Seiten → ${z(w.a)}x = ${z(w.c - w.b)}`},
+          {name:"2. Schritt", text:`: ${z(w.a)} auf beiden Seiten → x = ${z(Math.round(x * 10000) / 10000)}`},
+          {name:"Probe", text:`${z(w.a)} · ${z(Math.round(x * 10000) / 10000)} ${w.b < 0 ? "− " + z(-w.b) : "+ " + z(w.b)} = ${z(Math.round(probe * 1000) / 1000)}`}
+        ],
+        satz: Number.isInteger(x)
+          ? `x = ${z(x)} geht glatt auf. Die Probe muss immer die rechte Seite ergeben — hier ${z(w.c)}.`
+          : `Nicht jede Gleichung geht glatt auf. x = ${z(Math.round(x * 10000) / 10000)} ist genauso richtig — die Probe stimmt trotzdem.`
+      };
+    }
+  },
   einfach:[
     "Denk an eine Waage, die im Gleichgewicht ist. Links liegt genauso viel wie rechts. Das Gleichheitszeichen ist die Mitte der Waage.",
     "In 3x + 5 = 20 heißt das: Wenn du eine bestimmte Zahl dreimal nimmst und 5 dazuzählst, kommst du auf 20. Welche Zahl ist das?",
@@ -10102,6 +11022,35 @@ const ERKLAERUNGEN = {
     ["Komma vor dass vergessen", "„dass“ leitet einen Nebensatz ein. Davor steht ein Komma."],
     ["Bei „das, das“ unsicher geworden", "„Das Buch, das ich lese“ — beide Male mit einem s, weil beide durch „welches“ ersetzbar sind."]
   ],
+  spiel:{
+    titel:"Die Ersatzprobe zum Zusehen",
+    hinweis:"Schieb durch die Sätze. Die Probe: Passt „dieses“, „jenes“ oder „welches“? Dann mit einem s.",
+    regler:[
+      {id:"i", name:"Satz", von:0, bis:5, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["Ich hoffe, ___ es klappt.", "dass", false, "Ersatz passt nicht — es leitet einen Nebensatz ein."],
+        ["___ Kabel ist zu kurz.", "das", true, "„Dieses Kabel“ geht — also ein s."],
+        ["Er weiß, ___ er zu spät ist.", "dass", false, "„Er weiß, welches er zu spät ist“ ergibt keinen Sinn."],
+        ["Nimm ___ Werkzeug, ___ dort liegt.", "das … das", true, "Beide Male „welches“ möglich — beide Male ein s."],
+        ["Es ist so kalt, ___ die Leitung friert.", "dass", false, "Nach „so … ___“ folgt immer dass."],
+        ["___, was du suchst, liegt hier.", "Das", true, "„Dieses, was du suchst“ — Artikel, also ein s."]
+      ];
+      const s = S[w.i];
+      return {
+        werte:[
+          {name:"Satz", text:s[0].replace(/___/g, "<b>___</b>")},
+          {name:"Richtig ist", text:"<b>" + s[1] + "</b>"},
+          {name:"Ersatzprobe", text: s[2] ? "„dieses / jenes / welches“ passt" : "keiner der Ersätze passt"},
+          {name:"Begründung", text:s[3]}
+        ],
+        satz: s[2]
+          ? "Ein s: Es ist ein Artikel oder ein Pronomen. Man kann es durch ein anderes Wort ersetzen."
+          : "Zwei s: Es ist eine Konjunktion und leitet einen Nebensatz ein. Ersetzen geht nicht — dafür steht immer ein Komma davor."
+      };
+    }
+  },
   einfach:[
     "„das“ mit einem s gehört zu einem Nomen. Es steht davor oder ersetzt es: das Buch — ich nehme das.",
     "„dass“ mit zwei s verbindet zwei Satzteile. Es leitet einen Nebensatz ein: Ich hoffe, dass du kommst.",
@@ -10163,6 +11112,32 @@ const ERKLAERUNGEN = {
     ["Verbstellung nicht geprüft", "Im Nebensatz steht das gebeugte Verb am Ende. Das ist das sicherste Erkennungszeichen."],
     ["Relativsatz nicht als Nebensatz erkannt", "„Der Mann, der dort steht“ — auch das ist ein Nebensatz mit Komma."]
   ],
+  spiel:{
+    titel:"Nebensatz verschieben",
+    hinweis:"Derselbe Nebensatz, drei Stellungen. Das Komma wandert mit — abgetrennt wird immer.",
+    regler:[
+      {id:"s", name:"Nebensatz steht", von:0, bis:2, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const F = [
+        ["hinten", "Wir warten<b>,</b> weil die Anlage noch läuft.", "Ein Komma — es trennt den Nebensatz vom Hauptsatz."],
+        ["vorn", "Weil die Anlage noch läuft<b>,</b> warten wir.", "Ein Komma, jetzt vor dem Hauptsatz. Danach kommt sofort das Verb."],
+        ["mittendrin", "Wir werden<b>,</b> weil die Anlage noch läuft<b>,</b> später anfangen.", "Zwei Kommas — der eingeschobene Nebensatz wird beidseitig abgetrennt."]
+      ];
+      const f = F[w.s];
+      return {
+        werte:[
+          {name:"Stellung", text:f[0]},
+          {name:"So sieht es aus", text:f[1]},
+          {name:"Kommas", text: w.s === 2 ? "zwei" : "eins"},
+          {name:"Warum", text:f[2]}
+        ],
+        satz: w.s === 2
+          ? "Eingeschoben heißt <b>immer</b> zwei Kommas. Das zweite wird am häufigsten vergessen."
+          : "Am Bindewort erkennst du den Nebensatz: weil, dass, wenn, obwohl, damit. Und im Nebensatz steht das Verb ganz hinten."
+      };
+    }
+  },
   einfach:[
     "Ein Hauptsatz kann allein stehen: „Ich rufe dich an.“ Das ergibt für sich Sinn.",
     "Ein Nebensatz kann das nicht: „wenn ich zu Hause bin“ — allein klingt das unfertig.",
@@ -10219,6 +11194,33 @@ const ERKLAERUNGEN = {
     ["Auch ohne Signal großgeschrieben", "„Er kann gut schwimmen“ — hier ist schwimmen ein normales Verb, also klein."],
     ["Feste Wendungen falsch behandelt", "In „recht haben“ oder „pleite gehen“ wird klein geschrieben, obwohl es nach Nomen aussieht."]
   ],
+  spiel:{
+    titel:"Aus einem Verb wird ein Nomen",
+    hinweis:"Schieb das Signalwort davor. Sobald eins dasteht, wird großgeschrieben.",
+    regler:[
+      {id:"v", name:"Wort", von:0, bis:4, schritt:1, start:0},
+      {id:"s", name:"Signalwort davor", von:0, bis:4, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const W = ["messen","prüfen","schrauben","lesen","rechnen"];
+      const SIG = ["", "das ", "beim ", "zum ", "ein gutes "];
+      const wort = W[w.v];
+      const sig = SIG[w.s];
+      const gross = w.s > 0;
+      const wortForm = gross ? wort.charAt(0).toUpperCase() + wort.slice(1) : wort;
+      return {
+        werte:[
+          {name:"So steht es da", text:`<b>${sig}${wortForm}</b>`},
+          {name:"Signalwort", text: gross ? `„${sig.trim()}"` : "keins"},
+          {name:"Wortart", text: gross ? "Nomen (nominalisiertes Verb)" : "Verb"},
+          {name:"Schreibung", text: gross ? "groß" : "klein"}
+        ],
+        satz: gross
+          ? `Vor dem Wort steht „${sig.trim()}" — ein Artikel, eine verschmolzene Präposition oder ein Adjektiv. Damit ist es ein Nomen und wird <b>groß</b> geschrieben.`
+          : "Ohne Signalwort bleibt es ein Verb und wird kleingeschrieben. Probe: Passt „das“ davor, ist es ein Nomen."
+      };
+    }
+  },
   einfach:[
     "„laufen“ ist ein Verb — ein Tuwort. Verben schreibt man klein.",
     "Aber: „Das Laufen macht Spaß.“ Hier ist aus dem Tuwort eine Sache geworden, über die man spricht.",
@@ -10275,6 +11277,53 @@ const ERKLAERUNGEN = {
     ["Artikel für ein Nomen gehalten", "Der, die, das sind Begleiter, keine Nomen."],
     ["Bei zusammengesetzten Formen nur ein Teil bestimmt", "„ist gelaufen“ ist eine Verbform aus zwei Teilen, nicht ein Verb und ein Adjektiv."]
   ],
+  spiel:{
+    titel:"Satz Wort für Wort durchgehen",
+    hinweis:"Schieb durch den Satz. Zu jedem Wort steht da, welche Wortart es ist und woran man das erkennt.",
+    regler:[
+      {id:"satz", name:"Satz", von:0, bis:2, schritt:1, start:0},
+      {id:"i",    name:"Wort Nr.", von:1, bis:8, schritt:1, start:1}
+    ],
+    ausgabe:(w) => {
+      const SAETZE = [
+        [["Der","Artikel","steht vor einem Nomen und zeigt Fall, Zahl und Geschlecht"],
+         ["alte","Adjektiv","beschreibt das Nomen und lässt sich steigern: alt, älter, am ältesten"],
+         ["Motor","Nomen","Ding oder Wesen, wird großgeschrieben, hat einen Artikel"],
+         ["läuft","Verb","sagt, was geschieht, und lässt sich beugen: ich laufe, du läufst"],
+         ["heute","Adverb","sagt wann — es bleibt immer gleich, egal was drumherum steht"],
+         ["sehr","Adverb","verstärkt das folgende Wort"],
+         ["ruhig","Adjektiv","beschreibt, wie er läuft"]],
+        [["Wir","Pronomen","steht anstelle eines Nomens"],
+         ["haben","Verb","Hilfsverb, hier Teil der Zeitform"],
+         ["gestern","Adverb","sagt wann"],
+         ["in","Präposition","zeigt das Verhältnis: wo, wann, wie"],
+         ["der","Artikel","gehört zum Nomen dahinter"],
+         ["Werkstatt","Nomen","Ort, wird großgeschrieben"],
+         ["gearbeitet","Verb","Partizip, zweiter Teil der Zeitform"]],
+        [["Ohne","Präposition","zeigt das Verhältnis zum Nomen dahinter"],
+         ["Strom","Nomen","wird großgeschrieben"],
+         ["läuft","Verb","was geschieht"],
+         ["die","Artikel","gehört zu Anlage"],
+         ["Anlage","Nomen","Ding"],
+         ["nicht","Adverb","verneint die Aussage"]]
+      ];
+      const satz = SAETZE[w.satz];
+      const nr = Math.min(w.i, satz.length) - 1;
+      const wortHtml = satz.map((t, k) =>
+        `<span style="padding:2px 5px;border-radius:5px;${k === nr ? "background:#10a37f;color:#fff;font-weight:700" : ""}">${t[0]}</span>`).join(" ");
+      return {
+        werte:[
+          {name:"Satz", text:wortHtml},
+          {name:"Wort", text:satz[nr][0]},
+          {name:"Wortart", text:satz[nr][1]},
+          {name:"Woran man das sieht", text:satz[nr][2]}
+        ],
+        satz: w.i > satz.length
+          ? `Dieser Satz hat nur ${satz.length} Wörter — angezeigt wird das letzte.`
+          : `Die Wortart hängt nicht am Wort allein, sondern daran, <b>was es im Satz tut</b>.`
+      };
+    }
+  },
   einfach:[
     "Wörter haben verschiedene Jobs. Manche benennen etwas, manche sagen, was passiert, manche beschreiben.",
     "Nomen benennen Dinge, Lebewesen oder Begriffe: Hund, Tisch, Freude. Sie haben einen Artikel und werden großgeschrieben.",
@@ -10339,6 +11388,36 @@ const ERKLAERUNGEN = {
     ["Nach dem falschen Fall gefragt", "„Wem?“ führt zum Dativ, „Wen oder was?“ zum Akkusativ. Die Frage entscheidet."],
     ["Bei mehrteiligem Prädikat nur einen Teil gefunden", "„hat gelesen“ gehört zusammen, auch wenn die Teile im Satz weit auseinanderstehen."]
   ],
+  spiel:{
+    titel:"Umstellprobe zum Anfassen",
+    hinweis:"Schieb das Satzglied nach vorn. Was zusammen wandert, ist ein Satzglied — das ist die ganze Probe.",
+    regler:[
+      {id:"v", name:"Was steht vorn?", von:0, bis:2, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const TEILE = [
+        {t:"Der Meister", rolle:"Subjekt", frage:"Wer oder was?"},
+        {t:"prüft", rolle:"Prädikat", frage:"Was tut er?"},
+        {t:"die Anlage", rolle:"Akkusativobjekt", frage:"Wen oder was?"},
+        {t:"jeden Montag", rolle:"adverbiale Bestimmung der Zeit", frage:"Wann?"}
+      ];
+      /* Das Prädikat bleibt immer auf Platz zwei — verschoben wird nur der Rest. */
+      const wahl = [0, 2, 3][w.v];
+      const rest = [0, 2, 3].filter(i => i !== wahl);
+      const gebaut = [TEILE[wahl].t, TEILE[1].t, ...rest.map(i => TEILE[i].t)];
+      const satz = gebaut.join(" ") + ".";
+      return {
+        werte:[
+          {name:"Satz", text:satz.charAt(0).toUpperCase() + satz.slice(1)},
+          {name:"Vorn steht", text:TEILE[wahl].t},
+          {name:"Das ist das", text:TEILE[wahl].rolle},
+          {name:"Erfragt mit", text:TEILE[wahl].frage},
+          {name:"Prädikat", text:TEILE[1].t + " — steht immer an zweiter Stelle"}
+        ],
+        satz:"Egal was vorn steht: Das Prädikat bleibt im Aussagesatz an <b>zweiter</b> Stelle. Und die Wörter eines Satzglieds wandern immer <b>zusammen</b> — einzeln lassen sie sich nicht verschieben."
+      };
+    }
+  },
   einfach:[
     "Ein Satzglied ist ein Baustein des Satzes — nicht unbedingt nur ein Wort. „Der nette Lehrer“ ist ein einziges Satzglied.",
     "Der wichtigste Baustein ist das Prädikat. Das ist das Verb, es sagt, was geschieht. Damit fängst du immer an.",
@@ -10403,6 +11482,33 @@ const ERKLAERUNGEN = {
     ["Tageszeiten nach Zeitangabe klein", "„heute Abend“, „morgen Mittag“ — die Tageszeit wird großgeschrieben."],
     ["Höflichkeitsform verwechselt", "Das höfliche „Sie“ wird großgeschrieben, das vertraute „du“ darf klein bleiben."]
   ],
+  spiel:{
+    titel:"Dasselbe Wort, groß und klein",
+    hinweis:"Schieb durch die Beispiele. Es hängt nie am Wort, immer an seiner Rolle im Satz.",
+    regler:[
+      {id:"i", name:"Beispiel", von:0, bis:5, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const B = [
+        ["laufen","Wir laufen zur Halle.","Das Laufen fällt ihm schwer.","Vor dem Nomen steht „das“ — ein Signalwort."],
+        ["gut","Das ist gut geworden.","Er will nur dein Bestes.","Nach „dein“ wird das Adjektiv zum Nomen."],
+        ["deutsch","Er spricht deutsch.","Er lernt Deutsch.","Als Sprache und Schulfach ist es ein Nomen."],
+        ["heute","Wir fangen heute an.","Das Heute zählt mehr als das Gestern.","Auch ein Adverb wird mit Artikel zum Nomen."],
+        ["essen","Wir essen später.","Das Essen steht auf dem Tisch.","Artikel davor heißt Nomen heißt groß."],
+        ["alt","Der Motor ist alt.","Alte und Junge arbeiten zusammen.","Ohne Bezugswort steht das Adjektiv für Personen — dann groß."]
+      ];
+      const b = B[w.i];
+      return {
+        werte:[
+          {name:"Wort", text:b[0]},
+          {name:"Kleingeschrieben", text:b[1]},
+          {name:"Großgeschrieben", text:"<b>" + b[2] + "</b>"},
+          {name:"Warum", text:b[3]}
+        ],
+        satz:"Die Probe geht immer gleich: Passt ein Artikel davor („das“, „ein“, „dein“), ist es ein Nomen — und wird groß geschrieben."
+      };
+    }
+  },
   einfach:[
     "Das Deutsche ist damit fast allein auf der Welt: Bei uns werden alle Nomen großgeschrieben, nicht nur Namen.",
     "Ein Nomen erkennst du am Artikel davor: der Tisch, die Freude, ein Fahrrad.",
@@ -10452,6 +11558,31 @@ const ERKLAERUNGEN = {
     ["Doppelpunkt und Komma vertauscht", "Vorangestellter Begleitsatz bekommt einen Doppelpunkt, nachgestellter ein Komma."],
     ["Anführungszeichen falsch herum", "Im Deutschen unten öffnen, oben schließen."]
   ],
+  spiel:{
+    titel:"Begleitsatz verschieben",
+    hinweis:"Derselbe Satz, drei Stellungen. Achte darauf, wohin Komma und Punkt wandern.",
+    regler:[
+      {id:"s", name:"Begleitsatz steht", von:0, bis:2, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const F = [
+        ["vorn", "Der Meister sagte: <b>„Der Motor läuft wieder.“</b>", "Doppelpunkt vor der Rede, Schlusszeichen der Rede vor dem Anführungszeichen. Danach kommt nichts mehr."],
+        ["hinten", "<b>„Der Motor läuft wieder“</b>, sagte der Meister.", "Kein Punkt in der Rede — dafür ein Komma nach dem Anführungszeichen. Der Punkt steht ganz am Ende."],
+        ["mittendrin", "<b>„Der Motor“</b>, sagte der Meister, <b>„läuft wieder.“</b>", "Der Begleitsatz wird beidseitig von Kommas eingeschlossen, die Rede in zwei Teilen."]
+      ];
+      const f = F[w.s];
+      return {
+        werte:[
+          {name:"Begleitsatz steht", text:f[0]},
+          {name:"So sieht es aus", text:f[1]},
+          {name:"Worauf es ankommt", text:f[2]}
+        ],
+        satz: w.s === 1
+          ? "Der häufigste Fehler: der Punkt bleibt in der Rede stehen. Steht der Begleitsatz hinten, wird aus dem Punkt ein <b>Komma</b> — und zwar hinter dem Anführungszeichen."
+          : "Fragezeichen und Ausrufezeichen bleiben in jeder Stellung <b>in</b> der Rede stehen. Nur der Punkt weicht dem Komma."
+      };
+    }
+  },
   einfach:[
     "Wörtliche Rede heißt: Du schreibst genau die Worte auf, die jemand gesagt hat.",
     "Diese Worte kommen in Anführungszeichen: „Ich komme gleich.“",
@@ -10503,6 +11634,37 @@ const ERKLAERUNGEN = {
     ["Partizip falsch gebildet", "Bei starken Verben ändert sich der Stamm: gehen, ging, gegangen — nicht „gegeht“."],
     ["Plusquamperfekt vergessen", "Wenn etwas vor dem Erzählten liegt, braucht es diese Zeit. Sonst wirkt die Reihenfolge falsch."]
   ],
+  spiel:{
+    titel:"Dasselbe Verb in allen Zeiten",
+    hinweis:"Wähl ein Verb und schieb durch die Zeitformen. Achte darauf, wann ein Hilfsverb dazukommt.",
+    regler:[
+      {id:"v", name:"Verb", von:0, bis:2, schritt:1, start:0},
+      {id:"t", name:"Zeitform", von:0, bis:5, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const VERBEN = [
+        {inf:"arbeiten", f:["ich arbeite","ich arbeitete","ich habe gearbeitet","ich hatte gearbeitet","ich werde arbeiten","ich werde gearbeitet haben"]},
+        {inf:"gehen",    f:["ich gehe","ich ging","ich bin gegangen","ich war gegangen","ich werde gehen","ich werde gegangen sein"]},
+        {inf:"messen",   f:["ich messe","ich maß","ich habe gemessen","ich hatte gemessen","ich werde messen","ich werde gemessen haben"]}
+      ];
+      const NAMEN = ["Präsens","Präteritum","Perfekt","Plusquamperfekt","Futur I","Futur II"];
+      const WOFUER = ["Was gerade ist","Erzählte Vergangenheit, meist geschrieben",
+                      "Vergangenheit im Gespräch","Was noch vor etwas anderem in der Vergangenheit war",
+                      "Was sein wird","Was zu einem Zeitpunkt in der Zukunft schon vorbei sein wird"];
+      const v = VERBEN[w.v];
+      return {
+        werte:[
+          {name:"Grundform", text:v.inf},
+          {name:"Zeitform", text:NAMEN[w.t]},
+          {name:"So heißt es", text:"<b>" + v.f[w.t] + "</b>"},
+          {name:"Wofür man sie nimmt", text:WOFUER[w.t]}
+        ],
+        satz: w.t >= 2
+          ? `Ab dem Perfekt braucht es ein <b>Hilfsverb</b> (haben oder sein) und die Grundform hinten. „${v.f[w.t]}" — nicht das Verb allein trägt die Zeit.`
+          : `Präsens und Präteritum kommen ohne Hilfsverb aus: Das Verb selbst verändert sich.`
+      };
+    }
+  },
   einfach:[
     "Ein Verb ist ein Tuwort: gehen, lesen, sein. Es verändert seine Form, je nachdem wann etwas passiert.",
     "Diese verschiedenen Formen heißen Zeitformen.",
@@ -10573,6 +11735,30 @@ const ERKLAERUNGEN = {
     ["Aufzählung mit Satzreihe verwechselt", "Zwei vollständige Hauptsätze werden anders behandelt als eine Aufzählung von Wörtern."],
     ["Letztes Komma vergessen", "Vor einem nachgestellten Zusatz gehört wieder ein Komma."]
   ],
+  spiel:{
+    titel:"Aufzählung wachsen lassen",
+    hinweis:"Schieb die Anzahl hoch. Vor dem letzten „und“ bleibt es kommalos — das ist die ganze Regel.",
+    regler:[
+      {id:"n", name:"Wie viele Dinge?", von:1, bis:5, schritt:1, start:3}
+    ],
+    ausgabe:(w) => {
+      const D = ["Zange","Schraubendreher","Messgerät","Abisolierer","Prüfstift"];
+      const teile = D.slice(0, w.n);
+      const satz = teile.length === 1 ? teile[0]
+        : teile.slice(0, -1).join(", ") + " und " + teile[teile.length - 1];
+      return {
+        werte:[
+          {name:"Anzahl", text:z(w.n)},
+          {name:"So heißt es", text:"Ich brauche <b>" + satz + "</b>."},
+          {name:"Kommas", text:z(Math.max(0, w.n - 2))},
+          {name:"Vor dem letzten „und“", text:"kein Komma"}
+        ],
+        satz: w.n <= 2
+          ? "Bei zwei Dingen steht nur „und“ — kein Komma."
+          : `Bei ${z(w.n)} Dingen sind es ${z(w.n - 2)} ${w.n - 2 === 1 ? "Komma" : "Kommas"}: immer eins weniger als Trennstellen, weil das letzte „und" das Komma ersetzt.`
+      };
+    }
+  },
   einfach:[
     "Eine Aufzählung ist, wenn du mehrere Dinge hintereinander nennst: Äpfel, Birnen und Bananen.",
     "Damit man beim Lesen weiß, wo ein Ding aufhört und das nächste anfängt, setzt man Kommas dazwischen.",
@@ -10620,6 +11806,38 @@ const ERKLAERUNGEN = {
     ["Absolute Adjektive gesteigert", "„tot“, „einzig“ oder „optimal“ lassen sich sachlich nicht steigern."],
     ["Unregelmäßige Formen regelmäßig gebildet", "„guter, am gutesten“ gibt es nicht. Es heißt besser, am besten."]
   ],
+  spiel:{
+    titel:"Drei Stufen durchschieben",
+    hinweis:"Manche Adjektive steigern regelmäßig, manche nicht. Vergleiche selbst.",
+    regler:[
+      {id:"a", name:"Adjektiv", von:0, bis:5, schritt:1, start:0},
+      {id:"s", name:"Stufe", von:0, bis:2, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const A = [
+        {f:["klein","kleiner","am kleinsten"], art:"regelmäßig"},
+        {f:["alt","älter","am ältesten"], art:"mit Umlaut"},
+        {f:["gut","besser","am besten"], art:"unregelmäßig — ganz anderer Stamm"},
+        {f:["viel","mehr","am meisten"], art:"unregelmäßig"},
+        {f:["hoch","höher","am höchsten"], art:"Umlaut, dazu fällt das c weg"},
+        {f:["gern","lieber","am liebsten"], art:"unregelmäßig"}
+      ];
+      const NAMEN = ["Grundstufe (Positiv)","Vergleichsstufe (Komparativ)","Höchststufe (Superlativ)"];
+      const a = A[w.a];
+      return {
+        werte:[
+          {name:"Stufe", text:NAMEN[w.s]},
+          {name:"So heißt es", text:"<b>" + a.f[w.s] + "</b>"},
+          {name:"Alle drei", text:a.f.join(" – ")},
+          {name:"Besonderheit", text:a.art}
+        ],
+        satz: w.s === 1
+          ? `Beim Vergleich heißt es <b>als</b>: „größer <b>als</b>", nie „größer wie".`
+          : w.s === 2 ? `Die Höchststufe steht mit „am". Doppelt geht nicht: „am besten", nicht „am bestensten".`
+          : `Die Grundstufe vergleicht mit <b>wie</b>: „so groß <b>wie</b>".`
+      };
+    }
+  },
   einfach:[
     "Ein Adjektiv beschreibt, wie etwas ist: schnell, groß, gut.",
     "Wenn du zwei Dinge vergleichst, brauchst du eine gesteigerte Form: Das Auto ist schneller als das Fahrrad.",
@@ -10676,6 +11894,35 @@ const ERKLAERUNGEN = {
     ["Faktor nur auf das erste Glied", "2 · (x + 5) ergibt 2x + 10, nicht 2x + 5."],
     ["Probe weggelassen", "Eine Zahl einsetzen dauert Sekunden und findet fast jeden Vorzeichenfehler."]
   ],
+  spiel:{
+    titel:"Zusammenfassen zum Zusehen",
+    hinweis:"Nur Gleiches lässt sich zusammenfassen: x zu x, Zahlen zu Zahlen.",
+    regler:[
+      {id:"a", name:"x-Anteile links", von:-6, bis:9, schritt:1, start:3},
+      {id:"b", name:"Zahlen links", von:-12, bis:12, schritt:1, start:4},
+      {id:"c", name:"x-Anteile rechts", von:-6, bis:9, schritt:1, start:2},
+      {id:"d", name:"Zahlen rechts", von:-12, bis:12, schritt:1, start:-7}
+    ],
+    ausgabe:(w) => {
+      const x = w.a + w.c, zahl = w.b + w.d;
+      const teil = (n, s) => n === 0 ? "" : (n > 0 ? " + " : " − ") + (Math.abs(n) === 1 && s ? "" : z(Math.abs(n))) + s;
+      let erg = (teil(x, "x") + teil(zahl, "")).trim();
+      if (erg.startsWith("+ ")) erg = erg.slice(2);
+      if (!erg) erg = "0";
+      const roh = `${z(w.a)}x ${w.b < 0 ? "− " + z(-w.b) : "+ " + z(w.b)} ${w.c < 0 ? "− " + z(-w.c) : "+ " + z(w.c)}x ${w.d < 0 ? "− " + z(-w.d) : "+ " + z(w.d)}`;
+      return {
+        werte:[
+          {name:"Term", text:roh},
+          {name:"x-Anteile", text:`${z(w.a)}x ${w.c < 0 ? "− " + z(-w.c) : "+ " + z(w.c)}x = ${z(x)}x`},
+          {name:"Zahlen", text:`${z(w.b)} ${w.d < 0 ? "− " + z(-w.d) : "+ " + z(w.d)} = ${z(zahl)}`},
+          {name:"Zusammengefasst", text:"<b>" + erg + "</b>"}
+        ],
+        satz: x === 0 && zahl === 0 ? "Alles hebt sich auf — übrig bleibt 0."
+          : x === 0 ? "Die x-Anteile heben sich gegenseitig auf. Übrig bleibt nur eine Zahl."
+          : `${z(x)}x und ${z(zahl)} lassen sich <b>nicht weiter</b> zusammenfassen. x ist eine Unbekannte, keine Zahl — 3x + 4 ist nicht 7x.`
+      };
+    }
+  },
   einfach:[
     "Ein x ist einfach eine Zahl, die man noch nicht kennt. Rechnen darf man damit trotzdem.",
     "3x heißt „drei Stück x“. Genauso wie drei Äpfel. Und drei Äpfel plus zwei Äpfel sind fünf Äpfel — also 3x + 2x = 5x.",
@@ -10729,6 +11976,38 @@ const ERKLAERUNGEN = {
     ["Den Faktor nicht mit quadriert", "(3x)² ist 9x², nicht 3x². Beim Quadrieren wird alles in der Klammer quadriert — die Zahl davor genauso wie das x."],
     ["Dritte Formel mit den anderen verwechselt", "Nur bei plus mal minus fällt das mittlere Glied weg."]
   ],
+  spiel:{
+    titel:"Warum das Quadrat vier Teile hat",
+    hinweis:"(a + b)² ist ein Quadrat mit der Seite a + b. Zieh a und b und sieh die vier Stücke.",
+    regler:[
+      {id:"a", name:"a", von:1, bis:9, schritt:1, start:5},
+      {id:"b", name:"b", von:1, bis:9, schritt:1, start:3}
+    ],
+    ausgabe:(w) => {
+      const s = 240 / (w.a + w.b);
+      const A = w.a * s, B = w.b * s;
+      return {
+        bild:`<svg viewBox="0 0 300 280" ${SVG_STIL} role="img" aria-label="Quadrat aus a Quadrat, zwei mal a mal b und b Quadrat">
+          <rect x="30" y="20" width="${A.toFixed(1)}" height="${A.toFixed(1)}" fill="#10a37f" fill-opacity=".45" stroke="#10a37f" stroke-width="1.5"/>
+          <text x="${(30 + A / 2).toFixed(1)}" y="${(24 + A / 2).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">a²</text>
+          <rect x="${(30 + A).toFixed(1)}" y="20" width="${B.toFixed(1)}" height="${A.toFixed(1)}" fill="#3b82f6" fill-opacity=".35" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="${(30 + A + B / 2).toFixed(1)}" y="${(24 + A / 2).toFixed(1)}" text-anchor="middle" font-size="12" fill="currentColor">a·b</text>
+          <rect x="30" y="${(20 + A).toFixed(1)}" width="${A.toFixed(1)}" height="${B.toFixed(1)}" fill="#3b82f6" fill-opacity=".35" stroke="#3b82f6" stroke-width="1.5"/>
+          <text x="${(30 + A / 2).toFixed(1)}" y="${(24 + A + B / 2).toFixed(1)}" text-anchor="middle" font-size="12" fill="currentColor">a·b</text>
+          <rect x="${(30 + A).toFixed(1)}" y="${(20 + A).toFixed(1)}" width="${B.toFixed(1)}" height="${B.toFixed(1)}" fill="#f59e0b" fill-opacity=".4" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="${(30 + A + B / 2).toFixed(1)}" y="${(24 + A + B / 2).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">b²</text>
+          <text x="${(30 + (A + B) / 2).toFixed(1)}" y="274" text-anchor="middle" font-size="12" fill="currentColor">Seite = a + b = ${z(w.a + w.b)}</text>
+        </svg>`,
+        werte:[
+          {name:"a²", text:z(w.a * w.a)},
+          {name:"2 · a · b", text:z(2 * w.a * w.b)},
+          {name:"b²", text:z(w.b * w.b)},
+          {name:"zusammen (a + b)²", text:z((w.a + w.b) * (w.a + w.b))}
+        ],
+        satz:`${z(w.a * w.a)} + ${z(2 * w.a * w.b)} + ${z(w.b * w.b)} = <b>${z((w.a + w.b) * (w.a + w.b))}</b>. Die beiden blauen Rechtecke sind das, was beim „${z(w.a * w.a)} + ${z(w.b * w.b)}"-Fehler vergessen wird.`
+      };
+    }
+  },
   einfach:[
     "(a + b)² sieht so aus, als wäre es a² + b². Das ist der häufigste Fehler in der ganzen Mittelstufe.",
     "Denn (a + b)² heißt: (a + b) · (a + b). Und beim Ausmultiplizieren trifft jeder Teil der ersten Klammer jeden Teil der zweiten — das sind vier Produkte, nicht zwei.",
@@ -10879,6 +12158,44 @@ const ERKLAERUNGEN = {
     ["Vor dem Anwenden nicht normiert", "Steht eine Zahl vor x², muss erst die ganze Gleichung durch sie geteilt werden."],
     ["Negative Diskriminante ignoriert", "Unter der Wurzel darf nichts Negatives stehen. Dann gibt es im reellen Bereich keine Lösung."]
   ],
+  spiel:{
+    titel:"p, q und die Diskriminante",
+    hinweis:"Zieh p und q und sieh, ob es zwei, eine oder gar keine Lösung gibt — und warum.",
+    regler:[
+      {id:"p", name:"p", von:-8, bis:8, schritt:0.5, start:-2},
+      {id:"q", name:"q", von:-9, bis:9, schritt:0.5, start:-8}
+    ],
+    ausgabe:(w) => {
+      const d = (w.p / 2) * (w.p / 2) - w.q;
+      const px = (x) => 130 + x * 20, py = (y) => 70 - y * 5;
+      const punkte = [];
+      for (let i = 0; i <= 70; i++){
+        const x = -6 + i / 70 * 12, y = x * x + w.p * x + w.q;
+        if (y >= -13 && y <= 13) punkte.push(`${px(x).toFixed(1)},${py(y).toFixed(1)}`);
+      }
+      const x1 = d >= 0 ? -w.p / 2 + Math.sqrt(d) : null;
+      const x2 = d >= 0 ? -w.p / 2 - Math.sqrt(d) : null;
+      const rd = (x) => z(Math.round(x * 1000) / 1000);
+      return {
+        bild:`<svg viewBox="0 0 260 145" ${SVG_STIL} role="img" aria-label="Parabel mit den Nullstellen">
+          <line x1="10" y1="70" x2="250" y2="70" stroke="currentColor" stroke-width="1"/>
+          <line x1="130" y1="6" x2="130" y2="138" stroke="currentColor" stroke-width="1"/>
+          ${punkte.length > 1 ? `<polyline points="${punkte.join(" ")}" fill="none" stroke="#10a37f" stroke-width="2.5"/>` : ""}
+          ${d >= 0 && Math.abs(x1) <= 6 ? `<circle cx="${px(x1).toFixed(1)}" cy="70" r="4.5" fill="#b3382f"/>` : ""}
+          ${d >= 0 && Math.abs(x2) <= 6 ? `<circle cx="${px(x2).toFixed(1)}" cy="70" r="4.5" fill="#b3382f"/>` : ""}
+        </svg>`,
+        werte:[
+          {name:"Gleichung", text:`x² ${w.p < 0 ? "− " + z(-w.p) : "+ " + z(w.p)}x ${w.q < 0 ? "− " + z(-w.q) : "+ " + z(w.q)} = 0`},
+          {name:"Unter der Wurzel (p/2)² − q", text:z(Math.round(d * 1000) / 1000)},
+          {name:"Lösungen", text: d > 0 ? `x₁ = ${rd(x1)}, x₂ = ${rd(x2)}`
+            : d === 0 ? `x = ${rd(-w.p / 2)} (doppelt)` : "keine reelle Lösung"}
+        ],
+        satz: d > 0 ? "Positiv unter der Wurzel: Die Parabel schneidet die x-Achse an <b>zwei</b> Stellen."
+          : d === 0 ? "Genau null unter der Wurzel: Die Parabel <b>berührt</b> die Achse — eine doppelte Lösung."
+          : "Negativ unter der Wurzel: Die Parabel liegt ganz über oder ganz unter der Achse. Aus einer negativen Zahl lässt sich keine Wurzel ziehen — deshalb gibt es keine Lösung."
+      };
+    }
+  },
   einfach:[
     "Bei 2x = 6 gibt es genau eine Lösung. Bei x² = 9 gibt es zwei: 3 und −3, denn beide ergeben quadriert 9.",
     "Deshalb liefert die p-q-Formel auch immer zwei Werte — einmal mit Plus, einmal mit Minus vor der Wurzel.",
@@ -11016,6 +12333,32 @@ const ERKLAERUNGEN = {
     ["Hochzahl mit Faktor verwechselt", "2³ ist 8, nicht 6. Die Hochzahl sagt, wie oft die Basis mit sich selbst malgenommen wird."],
     ["Wurzel aus einer Summe gezogen", "√(a² + b²) ist nicht a + b. Das lässt sich nicht auseinanderziehen."]
   ],
+  spiel:{
+    titel:"Hochzahl ziehen",
+    hinweis:"Die Hochzahl sagt, wie oft die Zahl mit sich selbst malgenommen wird. Auch negativ und null.",
+    regler:[
+      {id:"b", name:"Basis", von:2, bis:10, schritt:1, start:2},
+      {id:"e", name:"Hochzahl", von:-4, bis:10, schritt:1, start:5}
+    ],
+    ausgabe:(w) => {
+      const wert = Math.pow(w.b, w.e);
+      const lesbar = (x) => (x >= 1e-4 && x < 1e9) ? z(Math.round(x * 1e6) / 1e6)
+        : x.toExponential(3).replace(".", ",").replace("e", " · 10^");
+      return {
+        werte:[
+          {name:"Geschrieben", text:`${z(w.b)} hoch ${z(w.e)}`},
+          {name:"Ausgeschrieben", text: w.e > 0 && w.e <= 6
+            ? Array.from({length: w.e}, () => z(w.b)).join(" · ")
+            : w.e === 0 ? "leeres Produkt" : "1 geteilt durch " + z(w.b) + " hoch " + z(-w.e)},
+          {name:"Ergebnis", text:lesbar(wert)},
+          {name:"Quadratwurzel daraus", text: wert >= 0 ? lesbar(Math.sqrt(wert)) : "gibt es nicht"}
+        ],
+        satz: w.e === 0 ? "Jede Zahl hoch null ist 1 — auch das sieht man hier."
+          : w.e < 0 ? `Eine negative Hochzahl heißt: eins geteilt durch die Potenz. Das Ergebnis wird <b>kleiner</b> als 1, aber nie null.`
+          : `Ein Schritt mehr bei der Hochzahl heißt: mal ${z(w.b)}. Deshalb wachsen Potenzen so schnell.`
+      };
+    }
+  },
   einfach:[
     "a⁵ heißt: a mal a mal a mal a mal a. Die Hochzahl sagt nur, wie oft.",
     "Deshalb ist a³ · a² = a⁵ — man hängt drei Stück und zwei Stück aneinander, macht fünf. Die Hochzahlen werden addiert.",
@@ -11067,6 +12410,45 @@ const ERKLAERUNGEN = {
     ["Öffnung falsch bestimmt", "Negatives a heißt nach unten geöffnet. Dann gibt es einen Hochpunkt, keinen Tiefpunkt."],
     ["Scheitel aus der Normalform abgelesen", "In y = ax² + bx + c steht der Scheitel nicht direkt. Erst umformen oder mit d = −b : (2a) rechnen."]
   ],
+  spiel:{
+    titel:"Parabel formen",
+    hinweis:"a macht sie eng oder weit und dreht sie um, c schiebt sie hoch und runter.",
+    regler:[
+      {id:"a", name:"a (Öffnung)", von:-2, bis:2, schritt:0.25, start:1},
+      {id:"c", name:"c (Verschiebung)", von:-4, bis:4, schritt:0.5, start:0}
+    ],
+    ausgabe:(w) => {
+      const px = (x) => 150 + x * 26, py = (y) => 100 - y * 16;
+      const punkte = [];
+      for (let i = 0; i <= 60; i++){
+        const x = -5 + i / 60 * 10, y = w.a * x * x + w.c;
+        if (y >= -5.6 && y <= 5.6) punkte.push(`${px(x).toFixed(1)},${py(y).toFixed(1)}`);
+      }
+      const nullstellen = w.a === 0 ? null : -w.c / w.a;
+      return {
+        bild:`<svg viewBox="0 0 300 190" ${SVG_STIL} role="img" aria-label="Parabel mit a gleich ${w.a} und c gleich ${w.c}">
+          <line x1="16" y1="100" x2="284" y2="100" stroke="currentColor" stroke-width="1"/>
+          <line x1="150" y1="10" x2="150" y2="190" stroke="currentColor" stroke-width="1"/>
+          ${[-4,-2,2,4].map(t => `<line x1="${px(t)}" y1="97" x2="${px(t)}" y2="103" stroke="currentColor"/><text x="${px(t)}" y="114" text-anchor="middle" font-size="8" fill="currentColor">${t}</text>`).join("")}
+          ${[-4,-2,2,4].map(t => `<line x1="147" y1="${py(t)}" x2="153" y2="${py(t)}" stroke="currentColor"/><text x="143" y="${py(t) + 3}" text-anchor="end" font-size="8" fill="currentColor">${t}</text>`).join("")}
+          ${punkte.length > 1 ? `<polyline points="${punkte.join(" ")}" fill="none" stroke="#10a37f" stroke-width="2.5"/>` : ""}
+          <circle cx="150" cy="${py(w.c).toFixed(1)}" r="4" fill="#10a37f"/>
+        </svg>`,
+        werte:[
+          {name:"Gleichung", text:`y = ${z(w.a)} · x² ${w.c < 0 ? "− " + z(-w.c) : "+ " + z(w.c)}`},
+          {name:"Scheitelpunkt", text:`(0 | ${z(w.c)})`},
+          {name:"Geöffnet nach", text: w.a > 0 ? "oben" : w.a < 0 ? "unten" : "gar nicht — a = 0 gibt eine Gerade"},
+          {name:"Nullstellen", text: w.a === 0 ? "keine Parabel"
+            : nullstellen > 0 ? "x = ± " + z(Math.round(Math.sqrt(nullstellen) * 100) / 100)
+            : nullstellen === 0 ? "x = 0 (Scheitel liegt auf der Achse)" : "keine"}
+        ],
+        satz: w.a === 0 ? "Mit a = 0 fällt das x² weg — dann ist es keine Parabel mehr, sondern eine waagerechte Gerade."
+          : Math.abs(w.a) >= 1.5 ? "Großes a: Die Parabel wird eng und steil."
+          : Math.abs(w.a) <= 0.5 ? "Kleines a: Die Parabel wird weit und flach."
+          : `a bestimmt Form und Richtung, c schiebt die ganze Parabel nur hoch oder runter.`
+      };
+    }
+  },
   einfach:[
     "Die einfachste Parabel ist y = x². Sie ist nach oben geöffnet und hat ihren tiefsten Punkt im Ursprung.",
     "Steht vor dem x² ein Minus, kippt die Parabel und ist nach unten geöffnet.",
@@ -11123,6 +12505,41 @@ const ERKLAERUNGEN = {
     ["Umkehrfunktion vergessen", "Ist der Winkel gesucht, brauchst du sin⁻¹, cos⁻¹ oder tan⁻¹."],
     ["Ohne rechten Winkel angewendet", "Die drei Grundfunktionen gelten nur im rechtwinkligen Dreieck."]
   ],
+  spiel:{
+    titel:"Winkel ziehen, Seiten mitlesen",
+    hinweis:"Die Hypotenuse bleibt gleich lang. Nur der Winkel ändert sich — und mit ihm beide Katheten.",
+    regler:[
+      {id:"a", name:"Winkel α", einheit:"°", von:1, bis:89, schritt:1, start:35},
+      {id:"c", name:"Hypotenuse c", einheit:"m", von:1, bis:20, schritt:0.5, start:10}
+    ],
+    ausgabe:(w) => {
+      const rad = w.a * Math.PI / 180;
+      const gegen = w.c * Math.sin(rad), an = w.c * Math.cos(rad);
+      const skala = 200 / 20;
+      const ax = an * skala, ay = gegen * skala;
+      return {
+        bild:`<svg viewBox="0 0 260 150" ${SVG_STIL} role="img" aria-label="Rechtwinkliges Dreieck mit Winkel ${w.a} Grad">
+          <path d="M24 130L${(24 + ax).toFixed(1)} 130L${(24 + ax).toFixed(1)} ${(130 - ay).toFixed(1)}Z"
+                fill="#10a37f" fill-opacity=".22" stroke="#10a37f" stroke-width="2"/>
+          <path d="M${(14 + ax).toFixed(1)} 130v-10h10" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          <text x="${(24 + ax / 2).toFixed(1)}" y="145" text-anchor="middle" font-size="10" fill="currentColor">an = ${z(Math.round(an * 100) / 100)}</text>
+          <text x="${(30 + ax).toFixed(1)}" y="${(130 - ay / 2).toFixed(1)}" font-size="10" fill="currentColor">gegen = ${z(Math.round(gegen * 100) / 100)}</text>
+          <text x="34" y="124" font-size="11" font-weight="700" fill="currentColor">${z(w.a)}°</text>
+        </svg>`,
+        werte:[
+          {name:"Gegenkathete = c · sin α", text:z(Math.round(gegen * 1000) / 1000) + " m"},
+          {name:"Ankathete = c · cos α",   text:z(Math.round(an * 1000) / 1000) + " m"},
+          {name:"sin α", text:z(Math.round(Math.sin(rad) * 10000) / 10000)},
+          {name:"cos α", text:z(Math.round(Math.cos(rad) * 10000) / 10000)},
+          {name:"tan α", text:z(Math.round(Math.tan(rad) * 10000) / 10000)}
+        ],
+        satz: w.a === 45 ? "Bei 45° sind beide Katheten gleich lang — sin und cos haben denselben Wert."
+          : w.a < 30 ? "Kleiner Winkel: Die Gegenkathete ist kurz, die Ankathete fast so lang wie die Hypotenuse."
+          : w.a > 60 ? "Großer Winkel: Jetzt ist es umgekehrt — die Gegenkathete nähert sich der Hypotenuse."
+          : "sin ist Gegenkathete durch Hypotenuse, cos ist Ankathete durch Hypotenuse. Beide zusammen ergeben quadriert immer 1."
+      };
+    }
+  },
   einfach:[
     "Im rechtwinkligen Dreieck hat jede Seite einen Namen — aber der hängt davon ab, welchen Winkel du gerade anschaust.",
     "Die Seite gegenüber dem Winkel heißt Gegenkathete. Die Seite, die am Winkel anliegt, heißt Ankathete. Die längste bleibt immer die Hypotenuse.",
@@ -11176,6 +12593,42 @@ const ERKLAERUNGEN = {
     ["Linear und exponentiell verwechselt", "Linear heißt: immer derselbe Betrag dazu. Exponentiell heißt: immer derselbe Prozentsatz."],
     ["Zeiteinheiten nicht angepasst", "Ein Monatszinssatz darf nicht mit der Zahl der Jahre potenziert werden."]
   ],
+  spiel:{
+    titel:"Wachstum über die Jahre",
+    hinweis:"Prozent vom jeweils neuen Wert — deshalb wird die Kurve immer steiler.",
+    regler:[
+      {id:"start", name:"Startwert", von:10, bis:1000, schritt:10, start:100},
+      {id:"p", name:"je Schritt", einheit:"%", von:-20, bis:30, schritt:1, start:10},
+      {id:"n", name:"Schritte", von:1, bis:30, schritt:1, start:10}
+    ],
+    ausgabe:(w) => {
+      const f = 1 + w.p / 100;
+      const ende = w.start * Math.pow(f, w.n);
+      const werte = Array.from({length: w.n + 1}, (_, i) => w.start * Math.pow(f, i));
+      const hoch = Math.max(...werte), tief = Math.min(...werte);
+      const spanne = Math.max(1e-9, hoch - tief);
+      const punkte = werte.map((v, i) =>
+        `${(24 + i / w.n * 330).toFixed(1)},${(96 - (v - tief) / spanne * 74).toFixed(1)}`).join(" ");
+      const linear = w.start + w.start * (w.p / 100) * w.n;
+      return {
+        bild:`<svg viewBox="0 0 380 116" ${SVG_STIL} role="img" aria-label="Kurve des exponentiellen Wachstums">
+          <line x1="24" y1="98" x2="366" y2="98" stroke="currentColor" stroke-width="1.2"/>
+          <polyline points="${punkte}" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+          <text x="24" y="112" font-size="9" fill="currentColor">0</text>
+          <text x="366" y="112" text-anchor="end" font-size="9" fill="currentColor">${z(w.n)} Schritte</text>
+        </svg>`,
+        werte:[
+          {name:"Faktor je Schritt", text:z(Math.round(f * 1000) / 1000)},
+          {name:"Nach " + z(w.n) + " Schritten", text:z(Math.round(ende * 100) / 100)},
+          {name:"Wäre es geradlinig", text:z(Math.round(linear * 100) / 100)},
+          {name:"Unterschied", text:z(Math.round((ende - linear) * 100) / 100)}
+        ],
+        satz: w.p === 0 ? "Ohne Änderung bleibt alles, wie es war — der Faktor ist 1."
+          : w.p < 0 ? `Bei ${z(w.p)} % je Schritt wird es weniger, aber nie ganz null — jedes Mal wird nur ein Teil abgezogen.`
+          : `Geradlinig wären es ${z(Math.round(linear))}, tatsächlich sind es <b>${z(Math.round(ende))}</b>. Der Unterschied wächst mit jedem Schritt, weil die Prozente immer vom <b>neuen</b> Wert genommen werden.`
+      };
+    }
+  },
   einfach:[
     "Bei gleichmäßigem Wachstum kommt jedes Jahr derselbe Betrag dazu: 100, 200, 300, 400.",
     "Bei exponentiellem Wachstum kommt jedes Jahr derselbe Anteil dazu. Und weil der Betrag schon gewachsen ist, wird der Zuwachs jedes Jahr größer.",
@@ -11229,6 +12682,36 @@ const ERKLAERUNGEN = {
     ["Überall „würde“ eingesetzt", "„Wenn ich Zeit hätte“ ist besser als „wenn ich Zeit haben würde“."],
     ["Bei gleicher Form nicht ausgewichen", "Klingt der Konjunktiv I wie der Indikativ, nimm den Konjunktiv II — sonst erkennt niemand die indirekte Rede."]
   ],
+  spiel:{
+    titel:"Wirklich, behauptet oder nur gedacht?",
+    hinweis:"Derselbe Inhalt in drei Formen. Schau, wie sich die Bedeutung verschiebt.",
+    regler:[
+      {id:"s", name:"Satz", von:0, bis:2, schritt:1, start:0},
+      {id:"m", name:"Form", von:0, bis:2, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["Der Motor läuft ruhig.", "Er sagt, der Motor laufe ruhig.", "Wenn der Motor ruhig liefe, wäre alles gut."],
+        ["Die Anlage hat einen Fehler.", "Sie meldet, die Anlage habe einen Fehler.", "Hätte die Anlage keinen Fehler, könnten wir weitermachen."],
+        ["Ich komme morgen.", "Er sagt, er komme morgen.", "Ich käme morgen, wenn ich Zeit hätte."]
+      ];
+      const NAMEN = ["Indikativ — die Wirklichkeitsform","Konjunktiv I — die indirekte Rede","Konjunktiv II — das Gedachte"];
+      const WOZU = ["Es ist so. Der Sprecher steht dahinter.",
+                    "Jemand anders hat das gesagt. Der Sprecher gibt es nur weiter, ohne dafür geradezustehen.",
+                    "Es ist nicht so — es wäre nur so, wenn etwas anderes zuträfe. Auch für höfliche Bitten."];
+      return {
+        werte:[
+          {name:"Form", text:NAMEN[w.m]},
+          {name:"So klingt es", text:"<b>" + S[w.s][w.m] + "</b>"},
+          {name:"Was das bedeutet", text:WOZU[w.m]}
+        ],
+        satz: w.m === 1
+          ? "Der Konjunktiv I ist das Werkzeug für Berichte: Man gibt weiter, ohne es sich zu eigen zu machen."
+          : w.m === 2 ? "Ist der Konjunktiv I nicht vom Indikativ zu unterscheiden, weicht man auf den Konjunktiv II aus."
+          : "Der Indikativ behauptet. Wer nur weitergibt, was ein anderer gesagt hat, nimmt den Konjunktiv I."
+      };
+    }
+  },
   einfach:[
     "Wenn eine Zeitung schreibt „Der Minister sagt, er hat nichts gewusst“, klingt es, als würde die Zeitung das bestätigen.",
     "Schreibt sie „Der Minister sagt, er habe nichts gewusst“, ist klar: Das behauptet er, nicht die Zeitung.",
@@ -11285,6 +12768,33 @@ const ERKLAERUNGEN = {
     ["Verbstellung nicht beachtet", "Sie ist das sicherste Erkennungszeichen: Verb am Ende bedeutet Nebensatz."],
     ["Teilsätze nicht gezählt", "Wer die gebeugten Verben nicht zählt, übersieht einen Teilsatz und damit ein Komma."]
   ],
+  spiel:{
+    titel:"Gleichrangig oder untergeordnet?",
+    hinweis:"Achte auf die Stellung des Verbs — daran erkennst du, welche Art vorliegt.",
+    regler:[
+      {id:"i", name:"Beispiel", von:0, bis:3, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const B = [
+        ["Die Anlage steht<b>,</b> und wir warten.", "Satzreihe", "und", "Zwei Hauptsätze. Beide Verben stehen an zweiter Stelle."],
+        ["Die Anlage steht<b>,</b> weil ein Teil fehlt.", "Satzgefüge", "weil", "Haupt- und Nebensatz. Im Nebensatz steht das Verb ganz hinten."],
+        ["Wir warten<b>,</b> denn die Anlage steht.", "Satzreihe", "denn", "„denn“ verbindet gleichrangig — das Verb bleibt auf Platz zwei."],
+        ["Wir warten<b>,</b> bis die Anlage läuft.", "Satzgefüge", "bis", "„bis“ ordnet unter — das Verb rutscht ans Ende."]
+      ];
+      const b = B[w.i];
+      return {
+        werte:[
+          {name:"Satz", text:b[0]},
+          {name:"Art", text:"<b>" + b[1] + "</b>"},
+          {name:"Bindewort", text:"„" + b[2] + "“"},
+          {name:"Woran man es sieht", text:b[3]}
+        ],
+        satz: b[1] === "Satzreihe"
+          ? "Bei der <b>Satzreihe</b> stehen zwei Hauptsätze nebeneinander — keiner hängt vom anderen ab. Bindewörter: und, oder, aber, denn, sondern."
+          : "Beim <b>Satzgefüge</b> hängt der Nebensatz am Hauptsatz. Sicherstes Zeichen: Das Verb steht ganz hinten."
+      };
+    }
+  },
   einfach:[
     "Eine Satzreihe verbindet zwei Hauptsätze. Beide könnten auch allein stehen: „Ich räume auf, und meine Schwester kocht.“",
     "Ein Satzgefüge hat einen Hauptsatz und einen Nebensatz. Der Nebensatz kann nicht allein stehen: „weil ich krank bin“ ergibt für sich keinen Sinn.",
@@ -11349,6 +12859,33 @@ const ERKLAERUNGEN = {
     ["Hinweiswort übersehen", "„Er denkt nicht daran, zu gehen“ — das „daran“ macht das Komma zur Pflicht."],
     ["Infinitivgruppe mit Nebensatz verwechselt", "Eine Infinitivgruppe hat kein eigenes Subjekt und keine gebeugte Verbform."]
   ],
+  spiel:{
+    titel:"Mit oder ohne Komma?",
+    hinweis:"Bei „zu“-Gruppen ist das Komma meist freiwillig — außer es steht ein Signalwort da.",
+    regler:[
+      {id:"i", name:"Beispiel", von:0, bis:4, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const B = [
+        ["Er versucht(,) die Anlage zu starten.", "freiwillig", "Eine einfache zu-Gruppe. Komma erlaubt, aber nicht nötig."],
+        ["Er kam<b>,</b> um die Anlage zu starten.", "Pflicht", "Signalwort „um“ — dann muss das Komma stehen."],
+        ["Er ging<b>,</b> ohne die Anlage zu starten.", "Pflicht", "Signalwort „ohne“ — Komma Pflicht."],
+        ["Der Plan<b>,</b> die Anlage zu starten<b>,</b> wurde verworfen.", "Pflicht", "Eingeschoben und auf ein Nomen bezogen — beidseitig abtrennen."],
+        ["Er hat vor<b>,</b> die Anlage zu starten.", "Pflicht", "Ein Wort im Hauptsatz kündigt die Gruppe an („vor“) — dann Komma."]
+      ];
+      const b = B[w.i];
+      return {
+        werte:[
+          {name:"Beispiel", text:b[0]},
+          {name:"Komma", text:"<b>" + b[1] + "</b>"},
+          {name:"Warum", text:b[2]}
+        ],
+        satz: b[1] === "Pflicht"
+          ? "Hier ist das Komma <b>Pflicht</b>. Die vier Auslöser: um, ohne, statt, anstatt, als — dazu Einschub und Ankündigung."
+          : "Ohne Signalwort darfst du selbst entscheiden. Setz es, wenn der Satz sonst schwer zu lesen ist."
+      };
+    }
+  },
   einfach:[
     "Eine Infinitivgruppe ist eine Wortgruppe mit „zu“ und der Grundform eines Verbs: „um pünktlich zu sein“.",
     "Anders als ein Nebensatz hat sie kein eigenes Subjekt — es steht kein „ich“, „er“ oder „sie“ darin.",
@@ -11399,6 +12936,37 @@ const ERKLAERUNGEN = {
     ["Stilmittel hineingelesen", "Nicht jede Wiederholung ist Absicht. Im Zweifel nur benennen, was klar erkennbar ist."],
     ["Fachbegriff falsch geschrieben", "Anapher, Alliteration, Personifikation — die Schreibweise gehört zur Leistung."]
   ],
+  spiel:{
+    titel:"Stilmittel durchblättern",
+    hinweis:"Zu jedem Mittel ein Beispiel und die Frage, woran man es festmacht.",
+    regler:[
+      {id:"i", name:"Stilmittel", von:0, bis:9, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const M = [
+        ["Metapher","Bild statt Sachwort","„Der Motor ist das Herz der Anlage.“","Etwas wird bildhaft gleichgesetzt, ohne „wie“."],
+        ["Vergleich","Bild mit „wie“","„Er arbeitet wie eine Maschine.“","Am Wörtchen „wie“ oder „als“ zu erkennen."],
+        ["Personifikation","Dinge handeln wie Menschen","„Der Wind flüstert.“","Ein Ding bekommt eine menschliche Tätigkeit."],
+        ["Alliteration","Gleicher Anlaut","„Milch macht müde Männer munter.“","Mehrere Wörter beginnen mit demselben Laut."],
+        ["Anapher","Wiederholung am Anfang","„Ich kam, ich sah, ich siegte.“","Mehrere Sätze fangen gleich an."],
+        ["Hyperbel","Maßlose Übertreibung","„Ich habe es tausendmal gesagt.“","Bewusst zu groß, damit die Wirkung stimmt."],
+        ["Ironie","Das Gegenteil ist gemeint","„Na, das war ja großartig.“","Nur aus dem Zusammenhang erkennbar."],
+        ["Rhetorische Frage","Frage ohne Antwortwunsch","„Wer will das schon?“","Es steht ein Fragezeichen, aber niemand soll antworten."],
+        ["Parallelismus","Gleicher Satzbau","„Heiß ist der Tag, kalt ist die Nacht.“","Zwei Satzteile sind gleich gebaut."],
+        ["Ellipse","Weggelassene Wörter","„Ende gut, alles gut.“","Etwas fehlt, man versteht es trotzdem."]
+      ];
+      const m = M[w.i];
+      return {
+        werte:[
+          {name:"Stilmittel", text:"<b>" + m[0] + "</b>"},
+          {name:"Was es macht", text:m[1]},
+          {name:"Beispiel", text:m[2]},
+          {name:"Woran man es erkennt", text:m[3]}
+        ],
+        satz:"In der Klausur reicht es nie, das Mittel zu <b>benennen</b>. Gefragt ist immer: Was bewirkt es an dieser Stelle?"
+      };
+    }
+  },
   einfach:[
     "Ein Stilmittel zu benennen ist nur die halbe Arbeit. In der Deutung zählt immer: Welche Wirkung hat es?",
     "Die schnellste Weiche ist das Wörtchen „wie“. Steht es da, ist es ein Vergleich: „stark wie ein Bär“.",
@@ -11465,6 +13033,33 @@ const ERKLAERUNGEN = {
     ["Lyrisches Ich mit dem Autor gleichgesetzt", "Das lyrische Ich ist eine Rolle im Text, nicht der Dichter selbst."],
     ["Form und Inhalt getrennt betrachtet", "Interessant wird es erst, wenn du zeigst, wie die Form den Inhalt unterstützt."]
   ],
+  spiel:{
+    titel:"Reimschema durchspielen",
+    hinweis:"Vier Zeilen, verschiedene Reimschemata. Die Buchstaben zeigen, welche Zeilen sich reimen.",
+    regler:[
+      {id:"i", name:"Schema", von:0, bis:3, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["Kreuzreim","a b a b","Nacht / Wind / sacht / Kind","Die erste reimt auf die dritte, die zweite auf die vierte."],
+        ["Paarreim","a a b b","Nacht / sacht / Wind / Kind","Immer zwei aufeinanderfolgende Zeilen reimen sich."],
+        ["Umarmender Reim","a b b a","Nacht / Wind / Kind / sacht","Die äußeren Zeilen umschließen die inneren."],
+        ["Waise / Blankvers","a b c d","Nacht / Wind / Baum / Haus","Kein Reim — dafür meist ein festes Versmaß."]
+      ];
+      const s = S[w.i];
+      const zeilen = s[2].split(" / ");
+      const muster = s[1].split(" ");
+      return {
+        werte:[
+          {name:"Schema", text:"<b>" + s[0] + "</b>"},
+          {name:"Muster", text:s[1]},
+          {name:"So klingt es", text:zeilen.map((zl, k) => `${muster[k]}&nbsp;&nbsp;… ${zl}`).join("<br>")},
+          {name:"Erkennungsmerkmal", text:s[3]}
+        ],
+        satz:"Das Schema allein ist noch keine Deutung. Gefragt ist immer: Was macht diese Form mit der <b>Wirkung</b> des Gedichts? Ein Paarreim wirkt schlicht und geschlossen, ein Kreuzreim beweglicher."
+      };
+    }
+  },
   einfach:[
     "Für das Reimschema schaut man nur auf das letzte Wort jeder Zeile. Der Inhalt spielt dabei keine Rolle.",
     "Reimen sich benachbarte Zeilen (1 mit 2, 3 mit 4), ist es ein Paarreim: aabb.",
@@ -11531,6 +13126,39 @@ const ERKLAERUNGEN = {
     ["Fremdwörter unnötig benutzt", "Ein deutsches Wort ist oft klarer. Fremdwörter nur, wenn sie genauer sind."],
     ["Endung nicht angepasst", "Fremdwörter werden im Deutschen gebeugt. Auch die Mehrzahlbildung ist oft eigen."]
   ],
+  spiel:{
+    titel:"Woher kommt das Wort?",
+    hinweis:"Schieb durch die Beispiele. An der Herkunft erkennst du oft auch die Schreibung.",
+    regler:[
+      {id:"i", name:"Wort", von:0, bis:7, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const F = [
+        ["Elektrizität","griechisch","élektron = Bernstein","Bernstein zieht gerieben Staub an — daher der Name."],
+        ["Isolation","lateinisch","insula = Insel","Was isoliert ist, steht für sich wie eine Insel."],
+        ["Motor","lateinisch","movere = bewegen","Der Beweger."],
+        ["Reparatur","lateinisch","reparare = wiederherstellen","—"],
+        ["Ingenieur","französisch","ingénieur","Endung -eur zeigt fast immer auf Französisch."],
+        ["Kabel","niederländisch","kabel = Tau","Kam über die Seefahrt ins Deutsche."],
+        ["Computer","englisch","to compute = rechnen","—"],
+        ["Konjunktur","lateinisch","coniungere = verbinden","Das Zusammentreffen der Umstände."]
+      ];
+      const f = F[w.i];
+      return {
+        werte:[
+          {name:"Wort", text:"<b>" + f[0] + "</b>"},
+          {name:"Herkunft", text:f[1]},
+          {name:"Ursprung", text:f[2]},
+          {name:"Dazu", text:f[3]}
+        ],
+        satz: f[1] === "griechisch"
+          ? "Griechische Wörter erkennst du oft an ph, th, rh oder y: Physik, Thermometer, Rhythmus, System."
+          : f[1] === "lateinisch" ? "Lateinische Wörter enden häufig auf -tion, -tur, -ion oder -al."
+          : f[1] === "französisch" ? "Französische Wörter enden oft auf -eur, -age, -ee — und werden meist auf der letzten Silbe betont."
+          : "Wer die Herkunft kennt, rät die Schreibung seltener falsch."
+      };
+    }
+  },
   einfach:[
     "Die meisten Fremdwörter im Deutschen stammen aus dem Lateinischen oder Griechischen.",
     "Sie sind oft aus zwei Bausteinen zusammengesetzt. Kennt man die, versteht man das Wort — auch wenn man es nie gehört hat.",
@@ -11584,6 +13212,36 @@ const ERKLAERUNGEN = {
     ["Ohne Publikum gedacht", "Dieselbe Rede wirkt vor Mitschülern und vor Fachleuten völlig verschieden."],
     ["Schluss weggelassen", "Ein Vortrag, der einfach aufhört, verpufft. Der letzte Satz bleibt am längsten hängen."]
   ],
+  spiel:{
+    titel:"Eine Rede von vorn bis hinten",
+    hinweis:"Schieb durch den Aufbau. Jeder Teil hat eine Aufgabe — fehlt einer, merkt das Publikum es.",
+    regler:[
+      {id:"i", name:"Teil der Rede", von:0, bis:4, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const T = [
+        ["Einstieg","Aufmerksamkeit holen","Frage, Zahl, kurze Geschichte oder ein Bild. Nie mit „Ich möchte heute über … sprechen“ anfangen."],
+        ["Hinführung","Warum geht das die Zuhörer an?","Der Punkt, an dem aus deinem Thema ihr Thema wird."],
+        ["Hauptteil","Die Sache selbst","Drei Punkte reichen. Mehr merkt sich niemand — auch du nicht."],
+        ["Gegenargument","Einwände vorwegnehmen","Wer den Einwand selbst nennt, wirkt sicherer als wer ihn verschweigt."],
+        ["Schluss","Der letzte Satz bleibt hängen","Zusammenfassen und mit einer klaren Aufforderung enden. Nicht mit „Ja, das war's.“"]
+      ];
+      const t = T[w.i];
+      const liste = T.map((x, k) =>
+        `<div style="padding:2px 0;${k === w.i ? "font-weight:800" : "opacity:.5"}">${k + 1}. ${x[0]}</div>`).join("");
+      return {
+        werte:[
+          {name:"Aufbau", text:liste},
+          {name:"Teil " + z(w.i + 1), text:"<b>" + t[0] + "</b>"},
+          {name:"Aufgabe", text:t[1]},
+          {name:"Worauf es ankommt", text:t[2]}
+        ],
+        satz: w.i === 0 || w.i === 4
+          ? "Anfang und Ende bleiben am stärksten hängen. Diese beiden Sätze lohnt es sich auswendig zu können."
+          : "Für den Hauptteil gilt: lieber drei Punkte, die sitzen, als sieben, die niemand behält."
+      };
+    }
+  },
   einfach:[
     "Eine Rede will nicht nur informieren, sondern überzeugen und zum Handeln bewegen. Deshalb ist sie sorgfältig gebaut.",
     "Eine rhetorische Frage ist eine Frage, auf die keine Antwort erwartet wird. Die Zuhörer sollen selbst auf die gewünschte Antwort kommen.",
@@ -11644,6 +13302,33 @@ const ERKLAERUNGEN = {
     ["Behauptungen ohne Beispiele", "Eine Erörterung lebt von konkreten Wörtern und Belegen."],
     ["Gesprochene und geschriebene Sprache vermischt", "Was im Gespräch üblich ist, muss im geschriebenen Text nicht falsch oder richtig sein."]
   ],
+  spiel:{
+    titel:"Ein Satz durch die Zeit",
+    hinweis:"Derselbe Gedanke, fünf Jahrhunderte. Sprache steht nie still.",
+    regler:[
+      {id:"j", name:"Zeit", von:0, bis:4, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const Z = [
+        ["um 800, Althochdeutsch","fater unser, thu bist in himile","Ganz andere Endungen, th statt d, Wortstellung frei"],
+        ["um 1200, Mittelhochdeutsch","ich hân mîn lêhen","Lange Vokale mit Dach, viele Wörter noch erkennbar"],
+        ["um 1550, Frühneuhochdeutsch","Wer ein Grub grebt, der wirdt drein fallen","Schreibung schwankt, dt und y wo heute nichts steht"],
+        ["um 1900, Neuhochdeutsch","Der Automobilist fuhr die Chaussee entlang","Feste Rechtschreibung, viele Wörter aus dem Französischen"],
+        ["heute","Ich hab das Update gedownloadet","Wörter aus dem Englischen, gesprochene Formen im Geschriebenen"]
+      ];
+      const t = Z[w.j];
+      return {
+        werte:[
+          {name:"Zeit", text:t[0]},
+          {name:"So klang es", text:"<b>" + t[1] + "</b>"},
+          {name:"Was auffällt", text:t[2]}
+        ],
+        satz: w.j === 4
+          ? "Was heute manchen als Verfall gilt, ist genau das, was in jedem Jahrhundert passiert ist. Sprache ändert sich, solange sie benutzt wird."
+          : "Kein Zustand dieser Reihe war „richtiger“ als der nächste — jeder galt zu seiner Zeit als normal."
+      };
+    }
+  },
   einfach:[
     "Wörter bekommen mit der Zeit andere Bedeutungen. „Weib“ war früher ein ganz normales Wort für Frau — heute klingt es abwertend.",
     "Manche Wörter meinen weniger als früher: „Hochzeit“ hieß einmal jedes hohe Fest, heute nur noch die Vermählung.",
@@ -11709,6 +13394,43 @@ const ERKLAERUNGEN = {
     ["Autor mit der Epoche gleichgesetzt", "Goethe hat in mehreren Epochen geschrieben — Sturm und Drang und Klassik."],
     ["Merkmale ungeprüft übernommen", "Nicht jedes Gedicht einer Epoche zeigt alle typischen Merkmale."]
   ],
+  spiel:{
+    titel:"Durch die Jahrhunderte schieben",
+    hinweis:"Zieh das Jahr und sieh, welche Epoche gerade läuft und woran man sie erkennt.",
+    regler:[
+      {id:"j", name:"Jahr", von:1500, bis:2000, schritt:10, start:1800}
+    ],
+    ausgabe:(w) => {
+      const E = [
+        [1500, 1600, "Renaissance und Humanismus", "Rückbesinnung auf die Antike, der Mensch rückt in die Mitte"],
+        [1600, 1720, "Barock", "Vergänglichkeit, Lebenslust und Todesangst nebeneinander; strenge Formen"],
+        [1720, 1785, "Aufklärung", "Vernunft und eigenes Denken; Literatur soll erziehen"],
+        [1765, 1785, "Sturm und Drang", "Gefühl gegen Regeln, junge Rebellen, freie Rhythmen"],
+        [1786, 1832, "Weimarer Klassik", "Maß, Harmonie, das Schöne und Wahre; Goethe und Schiller"],
+        [1795, 1848, "Romantik", "Sehnsucht, Nacht, Natur, das Unheimliche; die blaue Blume"],
+        [1848, 1890, "Realismus", "Die Welt, wie sie ist — aber geordnet erzählt"],
+        [1880, 1900, "Naturalismus", "Nichts wird geschönt: Elend, Dialekt, Sekundenstil"],
+        [1900, 1925, "Expressionismus", "Aufschrei, Großstadt, Krieg, zerbrochene Sprache"],
+        [1945, 1970, "Nachkriegsliteratur", "Trümmer, Schuld, karge Sprache"],
+        [1970, 2000, "Gegenwartsliteratur", "Viele Stimmen nebeneinander, kein gemeinsames Programm"]
+      ];
+      const treffer = E.filter(e => w.j >= e[0] && w.j <= e[1]);
+      const haupt = treffer.length ? treffer[treffer.length - 1] : null;
+      return {
+        werte:[
+          {name:"Jahr", text:z(w.j)},
+          {name:"Epoche", text: haupt ? "<b>" + haupt[2] + "</b>" : "Zwischenzeit ohne eigenen Namen"},
+          {name:"Zeitraum", text: haupt ? z(haupt[0]) + " bis " + z(haupt[1]) : "—"},
+          {name:"Woran man sie erkennt", text: haupt ? haupt[3] : "—"},
+          {name:"Gleichzeitig läuft auch", text: treffer.length > 1
+            ? treffer.slice(0, -1).map(e => e[2]).join(", ") : "nichts anderes"}
+        ],
+        satz: treffer.length > 1
+          ? "Epochen lösen sich nicht sauber ab — sie <b>überlappen sich</b>. Romantik und Klassik liefen jahrzehntelang nebeneinander."
+          : "Die Jahreszahlen sind Näherungen. Kein Autor ist morgens aufgewacht und hat beschlossen, ab jetzt Realist zu sein."
+      };
+    }
+  },
   einfach:[
     "Epochen sind keine Schubladen mit festen Wänden — sie überschneiden sich und gehen ineinander über.",
     "Wichtiger als Jahreszahlen ist, woran man eine Epoche erkennt: an ihren Themen und ihrer Haltung.",
@@ -12299,6 +14021,32 @@ const ERKLAERUNGEN = {
     ["Beim Strom dieselbe Regel wie bei der Spannung angewendet", "Es ist genau umgekehrt: Im Stern ist der Strom gleich, im Dreieck die Spannung."],
     ["Falsch geklemmt", "Ein 230/400-V-Motor gehört am 400-V-Netz in den Stern. Im Dreieck bekäme jede Wicklung 400 statt 230 V — er brennt durch."]
   ],
+  spiel:{
+    titel:"Stern oder Dreieck — derselbe Motor",
+    hinweis:"Dieselben Wicklungen, zwei Schaltungen. Schau, was mit Strom und Leistung passiert.",
+    regler:[
+      {id:"u", name:"Außenleiterspannung", einheit:"V", von:200, bis:690, schritt:10, start:400},
+      {id:"z", name:"Widerstand je Strang", einheit:"Ω", von:5, bis:200, schritt:5, start:40}
+    ],
+    ausgabe:(w) => {
+      const ustern = w.u / Math.sqrt(3);
+      const istern = ustern / w.z;
+      const idreieck = w.u / w.z;              /* Strangstrom im Dreieck */
+      const ileiter = idreieck * Math.sqrt(3);
+      const pstern = 3 * ustern * istern;
+      const pdreieck = 3 * w.u * idreieck;
+      return {
+        werte:[
+          {name:"Stern — Strangspannung", text:z(Math.round(ustern)) + " V"},
+          {name:"Stern — Leiterstrom", text:z(Math.round(istern * 100) / 100) + " A"},
+          {name:"Dreieck — Strangspannung", text:z(w.u) + " V"},
+          {name:"Dreieck — Leiterstrom", text:z(Math.round(ileiter * 100) / 100) + " A"},
+          {name:"Leistung Stern : Dreieck", text:z(Math.round(pstern)) + " W : " + z(Math.round(pdreieck)) + " W"}
+        ],
+        satz:"Im Dreieck liegt an jedem Strang die volle Außenleiterspannung — Strom und Leistung sind dreimal so groß wie im Stern. Genau deshalb wird beim Anlauf im Stern gestartet."
+      };
+    }
+  },
   einfach:[
     "Drehstrom hat drei Außenleiter: L1, L2 und L3. Zwischen zwei Außenleitern liegen 400 V, zwischen einem Außenleiter und N liegen 230 V.",
     "Bei der Sternschaltung werden die drei Strangenden zu einem gemeinsamen Punkt verbunden — dem Sternpunkt. Jeder Strang liegt dann zwischen einem Außenleiter und diesem Punkt.",
@@ -12365,6 +14113,32 @@ const ERKLAERUNGEN = {
     ["Trafo an Gleichspannung gedacht", "Ohne Wechselspannung ändert sich das Magnetfeld nicht, und es wird nichts übertragen. Die Primärwicklung wirkt dann fast wie ein Kurzschluss."],
     ["Verluste ganz vergessen", "Für die Schulrechnung gilt der ideale Trafo. In Wirklichkeit gehen ein paar Prozent als Wärme verloren."]
   ],
+  spiel:{
+    titel:"Windungen ziehen",
+    hinweis:"Das Verhältnis der Windungszahlen bestimmt alles: Spannung hoch heißt Strom runter.",
+    regler:[
+      {id:"u1", name:"Eingangsspannung", einheit:"V", von:12, bis:400, schritt:2, start:230},
+      {id:"n1", name:"Windungen primär", von:50, bis:2000, schritt:10, start:1000},
+      {id:"n2", name:"Windungen sekundär", von:10, bis:2000, schritt:10, start:100}
+    ],
+    ausgabe:(w) => {
+      const ue = w.n1 / w.n2;
+      const u2 = w.u1 / ue;
+      const i2 = 2;                            /* angenommene Last: 2 A */
+      const i1 = i2 / ue;
+      return {
+        werte:[
+          {name:"Übersetzung ü = N1 : N2", text:z(Math.round(ue * 1000) / 1000)},
+          {name:"Ausgangsspannung U2", text:z(Math.round(u2 * 100) / 100) + " V"},
+          {name:"Bei 2 A am Ausgang", text:"Eingangsstrom " + z(Math.round(i1 * 1000) / 1000) + " A"},
+          {name:"Leistung (ideal)", text:z(Math.round(u2 * i2)) + " W"}
+        ],
+        satz: ue > 1 ? `Mehr Windungen vorn als hinten: Die Spannung geht <b>runter</b>, der Strom dafür <b>rauf</b>.`
+             : ue < 1 ? `Weniger Windungen vorn als hinten: Die Spannung geht <b>rauf</b>, der Strom dafür <b>runter</b>.`
+             : "Gleich viele Windungen — die Spannung bleibt, wie sie ist. Ein solcher Trafo trennt nur."
+      };
+    }
+  },
   einfach:[
     "Ein Trafo besteht aus zwei Spulen auf einem gemeinsamen Eisenkern. Die eine heißt Primärwicklung, die andere Sekundärwicklung.",
     "Der Wechselstrom in der ersten Spule baut ein ständig wechselndes Magnetfeld auf. Der Eisenkern führt dieses Feld zur zweiten Spule.",
@@ -12430,6 +14204,41 @@ const ERKLAERUNGEN = {
     ["Nach 1 τ für voll gehalten", "Nach einer Zeitkonstanten sind es erst 63 %. Voll ist er erst nach etwa 5 τ."],
     ["Restspannung unterschätzt", "Ein Kondensator im Zwischenkreis kann nach dem Abschalten noch minutenlang gefährliche Spannung führen. Immer entladen und nachmessen."]
   ],
+  spiel:{
+    titel:"Ladekurve selbst einstellen",
+    hinweis:"R und C bestimmen zusammen, wie schnell der Kondensator voll wird.",
+    regler:[
+      {id:"r", name:"Widerstand R", einheit:"kΩ", von:1, bis:100, schritt:1, start:10},
+      {id:"c", name:"Kapazität C", einheit:"µF", von:1, bis:1000, schritt:1, start:100}
+    ],
+    ausgabe:(w) => {
+      const tau = w.r * 1000 * w.c / 1e6;      /* Sekunden */
+      const punkte = [];
+      for (let i = 0; i <= 40; i++){
+        const t = i / 40 * 5;                  /* in Vielfachen von tau */
+        const y = 1 - Math.exp(-t);
+        punkte.push(`${(30 + i / 40 * 340).toFixed(1)},${(96 - y * 70).toFixed(1)}`);
+      }
+      return {
+        bild:`<svg viewBox="0 0 400 120" ${SVG_STIL} role="img" aria-label="Ladekurve eines Kondensators über fünf Zeitkonstanten">
+          <line x1="30" y1="96" x2="376" y2="96" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="30" y1="14" x2="30" y2="96" stroke="currentColor" stroke-width="1.2"/>
+          <line x1="30" y1="26" x2="376" y2="26" stroke="currentColor" stroke-dasharray="4 3" opacity=".5"/>
+          <text x="380" y="29" text-anchor="end" font-size="9" fill="currentColor">100 %</text>
+          <line x1="98" y1="14" x2="98" y2="96" stroke="currentColor" stroke-dasharray="4 3" opacity=".5"/>
+          <text x="98" y="110" text-anchor="middle" font-size="9" fill="currentColor">1 τ</text>
+          <text x="376" y="110" text-anchor="end" font-size="9" fill="currentColor">5 τ</text>
+          <polyline points="${punkte.join(" ")}" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+        </svg>`,
+        werte:[
+          {name:"Zeitkonstante τ = R · C", text:z(Math.round(tau * 1000) / 1000) + " s"},
+          {name:"Nach 1 τ geladen auf", text:"63 % — " + z(Math.round(tau * 1000) / 1000) + " s"},
+          {name:"Praktisch voll (5 τ)", text:z(Math.round(tau * 5 * 1000) / 1000) + " s"}
+        ],
+        satz:`Die Form der Kurve ändert sich nie — nur wie lange sie dauert. Hier sind es <b>${z(Math.round(tau * 5 * 1000) / 1000)} s</b>, bis der Kondensator praktisch voll ist.`
+      };
+    }
+  },
   einfach:[
     "Ein Kondensator speichert Ladung. Man kann ihn sich wie einen kleinen Eimer vorstellen, der über einen dünnen Schlauch gefüllt wird.",
     "Der Widerstand davor ist der Schlauch: Je enger er ist, desto langsamer läuft der Eimer voll.",
@@ -12493,6 +14302,37 @@ const ERKLAERUNGEN = {
     ["Beim Drehstrom das √3 vergessen", "Bei Drehstrom gilt P = √3 · U · I · cos φ. Die einfache Formel gilt nur einphasig."],
     ["Blindleistung für verloren gehalten", "Sie wird nicht verbraucht, sie pendelt hin und her. Sie belastet aber trotzdem Leitung und Sicherung."]
   ],
+  spiel:{
+    titel:"Leistungsdreieck ziehen",
+    hinweis:"Nur die Wirkleistung arbeitet. Die Blindleistung pendelt hin und her — bezahlen muss man trotzdem den Strom dafür.",
+    regler:[
+      {id:"s",   name:"Scheinleistung S", einheit:"kVA", von:1, bis:50, schritt:1, start:10},
+      {id:"cos", name:"cos φ", von:0.3, bis:1, schritt:0.01, start:0.8}
+    ],
+    ausgabe:(w) => {
+      const p = w.s * w.cos;
+      const q = w.s * Math.sqrt(Math.max(0, 1 - w.cos * w.cos));
+      const skala = 300 / 50;
+      const bp = Math.max(2, p * skala), bq = Math.max(0, q * skala);
+      return {
+        bild:`<svg viewBox="0 0 400 110" ${SVG_STIL} role="img" aria-label="Leistungsdreieck aus Wirk- und Blindleistung">
+          <line x1="40" y1="86" x2="${(40 + bp).toFixed(1)}" y2="86" stroke="#10a37f" stroke-width="4"/>
+          <line x1="${(40 + bp).toFixed(1)}" y1="86" x2="${(40 + bp).toFixed(1)}" y2="${(86 - bq).toFixed(1)}" stroke="#b3382f" stroke-width="4"/>
+          <line x1="40" y1="86" x2="${(40 + bp).toFixed(1)}" y2="${(86 - bq).toFixed(1)}" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/>
+          <text x="${(40 + bp / 2).toFixed(1)}" y="102" text-anchor="middle" font-size="10" fill="currentColor">P (arbeitet)</text>
+          <text x="${(46 + bp).toFixed(1)}" y="${(86 - bq / 2).toFixed(1)}" font-size="10" fill="currentColor">Q</text>
+        </svg>`,
+        werte:[
+          {name:"Wirkleistung P = S · cos φ", text:z(Math.round(p * 100) / 100) + " kW"},
+          {name:"Blindleistung Q", text:z(Math.round(q * 100) / 100) + " kvar"},
+          {name:"Strom bei 400 V (3~)", text:z(Math.round(w.s * 1000 / (Math.sqrt(3) * 400) * 100) / 100) + " A"}
+        ],
+        satz: w.cos >= 0.99
+          ? "cos φ = 1: Alles, was fließt, arbeitet auch. Besser geht es nicht."
+          : `Von ${z(w.s)} kVA arbeiten nur <b>${z(Math.round(p * 100) / 100)} kW</b>. Der Rest pendelt zwischen Netz und Motor — die Leitung muss ihn trotzdem tragen.`
+      };
+    }
+  },
   einfach:[
     "Bei einem reinen Widerstand — einer Heizung zum Beispiel — wird alles, was hineingeht, in Wärme umgesetzt. Da ist Leistung einfach U · I.",
     "Bei Motoren, Spulen und Kondensatoren ist das anders. Ein Teil des Stroms baut nur Magnetfelder auf und wieder ab. Diese Energie pendelt hin und her, statt Arbeit zu leisten.",
@@ -12553,6 +14393,37 @@ const ERKLAERUNGEN = {
     ["Nur durch 100 geteilt", "Kilo und Milli stehen für 1000, nicht für 100. Zenti wäre 100 — das kommt in der Elektrotechnik aber kaum vor."],
     ["Erst am Ende umgerechnet", "Rechne immer zuerst alles auf Grundeinheiten um. Wer mit gemischten Vorsätzen rechnet, verzählt sich fast sicher."]
   ],
+  spiel:{
+    titel:"Vorsatz schieben",
+    hinweis:"Dieselbe Größe, andere Schreibweise. Zieh den Vorsatz und schau, wie das Komma wandert.",
+    regler:[
+      {id:"wert", name:"Zahlenwert", von:1, bis:999, schritt:1, start:47},
+      {id:"e",    name:"Vorsatz", von:-12, bis:9, schritt:3, start:0}
+    ],
+    ausgabe:(w) => {
+      const VORS = {"-12":["p","Piko"],"-9":["n","Nano"],"-6":["µ","Mikro"],"-3":["m","Milli"],
+                    "0":["","—"],"3":["k","Kilo"],"6":["M","Mega"],"9":["G","Giga"]};
+      const [kurz, lang] = VORS[String(w.e)];
+      const basis = w.wert * Math.pow(10, w.e);
+      const lesbar = (x) => {
+        const a = Math.abs(x);
+        if (a === 0) return "0";
+        if (a >= 1e-4 && a < 1e7) return z(Math.round(x * 1e6) / 1e6);
+        return x.toExponential(3).replace(".", ",").replace("e", " · 10^");
+      };
+      return {
+        werte:[
+          {name:"So geschrieben", text:z(w.wert) + " " + kurz + "F"},
+          {name:"Vorsatz", text:lang + (kurz ? " (" + kurz + ")" : "")},
+          {name:"Faktor",  text:"10 hoch " + z(w.e)},
+          {name:"In der Grundeinheit", text:lesbar(basis) + " F"}
+        ],
+        satz: w.e === 0 ? "Ohne Vorsatz steht der Wert schon in der Grundeinheit."
+          : w.e < 0 ? `${z(w.wert)} ${kurz}F sind ${lesbar(basis)} F — der Vorsatz macht die Zahl <b>kleiner</b>.`
+          : `${z(w.wert)} ${kurz}F sind ${lesbar(basis)} F — der Vorsatz macht die Zahl <b>größer</b>.`
+      };
+    }
+  },
   einfach:[
     "In der Elektrotechnik kommen sehr große und sehr kleine Zahlen vor: 4 700 000 Ω oder 0,000 022 F. So etwas schreibt niemand gern auf.",
     "Deshalb setzt man einen Vorsatz vor die Einheit. Aus 4 700 000 Ω wird 4,7 MΩ, aus 0,000 022 F wird 22 µF.",
@@ -12635,6 +14506,31 @@ const ERKLAERUNGEN = {
     ["Nur nach dem Spannungsfall ausgelegt", "Der Querschnitt muss auch die Strombelastbarkeit erfüllen. Maßgebend ist immer der größere der beiden Werte."],
     ["Länge doppelt gezählt", "Die Leitungslänge ist die einfache Strecke. Der Hin- und Rückweg steckt schon in der 2."]
   ],
+  spiel:{
+    titel:"Wie viel Spannung bleibt auf der Leitung?",
+    hinweis:"Je länger die Leitung und je dünner der Draht, desto mehr Spannung geht unterwegs verloren.",
+    regler:[
+      {id:"l", name:"Länge (einfach)", einheit:"m",  von:5,  bis:150, schritt:5,   start:40},
+      {id:"a", name:"Querschnitt",     einheit:"mm²", von:1.5, bis:16, schritt:0.5, start:1.5},
+      {id:"i", name:"Strom",           einheit:"A",  von:1,  bis:32,  schritt:1,   start:16}
+    ],
+    ausgabe:(w) => {
+      /* Kupfer: 0,0178 Ω·mm²/m. Hin- und Rückleiter, deshalb der Faktor 2. */
+      const du = 2 * w.l * w.i * 0.0178 / w.a;
+      const anteil = du / 230 * 100;
+      const ok = anteil <= 3;
+      return {
+        werte:[
+          {name:"Spannungsfall ΔU", text:z(Math.round(du * 100) / 100) + " V"},
+          {name:"Anteil von 230 V",  text:z(Math.round(anteil * 100) / 100) + " %"},
+          {name:"Am Gerät kommen an", text:z(Math.round((230 - du) * 100) / 100) + " V"}
+        ],
+        satz: ok
+          ? `${z(Math.round(anteil * 100) / 100) } % — das liegt unter den 3 %, die für Steckdosenstromkreise üblich sind.`
+          : `${z(Math.round(anteil * 100) / 100)} % sind <b>zu viel</b>. Der übliche Richtwert für Steckdosenstromkreise sind 3 %: dickerer Draht oder kürzere Leitung.`
+      };
+    }
+  },
   einfach:[
     "Ein Kabel ist kein perfekter Leiter. Auch Kupfer bremst den Strom ein bisschen.",
     "Wie stark, hängt von drei Dingen ab: von der Länge, vom Querschnitt und vom Material.",
@@ -12715,6 +14611,33 @@ const ERKLAERUNGEN = {
     ["Nur gerechnet, nicht bewertet", "„1667 Ω“ ist keine vollständige Antwort. Dazu gehört: Der gemessene Erder liegt darunter, also ist die Bedingung erfüllt."],
     ["Grenzwert 50 V mit der Netzspannung verwechselt", "230 V ist die Betriebsspannung. Als Berührungsspannung sind bei Wechselstrom nur 50 V zulässig."]
   ],
+  spiel:{
+    titel:"Wie gefährlich ist welcher Strom?",
+    hinweis:"Nicht die Spannung tötet, sondern der Strom durch den Körper. Zieh Spannung und Körperwiderstand.",
+    regler:[
+      {id:"u", name:"Spannung", einheit:"V", von:12, bis:400, schritt:2, start:230},
+      {id:"r", name:"Körperwiderstand", einheit:"Ω", von:500, bis:5000, schritt:100, start:1300}
+    ],
+    ausgabe:(w) => {
+      const ma = w.u / w.r * 1000;
+      const stufe = ma < 0.5 ? "nicht spürbar"
+        : ma < 10 ? "spürbar, Muskeln reagieren"
+        : ma < 30 ? "Loslassen wird schwer bis unmöglich"
+        : ma < 50 ? "Atemnot, Krämpfe"
+        : "Herzkammerflimmern möglich — lebensgefährlich";
+      return {
+        werte:[
+          {name:"Strom durch den Körper", text:z(Math.round(ma * 10) / 10) + " mA"},
+          {name:"Wirkung", text:stufe},
+          {name:"FI-Schutzschalter löst aus bei", text:"30 mA"}
+        ],
+        satz: ma >= 30
+          ? `<b>${z(Math.round(ma))} mA</b> — hier muss ein Fehlerstrom-Schutzschalter abschalten. Er löst bei 30 mA aus, und zwar in unter 0,4 Sekunden.`
+          : ma >= 10 ? `Bei ${z(Math.round(ma))} mA verkrampfen die Muskeln. Wer die Hand um ein Kabel hat, kann nicht mehr loslassen.`
+          : `Nasse Haut senkt den Körperwiderstand auf unter 1000 Ω. Dieselbe Spannung wird dann sehr viel gefährlicher.`
+      };
+    }
+  },
   einfach:[
     "Gefährlich wird es, wenn ein Außenleiter das Metallgehäuse eines Geräts berührt. Dann steht das Gehäuse unter Spannung.",
     "Zwei Dinge müssen dann passieren: Die Spannung am Gehäuse darf nicht gefährlich hoch werden, und die Anlage muss schnell abschalten.",
@@ -12792,6 +14715,29 @@ const ERKLAERUNGEN = {
     ["Nicht neu gezeichnet", "Nach jedem Zusammenfassen sieht die Schaltung anders aus. Wer im Kopf weiterarbeitet, verliert den Überblick."],
     ["Am Ende nicht geprüft", "Der Gesamtwiderstand muss größer sein als der Reihenanteil allein und kleiner als die Summe aller Widerstände."]
   ],
+  spiel:{
+    titel:"Zwei parallel, einer in Reihe",
+    hinweis:"R1 und R2 liegen parallel, R3 hängt in Reihe dahinter. Zieh und sieh, was der Gesamtwiderstand macht.",
+    regler:[
+      {id:"r1", name:"R1 (parallel)", einheit:"Ω", von:10, bis:200, schritt:5, start:100},
+      {id:"r2", name:"R2 (parallel)", einheit:"Ω", von:10, bis:200, schritt:5, start:100},
+      {id:"r3", name:"R3 (in Reihe)", einheit:"Ω", von:0,  bis:200, schritt:5, start:50}
+    ],
+    ausgabe:(w) => {
+      const rp = (w.r1 * w.r2) / (w.r1 + w.r2);
+      const rg = rp + w.r3;
+      const u = 230, i = rg > 0 ? u / rg : 0;
+      return {
+        werte:[
+          {name:"R1 ∥ R2", text:z(Math.round(rp * 100) / 100) + " Ω"},
+          {name:"Gesamt R = R1∥R2 + R3", text:z(Math.round(rg * 100) / 100) + " Ω"},
+          {name:"Strom bei 230 V", text:z(Math.round(i * 1000) / 1000) + " A"}
+        ],
+        satz: `Der Parallelteil ist mit ${z(Math.round(rp * 100) / 100)} Ω <b>kleiner</b> als jeder seiner beiden Zweige. ` +
+              (w.r3 === 0 ? "Ohne R3 bleibt nur er übrig." : "Erst R3 in Reihe macht das Ganze wieder größer.")
+      };
+    }
+  },
   einfach:[
     "In der Praxis liegen Widerstände selten nur in Reihe oder nur parallel. Meistens ist beides gemischt.",
     "Der Trick ist immer derselbe: Such dir die innerste Gruppe und fasse sie zu einem einzigen Ersatzwiderstand zusammen.",
@@ -12871,6 +14817,36 @@ const ERKLAERUNGEN = {
     ["Verlustleistung mit Wirkungsgrad verwechselt", "Der Wirkungsgrad ist ein Verhältnis ohne Einheit, die Verlustleistung eine Leistung in Watt."],
     ["Bei mehreren Stufen addiert", "Hintereinandergeschaltete Wirkungsgrade werden malgenommen, nicht addiert. Zweimal 90 % ergeben 81 %, nicht 180 %."]
   ],
+  spiel:{
+    titel:"Was kommt hinten raus?",
+    hinweis:"Zieh die aufgenommene Leistung und den Wirkungsgrad. Die Verlustleistung wird zu Wärme.",
+    regler:[
+      {id:"pzu",  name:"Aufgenommen", einheit:"W", von:100, bis:5000, schritt:50, start:2200},
+      {id:"eta",  name:"Wirkungsgrad", einheit:"%", von:30, bis:99,   schritt:1,  start:85}
+    ],
+    ausgabe:(w) => {
+      const pab = w.pzu * w.eta / 100;
+      const pv = w.pzu - pab;
+      const breite = Math.max(2, 360 * w.eta / 100);
+      return {
+        bild:`<svg viewBox="0 0 400 96" ${SVG_STIL} role="img" aria-label="Balken: nutzbarer Anteil und Verlust">
+          <rect x="20" y="28" width="360" height="30" rx="6" fill="#b3382f" fill-opacity=".35" stroke="#b3382f" stroke-width="1.5"/>
+          <rect x="20" y="28" width="${breite.toFixed(1)}" height="30" rx="6" fill="#10a37f" fill-opacity=".75" stroke="#10a37f" stroke-width="1.5"/>
+          <text x="20" y="80" font-size="11" fill="currentColor">nutzbar</text>
+          <text x="380" y="80" text-anchor="end" font-size="11" fill="currentColor">Verlust = Wärme</text>
+          <text x="200" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">${z(w.eta)} %</text>
+        </svg>`,
+        werte:[
+          {name:"Abgegeben P₂", text:z(Math.round(pab)) + " W"},
+          {name:"Verlust P_V",   text:z(Math.round(pv)) + " W"},
+          {name:"Wärme in einer Stunde", text:z(Math.round(pv) / 1000) + " kWh"}
+        ],
+        satz: w.eta >= 95 ? "Über 95 % erreichen nur große Motoren und gute Transformatoren."
+          : w.eta <= 50 ? `Mehr als die Hälfte geht als Wärme verloren — ${z(Math.round(pv))} W heizen den Raum.`
+          : `Von ${z(w.pzu)} W kommen ${z(Math.round(pab))} W an. Die restlichen ${z(Math.round(pv))} W werden Wärme.`
+      };
+    }
+  },
   einfach:[
     "Ein Motor zieht Leistung aus dem Netz. Ein Teil davon kommt an der Welle als Drehmoment an — der Rest wird zu Wärme.",
     "Die Leistung aus dem Netz heißt aufgenommene Leistung P zu. Die an der Welle heißt abgegebene Leistung P ab.",
@@ -12953,6 +14929,29 @@ const ERKLAERUNGEN = {
     ["Beim Drehmoment mit Watt statt Kilowatt gerechnet", "In M = 9550 · P : n gehört P in Kilowatt. Sonst ist das Ergebnis tausendmal zu groß."],
     ["Erwartet, dass der Läufer genau mitläuft", "Ohne Schlupf gäbe es keine Induktion und kein Drehmoment. Der Unterschied ist kein Fehler, sondern nötig."]
   ],
+  spiel:{
+    titel:"Polpaare, Frequenz, Schlupf",
+    hinweis:"Die Polpaarzahl steckt im Motor, die Frequenz kommt aus dem Netz oder dem Umrichter.",
+    regler:[
+      {id:"p",  name:"Polpaare",  von:1, bis:6, schritt:1, start:2},
+      {id:"f",  name:"Frequenz",  einheit:"Hz", von:10, bis:100, schritt:1, start:50},
+      {id:"s",  name:"Schlupf",   einheit:"%",  von:0,  bis:10,  schritt:0.5, start:4}
+    ],
+    ausgabe:(w) => {
+      const nsyn = 60 * w.f / w.p;
+      const n = nsyn * (1 - w.s / 100);
+      return {
+        werte:[
+          {name:"Synchrondrehzahl n₀ = 60 · f : p", text:z(Math.round(nsyn)) + " 1/min"},
+          {name:"Läuferdrehzahl n", text:z(Math.round(n)) + " 1/min"},
+          {name:"Differenz", text:z(Math.round(nsyn - n)) + " 1/min"}
+        ],
+        satz: w.s === 0
+          ? "Ohne Schlupf würde der Läufer genau mit dem Drehfeld laufen — dann könnte er kein Drehmoment abgeben."
+          : `Bei ${z(w.p)} Polpaaren und ${z(w.f)} Hz dreht das Feld mit ${z(Math.round(nsyn))} 1/min. Der Läufer bleibt um ${z(w.s)} % zurück.`
+      };
+    }
+  },
   einfach:[
     "Im Ständer eines Drehstrommotors erzeugen die drei Wicklungen ein Magnetfeld, das sich dreht. Man nennt es Drehfeld.",
     "Wie schnell dieses Feld umläuft, hängt nur von der Netzfrequenz und von der Zahl der Polpaare ab.",
@@ -13031,6 +15030,31 @@ const ERKLAERUNGEN = {
     ["Im viel zu großen Bereich gemessen", "20 V im 600-V-Bereich abzulesen ist unbrauchbar genau. Erst grob messen, dann kleiner schalten."],
     ["Widerstand unter Spannung gemessen", "Das zerstört das Messgerät und liefert Unsinn. Erst freischalten und Spannungsfreiheit feststellen."]
   ],
+  spiel:{
+    titel:"Warum das Messgerät den Wert verfälscht",
+    hinweis:"Ein Spannungsmesser liegt parallel. Ist sein Innenwiderstand zu klein, misst er seinen eigenen Einfluss mit.",
+    regler:[
+      {id:"r",  name:"Widerstand im Kreis", einheit:"kΩ", von:1, bis:1000, schritt:1, start:100},
+      {id:"ri", name:"Innenwiderstand Messgerät", einheit:"kΩ", von:10, bis:10000, schritt:10, start:10000}
+    ],
+    ausgabe:(w) => {
+      /* Zwei gleiche Widerstände an 10 V: ohne Messgerät liegen 5 V an */
+      const rp = (w.r * w.ri) / (w.r + w.ri);
+      const uOhne = 5;
+      const uMit = 10 * rp / (w.r + rp);
+      const fehler = (uMit - uOhne) / uOhne * 100;
+      return {
+        werte:[
+          {name:"Wirklich anliegend", text:z(uOhne) + " V"},
+          {name:"Angezeigt", text:z(Math.round(uMit * 1000) / 1000) + " V"},
+          {name:"Messabweichung", text:z(Math.round(fehler * 100) / 100) + " %"}
+        ],
+        satz: Math.abs(fehler) < 0.5
+          ? "Der Innenwiderstand ist groß genug — das Messgerät stört kaum."
+          : `Das Messgerät zieht den Wert um ${z(Math.round(Math.abs(fehler) * 100) / 100)} % nach unten. Faustregel: Der Innenwiderstand sollte mindestens hundertmal so groß sein wie der gemessene Widerstand.`
+      };
+    }
+  },
   einfach:[
     "Der Spannungsmesser wird immer parallel angeschlossen — er soll die Spannung über einem Bauteil sehen.",
     "Der Strommesser wird immer in Reihe geschaltet — der Strom muss durch ihn hindurchfließen.",
@@ -13112,6 +15136,29 @@ const ERKLAERUNGEN = {
     ["Bei der Ersparnis den ganzen Verbrauch gerechnet", "Gespart wird nur die Differenz. Das neue Gerät verbraucht ja weiterhin Strom."],
     ["Grundpreis vergessen", "Auf der Rechnung steht neben dem Arbeitspreis auch ein fester Grundpreis. Für den Vergleich zweier Geräte spielt er keine Rolle, für die Gesamtrechnung schon."]
   ],
+  spiel:{
+    titel:"Was kostet das im Jahr?",
+    hinweis:"Leistung mal Laufzeit mal Preis. Zieh die Regler und sieh, was ein einziges Gerät ausmacht.",
+    regler:[
+      {id:"p",     name:"Leistung", einheit:"W", von:5, bis:3000, schritt:5, start:100},
+      {id:"h",     name:"Läuft täglich", einheit:"h", von:0.5, bis:24, schritt:0.5, start:8},
+      {id:"preis", name:"Strompreis", einheit:"ct/kWh", von:15, bis:60, schritt:1, start:35}
+    ],
+    ausgabe:(w) => {
+      const kwhTag  = w.p / 1000 * w.h;
+      const kwhJahr = kwhTag * 365;
+      const jahr = kwhJahr * w.preis / 100;
+      return {
+        werte:[
+          {name:"Am Tag", text:z(Math.round(kwhTag * 1000) / 1000) + " kWh"},
+          {name:"Im Jahr", text:z(Math.round(kwhJahr)) + " kWh"},
+          {name:"Kosten im Monat", text:eur(Math.round(jahr / 12 * 100) / 100)},
+          {name:"Kosten im Jahr", text:eur(Math.round(jahr * 100) / 100)}
+        ],
+        satz:`${z(w.p)} W klingen nach wenig. ${z(w.h)} Stunden am Tag machen daraus <b>${eur(Math.round(jahr * 100) / 100)}</b> im Jahr.`
+      };
+    }
+  },
   einfach:[
     "Die Leistung eines Geräts steht in Watt auf dem Typenschild. Sie sagt, wie viel es in jedem Moment zieht.",
     "Was du bezahlst, ist aber die Energie — also Leistung mal Zeit. Abgerechnet wird in Kilowattstunden.",
@@ -13193,6 +15240,39 @@ const ERKLAERUNGEN = {
     ["Den Kreis am Ausgang übersehen", "Ein kleiner Kreis im Schaltzeichen bedeutet Negation. Aus UND wird NAND, und das Verhalten kehrt sich um."],
     ["Bei drei Eingängen mit vier Zeilen gerechnet", "Es sind 2 hoch n Zeilen. Drei Eingänge ergeben acht."]
   ],
+  spiel:{
+    titel:"Schalter umlegen",
+    hinweis:"Zwei Eingänge, alle Grundverknüpfungen auf einmal. Schieb E1 und E2 zwischen 0 und 1.",
+    regler:[
+      {id:"a", name:"Eingang E1", von:0, bis:1, schritt:1, start:1},
+      {id:"b", name:"Eingang E2", von:0, bis:1, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const a = w.a ? 1 : 0, b = w.b ? 1 : 0;
+      const und = a && b ? 1 : 0, oder = a || b ? 1 : 0;
+      const xor = a !== b ? 1 : 0;
+      const lampe = (an, x) => `<circle cx="${x}" cy="34" r="15" fill="${an ? "#10a37f" : "none"}" fill-opacity=".7" stroke="${an ? "#10a37f" : "currentColor"}" stroke-width="2"/>` +
+        `<text x="${x}" y="39" text-anchor="middle" font-size="13" font-weight="800" fill="${an ? "#fff" : "currentColor"}">${an}</text>`;
+      return {
+        bild:`<svg viewBox="0 0 400 76" ${SVG_STIL} role="img" aria-label="Ausgänge von UND, ODER, XOR und NICHT">
+          ${lampe(und, 60)}${lampe(oder, 150)}${lampe(xor, 240)}${lampe(a ? 0 : 1, 330)}
+          <text x="60"  y="68" text-anchor="middle" font-size="11" fill="currentColor">UND</text>
+          <text x="150" y="68" text-anchor="middle" font-size="11" fill="currentColor">ODER</text>
+          <text x="240" y="68" text-anchor="middle" font-size="11" fill="currentColor">XOR</text>
+          <text x="330" y="68" text-anchor="middle" font-size="11" fill="currentColor">NICHT E1</text>
+        </svg>`,
+        werte:[
+          {name:"E1 UND E2", text:String(und)},
+          {name:"E1 ODER E2", text:String(oder)},
+          {name:"Exklusiv-ODER", text:String(xor)},
+          {name:"NICHT E1", text:String(a ? 0 : 1)}
+        ],
+        satz: und ? "Beide Eingänge auf 1 — nur dann schaltet UND durch."
+          : oder ? "Mindestens einer ist 1: ODER schaltet, UND nicht."
+          : "Beide auf 0 — außer NICHT bleibt alles dunkel."
+      };
+    }
+  },
   einfach:[
     "In der Digitaltechnik gibt es nur zwei Zustände: 0 und 1. Nichts dazwischen.",
     "0 heißt „liegt nicht an“, 1 heißt „liegt an“. Ein Taster ist gedrückt oder nicht.",
@@ -13279,6 +15359,40 @@ const ERKLAERUNGEN = {
     ["Unter Spannung Widerstand gemessen", "Das zerstört das Messgerät und liefert falsche Werte. Erst freischalten."],
     ["Übergangswiderstand übersehen", "Eine lockere Klemme zeigt sich nicht im Durchgang, sondern erst unter Last — an einer fehlenden Teilspannung und an Wärme."]
   ],
+  spiel:{
+    titel:"Wo ist die Unterbrechung?",
+    hinweis:"Drei Verbraucher in Reihe. Setz den Fehler an eine Stelle und schau, was das Messgerät anzeigt.",
+    regler:[
+      {id:"stelle", name:"Unterbrechung nach Bauteil", von:0, bis:3, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const namen = ["nirgends — alles heil", "Bauteil 1", "Bauteil 2", "Bauteil 3"];
+      const offen = w.stelle > 0;
+      const kasten = (i) => {
+        const x = 60 + (i - 1) * 100;
+        const stromDa = !offen || i <= w.stelle;
+        return `<rect x="${x}" y="26" width="60" height="30" rx="5" fill="${stromDa && !offen ? "#10a37f" : "none"}" fill-opacity=".4" stroke="currentColor" stroke-width="1.5"/>` +
+          `<text x="${x + 30}" y="46" text-anchor="middle" font-size="12" fill="currentColor">${i}</text>`;
+      };
+      const bruch = offen ? `<text x="${60 + (w.stelle - 1) * 100 + 78}" y="46" text-anchor="middle" font-size="18" fill="#b3382f">✂</text>` : "";
+      return {
+        bild:`<svg viewBox="0 0 400 78" ${SVG_STIL} role="img" aria-label="Drei Bauteile in Reihe mit einer Unterbrechung">
+          <line x1="20" y1="41" x2="380" y2="41" stroke="currentColor" stroke-width="1.5"/>
+          ${kasten(1)}${kasten(2)}${kasten(3)}${bruch}
+          <text x="200" y="72" text-anchor="middle" font-size="11" fill="currentColor">${offen ? "Stromkreis offen — es fließt nichts" : "Stromkreis geschlossen"}</text>
+        </svg>`,
+        werte:[
+          {name:"Unterbrechung", text:namen[w.stelle]},
+          {name:"Strom im Kreis", text:offen ? "0 A" : "fließt"},
+          {name:"Spannung über der Unterbrechung", text:offen ? "volle Betriebsspannung" : "0 V"},
+          {name:"Spannung über den heilen Teilen", text:offen ? "0 V" : "je nach Widerstand"}
+        ],
+        satz: offen
+          ? "In einer Reihenschaltung steht die <b>volle Spannung über der Unterbrechung</b> — und über allem anderen 0 V. Genau daran findest du die Bruchstelle: Wo das Messgerät plötzlich die ganze Spannung anzeigt, ist der Fehler."
+          : "Alles heil: Die Spannung teilt sich auf die drei Verbraucher auf, überall fließt derselbe Strom."
+      };
+    }
+  },
   einfach:[
     "Der häufigste Anfängerfehler ist, sofort Bauteile zu tauschen. Erst messen, dann tauschen.",
     "Es gibt im Grunde nur zwei Arten von Fehlern: Es fließt zu wenig Strom oder zu viel.",
@@ -13367,6 +15481,26 @@ const ERKLAERUNGEN = {
     ["Zwischenschritt gerundet", "Der Einzelwert ist oft eine krumme Zahl. Rechne mit dem genauen Wert weiter."],
     ["Unpassende Größen zusammengerechnet", "Stück gehören zu Euro, Arbeiter zu Tagen. Wer die Paare durcheinanderbringt, rechnet Unsinn."]
   ],
+  spiel:{
+    titel:"Proportional oder umgekehrt?",
+    hinweis:"Zwei Zuordnungen nebeneinander: Beim einen wächst mit, beim anderen fällt.",
+    regler:[
+      {id:"n", name:"Anzahl", von:1, bis:24, schritt:1, start:6}
+    ],
+    ausgabe:(w) => {
+      const preis = 3.5 * w.n;              /* je mehr, desto teurer */
+      const arbeit = 48 / w.n;              /* je mehr Leute, desto kürzer */
+      return {
+        werte:[
+          {name:"Proportional: " + z(w.n) + " Stück à 3,50 €", text:eur(Math.round(preis * 100) / 100)},
+          {name:"Produkt Preis : Anzahl", text:eur(3.5) + " je Stück — bleibt gleich"},
+          {name:"Umgekehrt: 48 h auf " + z(w.n) + " Leute", text:z(Math.round(arbeit * 100) / 100) + " h"},
+          {name:"Produkt Zeit · Leute", text:z(48) + " — bleibt gleich"}
+        ],
+        satz:"Bei der <b>proportionalen</b> Zuordnung bleibt der <b>Quotient</b> gleich, bei der <b>umgekehrten</b> das <b>Produkt</b>. Daran erkennst du, welche Art vorliegt — nicht am Gefühl."
+      };
+    }
+  },
   einfach:[
     "Eine Zuordnung ordnet jedem Wert genau einen anderen zu: jeder Stückzahl einen Preis, jeder Arbeiterzahl eine Dauer.",
     "Es gibt zwei Sorten, die in der Schule ständig vorkommen.",
@@ -13442,6 +15576,34 @@ const ERKLAERUNGEN = {
     ["Ein unmögliches Dreieck akzeptiert", "Zwei Winkel, die zusammen schon über 180° ergeben, gibt es nicht. Dann steckt ein Fehler in der Angabe."],
     ["Dreiecksungleichung übersehen", "Die beiden kürzeren Seiten müssen zusammen länger sein als die längste. Sonst schließt sich das Dreieck nicht."]
   ],
+  spiel:{
+    titel:"Zwei Winkel ziehen, der dritte folgt",
+    hinweis:"Die Winkelsumme ist immer 180°. Der dritte Winkel hat also gar keine Wahl.",
+    regler:[
+      {id:"a", name:"Winkel α", einheit:"°", von:10, bis:160, schritt:1, start:60},
+      {id:"b", name:"Winkel β", einheit:"°", von:10, bis:160, schritt:1, start:60}
+    ],
+    ausgabe:(w) => {
+      const c = 180 - w.a - w.b;
+      const moeglich = c >= 1;
+      const gr = Math.max(w.a, w.b, c);
+      const art = !moeglich ? "so ein Dreieck gibt es nicht"
+        : gr > 90 ? "stumpfwinklig" : gr === 90 ? "rechtwinklig" : "spitzwinklig";
+      const gleich = moeglich && (w.a === w.b || w.b === c || w.a === c);
+      return {
+        werte:[
+          {name:"α", text:z(w.a) + "°"},
+          {name:"β", text:z(w.b) + "°"},
+          {name:"γ = 180° − α − β", text: moeglich ? z(c) + "°" : z(c) + "° — unmöglich"},
+          {name:"Art", text:art},
+          {name:"Besonderheit", text: !moeglich ? "—" : gleich ? "gleichschenklig — zwei Winkel sind gleich" : "ungleichseitig"}
+        ],
+        satz: !moeglich
+          ? `α und β ergeben zusammen schon ${z(w.a + w.b)}° — für γ bleibt nichts übrig. Zwei Winkel eines Dreiecks können zusammen nie 180° erreichen.`
+          : `Sobald zwei Winkel feststehen, steht der dritte fest: ${z(w.a)}° + ${z(w.b)}° + ${z(c)}° = 180°.`
+      };
+    }
+  },
   einfach:[
     "Ein Dreieck hat drei Ecken, drei Seiten und drei Winkel. Die Ecken heißen A, B und C.",
     "Die Winkel bekommen griechische Buchstaben: α (alpha) bei A, β (beta) bei B, γ (gamma) bei C.",
@@ -13522,6 +15684,29 @@ const ERKLAERUNGEN = {
     ["Auf vergangene Ergebnisse geschlossen", "Nach fünf Sechsen ist die sechste genauso wahrscheinlich wie vorher. Ein Würfel hat kein Gedächtnis."],
     ["Erwartungswert für eine Garantie gehalten", "10 erwartete Sechsen bei 60 Würfen heißt nicht, dass es genau 10 werden."]
   ],
+  spiel:{
+    titel:"Wie oft hintereinander?",
+    hinweis:"Bei mehreren Versuchen hintereinander werden die Wahrscheinlichkeiten malgenommen — nicht addiert.",
+    regler:[
+      {id:"p", name:"Chance je Versuch", einheit:"%", von:1, bis:99, schritt:1, start:50},
+      {id:"n", name:"Versuche", von:1, bis:12, schritt:1, start:3}
+    ],
+    ausgabe:(w) => {
+      const p = w.p / 100;
+      const alle = Math.pow(p, w.n);
+      const keins = Math.pow(1 - p, w.n);
+      const mind = 1 - keins;
+      const prz = (x) => z(Math.round(x * 10000) / 100) + " %";
+      return {
+        werte:[
+          {name:"Jedes Mal", text:prz(alle)},
+          {name:"Kein einziges Mal", text:prz(keins)},
+          {name:"Mindestens einmal", text:prz(mind)}
+        ],
+        satz:`${z(w.p)} % bei ${z(w.n)} Versuchen: <b>${prz(alle)}</b>, dass es jedes Mal klappt — aber <b>${prz(mind)}</b>, dass es mindestens einmal klappt. Das sind zwei ganz verschiedene Fragen.`
+      };
+    }
+  },
   einfach:[
     "Wenn alle Ausgänge gleich wahrscheinlich sind, ist die Rechnung einfach: günstige Fälle geteilt durch mögliche Fälle.",
     "Beispiel Würfel: Für eine Sechs gibt es einen günstigen Fall und sechs mögliche. Also 1 : 6, das sind rund 16,7 %.",
@@ -13710,6 +15895,50 @@ const ERKLAERUNGEN = {
     ["Beim Addieren nur eine Seite verrechnet", "Beide Gleichungen werden komplett addiert — links plus links, rechts plus rechts."],
     ["Probe nur in einer Gleichung", "Ein Zahlenpaar kann zufällig in eine Gleichung passen. Erst beide zusammen sind der Beweis."]
   ],
+  spiel:{
+    titel:"Zwei Geraden, ein Schnittpunkt",
+    hinweis:"Die Lösung eines Gleichungssystems ist der Punkt, in dem sich beide Geraden treffen.",
+    regler:[
+      {id:"m1", name:"Steigung Gerade 1", von:-3, bis:3, schritt:0.5, start:1},
+      {id:"b1", name:"Achsenabschnitt 1", von:-4, bis:4, schritt:0.5, start:1},
+      {id:"m2", name:"Steigung Gerade 2", von:-3, bis:3, schritt:0.5, start:-1},
+      {id:"b2", name:"Achsenabschnitt 2", von:-4, bis:4, schritt:0.5, start:3}
+    ],
+    ausgabe:(w) => {
+      const px = (x) => 130 + x * 22, py = (y) => 74 - y * 11;
+      const zeichne = (m, b, farbe) => {
+        if (m === 0) return `<line x1="${px(-5)}" y1="${py(b).toFixed(1)}" x2="${px(5)}" y2="${py(b).toFixed(1)}" stroke="${farbe}" stroke-width="2.5"/>`;
+        const xa = (-5 - b) / m, xb = (5 - b) / m;
+        const lo = Math.max(-5, Math.min(xa, xb)), hi = Math.min(5, Math.max(xa, xb));
+        return `<line x1="${px(lo).toFixed(1)}" y1="${py(m * lo + b).toFixed(1)}" x2="${px(hi).toFixed(1)}" y2="${py(m * hi + b).toFixed(1)}" stroke="${farbe}" stroke-width="2.5"/>`;
+      };
+      const parallel = w.m1 === w.m2;
+      const gleich = parallel && w.b1 === w.b2;
+      const xs = parallel ? null : (w.b2 - w.b1) / (w.m1 - w.m2);
+      const ys = parallel ? null : w.m1 * xs + w.b1;
+      const sichtbar = xs !== null && Math.abs(xs) <= 5 && Math.abs(ys) <= 5;
+      return {
+        bild:`<svg viewBox="0 0 260 150" ${SVG_STIL} role="img" aria-label="Zwei Geraden im Koordinatensystem">
+          <line x1="10" y1="74" x2="250" y2="74" stroke="currentColor" stroke-width="1"/>
+          <line x1="130" y1="8" x2="130" y2="140" stroke="currentColor" stroke-width="1"/>
+          ${zeichne(w.m1, w.b1, "#10a37f")}
+          ${zeichne(w.m2, w.b2, "#3b82f6")}
+          ${sichtbar ? `<circle cx="${px(xs).toFixed(1)}" cy="${py(ys).toFixed(1)}" r="5" fill="#b3382f"/>` : ""}
+        </svg>`,
+        werte:[
+          {name:"Gerade 1", text:`y = ${z(w.m1)}x ${w.b1 < 0 ? "− " + z(-w.b1) : "+ " + z(w.b1)}`},
+          {name:"Gerade 2", text:`y = ${z(w.m2)}x ${w.b2 < 0 ? "− " + z(-w.b2) : "+ " + z(w.b2)}`},
+          {name:"Lösung", text: gleich ? "unendlich viele — es ist dieselbe Gerade"
+            : parallel ? "keine — die Geraden sind parallel"
+            : `x = ${z(Math.round(xs * 1000) / 1000)}, y = ${z(Math.round(ys * 1000) / 1000)}`}
+        ],
+        satz: gleich ? "Gleiche Steigung und gleicher Achsenabschnitt: Beide Gleichungen beschreiben dieselbe Gerade — jeder Punkt ist eine Lösung."
+          : parallel ? "Gleiche Steigung, verschiedene Höhe: Die Geraden treffen sich nie. Beim Rechnen kommt dann etwas wie 0 = 2 heraus."
+          : sichtbar ? "Der rote Punkt ist die Lösung — <b>das</b> ist das Zahlenpaar, das beide Gleichungen zugleich erfüllt."
+          : "Der Schnittpunkt liegt außerhalb des gezeichneten Bereichs, gerechnet stimmt er trotzdem."
+      };
+    }
+  },
   einfach:[
     "Eine Gleichung mit zwei Unbekannten hat unendlich viele Lösungen. Erst eine zweite Gleichung legt die Sache fest.",
     "Beide Gleichungen zusammen heißen Gleichungssystem. Gesucht ist das Zahlenpaar, das in beide passt.",
@@ -13787,6 +16016,35 @@ const ERKLAERUNGEN = {
     ["Bei Umrechnungen den Faktor nicht potenziert", "1 m³ sind 1.000.000 cm³, nicht 100. Bei Volumen zählt der Faktor dreifach."],
     ["Beim Zylinder den Durchmesser eingesetzt", "In π · r² gehört der Radius. Bei gegebenem Durchmesser erst halbieren."]
   ],
+  spiel:{
+    titel:"Quader ziehen",
+    hinweis:"Volumen wächst mit drei Kanten, die Oberfläche nur mit zwei. Deshalb laufen sie auseinander.",
+    regler:[
+      {id:"a", name:"Länge", einheit:"cm", von:1, bis:30, schritt:1, start:10},
+      {id:"b", name:"Breite", einheit:"cm", von:1, bis:30, schritt:1, start:6},
+      {id:"c", name:"Höhe",  einheit:"cm", von:1, bis:30, schritt:1, start:4}
+    ],
+    ausgabe:(w) => {
+      const v = w.a * w.b * w.c;
+      const o = 2 * (w.a * w.b + w.a * w.c + w.b * w.c);
+      const s = 6;
+      const A = w.a * s, B = w.b * s * 0.5, C = w.c * s;
+      return {
+        bild:`<svg viewBox="0 0 300 190" ${SVG_STIL} role="img" aria-label="Quader mit den eingestellten Kanten">
+          <path d="M30 ${(170 - 0).toFixed(1)}h${A.toFixed(1)}v${(-C).toFixed(1)}h${(-A).toFixed(1)}Z" fill="#10a37f" fill-opacity=".35" stroke="#10a37f" stroke-width="1.8"/>
+          <path d="M30 ${(170 - C).toFixed(1)}l${B.toFixed(1)} ${(-B * 0.6).toFixed(1)}h${A.toFixed(1)}l${(-B).toFixed(1)} ${(B * 0.6).toFixed(1)}Z" fill="#10a37f" fill-opacity=".2" stroke="#10a37f" stroke-width="1.5"/>
+          <path d="M${(30 + A).toFixed(1)} 170l${B.toFixed(1)} ${(-B * 0.6).toFixed(1)}v${(-C).toFixed(1)}l${(-B).toFixed(1)} ${(B * 0.6).toFixed(1)}Z" fill="#10a37f" fill-opacity=".14" stroke="#10a37f" stroke-width="1.5"/>
+          <text x="${(30 + A / 2).toFixed(1)}" y="185" text-anchor="middle" font-size="10" fill="currentColor">${z(w.a)} cm</text>
+        </svg>`,
+        werte:[
+          {name:"Volumen V = a · b · c", text:z(v) + " cm³"},
+          {name:"In Litern", text:z(Math.round(v / 1000 * 1000) / 1000) + " l"},
+          {name:"Oberfläche O", text:z(o) + " cm²"}
+        ],
+        satz:`Verdoppelst du <b>alle drei</b> Kanten, wird die Oberfläche viermal und das Volumen <b>achtmal</b> so groß. 1000 cm³ sind genau 1 Liter.`
+      };
+    }
+  },
   einfach:[
     "Ein Körper hat drei Ausdehnungen: Länge, Breite und Höhe. Deshalb heißt die Einheit des Volumens cm³ — drei Längen malgenommen.",
     "Das Volumen ist der Rauminhalt. Stell dir vor, du füllst den Körper mit Wasser.",
@@ -13869,6 +16127,37 @@ const ERKLAERUNGEN = {
     ["Abschnitte mit ganzen Strecken verwechselt", "Es macht einen Unterschied, ob eine Strecke vom Scheitel aus oder erst ab der ersten Parallelen gemessen wird."],
     ["Nicht zur selben Zeit gemessen", "Bei der Schattenmethode müssen beide Messungen gleichzeitig erfolgen. Die Sonne wandert."]
   ],
+  spiel:{
+    titel:"Schatten messen statt klettern",
+    hinweis:"Zwei ähnliche Dreiecke: Stab und Baum. Zieh die Werte und sieh, wie die Höhe folgt.",
+    regler:[
+      {id:"sh", name:"Stab hoch", einheit:"m", von:0.5, bis:3, schritt:0.1, start:2},
+      {id:"ss", name:"Stabschatten", einheit:"m", von:0.5, bis:5, schritt:0.1, start:1},
+      {id:"bs", name:"Baumschatten", einheit:"m", von:1, bis:20, schritt:0.5, start:5}
+    ],
+    ausgabe:(w) => {
+      const faktor = w.sh / w.ss;
+      const hoehe = faktor * w.bs;
+      const skala = Math.min(90 / Math.max(hoehe, 0.1), 300 / Math.max(w.bs, 0.1));
+      return {
+        bild:`<svg viewBox="0 0 340 120" ${SVG_STIL} role="img" aria-label="Stab und Baum mit ihren Schatten">
+          <line x1="16" y1="104" x2="330" y2="104" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="30" y1="104" x2="30" y2="${(104 - w.sh * skala).toFixed(1)}" stroke="#10a37f" stroke-width="3"/>
+          <line x1="30" y1="${(104 - w.sh * skala).toFixed(1)}" x2="${(30 + w.ss * skala).toFixed(1)}" y2="104" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <line x1="180" y1="104" x2="180" y2="${(104 - hoehe * skala).toFixed(1)}" stroke="#10a37f" stroke-width="4"/>
+          <line x1="180" y1="${(104 - hoehe * skala).toFixed(1)}" x2="${(180 + w.bs * skala).toFixed(1)}" y2="104" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <text x="30" y="118" text-anchor="middle" font-size="9" fill="currentColor">Stab</text>
+          <text x="180" y="118" text-anchor="middle" font-size="9" fill="currentColor">Baum</text>
+        </svg>`,
+        werte:[
+          {name:"Verhältnis Höhe : Schatten", text:z(Math.round(faktor * 1000) / 1000)},
+          {name:"Baumschatten", text:z(w.bs) + " m"},
+          {name:"Baumhöhe", text:"<b>" + z(Math.round(hoehe * 100) / 100) + " m</b>"}
+        ],
+        satz:`Die Sonne steht für beide gleich — also ist das Verhältnis von Höhe zu Schatten bei beiden gleich. ${z(w.sh)} : ${z(w.ss)} = ${z(Math.round(hoehe * 100) / 100)} : ${z(w.bs)}. Mehr braucht es nicht, um einen Baum zu messen.`
+      };
+    }
+  },
   einfach:[
     "Zeichne zwei Strahlen, die von einem Punkt ausgehen. Jetzt schneide sie mit zwei parallelen Geraden.",
     "Dann entstehen zwei Dreiecke, die genau gleich aussehen — nur eines ist größer. Man sagt: Sie sind ähnlich.",
@@ -13947,6 +16236,29 @@ const ERKLAERUNGEN = {
     ["Durchmesser statt Radius eingesetzt", "Bei r³ wirkt sich das achtfach aus. Immer prüfen, was gegeben ist."],
     ["Volumen- und Oberflächenformel vertauscht", "Die Einheit im Ergebnis verrät es sofort: cm³ oder cm²."]
   ],
+  spiel:{
+    titel:"Radius ziehen",
+    hinweis:"Ein bisschen mehr Radius macht erstaunlich viel Volumen. Probier es aus.",
+    regler:[
+      {id:"r", name:"Radius r", einheit:"cm", von:1, bis:20, schritt:0.5, start:6},
+      {id:"h", name:"Höhe des Kegels", einheit:"cm", von:1, bis:40, schritt:1, start:12}
+    ],
+    ausgabe:(w) => {
+      const vk = 4 / 3 * Math.PI * Math.pow(w.r, 3);
+      const ok = 4 * Math.PI * w.r * w.r;
+      const vke = 1 / 3 * Math.PI * w.r * w.r * w.h;
+      const m = Math.sqrt(w.r * w.r + w.h * w.h);
+      return {
+        werte:[
+          {name:"Kugel V = 4/3 · π · r³", text:z(Math.round(vk * 100) / 100) + " cm³"},
+          {name:"Kugel O = 4 · π · r²",   text:z(Math.round(ok * 100) / 100) + " cm²"},
+          {name:"Kegel V = 1/3 · π · r² · h", text:z(Math.round(vke * 100) / 100) + " cm³"},
+          {name:"Mantellinie s", text:z(Math.round(m * 100) / 100) + " cm"}
+        ],
+        satz:`Der Radius steckt beim Volumen in der <b>dritten</b> Potenz: Doppelter Radius heißt achtfaches Volumen. Bei ${z(w.r)} cm sind es ${z(Math.round(vk))} cm³, bei ${z(w.r * 2)} cm schon ${z(Math.round(vk * 8))} cm³.`
+      };
+    }
+  },
   einfach:[
     "Bei der Kugel gibt es nur eine einzige Maßangabe: den Radius. Alles andere folgt daraus.",
     "Das Volumen der Kugel ist V = 4/3 · π · r³. Die Hochzahl 3 gehört zum Rauminhalt.",
@@ -14032,6 +16344,41 @@ const ERKLAERUNGEN = {
     ["Ausreißer nicht bemerkt", "Ein einziger extremer Wert verschiebt den Mittelwert stark. Der Median bleibt stabil."],
     ["Kennwerte einzeln interpretiert", "Ein Mittelwert allein sagt wenig. Erst zusammen mit Spannweite und Median ergibt sich ein Bild."]
   ],
+  spiel:{
+    titel:"Ein Ausreißer und was er anrichtet",
+    hinweis:"Fünf Messwerte. Zieh den letzten weit weg und schau, was der Mittelwert macht — und was der Median.",
+    regler:[
+      {id:"x", name:"Fünfter Wert", von:0, bis:200, schritt:1, start:22}
+    ],
+    ausgabe:(w) => {
+      const werte = [18, 20, 21, 23, w.x];
+      const summe = werte.reduce((a, b) => a + b, 0);
+      const mittel = summe / werte.length;
+      const sortiert = [...werte].sort((a, b) => a - b);
+      const median = sortiert[2];
+      const spanne = sortiert[4] - sortiert[0];
+      const skala = 340 / 200;
+      return {
+        bild:`<svg viewBox="0 0 380 78" ${SVG_STIL} role="img" aria-label="Fünf Messwerte auf einem Zahlenstrahl mit Mittelwert und Median">
+          <line x1="20" y1="46" x2="366" y2="46" stroke="currentColor" stroke-width="1.2"/>
+          ${werte.map(v => `<circle cx="${(20 + v * skala).toFixed(1)}" cy="46" r="5.5" fill="#10a37f" fill-opacity=".7"/>`).join("")}
+          <line x1="${(20 + mittel * skala).toFixed(1)}" y1="26" x2="${(20 + mittel * skala).toFixed(1)}" y2="60" stroke="#b3382f" stroke-width="2"/>
+          <text x="${(20 + mittel * skala).toFixed(1)}" y="20" text-anchor="middle" font-size="9" fill="currentColor">Mittel</text>
+          <line x1="${(20 + median * skala).toFixed(1)}" y1="32" x2="${(20 + median * skala).toFixed(1)}" y2="60" stroke="#3b82f6" stroke-width="2" stroke-dasharray="3 2"/>
+          <text x="${(20 + median * skala).toFixed(1)}" y="74" text-anchor="middle" font-size="9" fill="currentColor">Median</text>
+        </svg>`,
+        werte:[
+          {name:"Die Werte", text:werte.join(", ")},
+          {name:"Mittelwert", text:z(Math.round(mittel * 100) / 100)},
+          {name:"Median (mittlerer Wert)", text:z(median)},
+          {name:"Spannweite", text:z(spanne)}
+        ],
+        satz: w.x > 60
+          ? `Ein einziger Ausreißer zieht den <b>Mittelwert</b> auf ${z(Math.round(mittel * 100) / 100)} — obwohl vier von fünf Werten um 20 liegen. Der <b>Median</b> bleibt bei ${z(median)}. Deshalb wird bei Löhnen und Mieten der Median genannt.`
+          : "Solange alle Werte nah beieinander liegen, sagen Mittelwert und Median fast dasselbe."
+      };
+    }
+  },
   einfach:[
     "Wenn du eine lange Liste von Messwerten hast, willst du sie zu wenigen aussagekräftigen Zahlen zusammenfassen.",
     "Der bekannteste Kennwert ist der Durchschnitt, in der Mathematik arithmetisches Mittel genannt: alle Werte addieren, durch die Anzahl teilen.",
@@ -14102,6 +16449,43 @@ const ERKLAERUNGEN = {
     "Du greifst in die Sortierbox und musst wissen, welcher Widerstand das ist. Aufdrucke gibt es bei bedrahteten Bauteilen nicht, nur Ringe.",
     "Auch beim Prüfen einer Baugruppe brauchst du das: Erst am Farbcode ablesen, was verbaut sein soll, dann nachmessen, ob es stimmt."
   ],
+  spiel:{
+    titel:"Ringe drehen",
+    hinweis:"Zwei Ziffern, ein Multiplikator. Dreh die Ringe und lies den Wert ab.",
+    regler:[
+      {id:"a", name:"1. Ring (Zehner)", von:0, bis:9, schritt:1, start:2},
+      {id:"b", name:"2. Ring (Einer)",  von:0, bis:9, schritt:1, start:2},
+      {id:"m", name:"3. Ring (Nullen)", von:0, bis:6, schritt:1, start:2}
+    ],
+    ausgabe:(w) => {
+      const FARBE = ["schwarz","braun","rot","orange","gelb","grün","blau","violett","grau","weiß"];
+      const HEX = ["#111","#7a4a17","#c22f24","#e07b1a","#e3c520","#2c7a34","#1f4fa8","#6b4fd8","#8a8a8a","#f2f2f2"];
+      const wert = (w.a * 10 + w.b) * Math.pow(10, w.m);
+      const lesbar = wert >= 1e6 ? z(Math.round(wert / 1e5) / 10) + " MΩ"
+        : wert >= 1000 ? z(Math.round(wert / 100) / 10) + " kΩ"
+        : z(wert) + " Ω";
+      const ring = (i, x) => `<rect x="${x}" y="26" width="15" height="44" fill="${HEX[i]}" stroke="currentColor" stroke-width="1"/>`;
+      return {
+        bild:`<svg viewBox="0 0 300 108" ${SVG_STIL} role="img" aria-label="Widerstand mit den Ringen ${FARBE[w.a]}, ${FARBE[w.b]}, ${FARBE[w.m]}">
+          <line x1="10" y1="48" x2="290" y2="48" stroke="currentColor" stroke-width="2"/>
+          <rect x="70" y="22" width="160" height="52" rx="16" fill="#d9c6a4" stroke="currentColor" stroke-width="1.5"/>
+          ${ring(w.a, 92)}${ring(w.b, 122)}${ring(w.m, 152)}
+          <rect x="196" y="26" width="15" height="44" fill="#c9a227" stroke="currentColor" stroke-width="1"/>
+          <text x="150" y="98" text-anchor="middle" font-size="11" fill="currentColor">${FARBE[w.a]} · ${FARBE[w.b]} · ${FARBE[w.m]} · gold</text>
+        </svg>`,
+        werte:[
+          {name:"1. Ring", text:FARBE[w.a] + " = " + z(w.a)},
+          {name:"2. Ring", text:FARBE[w.b] + " = " + z(w.b)},
+          {name:"3. Ring", text:FARBE[w.m] + " = " + z(w.m) + " Nullen"},
+          {name:"Widerstand", text:"<b>" + lesbar + "</b>"},
+          {name:"Toleranz (gold)", text:"± 5 % — also " + z(Math.round(wert * 0.95)) + " bis " + z(Math.round(wert * 1.05)) + " Ω"}
+        ],
+        satz: w.a === 0
+          ? "Ein schwarzer erster Ring kommt in der Praxis nicht vor — man würde den Widerstand andersherum ablesen."
+          : `Die ersten beiden Ringe geben die Ziffern ${z(w.a)}${z(w.b)}, der dritte hängt ${z(w.m)} ${w.m === 1 ? "Null" : "Nullen"} an.`
+      };
+    }
+  },
   einfach:[
     "Ein bedrahteter Widerstand trägt meist vier farbige Ringe. Sie werden von links gelesen — die Seite, auf der die Ringe enger zusammenstehen.",
     "Die ersten beiden Ringe sind einfach Ziffern. Braun ist 1, rot ist 2, orange ist 3 und so weiter.",
@@ -14189,6 +16573,36 @@ const ERKLAERUNGEN = {
     "Sie stehen am Anfang jeder Arbeit an einer elektrischen Anlage — im Betrieb, in der Prüfung und in jedem Unfallbericht, in dem sie nicht eingehalten wurden.",
     "In der Zwischen- und Abschlussprüfung wirst du danach gefragt. Und dein Ausbilder wird sie dich aufsagen lassen, bis du sie im Schlaf kannst."
   ],
+  spiel:{
+    titel:"Die fünf Regeln der Reihe nach",
+    hinweis:"Schieb durch die Reihenfolge. Jede Regel schützt vor etwas anderem — deshalb darf keine fehlen.",
+    regler:[
+      {id:"n", name:"Regel Nr.", von:1, bis:5, schritt:1, start:1}
+    ],
+    ausgabe:(w) => {
+      const R = [
+        ["Freischalten","Allpolig vom Netz trennen — Sicherung heraus, Schalter aus.","Ohne das liegt weiter Spannung an."],
+        ["Gegen Wiedereinschalten sichern","Abschließen, Schild anbringen, Sicherung mitnehmen.","Sonst schaltet ein Kollege in gutem Glauben wieder ein."],
+        ["Spannungsfreiheit feststellen","Allpolig messen — mit einem geprüften zweipoligen Spannungsprüfer.","Ein Freischalten, das man nicht gemessen hat, ist eine Vermutung."],
+        ["Erden und kurzschließen","Erst erden, dann kurzschließen. Ab 1 kV Pflicht.","Schützt, falls doch Spannung zurückkommt."],
+        ["Benachbarte Teile abdecken","Alles unter Spannung in Reichweite abdecken oder abschranken.","Der häufigste Unfall passiert am Nachbarteil, nicht an der Baustelle."]
+      ];
+      const r = R[w.n - 1];
+      const liste = R.map((x, i) =>
+        `<div style="padding:3px 0;${i === w.n - 1 ? "font-weight:800" : "opacity:.5"}">${i + 1}. ${x[0]}</div>`).join("");
+      return {
+        werte:[
+          {name:"Alle fünf", text:liste},
+          {name:"Regel " + z(w.n), text:"<b>" + r[0] + "</b>"},
+          {name:"Was zu tun ist", text:r[1]},
+          {name:"Wovor sie schützt", text:r[2]}
+        ],
+        satz: w.n === 3
+          ? "Regel 3 ist die, bei der es tödlich wird, wenn man sie überspringt. Freigeschaltet <b>geglaubt</b> ist nicht freigeschaltet <b>gemessen</b>."
+          : `Die Reihenfolge ist verbindlich. Beim Aufheben geht es rückwärts: 5, 4, 3, 2, 1.`
+      };
+    }
+  },
   einfach:[
     "Die Regeln heißen: Freischalten. Gegen Wiedereinschalten sichern. Spannungsfreiheit feststellen. Erden und kurzschließen. Benachbarte, unter Spannung stehende Teile abdecken oder abschranken.",
     "Freischalten heißt: allpolig trennen. Alle aktiven Leiter, nicht nur der Außenleiter.",
@@ -14272,6 +16686,31 @@ const ERKLAERUNGEN = {
     "Akkus werden in Amperestunden angegeben. Wie lange ein Gerät damit läuft, rechnest du mit genau diesem Zusammenhang aus.",
     "Auch beim Kondensator brauchst du die Ladung: Wie viel Energie steckt in einem Zwischenkreiskondensator, und wie gefährlich ist er nach dem Abschalten noch?"
   ],
+  spiel:{
+    titel:"Wie viel Ladung fließt?",
+    hinweis:"Strom mal Zeit ergibt Ladung. Zieh beides und sieh, wie lange ein Akku durchhält.",
+    regler:[
+      {id:"i", name:"Strom I", einheit:"A", von:0.1, bis:10, schritt:0.1, start:2},
+      {id:"t", name:"Zeit t", einheit:"min", von:1, bis:240, schritt:1, start:60}
+    ],
+    ausgabe:(w) => {
+      const sek = w.t * 60;
+      const q = w.i * sek;
+      const ah = w.i * (w.t / 60);
+      const akku = 2.5;                       /* Beispielakku mit 2,5 Ah */
+      const rest = Math.max(0, akku - ah);
+      return {
+        werte:[
+          {name:"Ladung Q = I · t", text:z(Math.round(q)) + " C (Coulomb)"},
+          {name:"In Amperestunden", text:z(Math.round(ah * 1000) / 1000) + " Ah"},
+          {name:"Akku 2,5 Ah — Rest", text:z(Math.round(rest * 100) / 100) + " Ah"}
+        ],
+        satz: ah >= akku
+          ? `Ein Akku mit 2,5 Ah wäre nach dieser Zeit <b>leer</b> — bei ${z(w.i)} A hält er nur ${z(Math.round(akku / w.i * 60))} min.`
+          : `Bei ${z(w.i)} A hält ein Akku mit 2,5 Ah rund <b>${z(Math.round(akku / w.i * 60))} min</b> durch.`
+      };
+    }
+  },
   einfach:[
     "In einem Leiter bewegen sich Elektronen. Jedes trägt eine winzige Ladung.",
     "Die Ladungsmenge Q misst man in Coulomb. Ein Coulomb sind etwa 6,24 Trillionen Elektronen — eine unhandliche Zahl, deshalb rechnet man lieber mit Ampere.",
@@ -14533,6 +16972,30 @@ const ERKLAERUNGEN = {
     "Bevor du eine Schutzmaßnahme auswählst oder eine Anlage prüfst, musst du die Netzform kennen. Im TT-Netz ist ein RCD praktisch zwingend, im TN-Netz reicht oft die Überstromschutzeinrichtung.",
     "Beim Umbau alter Anlagen triffst du auf TN-C und musst wissen, warum hinter dem Zähler kein PEN-Leiter mehr aufgeteilt werden darf, nachdem er einmal getrennt wurde."
   ],
+  spiel:{
+    titel:"Berührungsspannung im Fehlerfall",
+    hinweis:"Wie hoch die Spannung am Gehäuse wird, hängt am Verhältnis der beiden Erdungswiderstände.",
+    regler:[
+      {id:"ra", name:"Anlagenerder R_A", einheit:"Ω", von:1, bis:200, schritt:1, start:20},
+      {id:"rb", name:"Betriebserder R_B", einheit:"Ω", von:1, bis:50, schritt:1, start:2}
+    ],
+    ausgabe:(w) => {
+      const u0 = 230;
+      const i = u0 / (w.ra + w.rb);
+      const ub = i * w.ra;
+      const ok = ub <= 50;
+      return {
+        werte:[
+          {name:"Fehlerstrom", text:z(Math.round(i * 100) / 100) + " A"},
+          {name:"Spannung am Gehäuse", text:z(Math.round(ub)) + " V"},
+          {name:"Grenzwert für Wechselspannung", text:"50 V"}
+        ],
+        satz: ok
+          ? `${z(Math.round(ub))} V bleiben unter der zulässigen Berührungsspannung von 50 V.`
+          : `<b>${z(Math.round(ub))} V</b> am Gehäuse — weit über den zulässigen 50 V. Im TT-Netz ist deshalb ein Fehlerstrom-Schutzschalter vorgeschrieben: Der Erder allein schaltet nicht ab.`
+      };
+    }
+  },
   einfach:[
     "Der Name einer Netzform besteht aus zwei Buchstaben, manchmal mit einem Zusatz dahinter.",
     "Der erste Buchstabe beschreibt die Stromquelle, also den Transformator des Versorgers. T heißt: direkt geerdet. I heißt: isoliert oder nur hochohmig geerdet.",
@@ -14620,6 +17083,32 @@ const ERKLAERUNGEN = {
     "Pumpen, Lüfter, Förderbänder und Aufzüge laufen heute fast alle über Umrichter. Sanft anfahren, Drehzahl regeln, Energie sparen — das ist Alltag im Betrieb.",
     "Beim Einstellen und beim Fehlersuchen musst du zwischen Frequenz und Drehzahl umrechnen können. Auf dem Display steht Hertz, auf dem Typenschild 1/min."
   ],
+  spiel:{
+    titel:"Frequenz und Spannung zusammen",
+    hinweis:"Ein Umrichter hält U durch f konstant. Zieh die Frequenz und sieh, warum.",
+    regler:[
+      {id:"f", name:"Frequenz", einheit:"Hz", von:5, bis:87, schritt:1, start:50},
+      {id:"p", name:"Polpaare", von:1, bis:4, schritt:1, start:2}
+    ],
+    ausgabe:(w) => {
+      const nenn = 50, unenn = 400;
+      const u = Math.min(unenn, unenn * w.f / nenn);
+      const n = 60 * w.f / w.p;
+      const kennlinie = u / w.f;
+      const feldschwaeche = w.f > nenn;
+      return {
+        werte:[
+          {name:"Drehfelddrehzahl", text:z(Math.round(n)) + " 1/min"},
+          {name:"Ausgangsspannung", text:z(Math.round(u)) + " V"},
+          {name:"Verhältnis U : f", text:z(Math.round(kennlinie * 100) / 100) + " V/Hz"},
+          {name:"Bereich", text: feldschwaeche ? "Feldschwächbereich" : "Konstantflussbereich"}
+        ],
+        satz: feldschwaeche
+          ? `Über ${z(nenn)} Hz kann die Spannung nicht weiter mit — sie ist bei ${z(unenn)} V am Anschlag. Der Motor dreht schneller, aber sein Drehmoment fällt ab.`
+          : `Bis ${z(nenn)} Hz laufen Spannung und Frequenz gemeinsam hoch. So bleibt das Verhältnis <b>${z(Math.round(kennlinie * 100) / 100)} V/Hz</b> gleich — und damit auch das Drehmoment.`
+      };
+    }
+  },
   einfach:[
     "Die Drehzahl eines Drehstrommotors hängt an der Frequenz: n = 60 · f : p. Die Polpaarzahl ist fest eingebaut, die Frequenz nicht.",
     "Am festen Netz sind es immer 50 Hz. Der Motor läuft also mit 3000, 1500, 1000 oder 750 1/min, je nach Polpaarzahl.",
@@ -14701,6 +17190,28 @@ const ERKLAERUNGEN = {
     "In der Fertigung wird die Verfügbarkeit gemessen und ausgewertet. Wenn du in der Instandhaltung arbeitest, wird deine Arbeit genau an dieser Zahl gemessen.",
     "Auch für die Entscheidung reparieren oder ersetzen brauchst du sie: Eine Maschine mit 90 % Verfügbarkeit steht 876 Stunden im Jahr still. Das kann teurer sein als eine neue."
   ],
+  spiel:{
+    titel:"Was Stillstand kostet",
+    hinweis:"Verfügbarkeit klingt harmlos. Rechne aus, wie viele Stunden im Jahr dahinterstecken.",
+    regler:[
+      {id:"v",  name:"Verfügbarkeit", einheit:"%", von:80, bis:99.9, schritt:0.1, start:95},
+      {id:"kh", name:"Stillstand kostet je Stunde", einheit:"€", von:50, bis:5000, schritt:50, start:800}
+    ],
+    ausgabe:(w) => {
+      const stunden = 8760 * (1 - w.v / 100);
+      const kosten = stunden * w.kh;
+      return {
+        werte:[
+          {name:"Ausfall im Jahr", text:z(Math.round(stunden)) + " h"},
+          {name:"Das sind", text:z(Math.round(stunden / 24 * 10) / 10) + " Tage"},
+          {name:"Kosten im Jahr", text:eur(Math.round(kosten))}
+        ],
+        satz: w.v >= 99
+          ? `${z(w.v)} % klingen fast perfekt — sind aber immer noch ${z(Math.round(stunden))} Stunden Stillstand im Jahr.`
+          : `Jeder Prozentpunkt Verfügbarkeit sind rund 88 Stunden im Jahr. Bei ${eur(w.kh)} je Stunde entscheidet er über <b>${eur(Math.round(87.6 * w.kh))}</b>.`
+      };
+    }
+  },
   einfach:[
     "Instandhaltung besteht aus vier Teilen: Wartung, Inspektion, Instandsetzung und Verbesserung.",
     "Wartung heißt vorbeugen — schmieren, reinigen, nachziehen. Inspektion heißt feststellen, wie der Zustand ist.",
@@ -14775,6 +17286,34 @@ const ERKLAERUNGEN = {
     "Sobald du einen Auftrag selbstständig abwickelst, musst du wissen, was er kostet. Wer zu knapp kalkuliert, arbeitet umsonst.",
     "In der Prüfung ist die Kalkulation ein fester Bestandteil des kaufmännischen Teils — und im späteren Meisterbetrieb ist sie täglich Brot."
   ],
+  spiel:{
+    titel:"Vom Einkauf zum Angebotspreis",
+    hinweis:"Jeder Zuschlag rechnet auf den vorherigen Betrag — deshalb addieren sich die Prozente nicht einfach.",
+    regler:[
+      {id:"ek",  name:"Materialeinkauf", einheit:"€", von:50, bis:3000, schritt:10, start:400},
+      {id:"gk",  name:"Gemeinkosten", einheit:"%", von:0, bis:60, schritt:1, start:20},
+      {id:"gw",  name:"Gewinn", einheit:"%", von:0, bis:40, schritt:1, start:12},
+      {id:"std", name:"Arbeitsstunden", einheit:"h", von:0, bis:40, schritt:1, start:8}
+    ],
+    ausgabe:(w) => {
+      const satz = 62;
+      const material = w.ek * (1 + w.gk / 100);
+      const lohn = satz * w.std;
+      const selbst = material + lohn;
+      const netto = selbst * (1 + w.gw / 100);
+      const brutto = netto * 1.19;
+      return {
+        werte:[
+          {name:"Material mit Gemeinkosten", text:eur(Math.round(material * 100) / 100)},
+          {name:"Lohn (" + z(w.std) + " h à 62 €)", text:eur(lohn)},
+          {name:"Selbstkosten", text:eur(Math.round(selbst * 100) / 100)},
+          {name:"Angebotspreis netto", text:eur(Math.round(netto * 100) / 100)},
+          {name:"mit 19 % MwSt.", text:"<b>" + eur(Math.round(brutto * 100) / 100) + "</b>"}
+        ],
+        satz:`Aus ${eur(w.ek)} Einkauf werden ${eur(Math.round(brutto * 100) / 100)} auf der Rechnung. Der Gewinn wird auf die <b>Selbstkosten</b> gerechnet, nicht auf den Einkaufspreis — und die Mehrwertsteuer ganz zum Schluss auf alles.`
+      };
+    }
+  },
   einfach:[
     "Ein Angebot hat zwei große Blöcke: Material und Lohn.",
     "Die Lohnkosten rechnest du aus Stunden mal Stundenverrechnungssatz. Der Satz enthält schon Lohn, Lohnnebenkosten und einen Anteil an den Gemeinkosten.",
@@ -14872,6 +17411,30 @@ const ERKLAERUNGEN = {
     ["Überschlag für das Ergebnis gehalten", "Er ersetzt die genaue Rechnung nicht. Er prüft sie nur."],
     ["Größenordnung nicht hinterfragt", "Ein Zimmer mit 200 m² oder ein Akku, der 60 Stunden hält — beides fällt sofort auf, wenn man kurz nachdenkt."]
   ],
+  spiel:{
+    titel:"Wie gut ist der Überschlag?",
+    hinweis:"Runde beide Zahlen und vergleiche mit dem genauen Wert. Manchmal passt es, manchmal nicht.",
+    regler:[
+      {id:"a", name:"erste Zahl", von:11, bis:99, schritt:1, start:47},
+      {id:"b", name:"zweite Zahl", von:11, bis:99, schritt:1, start:32}
+    ],
+    ausgabe:(w) => {
+      const ra = Math.round(w.a / 10) * 10, rb = Math.round(w.b / 10) * 10;
+      const grob = ra * rb, genau = w.a * w.b;
+      const ab = Math.abs(grob - genau) / genau * 100;
+      return {
+        werte:[
+          {name:"Gerundet", text:`${z(ra)} · ${z(rb)}`},
+          {name:"Überschlag", text:z(grob)},
+          {name:"Genau", text:z(genau)},
+          {name:"Abweichung", text:z(Math.round(ab * 10) / 10) + " %"}
+        ],
+        satz: ab <= 5 ? `Nur ${z(Math.round(ab * 10) / 10)} % daneben — als Kontrolle sehr gut.`
+          : ab <= 15 ? `${z(Math.round(ab * 10) / 10)} % Abweichung. Für „stimmt die Größenordnung?" reicht das allemal.`
+          : `<b>${z(Math.round(ab * 10) / 10)} % daneben.</b> Wenn beide Zahlen kräftig in dieselbe Richtung gerundet werden, wird der Überschlag ungenau. Bei Zahlen nah an einer 5 lieber genauer rechnen.`
+      };
+    }
+  },
   einfach:[
     "Überschlagen heißt: absichtlich ungenau rechnen, um schnell eine Hausnummer zu haben.",
     "Dazu rundest du alle Zahlen auf etwas Glattes. Aus 47 wird 50, aus 3,99 € werden 4 €.",
@@ -15049,6 +17612,27 @@ const ERKLAERUNGEN = {
     ["Bei Flächen mit demselben Faktor gerechnet", "Im Maßstab 1 : 100 ist eine Fläche in Wirklichkeit 10 000-mal so groß, nicht 100-mal."],
     ["Verkleinerung und Vergrößerung verwechselt", "1 : 100 verkleinert, 100 : 1 vergrößert. Bei Bauteilzeichnungen kommt beides vor."]
   ],
+  spiel:{
+    titel:"Plan und Wirklichkeit",
+    hinweis:"Zieh die Länge auf dem Plan und den Maßstab. Achte darauf, was mit der Fläche passiert.",
+    regler:[
+      {id:"cm", name:"Auf dem Plan", einheit:"cm", von:0.5, bis:30, schritt:0.5, start:5},
+      {id:"m",  name:"Maßstab 1 :", von:10, bis:1000, schritt:10, start:100}
+    ],
+    ausgabe:(w) => {
+      const meter = w.cm * w.m / 100;
+      const flaeche = Math.pow(w.m, 2);
+      return {
+        werte:[
+          {name:"Maßstab", text:"1 : " + z(w.m)},
+          {name:"1 cm auf dem Plan", text:z(Math.round(w.m / 100 * 1000) / 1000) + " m in Wirklichkeit"},
+          {name:z(w.cm) + " cm sind", text:"<b>" + z(Math.round(meter * 1000) / 1000) + " m</b>"},
+          {name:"1 cm² auf dem Plan", text:z(Math.round(flaeche / 10000 * 1000) / 1000) + " m² in Wirklichkeit"}
+        ],
+        satz:`Bei Längen zählt der Faktor einmal, bei <b>Flächen zweimal</b>: Im Maßstab 1 : ${z(w.m)} ist eine wirkliche Fläche ${z(flaeche)}-mal so groß wie auf dem Plan, nicht ${z(w.m)}-mal.`
+      };
+    }
+  },
   einfach:[
     "Ein Maßstab wird als Verhältnis geschrieben, zum Beispiel 1 : 100.",
     "Die erste Zahl steht für den Plan, die zweite für die Wirklichkeit.",
@@ -15318,6 +17902,27 @@ const ERKLAERUNGEN = {
     ["Bei Dezibel den Faktor 10 vergessen", "Bei Leistungen gilt 10 · log. Beim Hundertfachen sind das 20 dB, nicht 2."],
     ["Logarithmus von null oder negativen Zahlen gesucht", "Den gibt es nicht. Keine Potenz einer positiven Basis wird null oder negativ."]
   ],
+  spiel:{
+    titel:"Verstärkung in Dezibel",
+    hinweis:"Zieh die Verstärkung. Der Logarithmus macht aus riesigen Sprüngen handliche Zahlen.",
+    regler:[
+      {id:"v", name:"Verstärkung (Faktor)", von:1, bis:10000, schritt:1, start:100}
+    ],
+    ausgabe:(w) => {
+      const db = 10 * Math.log10(w.v);
+      const zehner = Math.log10(w.v);
+      return {
+        werte:[
+          {name:"Faktor", text:z(w.v) + "-fach"},
+          {name:"Zehnerlogarithmus", text:z(Math.round(zehner * 10000) / 10000)},
+          {name:"In Dezibel (Leistung)", text:z(Math.round(db * 100) / 100) + " dB"},
+          {name:"Verdopplung entspricht", text:"rund 3 dB"}
+        ],
+        satz: w.v === 1 ? "Faktor 1 heißt keine Verstärkung — und 0 dB. Der Logarithmus von 1 ist immer null."
+          : `Aus dem Faktor ${z(w.v)} werden <b>${z(Math.round(db * 100) / 100)} dB</b>. Jede Verzehnfachung bringt genau 10 dB dazu — deshalb passen tausendfache Unterschiede noch auf eine kurze Skala.`
+      };
+    }
+  },
   einfach:[
     "Beim Potenzieren fragst du: 10 hoch 3 — was kommt heraus? Antwort: 1000.",
     "Beim Logarithmus fragst du andersherum: 1000 — welche Hochzahl war das? Antwort: 3.",
@@ -16396,14 +19001,20 @@ function kopfleisteHtml(){
         <a class="kopflink abbreit" href="/warum" onclick="return navKlick(event, () => zeigeSeite('warum'))">Warum nicht KI?</a>
         <a class="kopflink abmittel" href="/ueber" onclick="return navKlick(event, () => zeigeSeite('ueber'))">Über</a>
         <a class="kopflink abmittel" href="/hilfe" onclick="return navKlick(event, zeigeMelden)">Hilfe</a>
-        ${benutzer ? "" : `<a class="kopflink abbreit" href="/anmelden" onclick="return navKlick(event, zeigeAnmeldung)">Anmelden</a>`}
       </nav>
       <div class="kopfrechts">
         ${benutzer && aktivitaet.geladen ? `<a class="serie serie--mini" href="/serie" onclick="return navKlick(event, zeigeSerie)" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></a>` : ""}
-        ${/* Der auffälligste Knopf der Seite hieß für Fremde „Anmelden / Registrieren".
-              Das ist die falsche erste Aufforderung: Ein Konto lohnt sich erst, wenn es
-              etwas zu speichern gibt. Deshalb führt er jetzt immer zum Üben. */
-          amLoesen() ? "" : `<a class="btn kopfcta" href="/faecher" onclick="return navKlick(event, zurFachwahl)">Üben</a>`}
+        ${/* Zwei Knöpfe statt einem, solange niemand angemeldet ist.
+              „Üben" allein wäre zu wenig: Wer nur übt, legt sich nie ein Konto an
+              und verliert seinen Fortschritt. „Anmelden" allein war aber auch
+              falsch — dann springt ab, wer erst einmal schauen will. Deshalb steht
+              beides dauerhaft in der Leiste: Üben grün als Hauptweg, Anmelden
+              daneben als deutlich sichtbarer zweiter Knopf. */
+          amLoesen() ? "" :
+            (benutzer
+              ? `<a class="btn kopfcta" href="/faecher" onclick="return navKlick(event, zurFachwahl)">Üben</a>`
+              : `<a class="btn kopfzweit" href="/anmelden" onclick="return navKlick(event, zeigeAnmeldung)">Anmelden</a>
+                 <a class="btn kopfcta" href="/faecher" onclick="return navKlick(event, zurFachwahl)">Üben</a>`)}
         <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
           <i></i><i></i><i></i>
         </button>
