@@ -260,6 +260,16 @@
   .fortschritt{display:flex;gap:5px;margin-bottom:18px}
   .fortschritt i{flex:1;height:5px;border-radius:3px;background:var(--line)}
   .fortschritt i.an{background:var(--fach)}
+  /* Fächerliste auf der Startseite — was es gibt, auf einen Blick statt im Fließtext */
+  .fachliste{display:grid;gap:10px;margin-top:18px}
+  .fachzeile2{display:flex;align-items:center;gap:13px;background:var(--akz-soft);
+    border-radius:13px;padding:12px 15px}
+  .fachpunkt2{flex:none;width:34px;height:34px;border-radius:11px;background:var(--akz);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900}
+  .fachzeile2 b{display:block;font-size:16px;color:var(--akz-dark);line-height:1.3}
+  /* Nur der Text rechts, nicht das Farbfeld links — sonst verliert der
+     Buchstabe darin seine weiße Schrift und verschwindet. */
+  .fachzeile2 div span{display:block;font-size:13.5px;color:var(--soft)}
   /* Eigene Wörter — als das erkennbar, was sie sind: deine, nicht unsere */
   .vokeigen{border:1.5px dashed var(--englisch);background:var(--englisch-soft)}
   .vokeigen .tag{background:var(--englisch);color:#fff}
@@ -27662,7 +27672,7 @@ function willkommenHtml(){
           ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost")}
         </div>
         <div class="heromerkmale">
-          <span><i>✓</i> Schule und Ausbildung: Klasse 5 bis 10, 1. bis 4. Lehrjahr</span>
+          <span><i>✓</i> Mathe, Deutsch, Englisch und Elektroniker für Betriebstechnik</span>
           <span><i>✓</i> ${fertig.fertig} Themen fertig, ${fertig.gesamt - fertig.fertig} kommen</span>
           <span><i>✓</i> Jede Aufgabe neu gewürfelt</span>
           <span><i>✓</i> Ohne Anmeldung, ohne Kosten</span>
@@ -27711,9 +27721,37 @@ function willkommenHtml(){
         <div><b>${Object.keys(KATALOG).length}</b><span>Fächer</span></div>
         <div><b>${anzahlStufen()}</b><span>Klassen und Lehrjahre</span></div>
         <div><b>${anzahlGeplant()}</b><span>Themen</span></div>
-        <div><b>0 €</b><span>zum Ausprobieren</span></div>
+        <div><b>0 €</b><span>und das bleibt so</span></div>
       </div>
-      <p class="small soft" style="margin-top:14px">Mathe und Deutsch von Klasse 5 bis 10, dazu die Ausbildung zum Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr. Englisch, Französisch, Geschichte und Erdkunde kommen dazu.</p>
+      <div class="fachliste">
+        ${Object.entries(KATALOG).map(([k, v]) => {
+          let fertig = 0, gesamt = 0;
+          for (const liste of Object.values(v.themen)){
+            gesamt += liste.length;
+            fertig += liste.filter(t => AUFGABEN[t]).length;
+          }
+          const stufen = stufenVon(k);
+          return `<div class="fachzeile2" style="--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)">
+            <span class="fachpunkt2">${v.name[0]}</span>
+            <div><b>${v.langname || v.name}</b>
+              <span>${stufenwort(k) === "Lehrjahr" ? stufen[0] + ". bis " + stufen[stufen.length - 1] + ". Lehrjahr"
+                                                   : "Klasse " + stufen[0] + " bis " + stufen[stufen.length - 1]}
+                · ${fertig} von ${gesamt} Themen fertig${k === "englisch" ? " · dazu " + z(vokabelAnzahl()) + " Vokabeln" : ""}</span></div>
+          </div>`;
+        }).join("")}
+      </div>
+      <p class="small soft" style="margin-top:14px">Bei Englisch gibt es zusätzlich einen Vokabeltrainer —
+        auch dort bekommst du die Lösung nie hingelegt, die Hilfe kommt in vier Stufen.
+        Und du kannst deine eigenen Wörter hinschreiben, genau die, die bei dir drankommen.
+        Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu.</p>
+    </div>
+
+    <div class="card abschnitt">
+      <p class="ueberschrift">Zum Nachlesen</p>
+      <p class="soft" style="margin:0 0 14px;max-width:54ch">Zu jedem Thema gibt es eine Seite, auf der alles von
+        ganz vorn erklärt steht — mit Beispiel, den häufigsten Fehlern und einer Tabelle zum Nachschlagen.
+        Ohne Anmeldung, ohne Konto, einfach zum Lesen.</p>
+      <a class="btn ghost full" href="/erklaerungen">Alle ${anzahlFertig()} Erklärungen ansehen</a>
     </div>
 
     <div class="card" style="text-align:center">
