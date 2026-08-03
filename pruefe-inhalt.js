@@ -712,11 +712,168 @@ Object.assign(deutschProben, {
   }
 });
 
+/* -------------------------------------------------------- ELEKTRONIKER
+   Jede Aufgabe wird ein zweites Mal aus ihrem eigenen Text nachgerechnet —
+   mit den Formeln, die im Fachkundebuch stehen, nicht mit denen aus dem
+   Erzeuger. Stimmt das Ergebnis nicht mit der angegebenen Lösung überein,
+   ist entweder die Aufgabe oder die Lösung falsch. */
+
+/* deutsche Zahl aus einem Textstück: „1.150" -> 1150 , „0,8" -> 0.8 */
+const dz = (s) => Number(String(s).replace(/\./g, "").replace(",", "."));
+/* holt den Zahlenwert vor einer Einheit, z. B. groesse(t, "Ω") aus „220 Ω" */
+const groesse = (t, einheit) => {
+  const m = t.match(new RegExp("([\\d.,]+)\\s*" + einheit + "(?![\\wÄÖÜäöüß])"));
+  return m ? dz(m[1]) : null;
+};
+const alleGroessen = (t, einheit) =>
+  [...t.matchAll(new RegExp("([\\d.,]+)\\s*" + einheit + "(?![\\wÄÖÜäöüß])", "g"))].map(m => dz(m[1]));
+/* Aufgabentext vor und nach dem Zeilenumbruch — die Frage steht hinten */
+const vorne  = (a) => roh(a.text.split("<br>")[0]);
+const hinten = (a) => roh(a.text.split("<br>")[1] || "");
+const loes   = (a) => dz(roh(a.loesung));
+/* Rundungsfehler zulassen, aber keine echten Abweichungen */
+const stimmt = (soll, ist, toleranz = 1e-6) =>
+  Math.abs(soll - ist) <= toleranz ? null
+    : `gerechnet ergibt ${Math.round(soll * 1e6) / 1e6}, angegeben ist ${ist}`;
+
+const elektroProben = {
+
+  "Ohmsches Gesetz": (a) => {
+    const t = vorne(a), l = loes(a);
+    const r = groesse(t, "Ω"), i = groesse(t, "A"), u = groesse(t, "V");
+    if (r !== null && i !== null) return stimmt(r * i, l);          // U = R · I
+    if (r !== null && u !== null) return stimmt(u / r, l, 1e-3);    // I = U : R
+    if (u !== null && i !== null) return stimmt(u / i, l, 1e-3);    // R = U : I
+    return "konnte die Angaben nicht lesen: " + t;
+  },
+
+  "Elektrische Leistung und Arbeit": (a) => {
+    const t = vorne(a), l = loes(a);
+    const u = groesse(t, "V"), i = groesse(t, "A"), p = groesse(t, "W"), h = groesse(t, "Stunden");
+    if (u !== null && i !== null) return stimmt(u * i, l);          // P = U · I
+    if (p !== null && h !== null) return stimmt(p / 1000 * h, l);   // W = P · t in kWh
+    if (p !== null && u !== null) return stimmt(p / u, l, 1e-3);    // I = P : U
+    return "konnte die Angaben nicht lesen: " + t;
+  },
+
+  "Reihenschaltung": (a) => {
+    const t = vorne(a), l = loes(a);
+    const rs = alleGroessen(t, "Ω"), i = groesse(t, "A");
+    if (!rs.length) return "keine Widerstände gefunden: " + t;
+    if (i === null) {                                              // Gesamtwiderstand
+      if (rs.length < 3) return "es sollten drei Widerstände sein: " + t;
+      return stimmt(rs.reduce((s, r) => s + r, 0), l);
+    }
+    const m = hinten(a).match(/am ([\d.,]+)-Ω/);                   // Teilspannung
+    if (!m) return "konnte nicht lesen, welcher Widerstand gemeint ist: " + hinten(a);
+    const r = dz(m[1]);
+    if (!rs.includes(r)) return `der Widerstand ${r} Ω kommt in der Schaltung gar nicht vor`;
+    const fehl = stimmt(i * r, l, 1e-3);
+    if (fehl) return fehl;
+    /* Probe: alle Teilspannungen zusammen müssen die Gesamtspannung ergeben */
+    const summe = rs.reduce((s, x) => s + i * x, 0);
+    if (Math.abs(summe - i * rs.reduce((s, x) => s + x, 0)) > 1e-9) return "Maschenregel verletzt";
+    return null;
+  },
+
+  "Parallelschaltung": (a) => {
+    const t = vorne(a), l = loes(a);
+    const rs = alleGroessen(t, "Ω"), u = groesse(t, "V");
+    if (rs.length !== 2) return "es sollten zwei Widerstände sein: " + t;
+    if (u === null) {                                              // Gesamtwiderstand
+      const rg = rs[0] * rs[1] / (rs[0] + rs[1]);
+      const fehl = stimmt(rg, l, 1e-3);
+      if (fehl) return fehl;
+      /* zweiter Weg: Kehrwerte addieren — muss dasselbe ergeben */
+      const ueberKehrwert = 1 / (1 / rs[0] + 1 / rs[1]);
+      if (Math.abs(ueberKehrwert - rg) > 1e-9) return "die beiden Rechenwege widersprechen sich";
+      if (rg >= Math.min(rs[0], rs[1]) + 1e-9)
+        return `${rg} Ω ist nicht kleiner als der kleinste Einzelwiderstand`;
+      return null;
+    }
+    return stimmt(u / rs[0] + u / rs[1], l, 1e-3);                  // Gesamtstrom
+  },
+
+  "Spannungsteiler": (a) => {
+    const t = vorne(a), l = loes(a);
+    const r1 = dz((t.match(/R1 = ([\d.,]+)\s*Ω/) || [])[1]);
+    const r2 = dz((t.match(/R2 = ([\d.,]+)\s*Ω/) || [])[1]);
+    const u  = groesse(t, "V");
+    if (!isFinite(r1) || !isFinite(r2) || u === null) return "konnte die Angaben nicht lesen: " + t;
+    const m = hinten(a).match(/an R(\d)/);
+    if (!m) return "konnte nicht lesen, welche Teilspannung gefragt ist: " + hinten(a);
+    const gesucht = m[1] === "1" ? r1 : r2;
+    const fehl = stimmt(u * gesucht / (r1 + r2), l, 1e-3);
+    if (fehl) return fehl;
+    /* Probe: beide Teilspannungen zusammen ergeben die Quellenspannung */
+    const summe = u * r1 / (r1 + r2) + u * r2 / (r1 + r2);
+    if (Math.abs(summe - u) > 1e-9) return "die Teilspannungen ergeben nicht die Gesamtspannung";
+    return null;
+  },
+
+  "Frequenz und Periodendauer": (a) => {
+    const t = vorne(a), l = loes(a);
+    const f = groesse(t, "Hz"), tp = groesse(t, "ms");
+    if (f !== null) return stimmt(1000 / f, l, 1e-3);               // T in ms
+    if (tp !== null) return stimmt(1000 / tp, l, 1e-3);             // f in Hz
+    return "weder Frequenz noch Periodendauer gefunden: " + t;
+  },
+
+  "Stern und Dreieck": (a) => {
+    const t = vorne(a), l = loes(a);
+    const w3 = Math.sqrt(3);
+    const u = groesse(t, "V"), i = groesse(t, "A");
+    if (u !== null) return stimmt(Math.round(u * w3), l);           // Stern: U Leiter
+    if (i !== null) return stimmt(Math.round(i * w3 * 10) / 10, l); // Dreieck: I Leiter
+    return "konnte die Angaben nicht lesen: " + t;
+  },
+
+  "Transformator": (a) => {
+    const t = vorne(a), l = loes(a);
+    if (/Primärseite/.test(t)) {                                   // U2 gesucht
+      const n1 = dz((t.match(/([\d.,]+)\s*Windungen/) || [])[1]);
+      const n2 = dz((t.match(/und ([\d.,]+) auf der Sekundärseite/) || [])[1]);
+      const u1 = groesse(t, "V");
+      if (!isFinite(n1) || !isFinite(n2) || u1 === null) return "konnte die Angaben nicht lesen: " + t;
+      return stimmt(u1 * n2 / n1, l, 1e-3);
+    }
+    const n1 = dz((t.match(/([\d.,]+)\s*Windungen/) || [])[1]);     // N2 gesucht
+    const u1 = groesse(t, "V");
+    const u2 = groesse(hinten(a), "V");
+    if (!isFinite(n1) || u1 === null || u2 === null) return "konnte die Angaben nicht lesen: " + t;
+    if (u2 >= u1) return "die gesuchte Spannung sollte kleiner als die Primärspannung sein";
+    return stimmt(Math.round(n1 * u2 / u1), l);
+  },
+
+  "Kondensator laden": (a) => {
+    const t = vorne(a), l = loes(a);
+    const r = groesse(t, "kΩ"), c = groesse(t, "[µμ]F"), u = groesse(t, "V");
+    if (r === null || c === null) return "konnte R oder C nicht lesen: " + t;
+    /* kΩ · µF ergibt ms — die Spannung darf am Ergebnis nichts ändern */
+    return u === null ? stimmt(r * c, l) : stimmt(5 * r * c, l);
+  },
+
+  "Blindleistung und cos φ": (a) => {
+    const t = vorne(a), l = loes(a);
+    const u = groesse(t, "V"), i = groesse(t, "A"), p = groesse(t, "W");
+    const c = dz((t.match(/cos φ = ([\d.,]+)/) || [])[1]);
+    if (u === null || i === null) return "konnte U oder I nicht lesen: " + t;
+    if (isFinite(c)) {                                             // P gesucht
+      if (c <= 0 || c > 1) return `cos φ = ${c} liegt nicht zwischen 0 und 1`;
+      return stimmt(u * i * c, l, 1e-3);
+    }
+    if (p === null) return "konnte die Wirkleistung nicht lesen: " + t;
+    const cos = p / (u * i);                                       // cos φ gesucht
+    if (cos > 1 + 1e-9) return `die Wirkleistung ist größer als die Scheinleistung (cos φ = ${cos})`;
+    return stimmt(cos, l, 1e-3);
+  }
+};
+
 /* --------------------------------------------------------------- LAUF */
 const NICHT_PRUEFBAR = {
 };
 
-const proben = { ...matheProben, ...deutschProben };
+const proben = { ...matheProben, ...deutschProben, ...elektroProben };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
   const probe = proben[thema];

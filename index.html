@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Endlich kapiert</title>
-<meta name="description" content="Endlich kapiert: Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe und Deutsch, Klasse 5 bis 10.">
+<meta name="description" content="Endlich kapiert: Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe und Deutsch von Klasse 5 bis 10, Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr.">
 <meta name="theme-color" content="#10a37f">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -47,6 +47,7 @@
     --englisch:var(--farbe-gelb);     --englisch-soft:var(--farbe-gelb-soft);     --englisch-dark:var(--farbe-gelb-dark);
     --franzoesisch:var(--farbe-gruen);--franzoesisch-soft:var(--farbe-gruen-soft);--franzoesisch-dark:var(--farbe-gruen-dark);
     --geschichte:var(--farbe-braun);  --geschichte-soft:var(--farbe-braun-soft);  --geschichte-dark:var(--farbe-braun-dark);
+    --elektroniker:var(--farbe-gelb); --elektroniker-soft:var(--farbe-gelb-soft); --elektroniker-dark:var(--farbe-gelb-dark);
     --erdkunde:var(--farbe-tuerkis);  --erdkunde-soft:var(--farbe-tuerkis-soft);  --erdkunde-dark:var(--farbe-tuerkis-dark);
     /* Abschnittsfarben der Willkommensseite */
     --rose:#ad3149;   --rose-soft:#fdeaee;
@@ -86,6 +87,8 @@
     --ac:var(--mathe);--ac-soft:var(--mathe-soft);--ac-dark:var(--mathe-dark)}
   html[data-fach="deutsch"]{--fach:var(--deutsch);--fach-soft:var(--deutsch-soft);--fach-dark:var(--deutsch-dark);
     --ac:var(--deutsch);--ac-soft:var(--deutsch-soft);--ac-dark:var(--deutsch-dark)}
+  html[data-fach="elektroniker"]{--fach:var(--elektroniker);--fach-soft:var(--elektroniker-soft);--fach-dark:var(--elektroniker-dark);
+    --ac:var(--elektroniker);--ac-soft:var(--elektroniker-soft);--ac-dark:var(--elektroniker-dark)}
   /* Schriftgröße-Regler: skaliert den gesamten Inhalt über die Variable --fs */
   .reglerreihe{display:flex;align-items:center;gap:14px}
   .reglerreihe .reglerklein{font-size:15px;color:var(--soft);font-weight:800;flex:none}
@@ -1135,7 +1138,7 @@
 /* ---------- Themenkatalog ---------- */
 const KATALOG = {
   mathe: {
-    name:"Mathe",
+    name:"Mathe", bereich:"Schule", stufen:[5,6,7,8,9,10], stufenwort:"Klasse",
     themen:{
       5:["Natürliche Zahlen","Grundrechenarten","Größen und Einheiten","Flächen und Umfang","Symmetrie"],
       6:["Brüche","Dezimalzahlen","Teilbarkeit","Dreisatz","Winkel messen"],
@@ -1146,7 +1149,7 @@ const KATALOG = {
     }
   },
   deutsch: {
-    name:"Deutsch",
+    name:"Deutsch", bereich:"Schule", stufen:[5,6,7,8,9,10], stufenwort:"Klasse",
     themen:{
       5:["Wortarten erkennen","Satzglieder bestimmen","Groß- und Kleinschreibung","Wörtliche Rede","Erzählen"],
       6:["das oder dass","Zeitformen","Kommas bei Aufzählungen","Berichten","Adjektive steigern"],
@@ -1155,8 +1158,37 @@ const KATALOG = {
       9:["Stilmittel erkennen","Gedichte deuten","Bewerbung schreiben","Textgebundene Erörterung","Fremdwörter"],
       10:["Literaturepochen","Interpretation","Sprachwandel","Rede und Rhetorik","Facharbeit"]
     }
+  },
+  /* Ausbildung: dieselbe Mechanik, nur heißen die Stufen Lehrjahr statt Klasse.
+     Gegliedert nach den Lernfeldern für Elektroniker für Betriebstechnik. */
+  elektroniker: {
+    name:"Elektroniker", bereich:"Ausbildung", stufen:[1,2,3,4], stufenwort:"Lehrjahr",
+    langname:"Elektroniker für Betriebstechnik",
+    themen:{
+      1:["Ohmsches Gesetz","Elektrische Leistung und Arbeit","Reihenschaltung","Parallelschaltung","Einheiten und Vorsätze"],
+      2:["Spannungsteiler","Frequenz und Periodendauer","Leiterquerschnitt","Schutzmaßnahmen","Gemischte Schaltungen"],
+      3:["Stern und Dreieck","Transformator","Wirkungsgrad","Motor und Drehzahl","Messen im Betrieb"],
+      4:["Kondensator laden","Blindleistung und cos φ","Energiekosten","Logikverknüpfungen","Fehler suchen"]
+    }
   }
 };
+/* Wie viele verschiedene Stufen es insgesamt gibt — Klasse 5 bis 10 zählt
+   einmal, auch wenn mehrere Fächer sie haben; die Lehrjahre kommen dazu. */
+function anzahlStufen(){
+  const menge = new Set();
+  for (const f of Object.keys(KATALOG))
+    for (const k of stufenVon(f)) menge.add(bereichVon(f) + "-" + k);
+  return menge.size;
+}
+/* Zu welchem Bereich ein Fach gehört — Schule oder Ausbildung */
+function bereichVon(f){ return (KATALOG[f] && KATALOG[f].bereich) || "Schule"; }
+/* Welche Stufen ein Fach hat und wie sie heißen — Klasse 5 bis 10 oder 1. bis 4. Lehrjahr */
+function stufenVon(f){ return (KATALOG[f] && KATALOG[f].stufen) || [5,6,7,8,9,10]; }
+function stufenwort(f){ return (KATALOG[f] && KATALOG[f].stufenwort) || "Klasse"; }
+/* „Klasse 7" bzw. „2. Lehrjahr" */
+function stufenText(f, k){
+  return stufenwort(f) === "Lehrjahr" ? `${k}. Lehrjahr` : `Klasse ${k}`;
+}
 
 /* ---------- Werkzeuge für die Aufgabenerzeugung ---------- */
 const rnd  = (a,b) => a + Math.floor(Math.random() * (b - a + 1));
@@ -3577,6 +3609,773 @@ const AUFGABEN = {
         F(zwei[0].autor, `${zwei[0].autor} gehört zur Epoche ${zwei[0].epoche}.`),
         F(zwei[1].autor, `${zwei[1].autor} gehört zur Epoche ${zwei[1].epoche}.`)], 3)}]};
  }
+],
+
+/* ===================== ELEKTRONIKER · 1. LEHRJAHR ===================== */
+
+"Ohmsches Gesetz":[
+
+ /* Spannung gesucht: U = R · I */
+ () => {
+   const r = pick([10, 15, 20, 22, 40, 50, 100, 220]);
+   const i = pick([0.1, 0.2, 0.5, 1.5, 2]);
+   const u = Math.round(r * i * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Durch einen Widerstand von ${z(r)} Ω fließt ein Strom von ${z(i)} A.<br>Wie groß ist die Spannung in Volt?`,
+    loesung: z(u),
+    schluss:"U = R · I. Diese eine Formel reicht — die beiden anderen sind nur umgestellt.",
+    schritte:[
+     {frage:"Welche Größe wird <b>gesucht</b>?",
+      tipp:"Zwei der drei Größen stehen schon in der Aufgabe. Welche fehlt?",
+      tipp2:"U ist die Spannung, I der Strom, R der Widerstand. Widerstand und Strom sind gegeben.",
+      optionen:[R("Die Spannung U", "Richtig — Widerstand und Strom stehen da, die Spannung fehlt."),
+                F("Der Strom I", `Der steht schon in der Aufgabe: ${z(i)} A.`),
+                F("Der Widerstand R", `Der steht schon in der Aufgabe: ${z(r)} Ω.`)]},
+     {frage:"Welche <b>Formel</b> brauchst du?",
+      tipp:"Im Ohmschen Gesetz hängen U, R und I zusammen.",
+      tipp2:"Merkhilfe: Im Dreieck steht U oben, R und I stehen darunter nebeneinander. Deckst du U zu, bleibt R · I übrig.",
+      optionen:[R("U = R · I", "Richtig. Spannung ist Widerstand mal Strom."),
+                F("R = U : I", "Dieselbe Formel, aber nach R umgestellt. Damit kommst du nicht an U."),
+                F("I = U : R", "Damit rechnest du den Strom aus — den kennst du hier schon.")]},
+     {frage:`Was ergibt <b>${z(r)} Ω · ${z(i)} A</b>?`,
+      tippAntwort: z(u),
+      tipp:"Die beiden Zahlen einfach malnehmen.",
+      tipp2:`Rechne ${z(r)} · ${z(i)}. Ohm mal Ampere ergibt Volt.`,
+      optionen:[R(`${z(u)} V`, "Richtig."),
+                F(`${z(Math.round(r / i * 1000) / 1000)} V`, "Das wäre R geteilt durch I. Hier wird malgenommen."),
+                F(`${z(Math.round((r + i) * 1000) / 1000)} V`, "Ohm und Ampere darf man nicht addieren, das sind verschiedene Größen.")]}]};
+ },
+
+ /* Strom gesucht: I = U : R */
+ () => {
+   const u = pick([12, 24, 60, 100, 230]);
+   const r = pick([2, 4, 5, 10, 20, 25, 50]);
+   const i = Math.round(u / r * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`An einem Widerstand von ${z(r)} Ω liegen ${z(u)} V an.<br>Wie groß ist der Strom in Ampere?`,
+    loesung: z(i),
+    schluss:"Je größer der Widerstand, desto kleiner der Strom — bei gleicher Spannung.",
+    schritte:[
+     {frage:"Welche <b>Formel</b> passt hier?",
+      tipp:"Gesucht ist der Strom. Spannung und Widerstand sind bekannt.",
+      tipp2:"Geh von U = R · I aus und teile beide Seiten durch R. Dann steht I allein.",
+      optionen:[R("I = U : R", "Richtig — Spannung geteilt durch Widerstand."),
+                F("I = U · R", "Malnehmen würde den Strom größer machen, je größer der Widerstand ist. Das ist verkehrt."),
+                F("I = R : U", "Vertauscht. Oben steht die Spannung.")]},
+     {frage:"Was passiert mit dem Strom, wenn der <b>Widerstand größer</b> wird?",
+      tipp:"Denk an einen Gartenschlauch, den du zusammendrückst.",
+      tipp2:"In der Formel steht R unter dem Bruchstrich. Wird der Nenner größer, wird das Ergebnis kleiner.",
+      optionen:[R("Er wird kleiner", "Genau. Mehr Widerstand bremst den Strom."),
+                F("Er wird größer", "Umgekehrt — der Widerstand bremst."),
+                F("Er bleibt gleich", "Nein, der Widerstand wirkt sich direkt auf den Strom aus.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(r)} Ω</b>?`,
+      tippAntwort: z(i),
+      tipp:"Teile die Spannung durch den Widerstand.",
+      tipp2:`Rechne ${z(u)} geteilt durch ${z(r)}. Volt durch Ohm ergibt Ampere.`,
+      optionen:[R(`${z(i)} A`, "Richtig."),
+                F(`${z(u * r)} A`, "Das wäre malgenommen — dann käme viel zu viel heraus."),
+                F(`${z(Math.round(r / u * 10000) / 10000)} A`, "Verkehrt herum geteilt — die Spannung gehört nach oben.")]}]};
+ },
+
+ /* Widerstand gesucht: R = U : I */
+ () => {
+   const u = pick([5, 12, 24, 60, 230]);
+   const i = pick([0.05, 0.1, 0.2, 0.5, 2]);
+   const r = Math.round(u / i * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Bauteil zieht bei ${z(u)} V einen Strom von ${z(i)} A.<br>Wie groß ist sein Widerstand in Ohm?`,
+    loesung: z(r),
+    schluss:"R = U : I — so misst man einen Widerstand, ohne ihn auszubauen.",
+    schritte:[
+     {frage:"Welche <b>Formel</b> brauchst du?",
+      tipp:"Gesucht ist R. Spannung und Strom sind bekannt.",
+      tipp2:"Im Dreieck U über R · I: Deckst du R zu, bleibt U über I stehen — also U geteilt durch I.",
+      optionen:[R("R = U : I", "Richtig."),
+                F("R = U · I", "Damit rechnest du die Leistung aus, nicht den Widerstand."),
+                F("R = I : U", "Vertauscht. Die Spannung steht oben.")]},
+     {frage:"Welche <b>Einheit</b> wird das Ergebnis haben?",
+      tipp:"Gesucht ist ein Widerstand.",
+      tipp2:"Das Zeichen Ω ist der griechische Buchstabe Omega und wird „Ohm“ gesprochen. Es ist die Einheit des Widerstands.",
+      optionen:[R("Ohm (Ω)", "Richtig — Ω spricht man „Ohm“."),
+                F("Ampere (A)", "Ampere ist die Einheit des Stroms."),
+                F("Volt (V)", "Volt ist die Einheit der Spannung.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(i)} A</b>?`,
+      tippAntwort: z(r),
+      tipp:"Teile die Spannung durch den Strom.",
+      tipp2:`Kleiner Strom, großer Widerstand: ${z(u)} geteilt durch ${z(i)} ergibt eine große Zahl.`,
+      optionen:[R(`${z(r)} Ω`, "Richtig."),
+                F(`${z(Math.round(u * i * 1000) / 1000)} Ω`, "Das ist U mal I — das wäre die Leistung in Watt."),
+                F(`${z(u)} Ω`, "Das ist die Spannung, nicht der Widerstand.")]}]};
+ }
+],
+
+"Elektrische Leistung und Arbeit":[
+
+ /* P = U · I */
+ () => {
+   const u = pick([12, 24, 230, 400]);
+   const i = pick([0.5, 2, 3, 5, 8, 10]);
+   const p = Math.round(u * i * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Verbraucher liegt an ${z(u)} V und zieht ${z(i)} A.<br>Wie groß ist die Leistung in Watt?`,
+    loesung: z(p),
+    schluss:"P = U · I. Das steht auch auf jedem Typenschild — dort findest du meist P und U, den Strom rechnest du dir aus.",
+    schritte:[
+     {frage:"Welche <b>Formel</b> gilt für die Leistung?",
+      tipp:"Leistung entsteht, wenn Spannung und Strom zusammenkommen.",
+      tipp2:"Ohne Spannung fließt kein Strom, ohne Strom wird nichts umgesetzt. Beides zusammen ergibt die Leistung — es wird malgenommen.",
+      optionen:[R("P = U · I", "Richtig — Spannung mal Strom."),
+                F("P = U : I", "Teilen ergibt den Widerstand, nicht die Leistung."),
+                F("P = U + I", "Volt und Ampere darf man nicht addieren.")]},
+     {frage:"Wie heißt die <b>Einheit</b> der Leistung?",
+      tipp:"Sie steht auf jeder Glühlampe und jedem Föhn.",
+      tipp2:"Sie ist nach James Watt benannt und wird mit einem großen W abgekürzt.",
+      optionen:[R("Watt (W)", "Richtig."),
+                F("Wattstunde (Wh)", "Das ist die Arbeit — Leistung mal Zeit."),
+                F("Voltampere (VA)", "So heißt die Scheinleistung im Wechselstromnetz, nicht die Wirkleistung.")]},
+     {frage:`Was ergibt <b>${z(u)} V · ${z(i)} A</b>?`,
+      tippAntwort: z(p),
+      tipp:"Die beiden Zahlen malnehmen.",
+      tipp2:`Rechne ${z(u)} · ${z(i)}. Volt mal Ampere ergibt Watt.`,
+      optionen:[R(`${z(p)} W`, "Richtig."),
+                F(`${z(Math.round(u / i * 1000) / 1000)} W`, "Das wäre geteilt — hier wird malgenommen."),
+                F(`${z(Math.round((u + i) * 1000) / 1000)} W`, "Addieren geht nicht, das sind verschiedene Größen.")]}]};
+ },
+
+ /* Arbeit W = P · t in kWh */
+ () => {
+   const p = pick([60, 100, 500, 1200, 2000, 2400]);
+   const t = pick([0.5, 2, 3, 4, 5]);
+   const kw = p / 1000;
+   const w = Math.round(kw * t * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Gerät mit ${z(p)} W läuft ${z(t)} Stunden.<br>Wie viele Kilowattstunden verbraucht es?`,
+    loesung: z(w),
+    schluss:"Kilowattstunden sind das, was auf der Stromrechnung steht — Leistung mal Zeit.",
+    schritte:[
+     {frage:`Wie viel sind <b>${z(p)} W</b> in Kilowatt?`,
+      tipp:"Kilo heißt tausend.",
+      tipp2:`Teile durch 1000: ${z(p)} : 1000. Das Komma wandert drei Stellen nach links.`,
+      optionen:[R(`${z(kw)} kW`, "Richtig — 1 kW sind 1000 W."),
+                F(`${z(p * 1000)} kW`, "Das wäre malgenommen. Kilowatt ist die größere Einheit, die Zahl wird kleiner."),
+                F(`${z(p / 100)} kW`, "Du hast nur durch 100 geteilt. Kilo heißt 1000.")]},
+     {frage:"Welche <b>Formel</b> gilt für die elektrische Arbeit?",
+      tipp:"Arbeit ist Leistung über eine gewisse Zeit.",
+      tipp2:"Ein starkes Gerät für kurze Zeit kann genauso viel verbrauchen wie ein schwaches für lange Zeit. Beides wird malgenommen.",
+      optionen:[R("W = P · t", "Richtig — Leistung mal Zeit."),
+                F("W = P : t", "Teilen wäre falsch: doppelte Zeit heißt doppelter Verbrauch."),
+                F("W = P + t", "Kilowatt und Stunden kann man nicht addieren.")]},
+     {frage:`Was ergibt <b>${z(kw)} kW · ${z(t)} h</b>?`,
+      tippAntwort: z(w),
+      tipp:"Die beiden Zahlen malnehmen.",
+      tipp2:`Rechne ${z(kw)} · ${z(t)}. Kilowatt mal Stunden ergibt Kilowattstunden.`,
+      optionen:[R(`${z(w)} kWh`, "Richtig."),
+                F(`${z(Math.round(p * t * 1000) / 1000)} kWh`, "Da hast du mit Watt statt Kilowatt gerechnet — das ist tausendmal zu viel."),
+                F(`${z(Math.round(kw / t * 1000) / 1000)} kWh`, "Das wäre geteilt. Längere Laufzeit heißt mehr Verbrauch.")]}]};
+ },
+
+ /* Strom aus Leistung und Spannung */
+ () => {
+   const u = pick([230, 400]);
+   const i = pick([2, 4, 5, 10, 16]);
+   const p = u * i;
+   return {
+    typ:"formel",
+    text:`Auf dem Typenschild eines Motors stehen ${z(p)} W und ${z(u)} V.<br>Wie groß ist der Strom in Ampere?`,
+    loesung: z(i),
+    schluss:"So findest du heraus, welche Sicherung und welcher Leitungsquerschnitt zu einem Gerät passen.",
+    schritte:[
+     {frage:"Wie stellst du <b>P = U · I</b> nach I um?",
+      tipp:"Beide Seiten durch U teilen.",
+      tipp2:"Links steht P, rechts U · I. Teilst du beide Seiten durch U, bleibt rechts nur I stehen.",
+      optionen:[R("I = P : U", "Richtig."),
+                F("I = P · U", "Malnehmen würde die Zahl noch größer machen."),
+                F("I = U : P", "Vertauscht — die Leistung steht oben.")]},
+     {frage:"Wie muss die <b>Sicherung</b> zum Betriebsstrom liegen?",
+      tipp:"Sie muss mehr aushalten als das, was im Betrieb fließt.",
+      tipp2:"Beim Anlaufen zieht ein Motor kurzzeitig sogar mehr als im Dauerbetrieb. Genau auf Kante geht deshalb nicht.",
+      optionen:[R("Über dem Betriebsstrom", "Richtig — sonst löst sie beim Anlaufen aus."),
+                F("Genau auf dem Betriebsstrom", "Zu knapp — beim Anlaufen fließt kurzzeitig mehr."),
+                F("Unter dem Betriebsstrom", "Die würde sofort auslösen.")]},
+     {frage:`Was ergibt <b>${z(p)} W : ${z(u)} V</b>?`,
+      tippAntwort: z(i),
+      tipp:"Teile die Leistung durch die Spannung.",
+      tipp2:`Rechne ${z(p)} geteilt durch ${z(u)}. Watt durch Volt ergibt Ampere.`,
+      optionen:[R(`${z(i)} A`, "Richtig."),
+                F(`${z(Math.round(u / p * 10000) / 10000)} A`, "Verkehrt herum geteilt — die Leistung gehört nach oben."),
+                F(`${z(Math.round(u / i * 100) / 100)} A`, "Das ist der Widerstand in Ohm, nicht der Strom.")]}]};
+ }
+],
+
+"Reihenschaltung":[
+
+ /* Gesamtwiderstand */
+ () => {
+   const [r1, r2, r3] = zieheVerschiedene([10, 15, 20, 22, 25, 30, 33, 47, 50, 100], 3);
+   const rg = r1 + r2 + r3;
+   return {
+    typ:"formel",
+    text:`Drei Widerstände in Reihe: ${z(r1)} Ω, ${z(r2)} Ω und ${z(r3)} Ω.<br>Wie groß ist der Gesamtwiderstand in Ohm?`,
+    loesung: z(rg),
+    schluss:"In Reihe addieren sich die Widerstände. Der Gesamtwiderstand ist immer größer als jeder einzelne.",
+    schritte:[
+     {frage:"Was ist bei einer <b>Reihenschaltung</b> überall gleich?",
+      tipp:"Es gibt nur einen einzigen Weg für den Strom.",
+      tipp2:"Stell dir eine Wasserleitung ohne Abzweig vor: Was vorne hineinfließt, kommt hinten wieder heraus — überall dieselbe Menge.",
+      optionen:[R("Der Strom", "Richtig — durch alle Bauteile fließt derselbe Strom."),
+                F("Die Spannung", "Die Spannung teilt sich auf die Widerstände auf."),
+                F("Die Leistung", "Am größten Widerstand wird auch die meiste Leistung frei.")]},
+     {frage:"Welche <b>Formel</b> gilt für den Gesamtwiderstand?",
+      tipp:"Alle Widerstände liegen hintereinander im selben Weg.",
+      tipp2:"Jeder Widerstand bremst zusätzlich. Der Strom muss durch alle hindurch — die Bremswirkungen zählen zusammen.",
+      optionen:[R("R = R1 + R2 + R3", "Richtig — in Reihe wird addiert."),
+                F("R = R1 · R2 · R3", "Malnehmen gilt hier nicht."),
+                F("1 : R = 1 : R1 + 1 : R2 + 1 : R3", "Das ist die Formel für die Parallelschaltung.")]},
+     {frage:`Was ergibt <b>${z(r1)} + ${z(r2)} + ${z(r3)}</b>?`,
+      tippAntwort: z(rg),
+      tipp:"Zähle die drei Zahlen zusammen.",
+      tipp2:`Rechne erst ${z(r1)} + ${z(r2)} = ${z(r1 + r2)}, dann noch ${z(r3)} dazu.`,
+      optionen:[R(`${z(rg)} Ω`, "Richtig."),
+                F(`${z(r1 + r2)} Ω`, "Da fehlt der dritte Widerstand."),
+                F(`${z(Math.round(1 / (1/r1 + 1/r2 + 1/r3) * 100) / 100)} Ω`, "Das wäre die Parallelschaltung — hier liegen sie hintereinander.")]}]};
+ },
+
+ /* Teilspannung */
+ () => {
+   const i = pick([0.1, 0.2, 0.5, 2]);
+   const [r1, r2] = zieheVerschiedene([10, 20, 30, 40, 50, 60, 100], 2);
+   const u1 = Math.round(i * r1 * 1000) / 1000;
+   const u2 = Math.round(i * r2 * 1000) / 1000;
+   const ug = Math.round(i * (r1 + r2) * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`In einer Reihenschaltung aus ${z(r1)} Ω und ${z(r2)} Ω fließen ${z(i)} A.<br>Wie groß ist die Spannung am ${z(r1)}-Ω-Widerstand in Volt?`,
+    loesung: z(u1),
+    schluss:"Am größeren Widerstand fällt auch die größere Spannung ab — alle Teilspannungen zusammen ergeben die Gesamtspannung.",
+    schritte:[
+     {frage:`Welcher Strom fließt durch den <b>${z(r1)}-Ω-Widerstand</b>?`,
+      tipp:"In der Reihe gibt es nur einen Strom.",
+      tipp2:`Der Strom teilt sich nicht auf. Durch beide Widerstände fließen dieselben ${z(i)} A.`,
+      optionen:[R(`${z(i)} A`, "Richtig — überall derselbe Strom."),
+                F(`${z(i / 2)} A`, "Der Strom teilt sich nur bei einer Parallelschaltung auf."),
+                F(`${z(i * 2)} A`, "Der Strom wird durch die Reihenschaltung nicht größer.")]},
+     {frage:`Wie rechnest du die Spannung an <b>einem</b> Widerstand aus?`,
+      tipp:"Das Ohmsche Gesetz gilt auch für jedes einzelne Bauteil.",
+      tipp2:"Nimm den Strom durch das Bauteil mal seinen Widerstand — genau wie bei einem einzelnen Widerstand.",
+      optionen:[R("U1 = I · R1", "Richtig — das Ohmsche Gesetz gilt für jedes Bauteil einzeln."),
+                F("U1 = I · (R1 + R2)", "Das wäre die Gesamtspannung."),
+                F("U1 = I : R1", "Teilen ergibt keine Spannung.")]},
+     {frage:`Was ergibt <b>${z(i)} A · ${z(r1)} Ω</b>?`,
+      tippAntwort: z(u1),
+      tipp:"Strom mal Widerstand.",
+      tipp2:`Rechne ${z(i)} · ${z(r1)}. Ampere mal Ohm ergibt Volt.`,
+      optionen:[R(`${z(u1)} V`, "Richtig."),
+                F(`${z(u2)} V`, `Das ist die Spannung am ${z(r2)}-Ω-Widerstand.`),
+                F(`${z(ug)} V`, "Das ist die Gesamtspannung über beide zusammen.")]}]};
+ }
+],
+
+"Parallelschaltung":[
+
+ /* Gesamtwiderstand zweier paralleler Widerstände */
+ () => {
+   const paar = pick([[10, 15], [20, 30], [12, 24], [30, 60], [100, 400], [40, 60], [18, 9], [220, 220]]);
+   const r1 = paar[0], r2 = paar[1];
+   const rg = Math.round(r1 * r2 / (r1 + r2) * 1000) / 1000;
+   const kleiner = Math.min(r1, r2);
+   return {
+    typ:"formel",
+    text:`${z(r1)} Ω und ${z(r2)} Ω liegen parallel.<br>Wie groß ist der Gesamtwiderstand in Ohm?`,
+    loesung: z(rg),
+    schluss:"Parallel wird der Gesamtwiderstand immer kleiner als der kleinste einzelne — der Strom bekommt einen zweiten Weg.",
+    schritte:[
+     {frage:"Was ist bei einer <b>Parallelschaltung</b> überall gleich?",
+      tipp:"Beide Widerstände hängen an denselben zwei Punkten.",
+      tipp2:"Oben derselbe Anschluss, unten derselbe Anschluss — also liegt an beiden dieselbe Spannung an.",
+      optionen:[R("Die Spannung", "Richtig — an allen Zweigen liegt dieselbe Spannung."),
+                F("Der Strom", "Der Strom teilt sich auf die Zweige auf."),
+                F("Der Widerstand", "Die Widerstände dürfen verschieden groß sein.")]},
+     {frage:"Ist der Gesamtwiderstand <b>größer oder kleiner</b> als der kleinste einzelne?",
+      tipp:"Der Strom hat jetzt zwei Wege statt einem.",
+      tipp2:"Zwei offene Türen lassen mehr Menschen durch als eine. Mehr Strom bei gleicher Spannung heißt weniger Widerstand.",
+      optionen:[R("Kleiner", `Richtig — er muss unter ${z(kleiner)} Ω liegen.`),
+                F("Größer", "Das gilt für die Reihenschaltung."),
+                F("Genau gleich", "Der zweite Zweig verändert das Ergebnis auf jeden Fall.")]},
+     {frage:`Was ergibt <b>(${z(r1)} · ${z(r2)}) : (${z(r1)} + ${z(r2)})</b>?`,
+      tippAntwort: z(rg),
+      tipp:"Erst oben malnehmen, dann unten zusammenzählen, dann teilen.",
+      tipp2:`Oben: ${z(r1)} · ${z(r2)} = ${z(r1 * r2)}. Unten: ${z(r1)} + ${z(r2)} = ${z(r1 + r2)}. Jetzt oben durch unten.`,
+      optionen:[R(`${z(rg)} Ω`, "Richtig."),
+                F(`${z(r1 + r2)} Ω`, "Das wäre die Reihenschaltung — hier liegen sie parallel."),
+                F(`${z(kleiner)} Ω`, "Das Ergebnis muss noch unter dem kleinsten einzelnen Wert liegen.")]}]};
+ },
+
+ /* Gesamtstrom */
+ () => {
+   const u = pick([12, 24, 60, 120]);
+   const [r1, r2] = zieheVerschiedene([2, 3, 4, 6, 12], 2);
+   const i1 = u / r1, i2 = u / r2;
+   const ig = Math.round((i1 + i2) * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`An ${z(u)} V liegen ${z(r1)} Ω und ${z(r2)} Ω parallel.<br>Wie groß ist der Gesamtstrom in Ampere?`,
+    loesung: z(ig),
+    schluss:"Die Zweigströme addieren sich zum Gesamtstrom — das ist die Knotenregel.",
+    schritte:[
+     {frage:`Welche Spannung liegt am <b>${z(r2)}-Ω-Widerstand</b>?`,
+      tipp:"Bei einer Parallelschaltung liegt an jedem Zweig dieselbe Spannung.",
+      tipp2:`Beide Widerstände hängen direkt an der Quelle. Also liegen an beiden ${z(u)} V.`,
+      optionen:[R(`${z(u)} V`, "Richtig — an jedem Zweig die volle Spannung."),
+                F(`${z(u / 2)} V`, "Aufgeteilt wird die Spannung nur in der Reihenschaltung."),
+                F(`${z(u * 2)} V`, "Mehr als die Quellenspannung gibt es nicht.")]},
+     {frage:`Wie groß ist der Strom durch den <b>${z(r1)}-Ω-Widerstand</b>?`,
+      tipp:"Ohmsches Gesetz für diesen einen Zweig.",
+      tipp2:`Rechne I = U : R, also ${z(u)} : ${z(r1)}.`,
+      optionen:[R(`${z(i1)} A`, "Richtig."),
+                F(`${z(i2)} A`, `Das ist der Strom durch den ${z(r2)}-Ω-Widerstand.`),
+                F(`${z(u * r1)} A`, "Hier wird geteilt, nicht malgenommen.")]},
+     {frage:`Wie kommst du auf den <b>Gesamtstrom</b>?`,
+      tippAntwort: z(ig),
+      tipp:"Was in den Knoten hineinfließt, muss auch wieder heraus.",
+      tipp2:`Zähle beide Zweigströme zusammen: ${z(i1)} A + ${z(i2)} A.`,
+      optionen:[R(`${z(ig)} A`, "Richtig — die Zweigströme addieren sich."),
+                F(`${z(Math.max(i1, i2))} A`, "Der zweite Zweig fehlt noch."),
+                F(`${z(Math.round(Math.abs(i1 - i2) * 1000) / 1000)} A`, "Abziehen ist falsch — beide Ströme fließen zur Quelle zurück.")]}]};
+ }
+],
+
+/* ===================== ELEKTRONIKER · 2. LEHRJAHR ===================== */
+
+"Spannungsteiler":[
+
+ /* Unbelasteter Spannungsteiler */
+ () => {
+   const u = pick([12, 24, 60, 120]);
+   const verh = pick([[1, 2], [2, 1], [1, 3], [3, 1], [1, 5], [5, 1]]);
+   const basis = pick([100, 220, 1000]);
+   const r1 = verh[0] * basis, r2 = verh[1] * basis;
+   const u2 = Math.round(u * r2 / (r1 + r2) * 1000) / 1000;
+   const u1 = Math.round((u - u2) * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Spannungsteiler aus R1 = ${z(r1)} Ω und R2 = ${z(r2)} Ω liegt an ${z(u)} V.<br>Wie groß ist die Spannung an R2 in Volt?`,
+    loesung: z(u2),
+    schluss:"Die Spannungen verhalten sich wie die Widerstände. So macht man aus einer festen Spannung eine kleinere.",
+    schritte:[
+     {frage:"Wie sind die beiden Widerstände geschaltet?",
+      tipp:"Der Strom fließt durch beide nacheinander.",
+      tipp2:"Ein Spannungsteiler ist immer eine Reihenschaltung — sonst könnte sich die Spannung gar nicht aufteilen.",
+      optionen:[R("In Reihe", "Richtig — deshalb teilt sich die Spannung auf."),
+                F("Parallel", "Parallel läge an beiden dieselbe Spannung, da gäbe es nichts zu teilen."),
+                F("Gemischt", "Zwei Widerstände allein ergeben entweder Reihe oder parallel.")]},
+     {frage:"Welche <b>Formel</b> gilt für die Teilspannung an R2?",
+      tipp:"Die Spannungen verhalten sich wie die Widerstände.",
+      tipp2:"Nimm die Gesamtspannung und den Anteil, den R2 am Gesamtwiderstand hat: R2 geteilt durch (R1 + R2).",
+      optionen:[R("U2 = U · R2 : (R1 + R2)", "Richtig."),
+                F("U2 = U · R1 : (R1 + R2)", "Damit bekommst du die Spannung an R1."),
+                F("U2 = U : R2", "Volt durch Ohm ergibt Ampere, keine Spannung.")]},
+     {frage:`Was ergibt <b>${z(u)} V · ${z(r2)} : ${z(r1 + r2)}</b>?`,
+      tippAntwort: z(u2),
+      tipp:"Erst den Bruch kürzen, dann malnehmen.",
+      tipp2:`${z(r2)} : ${z(r1 + r2)} ergibt ${z(Math.round(r2 / (r1 + r2) * 1000) / 1000)}. Das mal ${z(u)} V.`,
+      optionen:[R(`${z(u2)} V`, "Richtig."),
+                F(`${z(u1)} V`, "Das ist die Spannung an R1 — zusammen ergeben beide die Gesamtspannung."),
+                F(`${z(u)} V`, "Das ist die ganze Spannung, nicht der Teil an R2.")]}]};
+ },
+
+ /* Welcher Widerstand bekommt mehr Spannung */
+ () => {
+   const u = pick([12, 24, 60]);
+   const klein = pick([100, 220, 470]);
+   const gross = klein * pick([2, 4, 5]);
+   const drehen = rnd(0, 1);
+   const r1 = drehen ? gross : klein, r2 = drehen ? klein : gross;
+   const u1 = Math.round(u * r1 / (r1 + r2) * 1000) / 1000;
+   const u2 = Math.round(u * r2 / (r1 + r2) * 1000) / 1000;
+   const grosser = drehen ? "R1" : "R2";
+   return {
+    typ:"formel",
+    text:`R1 = ${z(r1)} Ω und R2 = ${z(r2)} Ω liegen in Reihe an ${z(u)} V.<br>Wie groß ist die Spannung an R1 in Volt?`,
+    loesung: z(u1),
+    schluss:"Der größere Widerstand bekommt die größere Spannung — und beide zusammen ergeben immer die Quellenspannung.",
+    schritte:[
+     {frage:"An welchem Widerstand fällt <b>mehr Spannung</b> ab?",
+      tipp:"Durch beide fließt derselbe Strom.",
+      tipp2:`Bei gleichem Strom gilt U = I · R: Je größer R, desto größer U. Größer ist hier ${grosser} mit ${z(gross)} Ω.`,
+      optionen: zieheVerschiedene([
+        R(`An ${grosser}`, `Richtig — ${grosser} ist mit ${z(gross)} Ω der größere Widerstand.`),
+        F(`An ${grosser === "R1" ? "R2" : "R1"}`, `Der ist mit ${z(klein)} Ω der kleinere — dort fällt weniger ab.`),
+        F("An beiden gleich viel", "Das gilt nur bei gleich großen Widerständen.")], 3)},
+     {frage:"Wie groß ist der <b>Gesamtwiderstand</b>?",
+      tipp:"Reihenschaltung: einfach zusammenzählen.",
+      tipp2:`Rechne ${z(r1)} + ${z(r2)}.`,
+      optionen:[R(`${z(r1 + r2)} Ω`, "Richtig."),
+                F(`${z(Math.round(r1 * r2 / (r1 + r2) * 100) / 100)} Ω`, "Das wäre die Parallelschaltung."),
+                F(`${z(Math.abs(r1 - r2))} Ω`, "Abziehen gilt hier nicht.")]},
+     {frage:`Was ergibt <b>${z(u)} V · ${z(r1)} : ${z(r1 + r2)}</b>?`,
+      tippAntwort: z(u1),
+      tipp:"Anteil von R1 am Gesamtwiderstand, mal die Gesamtspannung.",
+      tipp2:`${z(r1)} : ${z(r1 + r2)} ergibt ${z(Math.round(r1 / (r1 + r2) * 1000) / 1000)}. Das mal ${z(u)} V.`,
+      optionen:[R(`${z(u1)} V`, "Richtig."),
+                F(`${z(u2)} V`, "Das ist der Anteil an R2."),
+                F(`${z(u)} V`, "Das ist die ganze Spannung.")]}]};
+ }
+],
+
+"Frequenz und Periodendauer":[
+
+ /* T aus f */
+ () => {
+   const f = pick([50, 100, 200, 250, 500, 1000, 2000, 25, 20, 10, 5, 2]);
+   const t = Math.round(1000 / f * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Eine Wechselspannung hat die Frequenz ${z(f)} Hz.<br>Wie lang ist eine Periode in Millisekunden?`,
+    loesung: z(t),
+    schluss:"T = 1 : f. Unser Netz hat 50 Hz, eine Periode dauert also 20 ms.",
+    schritte:[
+     {frage:"Was sagt die <b>Frequenz</b> aus?",
+      tipp:"Die Einheit Hertz heißt „pro Sekunde“.",
+      tipp2:`${z(f)} Hz bedeutet: Der Vorgang wiederholt sich ${z(f)}-mal in einer Sekunde.`,
+      optionen:[R("Wie oft sich der Vorgang pro Sekunde wiederholt", "Richtig — Hertz heißt Schwingungen je Sekunde."),
+                F("Wie lange eine Schwingung dauert", "Das ist die Periodendauer T — das Gegenstück zur Frequenz."),
+                F("Wie hoch die Spannung ist", "Die Spannung hat mit der Frequenz nichts zu tun.")]},
+     {frage:"Welcher <b>Zusammenhang</b> gilt zwischen f und T?",
+      tipp:"Beide sind Gegenstücke voneinander.",
+      tipp2:"Je öfter etwas pro Sekunde passiert, desto kürzer dauert ein einzelner Durchgang. Man teilt 1 durch die Frequenz.",
+      optionen:[R("T = 1 : f", "Richtig — die beiden sind Kehrwerte voneinander."),
+                F("T = f", "Dann hätten hohe Frequenzen auch lange Perioden — das passt nicht."),
+                F("T = f : 1000", "Das ist keine gültige Beziehung, nur eine Umrechnung von Einheiten.")]},
+     {frage:`Was ergibt <b>1 s : ${z(f)}</b> in Millisekunden?`,
+      tippAntwort: z(t),
+      tipp:"Eine Sekunde sind 1000 Millisekunden.",
+      tipp2:`Rechne 1000 ms : ${z(f)}.`,
+      optionen:[R(`${z(t)} ms`, "Richtig."),
+                F(`${z(f)} ms`, "Das ist die Frequenzzahl, nicht die Dauer."),
+                F(`${z(f * 1000)} ms`, "Da hast du malgenommen statt geteilt.")]}]};
+ },
+
+ /* f aus T */
+ () => {
+   const t = pick([1, 2, 4, 5, 10, 20, 25, 40, 50, 100, 200]);
+   const f = Math.round(1000 / t * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Auf dem Oszilloskop dauert eine Periode ${z(t)} ms.<br>Wie groß ist die Frequenz in Hertz?`,
+    loesung: z(f),
+    schluss:"Am Oszilloskop misst man immer die Zeit — die Frequenz rechnet man daraus aus.",
+    schritte:[
+     {frage:`Wie viele <b>Sekunden</b> sind ${z(t)} ms?`,
+      tipp:"Milli heißt ein Tausendstel.",
+      tipp2:`Teile durch 1000: ${z(t)} : 1000 s.`,
+      optionen:[R(`${z(t / 1000)} s`, "Richtig."),
+                F(`${z(t * 1000)} s`, "Millisekunden sind kleiner als Sekunden, die Zahl muss also kleiner werden."),
+                F(`${z(t)} s`, "Das wäre tausendmal zu lang.")]},
+     {frage:"Welche <b>Formel</b> brauchst du?",
+      tipp:"Gesucht ist die Frequenz, bekannt ist die Periodendauer.",
+      tipp2:"T = 1 : f lässt sich umstellen zu f = 1 : T. Beide sind Kehrwerte voneinander.",
+      optionen:[R("f = 1 : T", "Richtig."),
+                F("f = T", "Dann wären lange Perioden hohe Frequenzen — das passt nicht."),
+                F("f = T · 1000", "Das ist nur eine Umrechnung der Einheit, keine Formel.")]},
+     {frage:`Was ergibt <b>1 : ${z(t / 1000)} s</b>?`,
+      tippAntwort: z(f),
+      tipp:"Teile 1000 durch die Millisekunden.",
+      tipp2:`Rechne 1000 : ${z(t)}. Das Ergebnis ist die Frequenz in Hertz.`,
+      optionen:[R(`${z(f)} Hz`, "Richtig."),
+                F(`${z(t)} Hz`, "Das ist die Zeit in Millisekunden, nicht die Frequenz."),
+                F(`${z(Math.round(t / 1000 * 1000) / 1000)} Hz`, "Da hast du verkehrt herum geteilt.")]}]};
+ }
+],
+
+/* ===================== ELEKTRONIKER · 3. LEHRJAHR ===================== */
+
+"Stern und Dreieck":[
+
+ /* Sternschaltung: Leiterspannung aus Strangspannung */
+ () => {
+   const ustr = pick([110, 127, 230, 400]);
+   const ul = Math.round(ustr * Math.sqrt(3));
+   return {
+    typ:"formel",
+    text:`Ein Verbraucher ist im Stern geschaltet. Die Strangspannung beträgt ${z(ustr)} V.<br>Wie groß ist die Leiterspannung in Volt? (auf ganze Volt runden)`,
+    loesung: z(ul),
+    schluss:`Deshalb heißt unser Netz 230 V / 400 V: 230 · √3 ergibt 398 V, genannt wird die Nennspannung 400 V.`,
+    schritte:[
+     {frage:"Wo liegt bei der <b>Sternschaltung</b> die Strangspannung an?",
+      tipp:"Im Stern sind alle drei Stränge an einem gemeinsamen Punkt zusammengeschaltet.",
+      tipp2:"Dieser gemeinsame Punkt ist der Sternpunkt. Jeder Strang liegt zwischen einem Außenleiter und diesem Punkt — also zwischen L und N.",
+      optionen:[R("Zwischen Außenleiter und Sternpunkt", "Richtig — das ist bei uns die Spannung von 230 V."),
+                F("Zwischen zwei Außenleitern", "Das ist die Leiterspannung, also 400 V."),
+                F("Zwischen Sternpunkt und Erde", "Der Sternpunkt liegt zwar meist auf Erdpotenzial, aber dort liegt kein Strang.")]},
+     {frage:"Welcher <b>Faktor</b> steht zwischen den beiden Spannungen?",
+      tipp:"Es ist keine glatte Zahl, sondern eine Wurzel.",
+      tipp2:"Die drei Spannungen sind zeitlich um 120° versetzt. Rechnet man sie zusammen, kommt die Wurzel aus 3 heraus, ungefähr 1,73.",
+      optionen:[R("√3 ≈ 1,73", "Richtig — die Leiterspannung ist um diesen Faktor größer."),
+                F("2", "Das wäre zu viel: 230 · 2 wären 460 V, unser Netz hat 400 V."),
+                F("3", "Viel zu viel — dann läge unser Netz bei 690 V.")]},
+     {frage:`Was ergibt <b>${z(ustr)} V · 1,73</b>?`,
+      tippAntwort: z(ul),
+      tipp:"Die Strangspannung mal 1,73 nehmen und runden.",
+      tipp2:`Rechne ${z(ustr)} · 1,73 und runde auf ganze Volt.`,
+      optionen:[R(`${z(ul)} V`, "Richtig."),
+                F(`${z(Math.round(ustr / Math.sqrt(3)))} V`, "Da hast du geteilt. Im Stern ist die Leiterspannung die größere."),
+                F(`${z(ustr)} V`, "Das ist die Strangspannung, die war schon gegeben.")]}]};
+ },
+
+ /* Dreieckschaltung: Leiterstrom aus Strangstrom */
+ () => {
+   const istr = pick([2, 3, 4, 5, 10]);
+   const il = Math.round(istr * Math.sqrt(3) * 10) / 10;
+   return {
+    typ:"formel",
+    text:`Ein Motor ist im Dreieck geschaltet, durch jeden Strang fließen ${z(istr)} A.<br>Wie groß ist der Leiterstrom in Ampere? (auf eine Nachkommastelle runden)`,
+    loesung: z(il),
+    schluss:"Im Dreieck ist die Spannung gleich und der Strom größer — im Stern genau umgekehrt.",
+    schritte:[
+     {frage:"Was gilt in der <b>Dreieckschaltung</b> für die Spannung?",
+      tipp:"Jeder Strang liegt direkt zwischen zwei Außenleitern.",
+      tipp2:"Es gibt keinen Sternpunkt. Die Stränge hängen zwischen L1–L2, L2–L3 und L3–L1 — also an der vollen Leiterspannung.",
+      optionen:[R("Strangspannung = Leiterspannung", "Richtig — im Dreieck liegt an jedem Strang die volle Leiterspannung."),
+                F("Strangspannung ist um √3 kleiner", "Das gilt für die Sternschaltung."),
+                F("Strangspannung ist doppelt so groß", "So einen Faktor gibt es im Drehstromnetz nicht.")]},
+     {frage:"Und was gilt für den <b>Strom</b>?",
+      tipp:"Im Dreieck treffen an jeder Klemme zwei Stränge zusammen.",
+      tipp2:"Weil sich an jeder Klemme zwei Strangströme überlagern, ist der Leiterstrom um √3 größer als der Strangstrom.",
+      optionen:[R("Leiterstrom = √3 · Strangstrom", "Richtig."),
+                F("Leiterstrom = Strangstrom", "Das gilt im Stern, nicht im Dreieck."),
+                F("Leiterstrom = Strangstrom : √3", "Verkehrt herum — der Leiterstrom ist der größere.")]},
+     {frage:`Was ergibt <b>${z(istr)} A · 1,73</b>?`,
+      tippAntwort: z(il),
+      tipp:"Strangstrom mal 1,73.",
+      tipp2:`Rechne ${z(istr)} · 1,73 und runde auf eine Nachkommastelle.`,
+      optionen:[R(`${z(il)} A`, "Richtig."),
+                F(`${z(Math.round(istr / Math.sqrt(3) * 10) / 10)} A`, "Da hast du geteilt — der Leiterstrom ist größer."),
+                F(`${z(istr)} A`, "Das ist der Strangstrom, der war gegeben.")]}]};
+ }
+],
+
+"Transformator":[
+
+ /* Sekundärspannung aus dem Übersetzungsverhältnis */
+ () => {
+   const u1 = pick([230, 400]);
+   const ue = pick([2, 5, 10, 20]);
+   const n1 = pick([500, 1000, 2000]);
+   const n2 = n1 / ue;
+   const u2 = Math.round(u1 / ue * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Transformator hat ${z(n1)} Windungen auf der Primärseite und ${z(n2)} auf der Sekundärseite. Primär liegen ${z(u1)} V an.<br>Wie groß ist die Sekundärspannung in Volt?`,
+    loesung: z(u2),
+    schluss:"Die Spannungen verhalten sich wie die Windungszahlen. Weniger Windungen heißt weniger Spannung.",
+    schritte:[
+     {frage:"Welches <b>Verhältnis</b> gilt am Transformator?",
+      tipp:"Spannungen und Windungszahlen gehören paarweise zusammen.",
+      tipp2:"Jede Windung bekommt denselben Anteil ab. Deshalb verhält sich U1 zu U2 genau wie N1 zu N2.",
+      optionen:[R("U1 : U2 = N1 : N2", "Richtig."),
+                F("U1 : U2 = N2 : N1", "Vertauscht — dann würde weniger Windungen mehr Spannung bedeuten."),
+                F("U1 · U2 = N1 · N2", "Volt und Windungen kann man nicht malnehmen.")]},
+     {frage:`Wie groß ist das <b>Übersetzungsverhältnis</b> ${z(n1)} : ${z(n2)}?`,
+      tipp:"Teile die größere Windungszahl durch die kleinere.",
+      tipp2:`Rechne ${z(n1)} : ${z(n2)}.`,
+      optionen:[R(`${z(ue)}`, `Richtig — primär hat der Trafo ${z(ue)}-mal so viele Windungen.`),
+                F(`${z(Math.round(n2 / n1 * 1000) / 1000)}`, "Das ist der Kehrwert."),
+                F(`${z(n1 - n2)}`, "Beim Übersetzungsverhältnis wird geteilt, nicht abgezogen.")]},
+     {frage:`Was ergibt <b>${z(u1)} V : ${z(ue)}</b>?`,
+      tippAntwort: z(u2),
+      tipp:"Teile die Primärspannung durch das Übersetzungsverhältnis.",
+      tipp2:`Rechne ${z(u1)} : ${z(ue)}. Weniger Windungen heißt weniger Spannung.`,
+      optionen:[R(`${z(u2)} V`, "Richtig."),
+                F(`${z(Math.round(u1 * ue * 1000) / 1000)} V`, "Das wäre ein Aufwärtstrafo — hier hat die Sekundärseite weniger Windungen."),
+                F(`${z(u1)} V`, "Das ist die Primärspannung.")]}]};
+ },
+
+ /* Windungszahl gesucht */
+ () => {
+   const u1 = 230;
+   const n1 = pick([460, 690, 920, 1150]);
+   const u2 = pick([12, 24, 46, 115]);
+   const n2 = Math.round(n1 * u2 / u1);
+   return {
+    typ:"formel",
+    text:`Ein Trafo hat primär ${z(n1)} Windungen bei ${z(u1)} V.<br>Wie viele Windungen braucht die Sekundärseite für ${z(u2)} V?`,
+    loesung: z(n2),
+    schluss:"Windungszahl und Spannung gehen immer im gleichen Verhältnis mit.",
+    schritte:[
+     {frage:"Wie viele <b>Windungen je Volt</b> hat dieser Trafo?",
+      tipp:"Teile die Windungszahl durch die Spannung.",
+      tipp2:`Rechne ${z(n1)} : ${z(u1)} — so viele Windungen kommen auf jedes Volt.`,
+      optionen:[R(`${z(Math.round(n1 / u1 * 1000) / 1000)}`, "Richtig."),
+                F(`${z(Math.round(u1 / n1 * 1000) / 1000)}`, "Das ist der Kehrwert: Volt je Windung."),
+                F(`${z(n1)}`, "Das ist die ganze Windungszahl, nicht der Wert je Volt.")]},
+     {frage:"Wie stellst du <b>U1 : U2 = N1 : N2</b> nach N2 um?",
+      tipp:"Über Kreuz malnehmen.",
+      tipp2:"Aus U1 · N2 = U2 · N1 wird N2 = N1 · U2 : U1.",
+      optionen:[R("N2 = N1 · U2 : U1", "Richtig."),
+                F("N2 = N1 · U1 : U2", "Vertauscht — damit käme mehr statt weniger heraus."),
+                F("N2 = N1 : U2", "Windungen durch Volt allein ergibt keine Windungszahl.")]},
+     {frage:`Was ergibt <b>${z(n1)} · ${z(u2)} : ${z(u1)}</b>?`,
+      tippAntwort: z(n2),
+      tipp:"Erst malnehmen, dann teilen.",
+      tipp2:`${z(n1)} · ${z(u2)} = ${z(n1 * u2)}. Das noch durch ${z(u1)} teilen.`,
+      optionen:[R(`${z(n2)} Windungen`, "Richtig."),
+                F(`${z(n1)} Windungen`, "Das ist die Primärwicklung."),
+                F(`${z(Math.round(n1 * u1 / u2))} Windungen`, "Da hast du verkehrt herum geteilt — die Sekundärseite hat weniger Windungen.")]}]};
+ }
+],
+
+/* ===================== ELEKTRONIKER · 4. LEHRJAHR ===================== */
+
+"Kondensator laden":[
+
+ /* Zeitkonstante */
+ () => {
+   const r = pick([1, 2, 5, 10, 20, 47]);
+   const c = pick([10, 22, 47, 100]);
+   const tau = r * c;
+   return {
+    typ:"formel",
+    text:`Ein Kondensator mit ${z(c)} µF wird über ${z(r)} kΩ geladen.<br>Wie groß ist die Zeitkonstante in Millisekunden?`,
+    loesung: z(tau),
+    schluss:"τ = R · C. Rechnest du in Kilo-Ohm und Mikrofarad, kommt die Zeit gleich in Millisekunden heraus.",
+    schritte:[
+     {frage:"Welche <b>Formel</b> gilt für die Zeitkonstante?",
+      tipp:"Sie hängt nur vom Widerstand und von der Kapazität ab.",
+      tipp2:"Ein größerer Widerstand lässt weniger Strom fließen, ein größerer Kondensator braucht mehr Ladung. Beides zusammen dauert länger — es wird malgenommen.",
+      optionen:[R("τ = R · C", "Richtig."),
+                F("τ = R : C", "Dann würde ein größerer Kondensator schneller voll — das stimmt nicht."),
+                F("τ = C : R", "Dann würde ein größerer Widerstand schneller laden — auch das stimmt nicht.")]},
+     {frage:"Spielt die <b>Spannung</b> für die Zeitkonstante eine Rolle?",
+      tipp:"Schau dir an, was in der Formel steht.",
+      tipp2:"In τ = R · C kommt U gar nicht vor. Eine höhere Spannung lädt zwar mehr Ladung ein, treibt aber auch mehr Strom — beides hebt sich auf.",
+      optionen:[R("Nein", "Richtig — die Ladezeit ist unabhängig von der Spannung."),
+                F("Ja, mehr Spannung heißt länger", "Nein, die Spannung steht nicht in der Formel."),
+                F("Ja, mehr Spannung heißt kürzer", "Auch nicht — die Zeitkonstante bleibt gleich.")]},
+     {frage:`Was ergibt <b>${z(r)} kΩ · ${z(c)} µF</b>?`,
+      tippAntwort: z(tau),
+      tipp:"Einfach die beiden Zahlen malnehmen.",
+      tipp2:`Rechne ${z(r)} · ${z(c)}. Kilo-Ohm mal Mikrofarad ergibt Millisekunden.`,
+      optionen:[R(`${z(tau)} ms`, "Richtig."),
+                F(`${z(Math.round(r / c * 1000) / 1000)} ms`, "Hier wird malgenommen, nicht geteilt."),
+                F(`${z(r + c)} ms`, "Ohm und Farad darf man nicht addieren.")]}]};
+ },
+
+ /* Ladezustand nach n Zeitkonstanten */
+ () => {
+   const u = pick([10, 12, 24, 100]);
+   const r = pick([1, 2, 5, 10]);
+   const c = pick([10, 47, 100]);
+   const tau = r * c;
+   const fuenf = tau * 5;
+   const nach1 = Math.round(u * 0.63 * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Kondensator wird über ${z(r)} kΩ und ${z(c)} µF an ${z(u)} V geladen.<br>Nach wie vielen Millisekunden gilt er als praktisch voll?`,
+    loesung: z(fuenf),
+    schluss:"Nach 5 τ ist der Kondensator zu über 99 % geladen — in der Praxis rechnet man damit als „voll“.",
+    schritte:[
+     {frage:`Wie groß ist die <b>Zeitkonstante</b> τ?`,
+      tipp:"τ = R · C, in kΩ und µF gerechnet.",
+      tipp2:`Rechne ${z(r)} · ${z(c)} — das Ergebnis steht gleich in Millisekunden.`,
+      optionen:[R(`${z(tau)} ms`, "Richtig."),
+                F(`${z(r + c)} ms`, "Addieren gilt hier nicht."),
+                F(`${z(Math.round(c / r * 1000) / 1000)} ms`, "Verkehrt herum geteilt.")]},
+     {frage:"Auf wie viel Prozent ist er nach <b>einer</b> Zeitkonstanten geladen?",
+      tipp:"Es ist ungefähr zwei Drittel.",
+      tipp2:`Nach 1 τ sind es 63 %. Bei ${z(u)} V wären das ${z(nach1)} V.`,
+      optionen:[R("Auf 63 %", "Richtig — das ist der feste Wert nach einer Zeitkonstanten."),
+                F("Auf 100 %", "So schnell geht es nicht, die Ladung nimmt immer langsamer zu."),
+                F("Auf 50 %", "Die Hälfte ist schon nach etwa 0,7 τ erreicht.")]},
+     {frage:"Nach wie vielen <b>Zeitkonstanten</b> gilt er als voll?",
+      tipp:"In der Praxis rechnet man mit einer festen Anzahl.",
+      tipp2:"Nach 5 τ sind über 99 % erreicht — näher kommt man praktisch nicht mehr heran.",
+      optionen:[R("Nach 5 τ", "Richtig."),
+                F("Nach 1 τ", "Da sind es erst 63 %."),
+                F("Nach 2 τ", "Da sind es erst rund 86 %.")]},
+     {frage:`Was ergibt <b>5 · ${z(tau)} ms</b>?`,
+      tippAntwort: z(fuenf),
+      tipp:"Die Zeitkonstante mal fünf.",
+      tipp2:`Rechne 5 · ${z(tau)}.`,
+      optionen:[R(`${z(fuenf)} ms`, "Richtig."),
+                F(`${z(tau)} ms`, "Das ist eine einzelne Zeitkonstante."),
+                F(`${z(tau * 2)} ms`, "Das sind erst zwei Zeitkonstanten.")]}]};
+ }
+],
+
+"Blindleistung und cos φ":[
+
+ /* Wirkleistung aus Scheinleistung und cos φ */
+ () => {
+   const u = 230;
+   const i = pick([2, 4, 5, 8, 10]);
+   const cos = pick([0.5, 0.6, 0.8, 0.9]);
+   const s = u * i;
+   const p = Math.round(s * cos * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Motor zieht an ${z(u)} V einen Strom von ${z(i)} A bei cos φ = ${z(cos)}.<br>Wie groß ist die Wirkleistung in Watt?`,
+    loesung: z(p),
+    schluss:"Nur die Wirkleistung leistet Arbeit. Der cos φ sagt, welcher Anteil der Scheinleistung das ist.",
+    schritte:[
+     {frage:"Wie rechnest du die <b>Scheinleistung</b> S aus?",
+      tipp:"Einfach Spannung mal Strom — ohne cos φ.",
+      tipp2:`Rechne ${z(u)} V · ${z(i)} A. Die Einheit heißt VA, nicht Watt.`,
+      optionen:[R(`${z(s)} VA`, "Richtig — S = U · I."),
+                F(`${z(p)} VA`, "Da hast du den cos φ schon eingerechnet — das ist dann die Wirkleistung."),
+                F(`${z(Math.round(u / i * 100) / 100)} VA`, "Hier wird malgenommen, nicht geteilt.")]},
+     {frage:"Was sagt der <b>cos φ</b> aus?",
+      tipp:"Er liegt immer zwischen 0 und 1.",
+      tipp2:"Er ist der Anteil der Scheinleistung, der wirklich in Arbeit umgesetzt wird. Bei cos φ = 1 wäre alles Wirkleistung.",
+      optionen:[R("Welcher Anteil der Scheinleistung Wirkleistung ist", "Richtig — deshalb heißt er auch Leistungsfaktor."),
+                F("Wie viel Strom fließt", "Der Strom steht schon in der Aufgabe."),
+                F("Wie hoch die Spannung ist", "Mit der Spannung hat der cos φ nichts zu tun.")]},
+     {frage:`Was ergibt <b>${z(s)} VA · ${z(cos)}</b>?`,
+      tippAntwort: z(p),
+      tipp:"Scheinleistung mal cos φ.",
+      tipp2:`Rechne ${z(s)} · ${z(cos)}. Das Ergebnis ist die Wirkleistung in Watt.`,
+      optionen:[R(`${z(p)} W`, "Richtig."),
+                F(`${z(s)} W`, "Das ist die Scheinleistung — der cos φ fehlt noch."),
+                F(`${z(Math.round(s / cos * 100) / 100)} W`, "Geteilt käme mehr heraus als die Scheinleistung — das kann nicht sein.")]}]};
+ },
+
+ /* cos φ gesucht */
+ () => {
+   const u = 230;
+   const i = pick([2, 4, 5, 10]);
+   const cos = pick([0.5, 0.6, 0.8, 0.9]);
+   const s = u * i;
+   const p = Math.round(s * cos * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Verbraucher nimmt ${z(p)} W auf und zieht an ${z(u)} V einen Strom von ${z(i)} A.<br>Wie groß ist der cos φ?`,
+    loesung: z(cos),
+    schluss:"cos φ = P : S. Je näher an 1, desto besser wird das Netz ausgenutzt.",
+    schritte:[
+     {frage:"Wie groß ist die <b>Scheinleistung</b>?",
+      tipp:"S = U · I.",
+      tipp2:`Rechne ${z(u)} · ${z(i)} und schreib VA dahinter.`,
+      optionen:[R(`${z(s)} VA`, "Richtig."),
+                F(`${z(p)} VA`, "Das ist die Wirkleistung in Watt."),
+                F(`${z(Math.round(p * cos * 100) / 100)} VA`, "Da wurde der cos φ ein zweites Mal eingerechnet.")]},
+     {frage:"Wie stellst du <b>P = S · cos φ</b> nach cos φ um?",
+      tipp:"Beide Seiten durch S teilen.",
+      tipp2:"Links steht P, rechts S · cos φ. Teilst du durch S, bleibt rechts nur cos φ übrig.",
+      optionen:[R("cos φ = P : S", "Richtig."),
+                F("cos φ = S : P", "Vertauscht — dann käme ein Wert über 1 heraus, den gibt es nicht."),
+                F("cos φ = P · S", "Malnehmen ergibt keinen Faktor zwischen 0 und 1.")]},
+     {frage:`Was ergibt <b>${z(p)} W : ${z(s)} VA</b>?`,
+      tippAntwort: z(cos),
+      tipp:"Teile die Wirkleistung durch die Scheinleistung.",
+      tipp2:`Rechne ${z(p)} : ${z(s)}. Das Ergebnis liegt zwischen 0 und 1 und hat keine Einheit.`,
+      optionen:[R(`${z(cos)}`, "Richtig."),
+                F(`${z(Math.round(s / p * 1000) / 1000)}`, "Über 1 kann der cos φ nicht sein — du hast verkehrt herum geteilt."),
+                F(`${z(p)}`, "Das ist die Wirkleistung, nicht der Faktor.")]}]};
+ }
 ]
 
 };
@@ -5737,6 +6536,456 @@ const ERKLAERUNGEN = {
     </g>
     <text x="200" y="220" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Nicht die Jahreszahl zählt, sondern die Haltung im Text</text>
   </svg>`
+},
+
+/* ===================== ELEKTRONIKER ===================== */
+
+"Ohmsches Gesetz": {
+  worum:"Spannung, Strom und Widerstand hängen fest zusammen. Kennst du zwei davon, kannst du das dritte ausrechnen.",
+  einfach:[
+    "Stell dir Strom wie Wasser in einem Rohr vor. Die Spannung ist der Druck, der das Wasser schiebt. Der Strom ist die Menge, die durchfließt. Der Widerstand ist eine Engstelle im Rohr.",
+    "Mehr Druck heißt mehr Wasser: Wird die Spannung größer, wird auch der Strom größer.",
+    "Engere Stelle heißt weniger Wasser: Wird der Widerstand größer, wird der Strom kleiner.",
+    "Genau das steht in einer einzigen Formel: U = R · I. Alle anderen Formen entstehen daraus durch Umstellen.",
+    "Praktisch ist das Formeldreieck: U steht oben, R und I stehen darunter. Deckst du die gesuchte Größe zu, siehst du sofort, wie gerechnet wird."
+  ],
+  begriffe:[
+    ["Spannung U","Der „Druck“ im Stromkreis. Einheit: Volt (V)."],
+    ["Strom I","Wie viel Ladung fließt. Einheit: Ampere (A)."],
+    ["Widerstand R","Wie stark ein Bauteil den Strom bremst. Einheit: Ohm (Ω)."]
+  ],
+  regeln:[
+    "U = R · I  (Spannung ist Widerstand mal Strom)",
+    "I = U : R  (Strom ist Spannung durch Widerstand)",
+    "R = U : I  (Widerstand ist Spannung durch Strom)",
+    "Formeldreieck: gesuchte Größe zudecken, dann steht die Rechnung da.",
+    "Volt · Ampere geht nicht — achte immer darauf, welche Einheit oben und welche unten steht."
+  ],
+  beispiel:{aufgabe:"An 20 Ω liegen 12 V. Wie groß ist der Strom?",
+    schritte:["Gesucht ist I.","I im Dreieck zudecken → U steht über R.","I = 12 V : 20 Ω"],
+    ergebnis:"0,6 A"},
+  bild:`<svg viewBox="0 0 400 210" ${SVG_STIL} role="img" aria-label="Formeldreieck mit U oben sowie R und I darunter">
+    <path d="M200 20 L330 170 L70 170 Z" fill="none" stroke="#10a37f" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M124 108h152" stroke="#10a37f" stroke-width="2"/>
+    <path d="M200 108v62" stroke="#10a37f" stroke-width="2"/>
+    <text x="200" y="88" text-anchor="middle" font-size="30" font-weight="700" fill="currentColor">U</text>
+    <text x="162" y="152" text-anchor="middle" font-size="26" font-weight="700" fill="currentColor">R</text>
+    <text x="238" y="152" text-anchor="middle" font-size="26" font-weight="700" fill="currentColor">I</text>
+    <text x="200" y="196" text-anchor="middle" font-size="13" fill="currentColor">Gesuchte Größe zudecken — der Rest ist die Rechnung</text>
+  </svg>`
+},
+
+"Elektrische Leistung und Arbeit": {
+  worum:"Leistung sagt, wie viel Strom ein Gerät in jedem Moment umsetzt. Arbeit sagt, wie viel es über die Zeit verbraucht.",
+  einfach:[
+    "Ein Wasserkocher mit 2000 W ist stark, eine Lampe mit 10 W ist schwach. Diese Zahl ist die Leistung P, gemessen in Watt.",
+    "Die Leistung entsteht aus Spannung und Strom zusammen: P = U · I.",
+    "Aber die Leistung allein sagt nichts über die Stromrechnung. Der Wasserkocher läuft drei Minuten, die Lampe brennt den ganzen Abend.",
+    "Deshalb gibt es die elektrische Arbeit W: Leistung mal Zeit. Sie wird in Kilowattstunden abgerechnet.",
+    "1 kWh heißt: ein Gerät mit 1000 W läuft eine Stunde lang. Genau das steht auf deiner Stromrechnung."
+  ],
+  begriffe:[
+    ["Leistung P","Wie viel gerade umgesetzt wird. Einheit: Watt (W)."],
+    ["Arbeit W","Leistung über eine Zeitspanne. Einheit: Kilowattstunde (kWh)."],
+    ["Kilo","Vorsatz für tausend. 1 kW = 1000 W."]
+  ],
+  regeln:[
+    "P = U · I  (Watt = Volt · Ampere)",
+    "I = P : U  — so findest du den Strom vom Typenschild.",
+    "W = P · t  (Arbeit ist Leistung mal Zeit)",
+    "Für kWh: erst Watt durch 1000 teilen, dann mit den Stunden malnehmen.",
+    "Kosten = kWh · Preis je kWh."
+  ],
+  beispiel:{aufgabe:"Ein Heizlüfter mit 2000 W läuft 3 Stunden. Wie viele kWh?",
+    schritte:["2000 W : 1000 = 2 kW","W = 2 kW · 3 h"],
+    ergebnis:"6 kWh"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Leistung ist Spannung mal Strom, Arbeit ist Leistung mal Zeit">
+    <rect x="14" y="24" width="86" height="44" rx="10" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="2"/>
+    <text x="57" y="52" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">U · I</text>
+    <path d="M104 46h30" stroke="#10a37f" stroke-width="2"/>
+    <path d="M130 41l9 5-9 5" fill="#10a37f"/>
+    <rect x="142" y="24" width="86" height="44" rx="10" fill="#10a37f" fill-opacity=".32" stroke="#10a37f" stroke-width="2"/>
+    <text x="185" y="52" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">P in W</text>
+    <text x="310" y="51" text-anchor="middle" font-size="12" fill="currentColor">Leistung — jetzt gerade</text>
+    <path d="M185 72v40" stroke="#10a37f" stroke-width="2"/>
+    <path d="M180 106l5 9 5-9" fill="#10a37f"/>
+    <rect x="142" y="120" width="86" height="44" rx="10" fill="#10a37f" fill-opacity=".18" stroke="#10a37f" stroke-width="2"/>
+    <text x="185" y="148" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">P · t</text>
+    <path d="M232 142h30" stroke="#10a37f" stroke-width="2"/>
+    <path d="M258 137l9 5-9 5" fill="#10a37f"/>
+    <rect x="270" y="120" width="102" height="44" rx="10" fill="#10a37f" fill-opacity=".32" stroke="#10a37f" stroke-width="2"/>
+    <text x="321" y="148" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">W in kWh</text>
+    <text x="80" y="147" text-anchor="middle" font-size="12" fill="currentColor">Arbeit —</text>
+    <text x="80" y="163" text-anchor="middle" font-size="12" fill="currentColor">über die Zeit</text>
+  </svg>`
+},
+
+"Reihenschaltung": {
+  worum:"Liegen Bauteile hintereinander, fließt überall derselbe Strom — und die Spannung teilt sich auf.",
+  einfach:[
+    "Reihenschaltung heißt: Es gibt nur einen einzigen Weg für den Strom. Alle Bauteile liegen hintereinander wie Perlen auf einer Schnur.",
+    "Weil es nur einen Weg gibt, fließt überall derselbe Strom. Was durch das erste Bauteil geht, geht auch durch das letzte.",
+    "Die Widerstände addieren sich einfach: R gesamt = R1 + R2 + R3. Der Gesamtwiderstand ist immer größer als jeder einzelne.",
+    "Die Gesamtspannung verteilt sich auf die Bauteile. Am größten Widerstand fällt die größte Spannung ab.",
+    "Alle Teilspannungen zusammen ergeben wieder die Quellenspannung. Das ist die Maschenregel.",
+    "Praktisch heißt das: Fällt ein Bauteil aus, ist der Weg unterbrochen und nichts geht mehr — wie bei einer alten Lichterkette."
+  ],
+  begriffe:[
+    ["Reihe","Alle Bauteile hintereinander, nur ein Strompfad."],
+    ["Teilspannung","Die Spannung, die an einem einzelnen Bauteil abfällt."],
+    ["Maschenregel","Alle Teilspannungen zusammen ergeben die Quellenspannung."]
+  ],
+  regeln:[
+    "Der Strom ist überall gleich: I = I1 = I2 = I3",
+    "R gesamt = R1 + R2 + R3",
+    "U gesamt = U1 + U2 + U3",
+    "Jede Teilspannung: U1 = I · R1",
+    "Der Gesamtwiderstand ist immer größer als der größte einzelne."
+  ],
+  beispiel:{aufgabe:"10 Ω und 20 Ω in Reihe, es fließen 0,5 A. Wie groß sind die Spannungen?",
+    schritte:["R gesamt = 10 + 20 = 30 Ω","U1 = 0,5 A · 10 Ω = 5 V","U2 = 0,5 A · 20 Ω = 10 V","Probe: 5 V + 10 V = 15 V"],
+    ergebnis:"U gesamt = 15 V"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Reihenschaltung aus zwei Widerständen mit Teilspannungen">
+    <g fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M60 55h52M162 55h76M288 55h62"/>
+      <path d="M350 55v95"/><path d="M60 150h290"/>
+      <path d="M60 55v29M60 110v40"/>
+    </g>
+    <g stroke="currentColor" stroke-width="2">
+      <path d="M44 90h32"/><path d="M52 102h16"/>
+    </g>
+    <text x="38" y="100" text-anchor="end" font-size="12" fill="currentColor">15 V</text>
+    <rect x="112" y="42" width="50" height="26" rx="4" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <rect x="238" y="42" width="50" height="26" rx="4" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <text x="137" y="34" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">R1</text>
+    <text x="263" y="34" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">R2</text>
+    <text x="137" y="86" text-anchor="middle" font-size="12" fill="#10a37f">U1 = 5 V</text>
+    <text x="263" y="86" text-anchor="middle" font-size="12" fill="#10a37f">U2 = 10 V</text>
+    <path d="M170 116h52" stroke="#10a37f" stroke-width="2"/>
+    <path d="M218 111l9 5-9 5" fill="#10a37f"/>
+    <text x="200" y="138" text-anchor="middle" font-size="12" fill="#10a37f">I überall gleich</text>
+    <text x="200" y="186" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Ein Weg — ein Strom, aber geteilte Spannung</text>
+  </svg>`
+},
+
+"Parallelschaltung": {
+  worum:"Liegen Bauteile nebeneinander an denselben zwei Punkten, haben sie alle dieselbe Spannung — und der Strom teilt sich auf.",
+  einfach:[
+    "Parallelschaltung heißt: Jedes Bauteil hängt direkt an denselben zwei Anschlüssen. Der Strom hat mehrere Wege zur Auswahl.",
+    "Weil oben und unten derselbe Anschluss ist, liegt an jedem Zweig dieselbe Spannung an.",
+    "Der Strom teilt sich auf. Durch den kleineren Widerstand fließt mehr, durch den größeren weniger.",
+    "Alle Zweigströme zusammen ergeben den Gesamtstrom. Das ist die Knotenregel.",
+    "Der Gesamtwiderstand wird kleiner als der kleinste einzelne Widerstand — der Strom bekommt ja einen zusätzlichen Weg.",
+    "Bei zwei Widerständen rechnet man am schnellsten mit: R = (R1 · R2) : (R1 + R2).",
+    "Deshalb sind Steckdosen in der Wohnung parallel geschaltet: Jedes Gerät bekommt volle 230 V, und wenn eines ausgeht, laufen die anderen weiter."
+  ],
+  begriffe:[
+    ["Parallel","Alle Bauteile an denselben zwei Punkten, mehrere Strompfade."],
+    ["Zweigstrom","Der Strom durch einen einzelnen Zweig."],
+    ["Knotenregel","Alle Zweigströme zusammen ergeben den Gesamtstrom."]
+  ],
+  regeln:[
+    "Die Spannung ist überall gleich: U = U1 = U2",
+    "I gesamt = I1 + I2",
+    "1 : R = 1 : R1 + 1 : R2",
+    "Bei genau zwei Widerständen kürzer: R = (R1 · R2) : (R1 + R2)",
+    "Der Gesamtwiderstand ist immer kleiner als der kleinste einzelne.",
+    "Gleich große Widerstände parallel: R gesamt = R : Anzahl."
+  ],
+  beispiel:{aufgabe:"10 Ω und 15 Ω liegen parallel. Wie groß ist der Gesamtwiderstand?",
+    schritte:["Oben: 10 · 15 = 150","Unten: 10 + 15 = 25","150 : 25 = 6","Probe: 6 Ω liegt unter 10 Ω — passt."],
+    ergebnis:"6 Ω"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Parallelschaltung: gleiche Spannung, geteilter Strom">
+    <g fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M50 40h230M50 160h230"/>
+      <path d="M140 40v25M140 135v25M240 40v25M240 135v25"/>
+      <path d="M50 40v44M50 108v52"/>
+    </g>
+    <g stroke="currentColor" stroke-width="2">
+      <path d="M34 90h32"/><path d="M42 102h16"/>
+    </g>
+    <text x="28" y="100" text-anchor="end" font-size="13" fill="currentColor">U</text>
+    <rect x="120" y="65" width="40" height="70" rx="5" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <rect x="220" y="65" width="40" height="70" rx="5" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <text x="140" y="106" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">R1</text>
+    <text x="240" y="106" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">R2</text>
+    <text x="140" y="182" text-anchor="middle" font-size="12" fill="#10a37f">I1</text>
+    <text x="240" y="182" text-anchor="middle" font-size="12" fill="#10a37f">I2</text>
+    <text x="330" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">U gleich</text>
+    <text x="330" y="116" text-anchor="middle" font-size="12" font-weight="700" fill="#10a37f">I geteilt</text>
+  </svg>`
+},
+
+"Spannungsteiler": {
+  worum:"Zwei Widerstände in Reihe teilen eine Spannung auf — im selben Verhältnis, in dem sie selbst stehen.",
+  einfach:[
+    "Manchmal hast du 12 V, brauchst aber nur 4 V. Dann nimmst du einen Spannungsteiler.",
+    "Er besteht einfach aus zwei Widerständen in Reihe. Die Spannung wird zwischen ihnen abgegriffen.",
+    "Weil durch beide derselbe Strom fließt, gilt U = I · R für jeden einzeln. Der größere Widerstand bekommt also die größere Spannung.",
+    "Das Wichtigste: Es kommt nur auf das Verhältnis an, nicht auf die absoluten Werte. 100 Ω und 200 Ω teilen genauso wie 1 kΩ und 2 kΩ.",
+    "Die Formel dafür: U2 = U · R2 : (R1 + R2). In der Klammer steht der Gesamtwiderstand, oben der Anteil, den du abgreifst.",
+    "Achtung: Das gilt nur unbelastet. Hängst du einen Verbraucher an den Abgriff, verändert er das Verhältnis."
+  ],
+  begriffe:[
+    ["Spannungsteiler","Zwei Widerstände in Reihe, dazwischen wird abgegriffen."],
+    ["Abgriff","Der Punkt zwischen den beiden Widerständen."],
+    ["Unbelastet","Am Abgriff hängt kein Verbraucher, es fließt kein zusätzlicher Strom."]
+  ],
+  regeln:[
+    "U1 : U2 = R1 : R2  (die Spannungen verhalten sich wie die Widerstände)",
+    "U2 = U · R2 : (R1 + R2)",
+    "U1 = U · R1 : (R1 + R2)",
+    "U1 + U2 = U  — das ist die Probe.",
+    "Nur das Verhältnis zählt, nicht die absolute Größe der Widerstände."
+  ],
+  beispiel:{aufgabe:"R1 = 1 kΩ, R2 = 2 kΩ an 12 V. Wie groß ist U2?",
+    schritte:["Gesamt: 1 + 2 = 3 kΩ","Anteil von R2: 2 : 3","U2 = 12 V · 2 : 3","Probe: U1 = 4 V, zusammen 12 V"],
+    ergebnis:"8 V"},
+  bild:`<svg viewBox="0 0 400 215" ${SVG_STIL} role="img" aria-label="Spannungsteiler mit Abgriff zwischen zwei Widerständen">
+    <g fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M95 30h120M95 180h120"/>
+      <path d="M215 30v20M215 82v46M215 160v20"/>
+      <path d="M95 30v62M95 118v62"/>
+    </g>
+    <g stroke="currentColor" stroke-width="2">
+      <path d="M79 98h32"/><path d="M87 110h16"/>
+    </g>
+    <text x="73" y="108" text-anchor="end" font-size="12" fill="currentColor">12 V</text>
+    <rect x="195" y="50" width="40" height="32" rx="4" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <rect x="195" y="128" width="40" height="32" rx="4" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <text x="188" y="71" text-anchor="end" font-size="12" font-weight="700" fill="currentColor">R1 = 1 kΩ</text>
+    <text x="188" y="149" text-anchor="end" font-size="12" font-weight="700" fill="currentColor">R2 = 2 kΩ</text>
+    <path d="M215 105h66" stroke="#10a37f" stroke-width="2"/>
+    <circle cx="215" cy="105" r="4" fill="#10a37f"/>
+    <text x="287" y="101" font-size="12" font-weight="700" fill="#10a37f">Abgriff</text>
+    <text x="287" y="119" font-size="12" font-weight="700" fill="#10a37f">U2 = 8 V</text>
+    <text x="200" y="205" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">2 von 3 Teilen des Widerstands → 2 von 3 Teilen der Spannung</text>
+  </svg>`
+},
+
+"Frequenz und Periodendauer": {
+  worum:"Frequenz und Periodendauer sind zwei Blickwinkel auf dasselbe: wie schnell sich eine Schwingung wiederholt.",
+  einfach:[
+    "Wechselspannung geht immer wieder auf und ab. Ein kompletter Durchgang — hoch, runter, wieder am Anfang — heißt eine Periode.",
+    "Die Periodendauer T sagt, wie lange ein solcher Durchgang dauert. Gemessen in Sekunden oder Millisekunden.",
+    "Die Frequenz f sagt, wie viele Durchgänge in einer Sekunde passieren. Gemessen in Hertz.",
+    "Beides ist dasselbe von zwei Seiten: Je öfter pro Sekunde, desto kürzer der einzelne Durchgang.",
+    "Deshalb gilt T = 1 : f und umgekehrt f = 1 : T. Man nennt das Kehrwerte.",
+    "Unser Netz hat 50 Hz. Also dauert eine Periode 1 : 50 s = 0,02 s = 20 ms. Diese Zahl solltest du im Kopf haben.",
+    "Am Oszilloskop misst du immer die Zeit — die Frequenz rechnest du daraus aus."
+  ],
+  begriffe:[
+    ["Periode","Ein vollständiger Durchgang der Schwingung."],
+    ["Periodendauer T","Wie lange eine Periode dauert. Einheit: Sekunde (s)."],
+    ["Frequenz f","Perioden je Sekunde. Einheit: Hertz (Hz)."],
+    ["Kehrwert","1 geteilt durch eine Zahl. Aus 50 wird 1 : 50."]
+  ],
+  regeln:[
+    "T = 1 : f",
+    "f = 1 : T",
+    "1 s = 1000 ms — rechne die Zeit immer zuerst in Sekunden um.",
+    "Kurzweg: T in ms = 1000 : f in Hz",
+    "Netzfrequenz 50 Hz → T = 20 ms. Merk dir dieses Zahlenpaar."
+  ],
+  beispiel:{aufgabe:"Eine Periode dauert 4 ms. Wie groß ist die Frequenz?",
+    schritte:["4 ms = 0,004 s","f = 1 : 0,004","kürzer: 1000 : 4"],
+    ergebnis:"250 Hz"},
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Sinuskurve mit einer markierten Periode von 20 Millisekunden">
+    <path d="M30 100h300" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
+    <path d="M40 100q22-60 45 0 22 60 45 0 22-60 45 0 22 60 45 0 22-60 45 0 22 60 45 0" fill="none" stroke="#10a37f" stroke-width="2.5"/>
+    <path d="M40 40v96M130 40v96" stroke="#10a37f" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <path d="M40 32h90" stroke="#10a37f" stroke-width="2"/>
+    <path d="M46 27l-8 5 8 5M124 27l8 5-8 5" fill="none" stroke="#10a37f" stroke-width="2"/>
+    <text x="85" y="18" text-anchor="middle" font-size="13" font-weight="700" fill="#10a37f">T = 20 ms</text>
+    <text x="200" y="154" text-anchor="middle" font-size="13" fill="currentColor">eine Periode = hoch, runter, zurück zum Anfang</text>
+    <text x="200" y="180" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">50 Hz  ⇄  20 ms</text>
+  </svg>`
+},
+
+"Stern und Dreieck": {
+  worum:"Im Drehstromnetz kann man drei Stränge auf zwei Arten anschließen — und davon hängt ab, wie viel Spannung und Strom sie bekommen.",
+  einfach:[
+    "Drehstrom hat drei Außenleiter: L1, L2 und L3. Zwischen zwei Außenleitern liegen 400 V, zwischen einem Außenleiter und N liegen 230 V.",
+    "Bei der Sternschaltung werden die drei Strangenden zu einem gemeinsamen Punkt verbunden — dem Sternpunkt. Jeder Strang liegt dann zwischen einem Außenleiter und diesem Punkt.",
+    "Im Stern bekommt jeder Strang also nur 230 V. Der Strom durch den Strang ist derselbe wie im Außenleiter.",
+    "Bei der Dreieckschaltung wird jeder Strang direkt zwischen zwei Außenleiter gehängt. Dann liegen an jedem Strang volle 400 V.",
+    "Dafür ist im Dreieck der Leiterstrom größer als der Strangstrom, weil an jeder Klemme zwei Stränge zusammenkommen.",
+    "Der Faktor zwischen den beiden Welten ist immer √3, also rund 1,73. Er kommt daher, dass die drei Spannungen zeitlich um 120° versetzt sind.",
+    "Praktisch heißt das: Derselbe Motor zieht im Dreieck dreimal so viel Leistung wie im Stern. Genau darauf beruht die Stern-Dreieck-Anlaufschaltung — erst sanft im Stern anlaufen, dann auf Dreieck umschalten."
+  ],
+  begriffe:[
+    ["Strangspannung","Die Spannung an einem einzelnen Wicklungsstrang."],
+    ["Leiterspannung","Die Spannung zwischen zwei Außenleitern."],
+    ["Sternpunkt","Der gemeinsame Punkt, an dem die drei Stränge im Stern zusammenlaufen."],
+    ["√3","Rund 1,73 — der feste Faktor im Drehstromnetz."]
+  ],
+  regeln:[
+    "Stern: U Leiter = √3 · U Strang,  I Leiter = I Strang",
+    "Dreieck: U Strang = U Leiter,  I Leiter = √3 · I Strang",
+    "√3 ≈ 1,73",
+    "Unser Netz: 230 V Strangspannung, 400 V Leiterspannung.",
+    "Im Dreieck nimmt derselbe Motor die dreifache Leistung auf wie im Stern."
+  ],
+  beispiel:{aufgabe:"Ein Motor im Dreieck zieht 5 A je Strang. Wie groß ist der Leiterstrom?",
+    schritte:["Im Dreieck ist der Leiterstrom größer.","I Leiter = √3 · I Strang","5 A · 1,73"],
+    ergebnis:"8,7 A"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Sternschaltung und Dreieckschaltung im Vergleich">
+    <text x="100" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Stern</text>
+    <g stroke="#10a37f" stroke-width="2.5" fill="none">
+      <path d="M100 110V60M100 110l-44 26M100 110l44 26"/>
+    </g>
+    <circle cx="100" cy="110" r="5" fill="#10a37f"/>
+    <g fill="currentColor" font-size="11" text-anchor="middle">
+      <text x="100" y="50">L1</text><text x="44" y="152">L2</text><text x="156" y="152">L3</text>
+    </g>
+    <text x="100" y="180" text-anchor="middle" font-size="12" fill="#10a37f">Strang: 230 V</text>
+    <text x="100" y="196" text-anchor="middle" font-size="12" fill="currentColor">I Strang = I Leiter</text>
+    <path d="M200 30v150" stroke="currentColor" stroke-width="1" opacity=".35"/>
+    <text x="300" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Dreieck</text>
+    <path d="M300 60L256 136h88z" fill="none" stroke="#10a37f" stroke-width="2.5" stroke-linejoin="round"/>
+    <g fill="currentColor" font-size="11" text-anchor="middle">
+      <text x="300" y="50">L1</text><text x="244" y="152">L2</text><text x="356" y="152">L3</text>
+    </g>
+    <text x="300" y="180" text-anchor="middle" font-size="12" fill="#10a37f">Strang: 400 V</text>
+    <text x="300" y="196" text-anchor="middle" font-size="12" fill="currentColor">I Leiter = √3 · I Strang</text>
+  </svg>`
+},
+
+"Transformator": {
+  worum:"Ein Transformator macht aus einer Wechselspannung eine größere oder kleinere — im Verhältnis der Windungszahlen.",
+  einfach:[
+    "Ein Trafo besteht aus zwei Spulen auf einem gemeinsamen Eisenkern. Die eine heißt Primärwicklung, die andere Sekundärwicklung.",
+    "Der Wechselstrom in der ersten Spule baut ein ständig wechselndes Magnetfeld auf. Der Eisenkern führt dieses Feld zur zweiten Spule.",
+    "In der zweiten Spule entsteht dadurch wieder eine Spannung. Die beiden Wicklungen berühren sich dabei nicht — das nennt man galvanische Trennung.",
+    "Wie groß die neue Spannung ist, hängt allein von den Windungszahlen ab: U1 : U2 = N1 : N2.",
+    "Weniger Windungen auf der Sekundärseite heißt weniger Spannung. Mehr Windungen heißt mehr Spannung.",
+    "Die Leistung bleibt dabei ungefähr gleich. Wird die Spannung kleiner, wird der Strom entsprechend größer.",
+    "Wichtig: Ein Trafo arbeitet nur mit Wechselspannung. Bei Gleichspannung ändert sich das Magnetfeld nicht, und es passiert nichts."
+  ],
+  begriffe:[
+    ["Primärseite","Die Wicklung, an der die Spannung angelegt wird. Größen mit 1."],
+    ["Sekundärseite","Die Wicklung, an der die Spannung abgenommen wird. Größen mit 2."],
+    ["Windungszahl N","Wie oft der Draht um den Kern gewickelt ist."],
+    ["Übersetzungsverhältnis","N1 : N2 — sagt, um welchen Faktor sich die Spannung ändert."]
+  ],
+  regeln:[
+    "U1 : U2 = N1 : N2",
+    "Nach U2 umgestellt: U2 = U1 · N2 : N1",
+    "Nach N2 umgestellt: N2 = N1 · U2 : U1",
+    "Beim idealen Trafo bleibt die Leistung gleich: U1 · I1 = U2 · I2",
+    "Deshalb gilt für die Ströme umgekehrt: I1 : I2 = N2 : N1",
+    "Ein Trafo funktioniert nur mit Wechselspannung."
+  ],
+  beispiel:{aufgabe:"1000 Windungen primär bei 230 V, 100 Windungen sekundär. Wie groß ist U2?",
+    schritte:["Übersetzung: 1000 : 100 = 10","Sekundär hat zehnmal weniger Windungen.","U2 = 230 V : 10"],
+    ergebnis:"23 V"},
+  bild:`<svg viewBox="0 0 400 190" ${SVG_STIL} role="img" aria-label="Transformator mit Primär- und Sekundärwicklung auf einem Eisenkern">
+    <rect x="170" y="35" width="60" height="120" fill="none" stroke="currentColor" stroke-width="2" opacity=".6"/>
+    <rect x="184" y="49" width="32" height="92" fill="none" stroke="currentColor" stroke-width="2" opacity=".6"/>
+    <g stroke="#10a37f" stroke-width="2.5" fill="none">
+      <path d="M150 50v78"/>
+      <path d="M150 50q-18 0-18 13t18 13M150 76q-18 0-18 13t18 13M150 102q-18 0-18 13t18 13"/>
+      <path d="M250 62v56"/>
+      <path d="M250 62q18 0 18 14t-18 14M250 90q18 0 18 14t-18 14"/>
+    </g>
+    <g stroke="currentColor" stroke-width="2">
+      <path d="M150 50H60M150 128H60M250 62h95M250 118h95"/>
+    </g>
+    <text x="105" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">230 V</text>
+    <text x="105" y="146" text-anchor="middle" font-size="12" fill="currentColor">N1 = 1000</text>
+    <text x="298" y="54" text-anchor="middle" font-size="13" font-weight="700" fill="#10a37f">23 V</text>
+    <text x="298" y="136" text-anchor="middle" font-size="12" fill="currentColor">N2 = 100</text>
+    <text x="200" y="178" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">Zehnmal weniger Windungen — zehnmal weniger Spannung</text>
+  </svg>`
+},
+
+"Kondensator laden": {
+  worum:"Ein Kondensator wird nicht sofort voll. Wie lange es dauert, hängt nur vom Widerstand und von der Kapazität ab.",
+  einfach:[
+    "Ein Kondensator speichert Ladung. Man kann ihn sich wie einen kleinen Eimer vorstellen, der über einen dünnen Schlauch gefüllt wird.",
+    "Der Widerstand davor ist der Schlauch: Je enger er ist, desto langsamer läuft der Eimer voll.",
+    "Die Kapazität C ist die Größe des Eimers: Je größer, desto länger dauert das Füllen.",
+    "Beides zusammen ergibt die Zeitkonstante τ (sprich „tau“): τ = R · C.",
+    "Nach einer Zeitkonstanten ist der Kondensator auf 63 % geladen. Das ist keine gerundete Schätzung, sondern ein fester Wert.",
+    "Danach geht es immer langsamer weiter: nach 2 τ sind es 86 %, nach 3 τ 95 %, nach 5 τ über 99 %. Ab 5 τ sagt man: praktisch voll.",
+    "Praktischer Rechentrick: Rechnest du in Kilo-Ohm und Mikrofarad, kommt die Zeit direkt in Millisekunden heraus.",
+    "Die Spannung spielt für die Ladezeit keine Rolle — sie kommt in der Formel gar nicht vor."
+  ],
+  begriffe:[
+    ["Kapazität C","Wie viel Ladung ein Kondensator aufnehmen kann. Einheit: Farad (F), meist µF."],
+    ["Zeitkonstante τ","R · C — das Zeitmaß für das Laden und Entladen."],
+    ["63 %","Der Ladezustand nach genau einer Zeitkonstanten."]
+  ],
+  regeln:[
+    "τ = R · C",
+    "kΩ · µF ergibt direkt ms.",
+    "Nach 1 τ: 63 %  ·  nach 2 τ: 86 %  ·  nach 3 τ: 95 %  ·  nach 5 τ: über 99 %",
+    "Nach 5 τ gilt der Kondensator als voll.",
+    "Die angelegte Spannung ändert die Ladezeit nicht.",
+    "Beim Entladen gilt dasselbe τ — nach 1 τ sind noch 37 % übrig."
+  ],
+  beispiel:{aufgabe:"100 µF wird über 10 kΩ geladen. Wann ist er praktisch voll?",
+    schritte:["τ = 10 kΩ · 100 µF = 1000 ms = 1 s","voll nach 5 τ","5 · 1 s"],
+    ergebnis:"5 s"},
+  bild:`<svg viewBox="0 0 400 200" ${SVG_STIL} role="img" aria-label="Ladekurve eines Kondensators mit den Werten bei einer, zwei, drei und fünf Zeitkonstanten">
+    <path d="M50 160h315M50 30v130" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M50 47h310" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" opacity=".6"/>
+    <text x="366" y="43" font-size="11" fill="currentColor">100 %</text>
+    <path d="M50 160L65 135L80 115.5L95 100.6L110 88.6L125 79.5L140 72.2L155 66.5L170 62.3L185 58.9L200 56.3L215 54.4L230 52.9L260 50.6L290 49.1L320 48.3L350 47.8"
+          fill="none" stroke="#10a37f" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M110 88.6V160" stroke="#10a37f" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <circle cx="110" cy="88.6" r="4" fill="#10a37f"/>
+    <text x="126" y="102" font-size="11" font-weight="700" fill="#10a37f">63 %</text>
+    <g font-size="11" fill="currentColor" text-anchor="middle">
+      <text x="110" y="176">1 τ</text><text x="170" y="176">2 τ</text><text x="230" y="176">3 τ</text>
+      <text x="290" y="176">4 τ</text><text x="350" y="176">5 τ</text>
+    </g>
+    <text x="300" y="66" text-anchor="middle" font-size="11" font-weight="700" fill="#10a37f">über 99 %</text>
+    <text x="200" y="196" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">τ = R · C — nach 5 τ gilt er als voll</text>
+  </svg>`
+},
+
+"Blindleistung und cos φ": {
+  worum:"Im Wechselstromnetz leistet nicht jeder Strom Arbeit. Der cos φ sagt, welcher Anteil wirklich ankommt.",
+  einfach:[
+    "Bei einem reinen Widerstand — einer Heizung zum Beispiel — wird alles, was hineingeht, in Wärme umgesetzt. Da ist Leistung einfach U · I.",
+    "Bei Motoren, Spulen und Kondensatoren ist das anders. Ein Teil des Stroms baut nur Magnetfelder auf und wieder ab. Diese Energie pendelt hin und her, statt Arbeit zu leisten.",
+    "Deshalb unterscheidet man drei Leistungen: Scheinleistung S ist alles, was durch die Leitung geht. Wirkleistung P ist der Teil, der Arbeit leistet. Blindleistung Q ist der Teil, der nur pendelt.",
+    "Der cos φ sagt, welcher Anteil der Scheinleistung Wirkleistung ist. Er liegt immer zwischen 0 und 1.",
+    "cos φ = 1 heißt: alles ist Wirkleistung, ideal. cos φ = 0,5 heißt: nur die Hälfte leistet Arbeit.",
+    "Das ist kein reines Rechenspiel. Die Leitung und die Sicherung müssen den ganzen Strom aushalten — auch den blinden Anteil.",
+    "Deshalb schaltet man in Betrieben Kondensatoren parallel zu den Motoren. Das nennt man Blindleistungskompensation und bringt den cos φ näher an 1."
+  ],
+  begriffe:[
+    ["Scheinleistung S","U · I, alles was durch die Leitung geht. Einheit: Voltampere (VA)."],
+    ["Wirkleistung P","Der Teil, der Arbeit leistet. Einheit: Watt (W)."],
+    ["Blindleistung Q","Der Teil, der nur hin- und herpendelt. Einheit: var."],
+    ["cos φ","Der Leistungsfaktor: Anteil der Wirkleistung an der Scheinleistung."]
+  ],
+  regeln:[
+    "S = U · I  (in VA)",
+    "P = S · cos φ = U · I · cos φ  (in W)",
+    "cos φ = P : S",
+    "Der cos φ liegt immer zwischen 0 und 1.",
+    "Kommt ein Wert über 1 heraus, hast du verkehrt herum geteilt.",
+    "Kondensatoren parallel zum Motor verbessern den cos φ."
+  ],
+  beispiel:{aufgabe:"Ein Motor an 230 V zieht 5 A bei cos φ = 0,8. Wie groß ist die Wirkleistung?",
+    schritte:["S = 230 V · 5 A = 1150 VA","P = S · cos φ","1150 · 0,8"],
+    ergebnis:"920 W"},
+  bild:`<svg viewBox="0 0 400 215" ${SVG_STIL} role="img" aria-label="Leistungsdreieck aus Wirkleistung, Blindleistung und Scheinleistung">
+    <path d="M60 175h160" stroke="#10a37f" stroke-width="3"/>
+    <path d="M220 175V55" stroke="#10a37f" stroke-width="3" opacity=".55"/>
+    <path d="M60 175L220 55" stroke="#10a37f" stroke-width="3"/>
+    <path d="M105 175A45 45 0 0 0 96 148" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".75"/>
+    <text x="112" y="166" font-size="14" font-weight="700" fill="currentColor">φ</text>
+    <text x="140" y="194" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">P = 920 W</text>
+    <text x="140" y="209" text-anchor="middle" font-size="11" fill="currentColor">Wirkleistung — leistet Arbeit</text>
+    <text x="232" y="106" font-size="12" font-weight="700" fill="currentColor">Q = 690 var</text>
+    <text x="232" y="123" font-size="11" fill="currentColor">Blindleistung — pendelt nur</text>
+    <text x="118" y="98" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">S = 1150 VA</text>
+    <text x="300" y="34" text-anchor="middle" font-size="12" fill="currentColor">cos φ = P : S = 0,8</text>
+  </svg>`
 }
 
 };
@@ -5752,7 +7001,7 @@ function fertigeThemen(f, k){
    Vorschläge möglichst nah an der gewählten Klasse liegen. */
 function grundlagenThemen(f, k, anzahl){
   const raus = [];
-  for (let stufe = k - 1; stufe >= 5 && raus.length < anzahl; stufe--)
+  for (let stufe = k - 1; stufe >= stufenVon(f)[0] && raus.length < anzahl; stufe--)
     for (const t of fertigeThemen(f, stufe)){
       raus.push({thema: t, klasse: stufe});
       if (raus.length >= anzahl) break;
@@ -6068,7 +7317,7 @@ async function themenwunschSenden(){
   const email = feldMail ? feldMail.value.trim() : "";
   if (nachricht.length < 3){ ladeFehler = "Schreib kurz, welches Thema dir fehlt."; return render(); }
   ladeFehler = "";
-  const bereich = `Themenwunsch · ${KATALOG[fach].name} ${klasse}`;
+  const bereich = `Themenwunsch · ${KATALOG[fach].name} ${stufenText(fach, klasse)}`;
   const {error} = await meldungInsert(bereich, nachricht, email);
   if (error){ ladeFehler = "Das Absenden hat nicht geklappt: " + (error.message || "unbekannter Fehler") + "."; return render(); }
   wunschGesendet = true; render();
@@ -6670,9 +7919,9 @@ function kopfleisteHtml(){
 
 function menueHtml(){
   if (!menueOffen) return "";
-  const klassen = f => [5,6,7,8,9,10].map(k => {
+  const klassen = f => stufenVon(f).map(k => {
     const fertig = KATALOG[f].themen[k].filter(t => AUFGABEN[t]).length;
-    const label = `Klasse ${k}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>`;
+    const label = `${stufenText(f, k)}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>`;
     return navLink(`/${f}/${k}`, `menueLernen('${f}', ${k})`, label, "mpunkt unter",
       `--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)`);
   }).join("");
@@ -6680,8 +7929,8 @@ function menueHtml(){
   return `
     <div class="menuegrund" onclick="menueSchliessen()"></div>
     <nav class="menue">
-      <p class="mtitel">Lernen</p>
-      ${["mathe","deutsch"].map(f => `
+      ${Object.keys(KATALOG).map((f, i, alle) => `
+        ${i === 0 || bereichVon(f) !== bereichVon(alle[i - 1]) ? `<p class="mtitel">${bereichVon(f)}</p>` : ""}
         <button class="mpunkt fachpunkt ${menueAuf === f ? "an" : ""}"
                 style="--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)"
                 onclick="menueKlappen('${f}')">
@@ -6796,7 +8045,7 @@ function kontoHtml(){
 /* ---------- Häufige Fragen ---------- */
 const FAQ = [
   ["Was ist „Endlich kapiert“?",
-   "Eine Lernseite für Mathe und Deutsch von Klasse 5 bis 10. Der Unterschied zu anderen: Du bekommst nie die fertige Lösung. Stattdessen wirst du mit kleinen Fragen dorthin geführt, bis du selbst draufkommst."],
+   "Eine Lernseite für Mathe und Deutsch von Klasse 5 bis 10 und für die Ausbildung zum Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr. Der Unterschied zu anderen: Du bekommst nie die fertige Lösung. Stattdessen wirst du mit kleinen Fragen dorthin geführt, bis du selbst draufkommst."],
   ["Kostet das etwas?",
    "Nein. Du kannst alles ohne Anmeldung und ohne Kosten ausprobieren."],
   ["Warum bekomme ich nie die Lösung?",
@@ -6808,7 +8057,7 @@ const FAQ = [
   ["Kommen immer dieselben Aufgaben?",
    "Nein. Die Zahlen werden bei jedem Aufruf neu erzeugt. Dieselbe Aufgabe siehst du praktisch nie zweimal — auswendig lernen funktioniert also nicht."],
   ["Für welche Klassen ist das gedacht?",
-   "Klasse 5 bis 10, in Mathe und Deutsch. Weitere Fächer kommen nach und nach dazu."],
+   "Klasse 5 bis 10, in Mathe und Deutsch. Dazu kommt die Ausbildung: Elektroniker für Betriebstechnik, 1. bis 4. Lehrjahr. Weitere Fächer und Berufe kommen nach und nach dazu."],
   ["Ich weiß bei einem Thema gar nichts. Was tun?",
    "Drück in der Aufgabe auf „Ich verstehe das Thema gar nicht“ oder tipp in der Themenliste auf das Fragezeichen. Dann bekommst du das Thema von vorn erklärt, bevor du weitermachst."],
   ["Ich habe einen Fehler gefunden.",
@@ -7048,8 +8297,8 @@ function fussleisteHtml(){
         <div class="fussspalte">
           <p class="fusstitel">Lernen</p>
           ${navLink("/start", "zurUebersicht()", "Übersicht", "fusslink")}
-          ${navLink("/mathe", "waehleFach('mathe')", "Mathe", "fusslink")}
-          ${navLink("/deutsch", "waehleFach('deutsch')", "Deutsch", "fusslink")}
+          ${Object.entries(KATALOG).map(([k, v]) =>
+            navLink(`/${k}`, `waehleFach('${k}')`, v.name, "fusslink")).join("")}
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
         <div class="fussspalte">
@@ -7324,7 +8573,7 @@ function uebersichtHtml(){
     <div class="card merksatz">
       <p class="ueberschrift">${SYM.gluehbirne} Merksatz des Tages</p>
       <p class="merktext">„${merk.satz}“</p>
-      <p class="small soft">${themaInfo(merk.thema).fach === "mathe" ? "Mathe" : "Deutsch"} · ${merk.thema}</p>
+      <p class="small soft">${KATALOG[themaInfo(merk.thema).fach].name} · ${merk.thema}</p>
       ${hatErklaerung(merk.thema) ? `<button class="btn ghost full" style="margin-top:12px" onclick="zeigeErklaerung('${merk.thema.replace(/'/g,"\\'")}')">Thema ansehen</button>` : ""}
     </div>` : ""}
 
@@ -7412,7 +8661,7 @@ function wartungZeigen(){
    für eine Klasse ergänzt, ändert sich der Stand auf der Seite mit. */
 function baustelleStand(){
   const faecher = Object.entries(KATALOG).map(([schluessel, f]) => {
-    const klassen = [5,6,7,8,9,10].map(k => {
+    const klassen = stufenVon(schluessel).map(k => {
       const liste = f.themen[k] || [];
       const fertig = liste.filter(t => AUFGABEN[t]).length;
       const stand = fertig === 0 ? "geplant" : (fertig < liste.length ? "arbeit" : "fertig");
@@ -7532,7 +8781,8 @@ function baustelleSeiteHtml(){
           </div>`).join("")}
       </div>
       <p class="small soft" style="margin-top:12px">Erst kommen Mathe und Deutsch bis Klasse 10
-        vollständig dran. Neue Fächer erst danach — lieber wenig, das richtig funktioniert.</p>
+        und die vier Lehrjahre Elektroniker vollständig dran. Neue Fächer und Berufe erst danach —
+        lieber wenig, das richtig funktioniert.</p>
     </div>
 
     <div class="card">
@@ -7788,8 +9038,8 @@ const FARBEN = [
   ["lila","Lila"], ["tuerkis","Türkis"], ["braun","Braun"]
 ];
 /* Voreinstellung nach den Schnellheftern — jeder kann sie umstellen */
-const FARBE_STANDARD = {mathe:"blau", deutsch:"rot", englisch:"gelb",
-  franzoesisch:"gruen", geschichte:"braun", erdkunde:"tuerkis"};
+const FARBE_STANDARD = {mathe:"blau", deutsch:"rot", elektroniker:"gelb",
+  englisch:"tuerkis", franzoesisch:"gruen", geschichte:"braun", erdkunde:"lila"};
 const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true,
   eingabe:"gemischt", bundesland:"", fachfarben:{},
   lesehilfe:false,      /* mehr Abstand zwischen Zeilen und Buchstaben */
@@ -8202,7 +9452,7 @@ async function speichereErgebnis(){
 function waehleFach(f){
   fach = f; wunschZuruecksetzen();
   const wunsch = einstellungen.stufe;
-  if (wunsch >= 5 && wunsch <= 10 && KATALOG[f] && KATALOG[f].themen[wunsch]){
+  if (wunsch && stufenwort(f) === "Klasse" && KATALOG[f] && KATALOG[f].themen[wunsch]){
     klasse = wunsch; ansicht = "start";
   } else { klasse = null; ansicht = "klassenwahl"; }
   render();
@@ -8484,7 +9734,7 @@ function renderSeite(){
   const wahl = (fach && klasse)
     ? `<div class="sidebox" style="padding:14px 15px">
          <p class="sidelabel" style="margin-bottom:6px">Du übst gerade</p>
-         <b style="display:block;font-size:16.5px;margin-bottom:8px">${KATALOG[fach].name} · Klasse ${klasse}</b>
+         <b style="display:block;font-size:16.5px;margin-bottom:8px">${KATALOG[fach].name} · ${stufenText(fach, klasse)}</b>
          ${navLink("/faecher", "zurFachwahl()", "Fach oder Klasse wechseln", "wechseln")}
        </div>` : "";
 
@@ -8596,20 +9846,26 @@ function render(gewaehlt){
         <h1>Welches Fach?</h1>
         <p class="soft">Such dir aus, worin du gerade Hilfe brauchst.</p>
       </div>
-      <div class="wahlgitter">
-        ${Object.entries(KATALOG).map(([k,v])=>{
-          let fertig = 0, gesamt = 0;
-          for (const liste of Object.values(v.themen)){
-            gesamt += liste.length;
-            fertig += liste.filter(t => AUFGABEN[t]).length;
-          }
-          return navLink(`/${k}`, `waehleFach('${k}')`, `
-            <span class="wahlzeichen">${v.name[0]}</span>
-            <span class="wahltext"><b>${v.name}</b>
-              <span>${fertig} von ${gesamt} Themen fertig</span></span>
-          `, "grosswahl mitfarbe", `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
-        }).join("")}
-      </div>
+      ${[...new Set(Object.keys(KATALOG).map(bereichVon))].map(bereich => {
+        const faecher = Object.entries(KATALOG).filter(([k]) => bereichVon(k) === bereich);
+        if (!faecher.length) return "";
+        return `
+        <p class="gruppe">${bereich}</p>
+        <div class="wahlgitter">
+          ${faecher.map(([k,v])=>{
+            let fertig = 0, gesamt = 0;
+            for (const liste of Object.values(v.themen)){
+              gesamt += liste.length;
+              fertig += liste.filter(t => AUFGABEN[t]).length;
+            }
+            return navLink(`/${k}`, `waehleFach('${k}')`, `
+              <span class="wahlzeichen">${v.name[0]}</span>
+              <span class="wahltext"><b>${v.langname || v.name}</b>
+                <span>${fertig} von ${gesamt} Themen fertig</span></span>
+            `, "grosswahl mitfarbe", `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
+          }).join("")}
+        </div>`;
+      }).join("")}
       <div class="card">
         <p class="small soft" style="margin:0 0 12px">Englisch, Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu.</p>
         ${navLink("/einstellungen", "zeigeEinstellungen()", "Einstellungen", "btn ghost full")}
@@ -8627,15 +9883,17 @@ function render(gewaehlt){
       <div class="card">
         ${navLink("/faecher", "zurFachwahl()", "← Anderes Fach", "zurueck")}
         <span class="tag">Schritt 2 von 3 · ${KATALOG[fach].name}</span>
-        <h1>Welche Klasse?</h1>
-        <p class="soft">Nimm die Klassenstufe, in der du gerade bist — oder die, in der du hängengeblieben bist.</p>
+        <h1>${stufenwort(fach) === "Lehrjahr" ? "Welches Lehrjahr?" : "Welche Klasse?"}</h1>
+        <p class="soft">${stufenwort(fach) === "Lehrjahr"
+          ? "Nimm das Lehrjahr, in dem du gerade bist — oder das, in dem etwas offen geblieben ist."
+          : "Nimm die Klassenstufe, in der du gerade bist — oder die, in der du hängengeblieben bist."}</p>
       </div>
       <div class="wahlgitter drei">
-        ${[5,6,7,8,9,10].map(k=>{
+        ${stufenVon(fach).map(k=>{
           const fertig = themen[k].filter(t => AUFGABEN[t]).length;
           return navLink(`/${fach}/${k}`, `waehleKlasse(${k})`, `
             <span class="wahlzeichen">${k}</span>
-            <span class="wahltext"><b>Klasse ${k}</b>
+            <span class="wahltext"><b>${stufenText(fach, k)}</b>
               <span>${fertig > 0 ? fertig + " von " + themen[k].length + " fertig" : "in Arbeit"}</span></span>
           `, "grosswahl mitfarbe");
         }).join("")}
@@ -8651,7 +9909,7 @@ function render(gewaehlt){
       <div class="pfad">
         ${navLink("/faecher", "zurFachwahl()", KATALOG[fach].name)}
         <span>›</span>
-        ${navLink(`/${fach}`, "zurKlassenwahl()", `Klasse ${klasse}`)}
+        ${navLink(`/${fach}`, "zurKlassenwahl()", stufenText(fach, klasse))}
       </div>`;
 
     /* ---- Klasse ist noch komplett leer: keine Sackgasse, sondern ein Weg weiter ---- */
@@ -8660,8 +9918,8 @@ function render(gewaehlt){
       el.innerHTML = `
         <div class="card">
           ${kopf}
-          <span class="tag">Klasse ${klasse} · im Aufbau</span>
-          <h1>An Klasse ${klasse} wird gerade gebaut</h1>
+          <span class="tag">${stufenText(fach, klasse)} · im Aufbau</span>
+          <h1>An ${stufenwort(fach) === "Lehrjahr" ? "diesem Lehrjahr" : "Klasse " + klasse} wird gerade gebaut</h1>
           <p class="soft">Wir sagen dir lieber ehrlich, dass hier noch nichts fertig ist,
             als dich mit halben Sachen abzuspeisen. Aber du bist trotzdem nicht am falschen Ort —
             zwei Dinge kannst du hier gerade machen.</p>
@@ -8670,7 +9928,7 @@ function render(gewaehlt){
         ${grundlagen.length ? `
         <div class="card">
           <p class="ueberschrift">${SYM.ziel} Damit kommst du jetzt schon weiter</p>
-          <p class="small soft" style="margin:0 0 14px">Fast alles in Klasse ${klasse} baut auf diesen Themen auf.
+          <p class="small soft" style="margin:0 0 14px">Fast alles in ${stufenText(fach, klasse)} baut auf diesen Themen auf.
             Wer sie sicher kann, tut sich später deutlich leichter — und genau das kannst du hier schon üben.</p>
           <div class="themen">
             ${grundlagen.map(g => {
@@ -8678,7 +9936,7 @@ function render(gewaehlt){
               const n = anzahlAufgaben(g.thema);
               return `<div class="themazeile">
                 ${navLink(`/${fach}/${g.klasse}`, `starteThemaAusKlasse('${sicher}')`,
-                  `<span>${g.thema}</span><span class="pill neutral">Klasse ${g.klasse}</span>`, "thema")}
+                  `<span>${g.thema}</span><span class="pill neutral">${stufenText(fach, g.klasse)}</span>`, "thema")}
                 ${hatErklaerung(g.thema) ? `<button class="erklknopf" title="Erklärung" onclick="zeigeErklaerung('${sicher}')">?</button>` : ""}
               </div>`;
             }).join("")}
@@ -8907,6 +10165,7 @@ function render(gewaehlt){
           ${[5,6,7,8,9,10].map(k => `
             <button class="stufe ${einstellungen.stufe === k ? "an" : ""}" onclick="setzeEinstellung('stufe', ${k})">Klasse ${k}</button>`).join("")}
         </div>
+        <p class="small soft" style="margin:12px 0 0">Gilt für Mathe und Deutsch. In der Ausbildung wird weiter nach dem Lehrjahr gefragt.</p>
       </div>
 
       <div class="card">
@@ -9211,7 +10470,7 @@ function willkommenHtml(){
           ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost")}
         </div>
         <div class="heromerkmale">
-          <span><i>✓</i> Mathe und Deutsch, Klasse 5 bis 10</span>
+          <span><i>✓</i> Schule und Ausbildung: Klasse 5 bis 10, 1. bis 4. Lehrjahr</span>
           <span><i>✓</i> ${fertig.fertig} Themen fertig, ${fertig.gesamt - fertig.fertig} kommen</span>
           <span><i>✓</i> Jede Aufgabe neu gewürfelt</span>
           <span><i>✓</i> Ohne Anmeldung, ohne Kosten</span>
@@ -9255,12 +10514,12 @@ function willkommenHtml(){
     <div class="card abschnitt himmel">
       <p class="ueberschrift">Was drin ist</p>
       <div class="zahlen">
-        <div><b>2</b><span>Fächer</span></div>
-        <div><b>6</b><span>Klassenstufen</span></div>
+        <div><b>${Object.keys(KATALOG).length}</b><span>Fächer</span></div>
+        <div><b>${anzahlStufen()}</b><span>Klassen und Lehrjahre</span></div>
         <div><b>${anzahlGeplant()}</b><span>Themen</span></div>
         <div><b>0 €</b><span>zum Ausprobieren</span></div>
       </div>
-      <p class="small soft" style="margin-top:14px">Mathe und Deutsch von Klasse 5 bis 10. Englisch, Französisch, Geschichte und Erdkunde kommen dazu.</p>
+      <p class="small soft" style="margin-top:14px">Mathe und Deutsch von Klasse 5 bis 10, dazu die Ausbildung zum Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr. Englisch, Französisch, Geschichte und Erdkunde kommen dazu.</p>
     </div>
 
     <div class="card" style="text-align:center">
