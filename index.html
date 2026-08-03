@@ -1040,6 +1040,15 @@
   .serieflamme svg{width:52px;height:52px}
   .seriezahl{font-size:64px;font-weight:900;line-height:1;color:var(--ac-dark);letter-spacing:-.03em;margin-top:4px}
   .serietage{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);font-weight:700;margin-top:6px}
+  .seriebeste{margin:14px 0 0;padding-top:14px;border-top:1px solid var(--line);
+    font-size:14.5px;color:var(--soft)}
+  .seriebeste b{color:var(--ink)}
+  /* Pausentage: was noch übrig ist, und was diese Serie schon gekostet hat */
+  .pausenreihe{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .pausenpunkt{width:30px;height:30px;border-radius:50%;display:inline-flex;
+    align-items:center;justify-content:center;font-size:14px;font-weight:800;border:1.5px solid var(--line)}
+  .pausenpunkt.frei{background:var(--ac-soft);border-color:var(--ac);color:var(--ac-dark)}
+  .pausenpunkt.weg{background:var(--bg);color:var(--soft)}
   /* Meilenstein-Feier + Badges */
   .feierkarte{text-align:center;position:relative;border:1.5px solid var(--ac);
     background:linear-gradient(160deg,var(--ac-soft),var(--card))}
@@ -16387,10 +16396,14 @@ function kopfleisteHtml(){
         <a class="kopflink abbreit" href="/warum" onclick="return navKlick(event, () => zeigeSeite('warum'))">Warum nicht KI?</a>
         <a class="kopflink abmittel" href="/ueber" onclick="return navKlick(event, () => zeigeSeite('ueber'))">Über</a>
         <a class="kopflink abmittel" href="/hilfe" onclick="return navKlick(event, zeigeMelden)">Hilfe</a>
+        ${benutzer ? "" : `<a class="kopflink abbreit" href="/anmelden" onclick="return navKlick(event, zeigeAnmeldung)">Anmelden</a>`}
       </nav>
       <div class="kopfrechts">
         ${benutzer && aktivitaet.geladen ? `<a class="serie serie--mini" href="/serie" onclick="return navKlick(event, zeigeSerie)" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></a>` : ""}
-        ${amLoesen() ? "" : `<a class="btn kopfcta" href="${benutzer ? "/faecher" : "/anmelden"}" onclick="return navKlick(event, ${benutzer ? "zurFachwahl" : "zeigeAnmeldung"})">${benutzer ? "Üben" : `<span class="nurbreit">Anmelden / Registrieren</span><span class="nurschmal">Anmelden</span>`}</a>`}
+        ${/* Der auffälligste Knopf der Seite hieß für Fremde „Anmelden / Registrieren".
+              Das ist die falsche erste Aufforderung: Ein Konto lohnt sich erst, wenn es
+              etwas zu speichern gibt. Deshalb führt er jetzt immer zum Üben. */
+          amLoesen() ? "" : `<a class="btn kopfcta" href="/faecher" onclick="return navKlick(event, zurFachwahl)">Üben</a>`}
         <button class="burger ${menueOffen ? "offen" : ""}" onclick="menueUmschalten()" aria-label="Menü">
           <i></i><i></i><i></i>
         </button>
@@ -16919,20 +16932,45 @@ async function ladeAktivitaet(){
     const heuteText = new Date().toLocaleDateString("de-DE");
     aktivitaet.heute = zeilen.filter(z => tagText(z.erstellt) === heuteText).length;
 
-    const tage = [...new Set(zeilen.map(z => tagText(z.erstellt)))];
-    let serie = 0, joker = 1, jokerGenutzt = false;
+    const tage = new Set(zeilen.map(z => tagText(z.erstellt)));
+    let serie = 0, verbraucht = 0;
     const pruef = new Date();
     /* Wer heute noch nicht geübt hat, verliert die Serie nicht — wir fangen bei gestern an. */
-    if (!tage.includes(pruef.toLocaleDateString("de-DE"))) pruef.setDate(pruef.getDate() - 1);
-    /* Streak-Schutz: ein ausgelassener Tag mitten in der Serie darf sie nicht sofort beenden. */
+    if (!tage.has(pruef.toLocaleDateString("de-DE"))) pruef.setDate(pruef.getDate() - 1);
+    /* Pausentage: Wer krank ist, Schicht hat oder einfach mal keinen Kopf dafür, soll
+       nicht bei null anfangen müssen. Auf je sieben Tage Serie kommt ein Pausentag —
+       eine lange Serie hält also mehr aus als eine frische. */
     while (true){
       const t = pruef.toLocaleDateString("de-DE");
-      if (tage.includes(t)){ serie++; pruef.setDate(pruef.getDate() - 1); }
-      else if (joker > 0 && serie > 0){ joker--; jokerGenutzt = true; pruef.setDate(pruef.getDate() - 1); }
+      if (tage.has(t)){ serie++; pruef.setDate(pruef.getDate() - 1); }
+      else if (serie > 0 && verbraucht < 1 + Math.floor(serie / 7)){
+        verbraucht++; pruef.setDate(pruef.getDate() - 1);
+      }
       else break;
     }
     aktivitaet.serie = serie;
-    aktivitaet.jokerGenutzt = jokerGenutzt;
+    aktivitaet.pausentage = verbraucht;
+    aktivitaet.pausenFrei = Math.max(0, 1 + Math.floor(serie / 7) - verbraucht);
+
+    /* Beste Serie: Sie bleibt stehen, auch wenn die aktuelle abreißt. Bei null
+       anzufangen fühlt sich für den, der sich sowieso für schlecht hält, wie ein
+       Beweis an. „Beste Serie: 11 Tage" bleibt dagegen eine Tatsache. */
+    const alsZahl = (t) => { const [d, m, j] = t.split("."); return Date.UTC(+j, +m - 1, +d) / 86400000; };
+    const sortiert = [...tage].map(alsZahl).sort((a, b) => a - b);
+    let beste = 0, lauf = 0;
+    sortiert.forEach((tag, i) => {
+      lauf = (i > 0 && tag - sortiert[i - 1] === 1) ? lauf + 1 : 1;
+      if (lauf > beste) beste = lauf;
+    });
+    if (serie > beste) beste = serie;
+    /* Der Abruf holt nur die letzten 400 Übungen — ein älterer Rekord stünde
+       sonst nicht mehr drin. Deshalb wird der Bestwert zusätzlich gemerkt. */
+    try {
+      const gemerkt = parseInt(window.localStorage.getItem("ek_beste_serie") || "0", 10) || 0;
+      if (gemerkt > beste) beste = gemerkt;
+      else if (beste > gemerkt) window.localStorage.setItem("ek_beste_serie", String(beste));
+    } catch(e){}
+    aktivitaet.beste = beste;
   } catch(e){ /* dann eben ohne */ }
   aktivitaet.geladen = true;
   meilensteinPruefen();
@@ -17177,6 +17215,27 @@ const WARTUNG_STAND = "1";
 let wartungGesehen = true;
 try { wartungGesehen = localStorage.getItem("ek_baustelle") === WARTUNG_STAND; } catch(e){}
 
+/* Der Hinweis kam früher als Erstes, noch bevor jemand etwas gesehen hatte.
+   Vier Gründe zu gehen, bevor es einen Grund zu bleiben gab — dort sprangen
+   die meisten ab. Jetzt darf man erst eine Aufgabe lösen; der Hinweis kommt
+   danach. Verschwiegen wird nichts: Das Baustellen-Band oben steht von der
+   ersten Sekunde an da, und wer ein Konto anlegen will, bekommt den Hinweis
+   auf jeden Fall vorher zu sehen. */
+let schonGeuebt = false;
+try { schonGeuebt = localStorage.getItem("ek_geuebt") === "1"; } catch(e){}
+function merkeGeuebt(){
+  if (schonGeuebt) return;
+  schonGeuebt = true;
+  try { localStorage.setItem("ek_geuebt", "1"); } catch(e){}
+}
+/* Zeitpunkte, an denen der Hinweis fällig ist: nach der ersten fertigen
+   Aufgabe und vor allem, was den Besucher etwas kostet (Konto, Anmeldung). */
+function wartungFaellig(){
+  if (!WARTUNG || wartungGesehen) return false;
+  if (["anmelden", "konto", "registrieren"].includes(ansicht)) return true;
+  return schonGeuebt && ansicht === "fertig";
+}
+
 function wartungVerstanden(){
   wartungGesehen = true;
   try { localStorage.setItem("ek_baustelle", WARTUNG_STAND); } catch(e){}
@@ -17348,13 +17407,15 @@ function baustelleSeiteHtml(){
 
 /* ---------- Hinweis beim ersten Besuch ---------- */
 function wartungTorHtml(){
-  if (!WARTUNG || wartungGesehen) return "";
+  if (!wartungFaellig()) return "";
   return `
     <div class="torgrund"></div>
     <div class="tor" role="dialog" aria-modal="true">
       <span class="tag">Testbetrieb</span>
       <h2>Diese Seite ist noch im Bau</h2>
-      <p class="soft">Schön, dass du da bist — aber du sollst wissen, worauf du dich einlässt:</p>
+      <p class="soft">${ansicht === "fertig"
+        ? "Erste Aufgabe geschafft. Bevor du weitermachst, sollst du wissen, worauf du dich einlässt:"
+        : "Bevor du dir ein Konto anlegst, sollst du wissen, worauf du dich einlässt:"}</p>
       <ul class="torliste">
         <li><b>Nichts hier ist fertig.</b> Endlich kapiert entsteht gerade erst. Aufgaben,
             Erklärungen und Aussehen ändern sich fast täglich.</li>
@@ -17367,7 +17428,7 @@ function wartungTorHtml(){
       <p class="small soft">Wenn dir etwas auffällt, sag uns Bescheid — über
         <b>Menü → Hilfe und Feedback</b>. Darüber freuen wir uns wirklich.</p>
       <button class="btn full" style="margin-top:16px" onclick="wartungVerstanden()">
-        Verstanden — ich schau mich trotzdem um</button>
+        ${ansicht === "fertig" ? "Verstanden — weiter üben" : "Verstanden — weiter"}</button>
       <button class="btn ghost full" style="margin-top:10px"
         onclick="wartungVerstanden();zeigeSeite('baustelle')">
         Zuerst ansehen, was schon fertig ist</button>
@@ -18021,7 +18082,12 @@ function zeigeSerie(){ if (ansicht !== "serie") vorSerie = ansicht; menueOffen =
 function serieHtml(){
   const s = aktivitaet.serie || 0;
   const heute = aktivitaet.heute || 0;
-  const serieText = s === 0 ? "Heute ist ein guter Tag zum Anfangen."
+  const beste = aktivitaet.beste || 0;
+  const frei = aktivitaet.pausenFrei || 0;
+  const genutzt = aktivitaet.pausentage || 0;
+  const serieText = s === 0
+    ? (beste > 0 ? "Die Serie ist gerissen — das ist kein Rückschritt. Deine beste Serie bleibt stehen, und heute fängt die nächste an."
+                 : "Heute ist ein guter Tag zum Anfangen.")
     : s === 1 ? "Tag 1 — der Anfang ist gemacht."
     : `${s} Tage in Folge — stark!`;
   const geschafft = heute >= tagesziel();
@@ -18040,6 +18106,21 @@ function serieHtml(){
       <div class="seriezahl">${s}</div>
       <div class="serietage">${s === 1 ? "Tag" : "Tage"} in Folge</div>
       <p class="soft" style="margin:12px 0 0">${serieText}</p>
+      ${beste > 0 ? `<p class="seriebeste">Beste Serie: <b>${beste}</b> ${beste === 1 ? "Tag" : "Tage"}${
+        beste > s ? " — die bleibt stehen, egal was kommt." : ""}</p>` : ""}
+    </div>
+    <div class="card">
+      <p class="ueberschrift">Pausentage</p>
+      <p class="small soft" style="margin:8px 0 0">Ein ausgelassener Tag beendet deine Serie nicht.
+        Auf je sieben Tage Serie kommt ein Pausentag dazu — wer lange dabei ist, hält also mehr aus.</p>
+      <div class="pausenreihe">${
+        Array.from({length: frei + genutzt}, (_, i) =>
+          `<span class="pausenpunkt ${i < frei ? "frei" : "weg"}">${i < frei ? "✓" : "·"}</span>`).join("")
+      }</div>
+      <p class="small soft" style="margin:10px 0 0">${
+        frei === 0 ? "Gerade ist kein Pausentag übrig — der nächste kommt, sobald die Serie weiter wächst."
+        : genutzt === 0 ? `Du hast <b>${frei}</b> ${frei === 1 ? "Pausentag" : "Pausentage"} übrig.`
+        : `<b>${genutzt}</b> ${genutzt === 1 ? "Pausentag ist" : "Pausentage sind"} in dieser Serie schon drin, <b>${frei}</b> ${frei === 1 ? "ist" : "sind"} noch übrig.`}</p>
     </div>
     <div class="card">
       <span class="zielkopf">${SYM.ziel} Heute: ${heute} von ${tagesziel()} Aufgaben</span>
@@ -18056,7 +18137,9 @@ function serieHtml(){
     </div>
     <div class="card">
       <p class="small soft" style="margin:0">Jeden Tag, an dem du übst, wächst deine Serie um eins.
-        <b>Streak-Schutz:</b> Ein einzelner ausgelassener Tag beendet deine Serie nicht — erst wenn du zwei Tage hintereinander pausierst, fängt sie wieder bei null an.${aktivitaet.jokerGenutzt ? " (Dein Schutz-Tag ist gerade aktiv.)" : ""}</p>
+        Ausgelassene Tage zehren von deinen <b>Pausentagen</b> — solange davon einer übrig ist,
+        läuft die Serie weiter. Sind alle aufgebraucht, fängt sie wieder bei null an.
+        Deine beste Serie bleibt in jedem Fall stehen.</p>
     </div>`;
 }
 function zurKlassenwahl(){ ansicht = "klassenwahl"; render(); }
@@ -18236,6 +18319,7 @@ async function weiter(){
   schrittZuruecksetzen();
   if (schrittNr < aktuell.schritte.length) neueReihenfolge();
   if (schrittNr >= aktuell.schritte.length){
+    merkeGeuebt();
     ansicht = "fertig"; render();
     await speichereErgebnis();
     render();
