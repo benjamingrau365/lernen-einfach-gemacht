@@ -2380,7 +2380,131 @@ const deutschProben3 = {
   }
 };
 
-const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2, ...deutschProben3,
+/* ---------------------------------------------------------- ENGLISCH I
+   Der Prüfer hält eigene Regeln: welche Subjekte die dritte Person Einzahl
+   sind, welche Pluralformen gelten, wann a und wann an steht. */
+
+const englischProben = {
+
+  "Simple Present": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Signalwort ja/nein */
+    if (/Signalwort/.test(t)) {
+      const wort = (t.match(/„(.+?)“/) || [])[1];
+      if (!wort) return "konnte das Signalwort nicht lesen";
+      const VERGANGEN = ["yesterday", "last week", "two years ago"];
+      const soll = VERGANGEN.includes(wort) ? "nein" : "ja";
+      return l === soll ? null : `„${wort}“ passt ${soll === "ja" ? "" : "nicht "}zum Simple Present, angegeben ist „${l}“`;
+    }
+
+    /* Verbform: dritte Person Einzahl unabhängig bestimmen */
+    const m = t.match(/Setz das Verb (\w+) richtig ein: (.+?) ___ /);
+    if (!m) return "konnte die Aufgabe nicht einordnen: " + t.slice(0, 90);
+    const verb = m[1], wer = m[2].trim();
+    const DRITTE = ["He", "She", "It", "My brother", "The dog"];
+    const MEHR   = ["We", "They", "I", "My friends"];
+    let dritte;
+    if (DRITTE.includes(wer)) dritte = true;
+    else if (MEHR.includes(wer)) dritte = false;
+    else return `für das Subjekt „${wer}“ ist nicht hinterlegt, ob es dritte Person ist`;
+    const soll = dritte ? verb + "s" : verb;
+    return l === soll ? null : `zu „${wer}“ gehört „${soll}“, angegeben ist „${l}“`;
+  },
+
+  "to be und to have got": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+    const wer = (t.match(/ein: (.+?) ___ /) || [])[1];
+    if (!wer) return "konnte das Subjekt nicht lesen: " + t.slice(0, 90);
+    /* eigene Tabelle statt Übernahme aus der Aufgabe */
+    const BE   = {"I":"am", "He":"is", "She":"is", "It":"is", "You":"are", "We":"are",
+                  "They":"are", "My sister":"is", "My parents":"are", "The cat":"is"};
+    const HAVE = {"He":"has got", "She":"has got", "My friend":"has got", "The school":"has got",
+                  "I":"have got", "We":"have got", "They":"have got", "My parents":"have got"};
+    if (/to be/.test(t)) {
+      const soll = BE[wer.trim()];
+      if (!soll) return `für „${wer}“ ist keine Form von to be hinterlegt`;
+      return l === soll ? null : `zu „${wer}“ gehört „${soll}“, angegeben ist „${l}“`;
+    }
+    const soll = HAVE[wer.trim()];
+    if (!soll) return `für „${wer}“ ist keine Form von have got hinterlegt`;
+    return l === soll ? null : `zu „${wer}“ gehört „${soll}“, angegeben ist „${l}“`;
+  },
+
+  "Fragen bilden": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* do oder does */
+    if (/Setz do oder does ein/.test(t)) {
+      const DRITTE = ["your brother", "the bus", "he", "she"];
+      const ANDERE = ["your parents", "you", "they", "we"];
+      /* das Subjekt kann aus mehreren Wörtern bestehen — längste Treffer zuerst */
+      const wer = [...DRITTE, ...ANDERE].find(x => t.includes("___ " + x + " "));
+      if (!wer) return "konnte das Subjekt nicht lesen: " + t.slice(0, 90);
+      const soll = DRITTE.includes(wer) ? "Does" : "Do";
+      return l === soll ? null : `zu „${wer}“ gehört „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* Fragewort — aus der Antwort erschlossen */
+    const antwort = (t.match(/Antwort: (.+)$/) || [])[1];
+    if (!antwort) return "konnte die Antwort nicht lesen: " + t.slice(0, 90);
+    const WORT = {
+      "Mrs Brown.":"Who", "In Hamburg.":"Where", "At eight o'clock.":"When",
+      "Because I missed the bus.":"Why", "By bike.":"How", "Maths.":"What"
+    };
+    const soll = WORT[antwort.trim()];
+    if (!soll) return `für die Antwort „${antwort}“ ist kein Fragewort hinterlegt`;
+    return l === soll ? null : `auf „${antwort}“ passt „${soll}“, angegeben ist „${l}“`;
+  },
+
+  "Verneinung": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+    const wer = (t.match(/: (.+?) ___ /) || [])[1];
+    if (!wer) return "konnte das Subjekt nicht lesen: " + t.slice(0, 90);
+
+    /* to be */
+    if (/to be/.test(t)) {
+      const BE = {"I":"am not", "He":"is not", "She":"is not", "It":"is not",
+                  "You":"are not", "We":"are not", "They":"are not"};
+      const soll = BE[wer.trim()];
+      if (!soll) return `für „${wer}“ ist keine verneinte Form hinterlegt`;
+      return l === soll ? null : `zu „${wer}“ gehört „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* don't oder doesn't */
+    const DRITTE = ["He", "She", "My brother", "The shop"];
+    const soll = DRITTE.includes(wer.trim()) ? "doesn't" : "don't";
+    return l === soll ? null : `zu „${wer}“ gehört „${soll}“, angegeben ist „${l}“`;
+  },
+
+  "Plural und Artikel": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Plural — eigene Tabelle */
+    const ein = (t.match(/Plural von (\w+)\s*\?/) || [])[1];
+    if (ein) {
+      const PLURAL = {book:"books", bus:"buses", box:"boxes", watch:"watches",
+                      city:"cities", baby:"babies", boy:"boys", child:"children",
+                      man:"men", woman:"women", foot:"feet", tooth:"teeth"};
+      const soll = PLURAL[ein];
+      if (!soll) return `für „${ein}“ ist kein Plural hinterlegt`;
+      return l === soll ? null : `der Plural von „${ein}“ ist „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* a oder an — nach dem Anfangslaut, nicht nach dem Buchstaben */
+    const wort = (t.match(/This is ___ (\w+)\./) || [])[1];
+    if (!wort) return "konnte das Wort nicht lesen: " + t.slice(0, 90);
+    const MIT_AN = ["apple", "orange", "egg", "umbrella", "hour"];
+    const MIT_A  = ["book", "dog", "teacher", "school", "university"];
+    let soll;
+    if (MIT_AN.includes(wort)) soll = "an";
+    else if (MIT_A.includes(wort)) soll = "a";
+    else return `für „${wort}“ ist kein Artikel hinterlegt`;
+    return l === soll ? null : `vor „${wort}“ steht „${soll}“, angegeben ist „${l}“`;
+  }
+};
+
+const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2, ...deutschProben3, ...englischProben,
                  ...elektroProben, ...elektroProben2, ...elektroProben3, ...elektroProben4 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
