@@ -260,6 +260,50 @@
   .fortschritt{display:flex;gap:5px;margin-bottom:18px}
   .fortschritt i{flex:1;height:5px;border-radius:3px;background:var(--line)}
   .fortschritt i.an{background:var(--fach)}
+  /* ---------- Prüfungsmodus ---------- */
+  .pruefbalken{border:1.5px solid var(--ac);background:var(--ac-soft)}
+  .pruefbalken.eng{border-color:var(--amber);background:var(--amber-soft)}
+  .pruefbalken .tag{background:var(--ac);color:#fff}
+  .pruefbalken.eng .tag{background:var(--amber);color:#fff}
+  .pruefkopf{display:flex;gap:10px;margin-top:16px}
+  .pruefkopf div{flex:1;background:var(--bg);border-radius:12px;padding:12px 10px;text-align:center}
+  .pruefkopf b{display:block;font-size:23px;font-weight:800;line-height:1.1}
+  .pruefkopf span{display:block;font-size:12.5px;color:var(--soft);margin-top:2px}
+  .pruefliste{display:grid;gap:8px;margin-top:12px}
+  .pruefzeile{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
+    background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 16px;
+    font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+  .pruefzeile:hover{border-color:var(--ac)}
+  .pruefzeile.alt{opacity:.6}
+  .pruefzeile b{display:block;font-size:16px}
+  .pruefzeile div span{display:block;font-size:13.5px;color:var(--soft)}
+  .pruefrest{flex:none;font-size:13px;font-weight:800;color:var(--ac-dark);
+    background:var(--ac-soft);border-radius:999px;padding:5px 12px;white-space:nowrap}
+  .pruefrest.eng{color:var(--amber);background:var(--amber-soft)}
+  .pruefheute{border:1.5px solid var(--ac)}
+  .pruefthemen{display:grid;gap:7px;margin-top:12px}
+  .pruefthema{display:flex;align-items:center;gap:11px;width:100%;background:var(--card);
+    border:1.5px solid var(--line);border-radius:11px;padding:11px 14px;font:inherit;
+    font-size:15.5px;color:var(--ink);text-align:left;cursor:pointer}
+  .pruefthema.an{border-color:var(--ac);background:var(--ac-soft)}
+  .pruefthema .kasten{flex:none;width:22px;height:22px;border-radius:7px;border:1.5px solid var(--line);
+    background:var(--card);display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:900;color:var(--ac-dark)}
+  .pruefthema.an .kasten{border-color:var(--ac);background:var(--ac);color:#fff}
+  .planliste{display:grid;gap:0;margin-top:12px}
+  .plantag{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line)}
+  .plantag:last-child{border-bottom:none}
+  .plantag.jetzt{background:var(--ac-soft);border-radius:11px;padding:12px 14px;border-bottom:none}
+  .plandatum{flex:none;width:74px;font-size:13.5px;font-weight:700;color:var(--soft);padding-top:2px}
+  .plantag.jetzt .plandatum{color:var(--ac-dark)}
+  .planinhalt{min-width:0;font-size:15.5px}
+  .planart{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.05em;
+    text-transform:uppercase;border-radius:999px;padding:3px 9px;margin-bottom:4px}
+  .art-erst{background:var(--ac-soft);color:var(--ac-dark)}
+  .art-wieder{background:var(--amber-soft);color:var(--amber)}
+  .art-probe{background:var(--red-soft);color:var(--red)}
+  .art-ziel{background:var(--ink);color:var(--card)}
+  .plantag.ziel .plandatum{color:var(--ink)}
   /* Fächerliste auf der Startseite — was es gibt, auf einen Blick statt im Fließtext */
   .fachliste{display:grid;gap:10px;margin-top:18px}
   .fachzeile2{display:flex;align-items:center;gap:13px;background:var(--akz-soft);
@@ -24462,6 +24506,7 @@ function menueHtml(){
           <span class="mname">${KATALOG[f].name}</span>
           <span>${menueAuf === f ? "▾" : "▸"}</span></button>
         ${menueAuf === f ? klassen(f) : ""}`).join("")}
+      ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "mpunkt")}
       ${benutzer ? navLink("/plan", "zeigePlan();menueSchliessen()", "Mein Wiederholungsplan", "mpunkt") : ""}
       ${benutzer ? navLink("/anfragen", "zeigeAnfragen();menueSchliessen()", "Meine Anfragen", "mpunkt") : ""}
 
@@ -24882,6 +24927,7 @@ function fussleisteHtml(){
           ${/* Echter Link, kein navLink: Die Erklärungsseiten sind feste HTML-Dateien
                 außerhalb der App — sie sollen wirklich geladen werden. */""}
           <a class="fusslink" href="/erklaerungen">Alle Erklärungen</a>
+          ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "fusslink")}
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
         <div class="fussspalte">
@@ -25062,6 +25108,31 @@ function begruessung(){
   return "Guten Abend";
 }
 
+/* Steht ein Termin an, gehört er nach oben — nicht ins Menü. Wer eine Arbeit
+   vor sich hat, will beim Öffnen sehen, was heute dran ist. */
+function pruefHinweisHtml(){
+  const p = typeof pruefNaechste === "function" ? pruefNaechste() : null;
+  if (!p) return "";
+  const tage = pruefTageBis(p.datum);
+  const heute = pruefHeuteThemen(p);
+  const sicher = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  return `
+    <div class="card pruefbalken ${tage <= 2 ? "eng" : ""}">
+      <div class="pruefbalkenkopf">
+        <div><span class="tag">${pruefRestText(p.datum)}</span>
+          <h2 style="margin:8px 0 2px">${sicher(p.name)}</h2>
+          <p class="small soft" style="margin:0">${pruefTagText(p.datum)}</p></div>
+      </div>
+      ${tage === 0
+        ? `<p class="soft" style="margin:12px 0 0">Heute ist es soweit. Du hast geübt — das trägt.</p>`
+        : heute && heute.themen.length
+          ? `<p class="soft" style="margin:12px 0 10px"><b>Heute dran:</b> ${heute.themen.map(sicher).join(", ")}</p>
+             ${navLink("/pruefung", "zeigePruefungen()", "Zum Plan", "btn full")}`
+          : `<p class="soft" style="margin:12px 0 10px">Für heute steht nichts an.</p>
+             ${navLink("/pruefung", "zeigePruefungen()", "Zum Plan", "btn ghost full")}`}
+    </div>`;
+}
+
 /* ---------- Die Ansicht ---------- */
 function uebersichtHtml(){
   const offen = benutzer ? fortschritt.filter(z => tageBis(z.naechste_wiederholung) <= 0) : [];
@@ -25130,6 +25201,7 @@ function uebersichtHtml(){
     </div>` : ""}
 
     ${benutzer ? einstieg : ""}
+    ${pruefHinweisHtml()}
     ${installHinweisHtml()}
 
     ${offen.length ? `
@@ -25932,6 +26004,405 @@ function navSnapshot(){
 }
 /* Adresse (URL) für die aktuelle Ansicht */
 /* Adresse zu einer Ansicht (rein, ohne Nebenwirkung) — auch für „Zurück"-Links genutzt */
+/* ---------- Prüfungsmodus ----------
+   Der Wiederholungsplan arbeitet vorwärts: Was hakt, kommt irgendwann wieder.
+   Vor einer Klassenarbeit hilft das wenig — da gibt es einen festen Termin,
+   und der Plan muss rückwärts gerechnet werden: Was muss ich heute machen,
+   damit ich am 12. März fertig bin?
+
+   Aufgeteilt wird in drei Abschnitte:
+     Erstdurchgang   jedes Thema einmal, über die erste Hälfte verteilt
+     Wiederholung    dieselben Themen noch einmal, das Wackelige zuerst
+     Generalprobe    am Tag davor alles einmal am Stück
+
+   Gespeichert wird im Browser auf dem Gerät — auch ohne Konto nutzbar. */
+let PRUEFUNGEN = [];
+function pruefLaden(){
+  try {
+    const roh = JSON.parse(localStorage.getItem("ek_pruefungen") || "[]");
+    PRUEFUNGEN = Array.isArray(roh) ? roh.filter(p => p && p.datum && Array.isArray(p.themen)) : [];
+  } catch(e){ PRUEFUNGEN = []; }
+}
+function pruefSichern(){
+  try { localStorage.setItem("ek_pruefungen", JSON.stringify(PRUEFUNGEN)); } catch(e){}
+}
+pruefLaden();
+
+/* ---------- Rechnen mit Tagen ---------- */
+function pruefHeute(){ const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+function pruefDatum(iso){ const d = new Date(iso + "T00:00:00"); d.setHours(0, 0, 0, 0); return d; }
+function pruefTageBis(iso){
+  return Math.round((pruefDatum(iso) - pruefHeute()) / 86400000);
+}
+function pruefTagText(iso){
+  return pruefDatum(iso).toLocaleDateString("de-DE",
+    {weekday:"short", day:"2-digit", month:"2-digit"});
+}
+function pruefPlusTage(n){
+  const d = pruefHeute(); d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+/* „noch 9 Tage“, „morgen“, „heute“ — in der Sprache, in der man es sagt */
+function pruefRestText(iso){
+  const t = pruefTageBis(iso);
+  if (t < 0) return "vorbei";
+  if (t === 0) return "heute";
+  if (t === 1) return "morgen";
+  return `noch ${z(t)} Tage`;
+}
+
+/* Wie wackelig ist ein Thema? Kommt aus dem Fortschritt, wenn es ihn gibt. */
+function pruefWackel(thema){
+  const zeile = typeof zeileZu === "function" ? zeileZu(thema) : null;
+  if (!zeile) return 1;              /* noch nie geübt — als unsicher behandeln */
+  if (!zeile.versuche) return 1;
+  return (zeile.fehler || 0) / zeile.versuche;
+}
+
+/* ---------- Der Plan ----------
+   Gibt für jeden Tag von heute bis zum Tag vor der Prüfung zurück, was dran
+   ist. Bewusst einfach gehalten, damit man ihn nachvollziehen kann. */
+function pruefPlan(p){
+  const tage = pruefTageBis(p.datum);
+  const themen = p.themen.filter(t => anzahlAufgaben(t) > 0);
+  if (tage < 0 || !themen.length) return [];
+  if (tage === 0) return [];
+
+  const uebungstage = tage;                       /* heute bis Tag davor */
+  const mitProbe = uebungstage >= 3;              /* Generalprobe lohnt erst ab drei Tagen */
+  const offen = uebungstage - (mitProbe ? 1 : 0);
+  /* Nie mehr Erstdurchgangstage als Themen — sonst stünde an manchen Tagen
+     nichts, und ein leerer Tag im Plan sieht aus wie ein Fehler. */
+  const ersteTage = Math.max(1, Math.min(themen.length, Math.ceil(offen * 0.6)));
+  const wiederTage = Math.max(0, offen - ersteTage);
+
+  /* Erstdurchgang: jedes Thema genau einmal, gleichmäßig verteilt */
+  const einmalVerteilen = (liste, anzahlTage) => {
+    const raus = Array.from({length: anzahlTage}, () => []);
+    liste.forEach((t, i) => raus[i % anzahlTage].push(t));
+    return raus;
+  };
+  /* Wiederholung: kein Tag bleibt leer. Sind es weniger Themen als Tage,
+     kommt dasselbe Thema mehrfach dran — genau so soll Wiederholen sein. */
+  const fuellendVerteilen = (liste, anzahlTage) => {
+    const raus = Array.from({length: anzahlTage}, () => []);
+    if (!liste.length || anzahlTage <= 0) return raus;
+    const runden = Math.max(liste.length, anzahlTage);
+    for (let i = 0; i < runden; i++) raus[i % anzahlTage].push(liste[i % liste.length]);
+    return raus.map(t => [...new Set(t)]);
+  };
+
+  const plan = [];
+  const ersteVerteilung = einmalVerteilen(themen, ersteTage);
+  for (let i = 0; i < ersteTage; i++)
+    plan.push({tag: i, art: "erst", themen: ersteVerteilung[i]});
+
+  if (wiederTage > 0){
+    /* Das Wackeligste zuerst — dann bleibt am meisten Zeit, es zu retten */
+    const sortiert = themen.slice().sort((a, b) => pruefWackel(b) - pruefWackel(a));
+    const wiederVerteilung = fuellendVerteilen(sortiert, wiederTage);
+    for (let i = 0; i < wiederTage; i++)
+      plan.push({tag: ersteTage + i, art: "wieder", themen: wiederVerteilung[i]});
+  }
+  if (mitProbe) plan.push({tag: uebungstage - 1, art: "probe", themen: themen});
+
+  return plan.filter(e => e.themen.length).map(e => ({...e, datum: pruefPlusTage(e.tag)}));
+}
+/* Was ist heute dran? Der erste Eintrag mit tag === 0. */
+function pruefHeuteThemen(p){
+  const eintrag = pruefPlan(p).find(e => e.tag === 0);
+  return eintrag ? eintrag : null;
+}
+/* Die nächste anstehende Prüfung — für den Hinweis auf der Übersicht */
+function pruefNaechste(){
+  const kommend = PRUEFUNGEN.filter(p => pruefTageBis(p.datum) >= 0)
+    .sort((a, b) => pruefTageBis(a.datum) - pruefTageBis(b.datum));
+  return kommend[0] || null;
+}
+const PRUEF_ART = {
+  erst:   ["Erstdurchgang", "Jedes Thema einmal in Ruhe."],
+  wieder: ["Wiederholung", "Noch einmal — das Wackeligste zuerst."],
+  probe:  ["Generalprobe", "Alles am Stück, wie in der Arbeit."]
+};
+
+/* ---------- Anlegen und verwalten ---------- */
+let pruefName = "";
+let pruefWann = "";
+let pruefFach = "";
+let pruefKlasse = null;
+let pruefAuswahl = [];
+let pruefOffen = null;        /* welche Prüfung wird gerade angesehen */
+let pruefMeldung = "";
+
+function zeigePruefungen(){
+  menueOffen = false; pruefMeldung = ""; pruefOffen = null;
+  if (!pruefFach){ pruefFach = fach || "mathe"; pruefKlasse = klasse || stufenVon(pruefFach)[0]; }
+  ansicht = "pruefungen"; render();
+}
+function pruefOeffnen(id){
+  pruefOffen = id; pruefMeldung = ""; ansicht = "pruefung"; render();
+}
+function pruefFachWahl(f){
+  pruefFach = f;
+  if (!stufenVon(f).includes(pruefKlasse)) pruefKlasse = stufenVon(f)[0];
+  pruefAuswahl = [];
+  render();
+}
+function pruefKlasseWahl(k){ pruefKlasse = k; pruefAuswahl = []; render(); }
+function pruefThemaUm(thema){
+  const i = pruefAuswahl.indexOf(thema);
+  if (i >= 0) pruefAuswahl.splice(i, 1); else pruefAuswahl.push(thema);
+  render();
+}
+function pruefAnlegen(){
+  const name = (document.getElementById("pruefName").value || "").trim();
+  const wann = (document.getElementById("pruefWann").value || "").trim();
+  if (!wann){ pruefMeldung = "Es fehlt noch das Datum."; render(); return; }
+  if (pruefTageBis(wann) < 0){ pruefMeldung = "Der Termin liegt in der Vergangenheit."; render(); return; }
+  if (!pruefAuswahl.length){ pruefMeldung = "Wähl mindestens ein Thema aus."; render(); return; }
+  const p = {
+    id: "p" + Date.now(),
+    name: name || `${KATALOG[pruefFach].name} ${stufenText(pruefFach, pruefKlasse)}`,
+    datum: wann, fach: pruefFach, klasse: pruefKlasse, themen: pruefAuswahl.slice()
+  };
+  PRUEFUNGEN.push(p); pruefSichern();
+  pruefName = ""; pruefWann = ""; pruefAuswahl = [];
+  pruefOeffnen(p.id);
+}
+function pruefLoeschen(id){
+  const p = PRUEFUNGEN.find(x => x.id === id);
+  if (!p) return;
+  if (!confirm(`„${p.name}“ wirklich löschen?`)) return;
+  PRUEFUNGEN = PRUEFUNGEN.filter(x => x.id !== id); pruefSichern();
+  pruefOffen = null; ansicht = "pruefungen"; render();
+}
+
+/* ---------- Generalprobe: alle Themen am Stück ---------- */
+let pruefLauf = null;    /* {themen:[…], nr:0, id, geschafft:0} */
+function pruefLaufAktiv(){ return !!(pruefLauf && pruefLauf.nr < pruefLauf.themen.length); }
+function pruefLaufStarten(id, themen){
+  const brauchbar = themen.filter(t => anzahlAufgaben(t) > 0);
+  if (!brauchbar.length) return;
+  pruefLauf = {id, themen: brauchbar, nr: 0, geschafft: 0};
+  const ort = themaInfo(brauchbar[0]);
+  if (ort){ fach = ort.fach; klasse = ort.klasse; }
+  starte(brauchbar[0]);
+}
+/* Wird aus weiter() aufgerufen, wenn eine Aufgabe fertig ist. Gibt true
+   zurück, wenn der Lauf weitergeht — dann bleibt die Abschlussseite aus. */
+function pruefLaufWeiter(){
+  if (!pruefLauf) return false;
+  pruefLauf.nr++; pruefLauf.geschafft++;
+  if (pruefLauf.nr >= pruefLauf.themen.length){ ansicht = "pruefungFertig"; render(); return true; }
+  const naechstes = pruefLauf.themen[pruefLauf.nr];
+  const ort = themaInfo(naechstes);
+  if (ort){ fach = ort.fach; klasse = ort.klasse; }
+  starte(naechstes);
+  return true;
+}
+function pruefLaufAbbrechen(){
+  const id = pruefLauf && pruefLauf.id;
+  pruefLauf = null;
+  if (id) pruefOeffnen(id); else zeigePruefungen();
+}
+
+/* ---------- Übersichtsseite: alle Prüfungen und das Anlegen ---------- */
+function pruefungenHtml(){
+  const themen = (KATALOG[pruefFach] && KATALOG[pruefFach].themen[pruefKlasse] || [])
+    .filter(t => anzahlAufgaben(t) > 0);
+  const sicher = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const kommend = PRUEFUNGEN.filter(p => pruefTageBis(p.datum) >= 0)
+    .sort((a, b) => pruefTageBis(a.datum) - pruefTageBis(b.datum));
+  const vorbei = PRUEFUNGEN.filter(p => pruefTageBis(p.datum) < 0);
+
+  return `
+    <div class="card">
+      ${navLink("/start", "zurUebersicht()", "← Zur Übersicht", "zurueck")}
+      <span class="tag">Vor der Arbeit</span>
+      <h1>Prüfungsmodus</h1>
+      <p class="soft" style="margin:10px 0 0">Trag den Termin und die Themen ein. Die App rechnet
+        rückwärts und sagt dir jeden Tag, was dran ist — damit du am Abend davor nicht alles
+        auf einmal machen musst.</p>
+    </div>
+
+    ${pruefMeldung ? `<div class="card vokmeldung"><p style="margin:0">${sicher(pruefMeldung)}</p></div>` : ""}
+
+    ${kommend.length ? `<div class="card">
+      <p class="ueberschrift">Deine Termine</p>
+      <div class="pruefliste">
+        ${kommend.map(p => {
+          const heute = pruefHeuteThemen(p);
+          return `<button class="pruefzeile" onclick="pruefOeffnen('${p.id}')">
+            <div><b>${sicher(p.name)}</b>
+              <span>${pruefTagText(p.datum)} · ${z(p.themen.length)} ${p.themen.length === 1 ? "Thema" : "Themen"}${
+                heute && heute.themen.length ? " · heute: " + sicher(heute.themen.join(", ")) : ""}</span></div>
+            <span class="pruefrest ${pruefTageBis(p.datum) <= 2 ? "eng" : ""}">${pruefRestText(p.datum)}</span>
+          </button>`;
+        }).join("")}
+      </div>
+    </div>` : ""}
+
+    <div class="card">
+      <p class="ueberschrift">Neuen Termin eintragen</p>
+      <label class="eigfeld"><span>Wann ist die Arbeit?</span>
+        <input class="feld" id="pruefWann" type="date" value="${sicher(pruefWann)}"
+               min="${pruefPlusTage(0)}" oninput="pruefWann=this.value"></label>
+      <label class="eigfeld"><span>Wie soll sie heißen? <i>(freiwillig)</i></span>
+        <input class="feld" id="pruefName" type="text" maxlength="50" value="${sicher(pruefName)}"
+               placeholder="Mathearbeit Nr. 3" oninput="pruefName=this.value"></label>
+
+      <p class="ueberschrift" style="margin-top:18px">Welches Fach?</p>
+      <div class="vokwahl">
+        ${Object.entries(KATALOG).map(([k, v]) =>
+          `<button class="vokknopf ${pruefFach === k ? "an" : ""}" onclick="pruefFachWahl('${k}')">${v.name}</button>`).join("")}
+      </div>
+
+      <p class="ueberschrift" style="margin-top:18px">${stufenwort(pruefFach) === "Lehrjahr" ? "Welches Lehrjahr?" : "Welche Klasse?"}</p>
+      <div class="vokwahl">
+        ${stufenVon(pruefFach).map(k =>
+          `<button class="vokknopf ${pruefKlasse === k ? "an" : ""}" onclick="pruefKlasseWahl(${k})">${stufenText(pruefFach, k)}</button>`).join("")}
+      </div>
+
+      <p class="ueberschrift" style="margin-top:18px">Was kommt dran?</p>
+      ${themen.length ? `<div class="pruefthemen">
+        ${themen.map(t => `<button class="pruefthema ${pruefAuswahl.includes(t) ? "an" : ""}"
+          onclick="pruefThemaUm(${JSON.stringify(t).replace(/"/g, "&quot;")})">
+          <span class="kasten">${pruefAuswahl.includes(t) ? "✓" : ""}</span>${t}</button>`).join("")}
+      </div>
+      <p class="small soft" style="margin:12px 0 0">${pruefAuswahl.length
+        ? `<b>${z(pruefAuswahl.length)}</b> ${pruefAuswahl.length === 1 ? "Thema" : "Themen"} ausgewählt.`
+        : "Noch nichts ausgewählt."}</p>
+      <button class="btn full" style="margin-top:14px" onclick="pruefAnlegen()">Plan erstellen</button>`
+      : `<p class="soft" style="margin:0">Für diese Auswahl gibt es noch keine Aufgaben.</p>`}
+    </div>
+
+    ${vorbei.length ? `<div class="card">
+      <p class="ueberschrift">Vorbei</p>
+      <div class="pruefliste">
+        ${vorbei.map(p => `<button class="pruefzeile alt" onclick="pruefOeffnen('${p.id}')">
+          <div><b>${sicher(p.name)}</b><span>${pruefTagText(p.datum)}</span></div>
+          <span class="pruefrest">vorbei</span>
+        </button>`).join("")}
+      </div>
+    </div>` : ""}`;
+}
+
+/* ---------- Der Plan zu einer einzelnen Prüfung ---------- */
+function pruefungHtml(){
+  const p = PRUEFUNGEN.find(x => x.id === pruefOffen);
+  if (!p) return `<div class="card"><p>Diesen Termin gibt es nicht mehr.</p>
+    <button class="btn full" style="margin-top:12px" onclick="zeigePruefungen()">Zurück</button></div>`;
+  const sicher = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const tage = pruefTageBis(p.datum);
+  const plan = pruefPlan(p);
+  const heute = plan.find(e => e.tag === 0);
+  const ohneAufgaben = p.themen.filter(t => !anzahlAufgaben(t));
+
+  return `
+    <div class="card">
+      <button class="zurueck" onclick="zeigePruefungen()">← Alle Termine</button>
+      <span class="tag">${sicher(pruefTagText(p.datum))}</span>
+      <h1>${sicher(p.name)}</h1>
+      <div class="pruefkopf">
+        <div><b>${tage < 0 ? "—" : z(Math.max(0, tage))}</b><span>${tage === 1 ? "Tag" : "Tage"} übrig</span></div>
+        <div><b>${z(p.themen.length)}</b><span>${p.themen.length === 1 ? "Thema" : "Themen"}</span></div>
+        <div><b>${z(plan.length)}</b><span>${plan.length === 1 ? "Übungstag" : "Übungstage"}</span></div>
+      </div>
+    </div>
+
+    ${tage === 0 ? `<div class="card gruen">
+      <h2 style="margin:0 0 8px">Heute ist es soweit</h2>
+      <p class="soft" style="margin:0">Jetzt hilft kein Pauken mehr. Du hast geübt — das trägt.</p>
+    </div>`
+    : tage < 0 ? `<div class="card">
+      <h2 style="margin:0 0 8px">Der Termin ist vorbei</h2>
+      <p class="soft" style="margin:0 0 14px">Du kannst die Themen weiter üben — sie stehen ohnehin
+        in deinem Wiederholungsplan.</p>
+      <button class="btn ghost full" onclick="pruefLoeschen('${p.id}')">Termin löschen</button>
+    </div>`
+    : `
+    ${heute && heute.themen.length ? `<div class="card pruefheute">
+      <span class="tag">Heute dran</span>
+      <h2 style="margin:8px 0 4px">${PRUEF_ART[heute.art][0]}</h2>
+      <p class="soft" style="margin:0 0 14px">${PRUEF_ART[heute.art][1]}</p>
+      <div class="pruefliste">
+        ${heute.themen.map(t => `<button class="pruefzeile" onclick="starteThemaAusPruefung(${JSON.stringify(t).replace(/"/g, "&quot;")})">
+          <div><b>${sicher(t)}</b><span>${z(anzahlAufgaben(t))} ${anzahlAufgaben(t) === 1 ? "Aufgabe" : "Aufgaben"}</span></div>
+          <span class="pruefrest">üben</span>
+        </button>`).join("")}
+      </div>
+      ${heute.art === "probe" ? `<button class="btn full" style="margin-top:14px"
+        onclick="pruefLaufStarten('${p.id}', ${JSON.stringify(p.themen).replace(/"/g, "&quot;")})">Generalprobe am Stück</button>` : ""}
+    </div>` : ""}
+
+    <div class="card">
+      <p class="ueberschrift">Dein Plan bis zum ${sicher(pruefTagText(p.datum))}</p>
+      <div class="planliste">
+        ${plan.map(e => `<div class="plantag ${e.tag === 0 ? "jetzt" : ""}">
+          <div class="plandatum">${e.tag === 0 ? "heute" : e.tag === 1 ? "morgen" : sicher(pruefTagText(e.datum))}</div>
+          <div class="planinhalt">
+            <span class="planart art-${e.art}">${PRUEF_ART[e.art][0]}</span>
+            <span>${e.themen.map(sicher).join(" · ")}</span>
+          </div>
+        </div>`).join("")}
+        <div class="plantag ziel">
+          <div class="plandatum">${sicher(pruefTagText(p.datum))}</div>
+          <div class="planinhalt"><span class="planart art-ziel">Die Arbeit</span><span>${sicher(p.name)}</span></div>
+        </div>
+      </div>
+      <p class="small soft" style="margin:14px 0 0">So ist der Plan gebaut: Erst geht jedes Thema
+        einmal durch. Danach kommt alles noch einmal, das Wackeligste zuerst. Am Tag davor
+        einmal alles am Stück — dann weißt du, wo du stehst, und hast noch einen Abend Zeit.</p>
+    </div>
+
+    <div class="card">
+      <button class="btn ghost full" onclick="pruefLaufStarten('${p.id}', ${JSON.stringify(p.themen).replace(/"/g, "&quot;")})">Generalprobe jetzt schon machen</button>
+      <p class="small soft" style="margin:10px 0 0">${p.themen.length === 1
+        ? "Eine Aufgabe zum Thema."
+        : `Alle ${z(p.themen.length)} Themen am Stück, je eine Aufgabe.`}
+        Danach weißt du, was noch hakt.</p>
+    </div>`}
+
+    ${ohneAufgaben.length ? `<div class="card">
+      <p class="small soft" style="margin:0">Für ${ohneAufgaben.map(sicher).join(", ")}
+        gibt es noch keine Aufgaben — ${ohneAufgaben.length === 1 ? "es steht" : "sie stehen"} deshalb nicht im Plan.</p>
+    </div>` : ""}
+
+    ${tage >= 0 ? `<div class="card">
+      <button class="btn ghost full" onclick="pruefLoeschen('${p.id}')">Termin löschen</button>
+    </div>` : ""}`;
+}
+
+/* Ein Thema aus dem Plan heraus üben — danach wieder zurück zum Plan */
+let vorPruefung = null;
+function starteThemaAusPruefung(thema){
+  vorPruefung = pruefOffen;
+  const ort = themaInfo(thema);
+  if (ort){ fach = ort.fach; klasse = ort.klasse; }
+  starte(thema);
+}
+
+/* ---------- Nach der Generalprobe ---------- */
+function pruefungFertigHtml(){
+  const p = PRUEFUNGEN.find(x => x.id === (pruefLauf && pruefLauf.id));
+  const anzahl = pruefLauf ? pruefLauf.geschafft : 0;
+  return `
+    <div class="card geschafftkarte">
+      <div class="geschafftkreis">✓</div>
+      <h1>Generalprobe geschafft</h1>
+      <div class="geschafftzahlen">
+        <div><b>${z(anzahl)}</b><span>${anzahl === 1 ? "Thema" : "Themen"}</span></div>
+        ${p ? `<div><b>${pruefRestText(p.datum)}</b><span>bis zur Arbeit</span></div>` : ""}
+      </div>
+      <p class="geschafftlob">Was dabei gehakt hat, liegt jetzt in deinem Wiederholungsplan
+        und kommt von allein wieder.</p>
+    </div>
+    <div class="card">
+      ${p ? `<button class="btn full" onclick="pruefLauf=null;pruefOeffnen('${p.id}')">Zurück zum Plan</button>` : ""}
+      <button class="btn ghost full" style="margin-top:10px" onclick="pruefLauf=null;zurUebersicht()">Zur Übersicht</button>
+    </div>`;
+}
+
 /* ---------- Vokabeltrainer ----------
    Dieselbe Regel wie bei den Aufgaben: Die Lösung wird nie einfach hingelegt.
    Die Hilfe kommt in vier Stufen — Länge, erster Buchstabe, Beispielsatz und
@@ -26362,6 +26833,9 @@ function pfadFuer(a, f, k){
     case "vokabelnUeben":
     case "vokabelnFertig": return "/vokabeln";
     case "vokabelnEigene": return "/vokabeln/eigene";
+    case "pruefungen":
+    case "pruefung":
+    case "pruefungFertig": return "/pruefung";
     case "dashboard":    return "/dashboard";
     case "baustelle":    return "/baustelle";
     case "passwortNeu":  return "/passwort-neu";
@@ -26384,7 +26858,7 @@ function ansichtAusPfad(){
     faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden", feedback:"feedback",
     faq:"faq", ueber:"ueber", warum:"warum", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
     konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle",
-    vokabeln:"vokabeln"};
+    vokabeln:"vokabeln", pruefung:"pruefungen"};
   /* /vokabeln/eigene ist die einzige Adresse mit zweiter Stufe außerhalb der Fächer */
   if (p === "vokabeln" && teile[1] === "eigene"){ ansicht = "vokabelnEigene"; return; }
   const ziel = direkt[p];
@@ -26828,6 +27302,13 @@ async function weiter(){
   if (schrittNr < aktuell.schritte.length) neueReihenfolge();
   if (schrittNr >= aktuell.schritte.length){
     merkeGeuebt();
+    /* In der Generalprobe geht es ohne Zwischenstopp zum naechsten Thema —
+       sonst reisst der Lauf nach jeder Aufgabe ab. */
+    if (pruefLaufAktiv()){
+      await speichereErgebnis();
+      pruefLaufWeiter();
+      return;
+    }
     ansicht = "fertig"; render();
     await speichereErgebnis();
     render();
@@ -27205,6 +27686,9 @@ function render(gewaehlt){
   if (ansicht === "serie"){ el.innerHTML = serieHtml(); return; }
   if (ansicht === "vokabeln"){ el.innerHTML = vokabelnHtml(); return; }
   if (ansicht === "vokabelnEigene"){ el.innerHTML = vokabelnEigeneHtml(); return; }
+  if (ansicht === "pruefungen"){ el.innerHTML = pruefungenHtml(); return; }
+  if (ansicht === "pruefung"){ el.innerHTML = pruefungHtml(); return; }
+  if (ansicht === "pruefungFertig"){ el.innerHTML = pruefungFertigHtml(); return; }
   if (ansicht === "vokabelnUeben"){
     el.innerHTML = vokUebenHtml();
     /* Beim Weiterblättern soll der Finger nicht erst das Feld suchen müssen. */
