@@ -248,6 +248,51 @@
     color:var(--ink);font-size:14.5px;font-weight:600;cursor:pointer;font-family:inherit}
   .vokknopf:hover{border-color:var(--ac)}
   .vokknopf.an{background:var(--ac-soft);border-color:var(--ac);color:var(--ac-dark)}
+  /* ---------- Arbeitsblatt ----------
+     Am Bildschirm sieht man eine Vorschau, die schon wie Papier aussieht.
+     Beim Drucken wird alles andere ausgeblendet — Kopfleiste, Baustellenband,
+     Knöpfe —, damit nur das Blatt auf dem Papier landet. */
+  .blatt{background:#fff;color:#16211e;border:1.5px solid var(--line);border-radius:14px;
+    padding:26px 24px;margin-bottom:16px;font-size:16px;line-height:1.6}
+  .blattkopf{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+    border-bottom:2px solid #16211e;padding-bottom:12px;margin-bottom:18px}
+  .blattkopf h1{font-size:23px;margin:0 0 3px;letter-spacing:-.02em;color:#16211e}
+  .blattkopf p{margin:0;font-size:13.5px;color:#5b6b66}
+  .blattname{flex:none;text-align:right;font-size:12px;color:#5b6b66}
+  .blattname i{display:block;width:120px;border-bottom:1px solid #16211e;margin-top:16px}
+  .blattaufgaben,.blattloesungen{margin:0;padding-left:26px}
+  .blattaufgaben li{margin-bottom:20px;break-inside:avoid;page-break-inside:avoid}
+  .blattthema{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.05em;
+    text-transform:uppercase;color:#5b6b66;margin-bottom:3px}
+  .blatttext{font-size:16.5px}
+  .blatthilfe{margin-top:7px;font-size:12.5px;color:#5b6b66;line-height:1.5}
+  /* Nur die Beschriftung „Wenn du nicht weiterkommst“ ist ein eigener Block —
+     das Fettgedruckte innerhalb der Fragen muss im Fluss bleiben. */
+  .blatthilfe > b{display:block}
+  /* Nur die direkten Kinder — sonst werden auch die span im Aufgabentext
+     selbst zu Blöcken und die Frage zerfällt in einzelne Zeilen. */
+  .blatthilfe > span{display:block;padding-left:12px;text-indent:-12px}
+  .blatthilfe > span::before{content:"· "}
+  .blattfeld{margin-top:9px;height:74px;border:1px dashed #c8d5d1;border-radius:8px}
+  .blattloesungen li{margin-bottom:9px}
+  .blattloesungen > li > span{display:block;font-size:12.5px;color:#5b6b66}
+  .blattfuss{margin-top:22px;padding-top:10px;border-top:1px solid #dfe8e5;
+    font-size:11.5px;color:#5b6b66;text-align:center}
+  .blattumbruch{height:0}
+  .blatt svg{max-width:300px}
+  @media print{
+    @page{margin:16mm 13mm}
+    body{background:#fff}
+    /* Erst alles unsichtbar, dann den Weg zum Blatt wieder freigeben — das
+       trifft zuverlässig auch, was außerhalb der Seitenmitte steht. */
+    body *{visibility:hidden}
+    .blatt,.blatt *{visibility:visible}
+    .blatt{position:absolute;left:0;top:0;width:100%;border:none;border-radius:0;
+      padding:0;margin:0;box-shadow:none}
+    .nichtdrucken{display:none !important}
+    .blattumbruch{break-after:page;page-break-after:always}
+    .blattfeld{border-color:#bbb}
+  }
   .vokkarte{text-align:center;padding-top:26px;padding-bottom:26px}
   .vokwort{font-size:clamp(26px,7vw,36px);font-weight:800;line-height:1.2;margin:10px 0;color:var(--ink)}
   .vokkopf{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
@@ -24507,6 +24552,7 @@ function menueHtml(){
           <span>${menueAuf === f ? "▾" : "▸"}</span></button>
         ${menueAuf === f ? klassen(f) : ""}`).join("")}
       ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "mpunkt")}
+      ${navLink("/arbeitsblatt", "zeigeArbeitsblatt()", "Arbeitsblatt drucken", "mpunkt")}
       ${benutzer ? navLink("/plan", "zeigePlan();menueSchliessen()", "Mein Wiederholungsplan", "mpunkt") : ""}
       ${benutzer ? navLink("/anfragen", "zeigeAnfragen();menueSchliessen()", "Meine Anfragen", "mpunkt") : ""}
 
@@ -24928,6 +24974,7 @@ function fussleisteHtml(){
                 außerhalb der App — sie sollen wirklich geladen werden. */""}
           <a class="fusslink" href="/erklaerungen.html">Alle Erklärungen</a>
           ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "fusslink")}
+          ${navLink("/arbeitsblatt", "zeigeArbeitsblatt()", "Arbeitsblatt drucken", "fusslink")}
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
         <div class="fussspalte">
@@ -26004,6 +26051,204 @@ function navSnapshot(){
 }
 /* Adresse (URL) für die aktuelle Ansicht */
 /* Adresse zu einer Ansicht (rein, ohne Nebenwirkung) — auch für „Zurück"-Links genutzt */
+/* ---------- Arbeitsblätter zum Ausdrucken ----------
+   Nicht jeder übt am Bildschirm. Vor einer Arbeit will man Papier vor sich
+   haben, Lehrer wollen etwas zum Austeilen, Eltern etwas zum Danebensitzen.
+
+   Erzeugt wird nichts Neues: Es sind dieselben Aufgaben wie in der App, nur
+   frisch gewürfelt und untereinander gesetzt. Das Lösungsblatt steht am
+   Schluss auf einer eigenen Seite — man kann es abtrennen, bevor man das
+   Blatt weitergibt.
+
+   Ein PDF entsteht über die Druckfunktion des Browsers („Als PDF speichern“).
+   Das spart eine fremde Bibliothek und funktioniert auf jedem Gerät. */
+let abThemen = [];            /* welche Themen aufs Blatt kommen */
+let abAnzahl = 10;
+let abLoesungen = true;
+let abHilfen = false;         /* die führenden Fragen als Hilfe mitdrucken */
+let abBlatt = null;           /* die gezogenen Aufgaben, damit sie beim Blättern stehen bleiben */
+let abFach = "";
+let abKlasse = null;
+let abMeldung = "";
+
+function zeigeArbeitsblatt(themen){
+  menueOffen = false; abMeldung = ""; abBlatt = null;
+  if (Array.isArray(themen) && themen.length){
+    abThemen = themen.filter(t => anzahlAufgaben(t) > 0);
+    const ort = themaInfo(abThemen[0]);
+    if (ort){ abFach = ort.fach; abKlasse = ort.klasse; }
+  } else if (!abFach){
+    abFach = fach || "mathe";
+    abKlasse = klasse || stufenVon(abFach)[0];
+  }
+  ansicht = "arbeitsblatt"; render();
+}
+function abFachWahl(f){
+  abFach = f;
+  if (!stufenVon(f).includes(abKlasse)) abKlasse = stufenVon(f)[0];
+  abThemen = []; render();
+}
+function abKlasseWahl(k){ abKlasse = k; abThemen = []; render(); }
+function abThemaUm(thema){
+  const i = abThemen.indexOf(thema);
+  if (i >= 0) abThemen.splice(i, 1); else abThemen.push(thema);
+  render();
+}
+
+/* Die Aufgaben ziehen. Reihum über die gewählten Themen, damit ein gemischtes
+   Blatt auch wirklich gemischt ist und nicht erst zehnmal dasselbe kommt. */
+function abZiehen(){
+  if (!abThemen.length){ abMeldung = "Wähl mindestens ein Thema aus."; render(); return; }
+  const raus = [];
+  for (let i = 0; i < abAnzahl; i++){
+    const thema = abThemen[i % abThemen.length];
+    const anzahl = anzahlAufgaben(thema);
+    if (!anzahl) continue;
+    const a = baueAufgabe(thema, Math.floor(i / abThemen.length) % anzahl);
+    entdoppeln(a);
+    /* Die führenden Fragen sind auf Papier nur dann eine Hilfe, wenn sie die
+       Lösung nicht schon enthalten. In der App ist das kein Problem — dort
+       liest man den letzten Schritt erst, wenn man vorher geantwortet hat.
+       Auf dem Blatt stehen alle Fragen gleichzeitig da, und eine Kontrollfrage
+       wie „Ist 287 ungefähr 10-mal so groß wie 28,7?“ wäre die Antwort. */
+    const nackt = (x) => String(x).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const loesung = nackt(a.loesung);
+    const hilfen = (a.schritte || []).map(s => s.frage)
+      .filter(f => f && !(loesung.length > 1 && nackt(f).includes(loesung)));
+    raus.push({thema, aufgabe: a, hilfen});
+  }
+  if (!raus.length){ abMeldung = "Für diese Auswahl gibt es keine Aufgaben."; render(); return; }
+  abBlatt = raus;
+  ansicht = "arbeitsblattDruck"; render();
+}
+function abNeuZiehen(){ ansicht = "arbeitsblatt"; abZiehen(); }
+function abDrucken(){ window.print(); }
+
+/* ---------- Einstellseite ---------- */
+function arbeitsblattHtml(){
+  const themen = (KATALOG[abFach] && KATALOG[abFach].themen[abKlasse] || [])
+    .filter(t => anzahlAufgaben(t) > 0);
+  const sicher = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+
+  return `
+    <div class="card">
+      ${navLink("/start", "zurUebersicht()", "← Zur Übersicht", "zurueck")}
+      <span class="tag">Zum Ausdrucken</span>
+      <h1>Arbeitsblatt</h1>
+      <p class="soft" style="margin:10px 0 0">Dieselben Aufgaben wie in der App, nur auf Papier —
+        frisch gewürfelt, mit Platz zum Rechnen. Das Lösungsblatt steht auf einer eigenen Seite
+        am Schluss, zum Abtrennen.</p>
+    </div>
+
+    ${abMeldung ? `<div class="card vokmeldung"><p style="margin:0">${sicher(abMeldung)}</p></div>` : ""}
+
+    <div class="card">
+      <p class="ueberschrift">Welches Fach?</p>
+      <div class="vokwahl">
+        ${Object.entries(KATALOG).map(([k, v]) =>
+          `<button class="vokknopf ${abFach === k ? "an" : ""}" onclick="abFachWahl('${k}')">${v.name}</button>`).join("")}
+      </div>
+
+      <p class="ueberschrift" style="margin-top:18px">${stufenwort(abFach) === "Lehrjahr" ? "Welches Lehrjahr?" : "Welche Klasse?"}</p>
+      <div class="vokwahl">
+        ${stufenVon(abFach).map(k =>
+          `<button class="vokknopf ${abKlasse === k ? "an" : ""}" onclick="abKlasseWahl(${k})">${stufenText(abFach, k)}</button>`).join("")}
+      </div>
+
+      <p class="ueberschrift" style="margin-top:18px">Welche Themen?</p>
+      ${themen.length ? `<div class="pruefthemen">
+        ${themen.map(t => `<button class="pruefthema ${abThemen.includes(t) ? "an" : ""}"
+          onclick="abThemaUm(${JSON.stringify(t).replace(/"/g, "&quot;")})">
+          <span class="kasten">${abThemen.includes(t) ? "✓" : ""}</span>${t}</button>`).join("")}
+      </div>` : `<p class="soft" style="margin:0">Für diese Auswahl gibt es noch keine Aufgaben.</p>`}
+    </div>
+
+    <div class="card">
+      <p class="ueberschrift">Wie viele Aufgaben?</p>
+      <div class="vokwahl">
+        ${[5, 10, 15, 20].map(n =>
+          `<button class="vokknopf ${abAnzahl === n ? "an" : ""}" onclick="abAnzahl=${n};render()">${n}</button>`).join("")}
+      </div>
+
+      <p class="ueberschrift" style="margin-top:18px">Was soll mit drauf?</p>
+      <div class="vokwahl">
+        <button class="vokknopf ${abLoesungen ? "an" : ""}" onclick="abLoesungen=!abLoesungen;render()">
+          ${abLoesungen ? "✓ " : ""}Lösungsblatt</button>
+        <button class="vokknopf ${abHilfen ? "an" : ""}" onclick="abHilfen=!abHilfen;render()">
+          ${abHilfen ? "✓ " : ""}Hilfefragen</button>
+      </div>
+      <p class="small soft" style="margin:12px 0 0">Die <b>Hilfefragen</b> sind dieselben Fragen, mit denen
+        dich die App hinführt. Auf Papier stehen sie klein unter der Aufgabe — man liest sie erst,
+        wenn man nicht weiterkommt.</p>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <p class="soft" style="margin:0 0 14px">${abThemen.length
+        ? `<b>${z(abAnzahl)}</b> Aufgaben aus ${z(abThemen.length)} ${abThemen.length === 1 ? "Thema" : "Themen"}.`
+        : "Noch kein Thema ausgewählt."}</p>
+      ${abThemen.length ? `<button class="btn full" onclick="abZiehen()">Arbeitsblatt erstellen</button>` : ""}
+    </div>`;
+}
+
+/* ---------- Das Blatt selbst ---------- */
+function arbeitsblattDruckHtml(){
+  if (!abBlatt) return `<div class="card"><p>Kein Blatt erzeugt.</p>
+    <button class="btn full" style="margin-top:12px" onclick="zeigeArbeitsblatt()">Zurück</button></div>`;
+  const sicher = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const zahm = (s) => String(s).replace(/<(?!\/?(b|i|br|sup|sub|em|strong|span|svg|g|path|rect|circle|line|text|polyline|polygon|tspan|defs|marker)\b)[^>]*>/g, "");
+  const titel = abThemen.length === 1 ? abThemen[0] : `${KATALOG[abFach].name} ${stufenText(abFach, abKlasse)}`;
+
+  return `
+    <div class="card nichtdrucken">
+      <button class="zurueck" onclick="zeigeArbeitsblatt()">← Einstellungen ändern</button>
+      <h2 style="margin:8px 0 6px">Fertig zum Drucken</h2>
+      <p class="soft" style="margin:0 0 14px">Im Druckfenster kannst du statt eines Druckers auch
+        <b>„Als PDF speichern“</b> wählen. Alles außer dem Blatt wird beim Drucken ausgeblendet.</p>
+      <button class="btn full" onclick="abDrucken()">Drucken oder als PDF speichern</button>
+      <button class="btn ghost full" style="margin-top:10px" onclick="abNeuZiehen()">Andere Aufgaben würfeln</button>
+    </div>
+
+    <div class="blatt">
+      <div class="blattkopf">
+        <div>
+          <h1>${sicher(titel)}</h1>
+          <p>${sicher(KATALOG[abFach].name)} · ${sicher(stufenText(abFach, abKlasse))}
+            ${abThemen.length > 1 ? " · " + abThemen.map(sicher).join(", ") : ""}</p>
+        </div>
+        <div class="blattname"><span>Name</span><i></i></div>
+      </div>
+
+      <ol class="blattaufgaben">
+        ${abBlatt.map(e => `<li>
+          ${abThemen.length > 1 ? `<span class="blattthema">${sicher(e.thema)}</span>` : ""}
+          <div class="blatttext">${zahm(e.aufgabe.text)}</div>
+          ${abHilfen && e.hilfen && e.hilfen.length ? `<div class="blatthilfe">
+            <b>Wenn du nicht weiterkommst:</b>
+            ${e.hilfen.map(f => `<span>${zahm(f)}</span>`).join("")}
+          </div>` : ""}
+          <div class="blattfeld"></div>
+        </li>`).join("")}
+      </ol>
+
+      <p class="blattfuss">Endlich kapiert · endlichkapiert.com — nie die Lösung, nur Fragen, die hinführen.</p>
+
+      ${abLoesungen ? `
+      <div class="blattumbruch"></div>
+      <div class="blattkopf">
+        <div>
+          <h1>Lösungen</h1>
+          <p>${sicher(titel)} · zum Abtrennen</p>
+        </div>
+      </div>
+      <ol class="blattloesungen">
+        ${abBlatt.map(e => `<li><b>${zahm(e.aufgabe.loesung)}</b>${
+          e.aufgabe.schluss ? `<span>${zahm(e.aufgabe.schluss)}</span>` : ""}</li>`).join("")}
+      </ol>
+      <p class="blattfuss">Nur die Ergebnisse. Der Weg dorthin steht in der App —
+        dort wird gefragt statt vorgesagt.</p>` : ""}
+    </div>`;
+}
+
 /* ---------- Prüfungsmodus ----------
    Der Wiederholungsplan arbeitet vorwärts: Was hakt, kommt irgendwann wieder.
    Vor einer Klassenarbeit hilft das wenig — da gibt es einen festen Termin,
@@ -26836,6 +27081,8 @@ function pfadFuer(a, f, k){
     case "pruefungen":
     case "pruefung":
     case "pruefungFertig": return "/pruefung";
+    case "arbeitsblatt":
+    case "arbeitsblattDruck": return "/arbeitsblatt";
     case "dashboard":    return "/dashboard";
     case "baustelle":    return "/baustelle";
     case "passwortNeu":  return "/passwort-neu";
@@ -26858,7 +27105,7 @@ function ansichtAusPfad(){
     faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden", feedback:"feedback",
     faq:"faq", ueber:"ueber", warum:"warum", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
     konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle",
-    vokabeln:"vokabeln", pruefung:"pruefungen"};
+    vokabeln:"vokabeln", pruefung:"pruefungen", arbeitsblatt:"arbeitsblatt"};
   /* /vokabeln/eigene ist die einzige Adresse mit zweiter Stufe außerhalb der Fächer */
   if (p === "vokabeln" && teile[1] === "eigene"){ ansicht = "vokabelnEigene"; return; }
   const ziel = direkt[p];
@@ -27686,6 +27933,8 @@ function render(gewaehlt){
   if (ansicht === "serie"){ el.innerHTML = serieHtml(); return; }
   if (ansicht === "vokabeln"){ el.innerHTML = vokabelnHtml(); return; }
   if (ansicht === "vokabelnEigene"){ el.innerHTML = vokabelnEigeneHtml(); return; }
+  if (ansicht === "arbeitsblatt"){ el.innerHTML = arbeitsblattHtml(); return; }
+  if (ansicht === "arbeitsblattDruck"){ el.innerHTML = arbeitsblattDruckHtml(); return; }
   if (ansicht === "pruefungen"){ el.innerHTML = pruefungenHtml(); return; }
   if (ansicht === "pruefung"){ el.innerHTML = pruefungHtml(); return; }
   if (ansicht === "pruefungFertig"){ el.innerHTML = pruefungFertigHtml(); return; }
