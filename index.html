@@ -494,6 +494,23 @@
   .grosswahl.mitfarbe .wahltext{min-width:0;font-size:inherit}
   .grosswahl.mitfarbe b{color:var(--akz-dark);margin-bottom:1px}
   .grosswahl.mitfarbe .wahltext span{display:block}
+  /* Unterbereich eines Fachs: eingerückt, mit einer Linie an die Kachel darüber
+     angebunden — damit man sieht, dass es zu Englisch gehört und kein Fach ist. */
+  .fachblock{display:flex;flex-direction:column;gap:8px}
+  .unterpunkt{display:flex;align-items:center;gap:12px;margin-left:26px;position:relative;
+    background:var(--card);border:1.5px solid var(--line);border-radius:13px;
+    padding:11px 14px;color:var(--ink);text-decoration:none;
+    transition:border-color .12s,background .12s}
+  .unterpunkt::before{content:"";position:absolute;left:-14px;top:-10px;bottom:50%;
+    width:12px;border-left:1.5px solid var(--line);border-bottom:1.5px solid var(--line);
+    border-bottom-left-radius:9px}
+  .unterpunkt:hover{border-color:var(--akz);background:var(--akz-soft)}
+  .unterpunkt .unterzeichen{flex:none;width:32px;height:32px;border-radius:10px;
+    background:var(--akz);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:900}
+  .unterpunkt .untertext{min-width:0}
+  .unterpunkt b{display:block;font-size:16px;color:var(--akz-dark);margin-bottom:1px}
+  .unterpunkt .untertext span{display:block;font-size:13px;color:var(--soft)}
   .pfad{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
   .pfad button,.pfad a{background:var(--fach-soft);border:none;border-radius:999px;padding:5px 13px;
     font:inherit;font-size:13.5px;font-weight:700;color:var(--fach-dark);cursor:pointer;text-decoration:none}
@@ -649,6 +666,9 @@
   .fusslink{background:none;border:none;font:inherit;font-size:14px;color:var(--soft);
     text-decoration:underline;cursor:pointer;padding:6px 0}
   .fusslink:hover{color:var(--ac-dark)}
+  /* Unterbereich im Fußmenü — eingerückt, damit die Zuordnung sichtbar bleibt */
+  .fusslink.fussunter{margin-left:10px;padding-left:12px;font-size:13.5px;
+    border-left:1.5px solid var(--line)}
 
   /* ---------- Antwort eintippen ---------- */
   .eingabezeile{display:flex;gap:10px;align-items:stretch}
@@ -24766,7 +24786,9 @@ function fussleisteHtml(){
           <p class="fusstitel">Lernen</p>
           ${navLink("/start", "zurUebersicht()", "Übersicht", "fusslink")}
           ${Object.entries(KATALOG).map(([k, v]) =>
-            navLink(`/${k}`, `waehleFach('${k}')`, v.name, "fusslink")).join("")}
+            navLink(`/${k}`, `waehleFach('${k}')`, v.name, "fusslink") +
+            /* Unterbereiche stehen eingerückt unter ihrem Fach */
+            (v.vokabeln ? navLink("/vokabeln", "zeigeVokabeln()", "Vokabeln", "fusslink fussunter") : "")).join("")}
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
         <div class="fussspalte">
@@ -26624,16 +26646,28 @@ function render(gewaehlt){
               gesamt += liste.length;
               fertig += liste.filter(t => AUFGABEN[t]).length;
             }
-            return navLink(`/${k}`, `waehleFach('${k}')`, `
+            const farbe = `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`;
+            const kachel = navLink(`/${k}`, `waehleFach('${k}')`, `
               <span class="wahlzeichen">${v.name[0]}</span>
               <span class="wahltext"><b>${v.langname || v.name}</b>
                 <span>${fertig} von ${gesamt} Themen fertig</span></span>
-            `, "grosswahl mitfarbe", `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
+            `, "grosswahl mitfarbe", farbe);
+            /* Vokabeln sind ein Unterbereich des Fachs, kein eigenes Fach —
+               deshalb hängen sie eingerückt unter der Kachel statt daneben. */
+            if (!v.vokabeln) return kachel;
+            return `<div class="fachblock" style="${farbe}">
+              ${kachel}
+              ${navLink("/vokabeln", "zeigeVokabeln()", `
+                <span class="unterzeichen">Aa</span>
+                <span class="untertext"><b>Vokabeln</b>
+                  <span>${z(vokabelAnzahl())} Wörter · eigener Trainer</span></span>
+              `, "unterpunkt")}
+            </div>`;
           }).join("")}
         </div>`;
       }).join("")}
       <div class="card">
-        <p class="small soft" style="margin:0 0 12px">Englisch, Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu.</p>
+        <p class="small soft" style="margin:0 0 12px">Französisch, Geschichte und Erdkunde kommen nach demselben Muster dazu.</p>
         ${navLink("/einstellungen", "zeigeEinstellungen()", "Einstellungen", "btn ghost full")}
         ${navLink("/hilfe", "zeigeMelden()", "Hilfe", "btn ghost full", "margin-top:10px")}
         ${navLink("/feedback", "zeigeFeedback()", "Feedback", "btn ghost full", "margin-top:10px")}
@@ -26649,7 +26683,7 @@ function render(gewaehlt){
     if (!KATALOG[f] || !KATALOG[f].vokabeln) return "";
     return `
       <div class="card vokeinstieg">
-        <span class="tag">Eigener Bereich</span>
+        <span class="tag">${KATALOG[f].name} · Unterbereich</span>
         <h2 style="margin:8px 0 6px">Vokabeln üben</h2>
         <p class="soft" style="margin:0 0 14px">${z(vokabelAnzahl())} Wörter nach Klasse und Thema geordnet —
           in beide Richtungen, mit Hilfe in Stufen. Unabhängig von der Grammatik.</p>
