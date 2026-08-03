@@ -2504,7 +2504,142 @@ const englischProben = {
   }
 };
 
-const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2, ...deutschProben3, ...englischProben,
+const englischProben2 = {
+
+  "Simple Past": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+    const verb = (t.match(/(?:Setz das Verb|Setz) (\w+) ins Simple Past/) || [])[1];
+    if (!verb) return "konnte das Verb nicht lesen: " + t.slice(0, 90);
+    /* eigene Tabelle, unabhängig von der Aufgabe aufgestellt */
+    const REGEL = {work:"worked", play:"played", open:"opened", live:"lived", use:"used",
+                   study:"studied", carry:"carried", stop:"stopped", plan:"planned"};
+    const UNREGEL = {go:"went", see:"saw", buy:"bought", think:"thought", take:"took",
+                     write:"wrote", find:"found", make:"made", come:"came", give:"gave"};
+    const soll = REGEL[verb] || UNREGEL[verb];
+    if (!soll) return `für „${verb}“ ist keine Vergangenheitsform hinterlegt`;
+    if (l !== soll) return `das Simple Past von „${verb}“ ist „${soll}“, angegeben ist „${l}“`;
+    /* die Schreibregel muss zur Form passen */
+    if (REGEL[verb]){
+      const nurD = verb.slice(-1) === "e";
+      if (nurD && soll !== verb + "d") return `„${verb}“ endet auf e, dann darf nur -d folgen`;
+      if (!nurD && /y$/.test(verb) && !/[aeiou]y$/.test(verb) && !/ied$/.test(soll))
+        return `„${verb}“ endet auf Konsonant + y, dann muss -ied folgen`;
+    }
+    return null;
+  },
+
+  "Present Progressive": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* Form bilden: be-Form plus -ing */
+    if (/Bilde das Present Progressive/.test(t)) {
+      const verb = (t.match(/Present Progressive von (\w+)\s*:/) || [])[1];
+      const wer  = (t.match(/:\s*(I|You|He|She|It|We|They) ___ /) || [])[1];
+      if (!verb || !wer) return "konnte Verb oder Subjekt nicht lesen: " + t.slice(0, 100);
+      const BE = {I:"am", He:"is", She:"is", It:"is", You:"are", We:"are", They:"are"};
+      const ING = {work:"working", read:"reading", write:"writing", make:"making",
+                   sit:"sitting", run:"running", play:"playing", take:"taking"};
+      if (!ING[verb]) return `für „${verb}“ ist keine -ing-Form hinterlegt`;
+      const soll = BE[wer] + " " + ING[verb];
+      return l === soll ? null : `zu „${wer}“ und „${verb}“ gehört „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* Zeitwahl: das Signalwort im Satz entscheidet */
+    const SATZ = {
+      "flicker":"is flickering", "get":"get", "sleep":"is sleeping", "boil":"boils",
+      "walk":"walks", "knock":"is knocking", "have":"have", "work":"am working"
+    };
+    const verb = (t.match(/\((\w+)\)/) || [])[1];
+    if (!verb) return "konnte das Verb in Klammern nicht lesen: " + t.slice(0, 100);
+    const soll = SATZ[verb];
+    if (!soll) return `für „${verb}“ ist keine Form hinterlegt`;
+    if (l !== soll) return `zu „${verb}“ gehört „${soll}“, angegeben ist „${l}“`;
+    /* Gegenprobe: Verlaufsform nur, wenn ein Jetzt-Signal im Satz steht */
+    const jetzt = /Look!|Listen!|Be quiet|At the moment|right now/i.test(t);
+    const verlauf = /^(am|is|are) /.test(soll);
+    if (jetzt !== verlauf)
+      return `Signal und Zeit passen nicht zusammen: ${jetzt ? "Jetzt-Signal" : "kein Jetzt-Signal"} im Satz, Lösung ist „${soll}“`;
+    return null;
+  },
+
+  "Steigerung von Adjektiven": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* unregelmäßige Steigerung */
+    const un = (t.match(/Steigere (\w+) \(/) || [])[1];
+    if (un) {
+      const UN = {good:["better","the best"], bad:["worse","the worst"],
+                  much:["more","the most"], many:["more","the most"],
+                  little:["less","the least"], far:["further","the furthest"]};
+      if (!UN[un]) return `für „${un}“ sind keine unregelmäßigen Formen hinterlegt`;
+      const zweite = /zweite/.test(t);
+      const soll = UN[un][zweite ? 1 : 0];
+      return l === soll ? null : `die ${zweite ? "zweite" : "erste"} Stufe von „${un}“ ist „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* regelmäßige Steigerung — Silbenzahl selbst hinterlegt */
+    const wort = (t.match(/erste Steigerungsstufe von (\w+)\s*\?/) || [])[1];
+    if (!wort) return "konnte das Adjektiv nicht lesen: " + t.slice(0, 100);
+    const SILBEN = {small:1, fast:1, cheap:1, big:1, hot:1, easy:2, happy:2,
+                    expensive:3, difficult:3, interesting:4, dangerous:3};
+    const silben = SILBEN[wort];
+    if (!silben) return `für „${wort}“ ist keine Silbenzahl hinterlegt`;
+    const kurz = silben === 1 || (silben === 2 && /y$/.test(wort));
+    if (!kurz) {
+      const soll = "more " + wort;
+      return l === soll ? null : `„${wort}“ hat ${silben} Silben und wird mit more gesteigert, angegeben ist „${l}“`;
+    }
+    /* kurze Wörter: -er, mit Verdopplung oder y-Wandel */
+    let soll;
+    if (/y$/.test(wort)) soll = wort.slice(0, -1) + "ier";
+    else if (/[^aeiou][aeiou][^aeiouwxy]$/.test(wort)) soll = wort + wort.slice(-1) + "er";
+    else soll = wort + "er";
+    return l === soll ? null : `die erste Stufe von „${wort}“ ist „${soll}“, angegeben ist „${l}“`;
+  },
+
+  "some und any": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+    if (l !== "some" && l !== "any") return `Lösung ist weder some noch any, sondern „${l}“`;
+    /* Satztyp unabhängig aus dem Satz selbst bestimmen */
+    const frage    = /\?/.test(t);
+    const verneint = /aren't|hasn't|haven't|didn't|isn't|don't|doesn't/.test(t);
+    const angebot  = /Would you like|Could I have|Shall I/.test(t);
+    let soll;
+    if (angebot) soll = "some";
+    else if (verneint || frage) soll = "any";
+    else soll = "some";
+    if (verneint && frage) return "Satz ist gleichzeitig verneint und Frage — nicht vorgesehen";
+    return l === soll ? null : `${angebot ? "Angebot oder Bitte" : verneint ? "Verneinung" : frage ? "Frage" : "bejahte Aussage"} verlangt „${soll}“, angegeben ist „${l}“`;
+  },
+
+  "Possessivbegleiter": (a) => {
+    const t = roh(a.text), l = roh(a.loesung).trim();
+
+    /* its oder it's */
+    if (/its.*oder.*it's/.test(t) || /it's.*oder.*its/.test(t)) {
+      /* Probe: lässt sich „it is“ oder „it has“ einsetzen? */
+      const satz = (t.match(/Setz ein:\s*(.+)$/) || [])[1] || t;
+      const kurzform = /___ raining|___ been|___ too late/.test(satz);
+      const soll = kurzform ? "it's" : "its";
+      return l === soll ? null : `${kurzform ? "hier ist die Kurzform von it is oder it has gemeint" : "hier geht es um Besitz"} — richtig wäre „${soll}“, angegeben ist „${l}“`;
+    }
+
+    /* Form zur Person */
+    const POSS = {I:"my", You:"your", He:"his", She:"her", They:"their", We:"our"};
+    const wer = (t.match(/:\s*(I|You|He|She|We|They) /) || [])[1];
+    if (wer) {
+      const soll = POSS[wer];
+      return l === soll ? null : `zu „${wer}“ gehört „${soll}“, angegeben ist „${l}“`;
+    }
+    /* es bleibt der Fall mit „it“ als Besitzer: The dog wants ___ food. */
+    if (/The dog wants/.test(t))
+      return l === "its" ? null : `Besitzer ist der Hund, also „its“, angegeben ist „${l}“`;
+    return "konnte den Besitzer nicht lesen: " + t.slice(0, 100);
+  }
+};
+
+
+const proben = { ...matheProben, ...matheProben2, ...matheProben3, ...matheProben4, ...matheProben5, ...deutschProben, ...deutschProben2, ...deutschProben3, ...englischProben, ...englischProben2,
                  ...elektroProben, ...elektroProben2, ...elektroProben3, ...elektroProben4 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {

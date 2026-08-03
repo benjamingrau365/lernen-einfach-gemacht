@@ -10616,6 +10616,446 @@ Object.assign(AUFGABEN, {
                 F("the", "„the“ ist der bestimmte Artikel, hier ist der unbestimmte gefragt.")]}]};
  }
 ]
+,
+
+/* ===================== ENGLISCH · KLASSE 6 ===================== */
+
+"Simple Past":[
+
+ /* regelmäßige Formen und ihre Schreibregeln */
+ () => {
+   const f = pick([
+     {ein:"work",   past:"worked",  regel:"einfach -ed", satz:"I ___ in the workshop yesterday."},
+     {ein:"play",   past:"played",  regel:"einfach -ed", satz:"We ___ football last Sunday."},
+     {ein:"open",   past:"opened",  regel:"einfach -ed", satz:"She ___ the window an hour ago."},
+     {ein:"live",   past:"lived",   regel:"endet schon auf e — nur -d", satz:"They ___ in Berlin until 2019."},
+     {ein:"use",    past:"used",    regel:"endet schon auf e — nur -d", satz:"He ___ the wrong screwdriver."},
+     {ein:"study",  past:"studied", regel:"Konsonant + y wird zu -ied", satz:"I ___ for the test all evening."},
+     {ein:"carry",  past:"carried", regel:"Konsonant + y wird zu -ied", satz:"We ___ the boxes upstairs."},
+     {ein:"stop",   past:"stopped", regel:"kurzer Vokal + einzelner Konsonant — der wird verdoppelt", satz:"The bus ___ at the corner."},
+     {ein:"plan",   past:"planned", regel:"kurzer Vokal + einzelner Konsonant — der wird verdoppelt", satz:"They ___ the whole trip in one day."}
+   ]);
+   return {
+    typ:"text",
+    text:`Setz das Verb <b>${f.ein}</b> ins <b>Simple Past</b>:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.past,
+    schluss:"Das Simple Past erzählt von Abgeschlossenem. Bei regelmäßigen Verben ist die Form für alle Personen gleich — nur die Schreibweise hat ein paar Stolperstellen.",
+    schritte:[
+     {frage:"Woran erkennst du, dass hier das Simple Past verlangt ist?",
+      tipp:"Achte auf die Zeitangabe im Satz.",
+      tipp2:"Wörter wie yesterday, last Sunday, an hour ago, in 2019 zeigen auf einen abgeschlossenen Zeitpunkt in der Vergangenheit.",
+      optionen:[R("An der Zeitangabe — sie zeigt auf einen abgeschlossenen Zeitpunkt", "Richtig. Genau dafür ist das Simple Past da."),
+                F("An der Person im Satz", "Die Person ändert im Simple Past gar nichts — die Form ist für alle gleich."),
+                F("Daran, dass es eine Frage ist", "Es ist keine Frage, und Fragen bilden auch keine Zeit.")]},
+     {frage:`Welche Schreibregel greift bei <b>${f.ein}</b>?`,
+      tipp:"Schau auf die letzten zwei Buchstaben.",
+      tipp2:f.regel,
+      optionen: zieheVerschiedene([
+        R(f.regel, "Richtig."),
+        F(f.regel === "einfach -ed" ? "Konsonant + y wird zu -ied" : "einfach -ed", "Das trifft hier nicht zu."),
+        F(f.regel === "kurzer Vokal + einzelner Konsonant — der wird verdoppelt" ? "endet schon auf e — nur -d" : "kurzer Vokal + einzelner Konsonant — der wird verdoppelt", "Das trifft hier nicht zu.")], 3)},
+     {frage:"Wie heißt die Form also?",
+      tippAntwort: f.past,
+      tipp:"Wende die Regel an.",
+      tipp2:`Es heißt „${f.past}“.`,
+      optionen: zieheVerschiedene([
+        R(f.past, "Richtig."),
+        F(f.ein + "ed", f.past === f.ein + "ed" ? "" : "So einfach ist es hier nicht — die Schreibweise ändert sich."),
+        F(f.ein + "d", f.past === f.ein + "d" ? "" : "Ein einzelnes -d reicht nur, wenn das Verb schon auf e endet.")], 3)}]};
+ },
+
+ /* unregelmäßige Verben */
+ () => {
+   const f = pick([
+     {ein:"go",    past:"went",   satz:"We ___ to the cinema last night."},
+     {ein:"see",   past:"saw",    satz:"I ___ him at the station yesterday."},
+     {ein:"buy",   past:"bought", satz:"She ___ a new bike last month."},
+     {ein:"think", past:"thought", satz:"He ___ it was easy."},
+     {ein:"take",  past:"took",   satz:"They ___ the early train."},
+     {ein:"write", past:"wrote",  satz:"I ___ the report on Monday."},
+     {ein:"find",  past:"found",  satz:"We ___ the fault after two hours."},
+     {ein:"make",  past:"made",   satz:"He ___ a big mistake."},
+     {ein:"come",  past:"came",   satz:"They ___ home very late."},
+     {ein:"give",  past:"gave",   satz:"She ___ me the keys."}
+   ]);
+   const falsch = f.ein + (f.ein.slice(-1) === "e" ? "d" : "ed");
+   return {
+    typ:"text",
+    text:`Setz <b>${f.ein}</b> ins <b>Simple Past</b>:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.past,
+    schluss:"Unregelmäßige Verben folgen keiner Regel — man lernt sie in Dreiergruppen auswendig. Dafür sind es nur rund 100, und die häufigsten hast du nach kurzer Zeit drin.",
+    schritte:[
+     {frage:`Ist <b>${f.ein}</b> ein regelmäßiges Verb?`,
+      tipp:"Regelmäßig heißt: Die Vergangenheit entsteht mit -ed.",
+      tipp2:`Nein. „${falsch}“ gibt es nicht — ${f.ein} gehört zu den unregelmäßigen Verben.`,
+      optionen:[R("Nein, es ist unregelmäßig", "Richtig — die Form musst du auswendig kennen."),
+                F("Ja, es bekommt -ed", `Dann müsste es „${falsch}“ heißen. Das Wort gibt es nicht.`),
+                F("Das kann man nicht wissen", "Doch — unregelmäßige Verben stehen in jeder Liste hinten im Buch.")]},
+     {frage:"Was hilft dir bei unregelmäßigen Verben?",
+      tipp:"Wie stehen sie im Buch?",
+      tipp2:"In Dreiergruppen: Grundform, Simple Past, Partizip. Zum Beispiel go – went – gone.",
+      optionen:[R("Sie in Dreiergruppen auswendig lernen", "Genau — Grundform, Simple Past, Partizip zusammen."),
+                F("Eine Regel für die Endung suchen", "Es gibt keine. Genau deshalb heißen sie unregelmäßig."),
+                F("Immer -ed anhängen und hoffen", "Damit liegst du bei diesen Verben immer falsch.")]},
+     {frage:`Wie heißt das Simple Past von <b>${f.ein}</b>?`,
+      tippAntwort: f.past,
+      tipp:"Denk an die Dreiergruppe aus der Liste.",
+      tipp2:`Es heißt „${f.past}“.`,
+      optionen: zieheVerschiedene([
+        R(f.past, "Richtig."),
+        F(falsch, "So bildet man nur regelmäßige Verben."),
+        F(f.ein, "Das ist die Grundform, nicht die Vergangenheit.")], 3)}]};
+ }
+],
+
+
+"Present Progressive":[
+
+ /* die Form: am / is / are + -ing */
+ () => {
+   const f = pick([
+     {p:"I", form:"am", verb:"work", ing:"working", regel:"einfach -ing", rest:"on the machine right now."},
+     {p:"He", form:"is", verb:"read", ing:"reading", regel:"einfach -ing", rest:"a book at the moment."},
+     {p:"She", form:"is", verb:"write", ing:"writing", regel:"das stumme e fällt weg", rest:"an email right now."},
+     {p:"We", form:"are", verb:"make", ing:"making", regel:"das stumme e fällt weg", rest:"dinner at the moment."},
+     {p:"They", form:"are", verb:"sit", ing:"sitting", regel:"kurzer Vokal + einzelner Konsonant — der wird verdoppelt", rest:"in the garden."},
+     {p:"He", form:"is", verb:"run", ing:"running", regel:"kurzer Vokal + einzelner Konsonant — der wird verdoppelt", rest:"to the bus stop."},
+     {p:"You", form:"are", verb:"play", ing:"playing", regel:"einfach -ing", rest:"very well today."},
+     {p:"I", form:"am", verb:"take", ing:"taking", regel:"das stumme e fällt weg", rest:"a break now."}
+   ]);
+   return {
+    typ:"text",
+    text:`Bilde das <b>Present Progressive</b> von <b>${f.verb}</b>:<br><i>${f.p} <span class='luecke'>___</span> ${f.rest}</i><br><span class="small">Gefragt sind beide Teile, zum Beispiel „am doing“.</span>`,
+    loesung: f.form + " " + f.ing,
+    schluss:"Das Present Progressive braucht immer zwei Teile: die passende Form von <b>be</b> und das Verb mit <b>-ing</b>. Fehlt einer davon, ist der Satz falsch.",
+    schritte:[
+     {frage:`Welche Form von <b>be</b> passt zu <b>${f.p}</b>?`,
+      tipp:"I → am, he/she/it → is, we/you/they → are.",
+      tipp2:`Zu „${f.p}“ gehört „${f.form}“.`,
+      optionen: zieheVerschiedene([
+        R(f.form, "Richtig."),
+        F(f.form === "am" ? "is" : "am", f.form === "am" ? "„is“ steht bei he, she und it." : "„am“ steht nur bei I."),
+        F(f.form === "are" ? "is" : "are", f.form === "are" ? "„is“ steht bei he, she und it." : "„are“ steht bei we, you und they.")], 3)},
+     {frage:`Wie lautet die <b>-ing</b>-Form von <b>${f.verb}</b>?`,
+      tipp:"Achte auf die Schreibweise am Wortende.",
+      tipp2:`${f.regel} — es heißt „${f.ing}“.`,
+      optionen: zieheVerschiedene([
+        R(f.ing, "Richtig."),
+        F(f.verb + "ing", f.ing === f.verb + "ing" ? "" : "Hier ändert sich die Schreibweise: " + f.regel + "."),
+        F(f.verb + "ed", "Das wäre die Vergangenheit, nicht die Verlaufsform.")], 3)},
+     {frage:"Wie heißt der ganze Ausdruck?",
+      tippAntwort: f.form + " " + f.ing,
+      tipp:"Setz beide Teile zusammen.",
+      tipp2:`Es heißt „${f.form} ${f.ing}“.`,
+      optionen: zieheVerschiedene([
+        R(f.form + " " + f.ing, "Richtig."),
+        F(f.ing, "Das -ing allein reicht nicht — die Form von be gehört dazu."),
+        F(f.form + " " + f.verb, "Ohne -ing ist es keine Verlaufsform.")], 3)}]};
+ },
+
+ /* Simple Present oder Present Progressive? */
+ () => {
+   const f = pick([
+     {satz:"Look! The lamp ___ (flicker) again.", verb:"flicker", zeit:"progressive", loes:"is flickering", signal:"Look!", grund:"Es passiert gerade in diesem Moment."},
+     {satz:"I ___ (get) up at six every morning.", verb:"get", zeit:"simple", loes:"get", signal:"every morning", grund:"Es ist eine Gewohnheit, kein Vorgang von jetzt."},
+     {satz:"Be quiet — the baby ___ (sleep).", verb:"sleep", zeit:"progressive", loes:"is sleeping", signal:"Be quiet", grund:"Es ist gerade jetzt so."},
+     {satz:"Water ___ (boil) at 100 degrees.", verb:"boil", zeit:"simple", loes:"boils", signal:"immer gültig", grund:"Es ist eine Tatsache, die immer stimmt."},
+     {satz:"She usually ___ (walk) to school.", verb:"walk", zeit:"simple", loes:"walks", signal:"usually", grund:"„usually“ zeigt eine Regelmäßigkeit an."},
+     {satz:"Listen! Somebody ___ (knock) at the door.", verb:"knock", zeit:"progressive", loes:"is knocking", signal:"Listen!", grund:"Es geschieht in diesem Augenblick."},
+     {satz:"We ___ (have) a test every Friday.", verb:"have", zeit:"simple", loes:"have", signal:"every Friday", grund:"Es wiederholt sich regelmäßig."},
+     {satz:"At the moment I ___ (work) on the wiring.", verb:"work", zeit:"progressive", loes:"am working", signal:"At the moment", grund:"„At the moment“ zeigt auf genau jetzt."}
+   ]);
+   return {
+    typ:"text",
+    text:`Welche Zeit passt hier?<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.loes,
+    schluss:"Simple Present für Gewohnheiten und Tatsachen, Present Progressive für das, was gerade abläuft. Das Signalwort im Satz verrät fast immer, welche der beiden gemeint ist.",
+    schritte:[
+     {frage:"Welches Signal im Satz hilft dir weiter?",
+      tipp:"Ein Wort oder ein Ausruf zeigt an, ob es um jetzt oder um immer geht.",
+      tipp2:`Hier ist es „${f.signal}“. ${f.grund}`,
+      optionen: zieheVerschiedene([
+        R(`„${f.signal}“`, "Richtig — " + f.grund),
+        F("das Verb selbst", "Das Verb sagt nichts über die Zeit aus, es wird ja erst eingesetzt."),
+        F("die Person im Satz", "Die Person entscheidet nur über die Endung, nicht über die Zeit.")], 3)},
+     {frage:"Welche Zeit ist also verlangt?",
+      tipp:"Geht es um genau jetzt oder um regelmäßig?",
+      tipp2: f.zeit === "progressive" ? "Es läuft gerade ab — Present Progressive." : "Es ist regelmäßig oder immer gültig — Simple Present.",
+      optionen:[R(f.zeit === "progressive" ? "Present Progressive" : "Simple Present", "Richtig."),
+                F(f.zeit === "progressive" ? "Simple Present" : "Present Progressive", f.zeit === "progressive" ? "Das wäre für Gewohnheiten. Hier läuft es aber gerade ab." : "Das wäre für einen Vorgang von jetzt. Hier geht es um eine Regelmäßigkeit."),
+                F("Simple Past", "Von Vergangenheit ist im Satz keine Rede.")]},
+     {frage:`Wie heißt die eingesetzte Form von <b>${f.verb}</b>?`,
+      tippAntwort: f.loes,
+      tipp: f.zeit === "progressive" ? "be-Form plus -ing." : "Grundform, in der dritten Person mit -s.",
+      tipp2:`Es heißt „${f.loes}“.`,
+      optionen: zieheVerschiedene([
+        R(f.loes, "Richtig."),
+        F(f.verb, f.loes === f.verb ? "" : "Die bloße Grundform passt hier nicht."),
+        F("is " + f.verb + "ing", f.loes === "is " + f.verb + "ing" ? "" : "Diese Form passt nicht zur Person oder nicht zur Zeit.")], 3)}]};
+ }
+],
+
+
+"Steigerung von Adjektiven":[
+
+ /* kurz oder lang — -er/-est oder more/most */
+ () => {
+   const f = pick([
+     {wort:"small",       silben:1, komp:"smaller",         sup:"the smallest",       art:"kurz"},
+     {wort:"fast",        silben:1, komp:"faster",          sup:"the fastest",        art:"kurz"},
+     {wort:"cheap",       silben:1, komp:"cheaper",         sup:"the cheapest",       art:"kurz"},
+     {wort:"big",         silben:1, komp:"bigger",          sup:"the biggest",        art:"kurz, Konsonant wird verdoppelt"},
+     {wort:"hot",         silben:1, komp:"hotter",          sup:"the hottest",        art:"kurz, Konsonant wird verdoppelt"},
+     {wort:"easy",        silben:2, komp:"easier",          sup:"the easiest",        art:"zweisilbig auf -y, also trotzdem mit -er"},
+     {wort:"happy",       silben:2, komp:"happier",         sup:"the happiest",       art:"zweisilbig auf -y, also trotzdem mit -er"},
+     {wort:"expensive",   silben:3, komp:"more expensive",  sup:"the most expensive", art:"lang"},
+     {wort:"difficult",   silben:3, komp:"more difficult",  sup:"the most difficult", art:"lang"},
+     {wort:"interesting", silben:4, komp:"more interesting", sup:"the most interesting", art:"lang"},
+     {wort:"dangerous",   silben:3, komp:"more dangerous",  sup:"the most dangerous", art:"lang"}
+   ]);
+   const kurz = f.art !== "lang";
+   return {
+    typ:"text",
+    text:`Wie heißt die <b>erste Steigerungsstufe</b> von <b>${f.wort}</b>?<br><i>This one is <span class='luecke'>___</span> than the other one.</i>`,
+    loesung: f.komp,
+    schluss:"Kurze Wörter steigert man mit -er und -est. Lange Wörter mit more und most. Wörter auf -y zählen dabei als kurz.",
+    schritte:[
+     {frage:`Wie viele Silben hat <b>${f.wort}</b>?`,
+      tipp:"Sprich es laut und klatsche mit.",
+      tipp2:`${f.wort} hat ${f.silben} ${f.silben === 1 ? "Silbe" : "Silben"}.`,
+      optionen: zieheVerschiedene([
+        R(String(f.silben), "Richtig."),
+        F(String(f.silben + 1), "Eine zu viel — sprich es noch einmal langsam."),
+        F(String(Math.max(1, f.silben - 1)), "Eine zu wenig.")], 3)},
+     {frage:"Wird hier mit -er oder mit more gesteigert?",
+      tipp:"Eine und zwei Silben auf -y: -er. Alles ab zwei Silben sonst: more.",
+      tipp2: kurz ? `${f.wort} gilt als kurz (${f.art}) — also mit -er.` : `${f.wort} ist lang — also mit more.`,
+      optionen:[R(kurz ? "mit -er" : "mit more", "Richtig."),
+                F(kurz ? "mit more" : "mit -er", kurz ? "more steht nur bei langen Wörtern." : "-er passt nur bei kurzen Wörtern."),
+                F("gar nicht steigerbar", "Doch, dieses Adjektiv lässt sich steigern.")]},
+     {frage:"Wie lautet die Form?",
+      tippAntwort: f.komp,
+      tipp: kurz ? "Häng -er an — achte auf die Schreibweise." : "Setz more davor, das Wort selbst bleibt unverändert.",
+      tipp2:`Es heißt „${f.komp}“.`,
+      optionen: zieheVerschiedene([
+        R(f.komp, "Richtig."),
+        F(kurz ? "more " + f.wort : f.wort + "er", kurz ? "more steht nur bei langen Wörtern." : "Ein angehängtes -er passt bei diesem langen Wort nicht."),
+        F(f.wort, "Das ist die Grundform, noch nicht gesteigert.")], 3)}]};
+ },
+
+ /* unregelmäßige Steigerung */
+ () => {
+   const f = pick([
+     {wort:"good",   komp:"better",  sup:"the best",     bed:"gut"},
+     {wort:"bad",    komp:"worse",   sup:"the worst",    bed:"schlecht"},
+     {wort:"much",   komp:"more",    sup:"the most",     bed:"viel"},
+     {wort:"many",   komp:"more",    sup:"the most",     bed:"viele"},
+     {wort:"little", komp:"less",    sup:"the least",    bed:"wenig"},
+     {wort:"far",    komp:"further", sup:"the furthest", bed:"weit"}
+   ]);
+   const stufe = pick(["komp", "sup"]);
+   const ziel = stufe === "komp" ? f.komp : f.sup;
+   const satz = stufe === "komp"
+     ? `This solution is <span class='luecke'>___</span> than the old one.`
+     : `This is <span class='luecke'>___</span> solution of all.`;
+   return {
+    typ:"text",
+    text:`Steigere <b>${f.wort}</b> (${f.bed}) — gefragt ist ${stufe === "komp" ? "die <b>erste</b>" : "die <b>zweite</b>"} Stufe:<br><i>${satz}</i>`,
+    loesung: ziel,
+    schluss:"Eine Handvoll Adjektive steigert man völlig unregelmäßig. Genau diese kommen aber am häufigsten vor — also lohnt sich das Auswendiglernen sofort.",
+    schritte:[
+     {frage:`Lässt sich <b>${f.wort}</b> mit -er oder more steigern?`,
+      tipp:"Probier es gedanklich aus — klingt das nach Englisch?",
+      tipp2:`Nein. „${f.wort}er“ und „more ${f.wort}“ gibt es beide nicht — ${f.wort} ist unregelmäßig.`,
+      optionen:[R("Nein, es ist unregelmäßig", "Richtig — die Formen musst du auswendig kennen."),
+                F("Ja, mit -er", `„${f.wort}er“ gibt es nicht.`),
+                F("Ja, mit more", `„more ${f.wort}“ gibt es nicht.`)]},
+     {frage: stufe === "komp" ? "Welche Stufe ist gefragt?" : "Woran erkennst du die zweite Stufe im Satz?",
+      tipp: stufe === "komp" ? "Achte auf das Wort than." : "Achte auf of all — das vergleicht mit allen anderen.",
+      tipp2: stufe === "komp" ? "„than“ vergleicht zwei Dinge — das ist die erste Stufe." : "„of all“ hebt eines über alle anderen — das ist die zweite Stufe.",
+      optionen: stufe === "komp"
+        ? [R("Die erste — „than“ vergleicht zwei Dinge", "Richtig."),
+           F("Die zweite — es ist das Beste von allen", "Dann müsste „of all“ dastehen, nicht „than“."),
+           F("Die Grundform", "Bei einem Vergleich mit than steht nie die Grundform.")]
+        : [R("An „of all“ — es wird mit allen verglichen", "Richtig."),
+           F("An „than“", "„than“ steht hier gar nicht."),
+           F("An der Person im Satz", "Die Person ändert an der Steigerung nichts.")]},
+     {frage:"Wie heißt die Form?",
+      tippAntwort: ziel,
+      tipp: stufe === "sup" ? "Bei der zweiten Stufe gehört „the“ dazu." : "Denk an die auswendig gelernte Reihe.",
+      tipp2:`Es heißt „${ziel}“.`,
+      optionen: zieheVerschiedene([
+        R(ziel, "Richtig."),
+        F(f.wort + "er", `„${f.wort}er“ gibt es nicht.`),
+        F(stufe === "komp" ? f.sup : f.komp, stufe === "komp" ? "Das ist die zweite Stufe, gefragt war die erste." : "Das ist die erste Stufe, gefragt war die zweite.")], 3)}]};
+ }
+],
+
+
+"some und any":[
+
+ /* Grundregel: Aussage, Verneinung, Frage */
+ () => {
+   const f = pick([
+     {satz:"There are ___ tools in the box.",        art:"Aussage",    loes:"some", grund:"In einer bejahten Aussage steht some."},
+     {satz:"We have ___ milk in the fridge.",        art:"Aussage",    loes:"some", grund:"In einer bejahten Aussage steht some."},
+     {satz:"I have got ___ questions about the plan.", art:"Aussage",  loes:"some", grund:"In einer bejahten Aussage steht some."},
+     {satz:"There aren't ___ sockets in this room.", art:"Verneinung", loes:"any",  grund:"Nach einer Verneinung steht any."},
+     {satz:"He hasn't got ___ money left.",          art:"Verneinung", loes:"any",  grund:"Nach einer Verneinung steht any."},
+     {satz:"We didn't find ___ mistakes.",           art:"Verneinung", loes:"any",  grund:"Nach einer Verneinung steht any."},
+     {satz:"Are there ___ apples in the kitchen?",   art:"Frage",      loes:"any",  grund:"In einer Frage steht any."},
+     {satz:"Have you got ___ time tomorrow?",        art:"Frage",      loes:"any",  grund:"In einer Frage steht any."},
+     {satz:"Did you see ___ people outside?",        art:"Frage",      loes:"any",  grund:"In einer Frage steht any."}
+   ]);
+   return {
+    typ:"text",
+    text:`Setz <b>some</b> oder <b>any</b> ein:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.loes,
+    schluss:"Some in der bejahten Aussage, any in Verneinung und Frage. Beide bedeuten auf Deutsch oft gar nichts Eigenes — man lässt sie in der Übersetzung einfach weg.",
+    schritte:[
+     {frage:"Was für ein Satz ist das?",
+      tipp:"Steht ein not oder n't drin? Endet er mit einem Fragezeichen?",
+      tipp2:`Es ist ${f.art === "Aussage" ? "eine bejahte Aussage" : f.art === "Frage" ? "eine Frage" : "eine Verneinung"}.`,
+      optionen: zieheVerschiedene([
+        R(f.art, "Richtig."),
+        F(f.art === "Frage" ? "eine bejahte Aussage" : "Frage", f.art === "Frage" ? "Der Satz endet mit einem Fragezeichen." : "Ein Fragezeichen steht hier nicht."),
+        F(f.art === "Verneinung" ? "Aussage" : "Verneinung", f.art === "Verneinung" ? "Das n't im Satz macht ihn zur Verneinung." : "Ein not oder n't kommt im Satz nicht vor.")], 3)},
+     {frage:"Welche Regel gilt für diesen Satztyp?",
+      tipp:"Some passt nur an einer Stelle.",
+      tipp2:f.grund,
+      optionen:[R(f.grund, "Richtig."),
+                F(f.loes === "some" ? "In einer bejahten Aussage steht any." : "In Verneinung und Frage steht some.", "Andersherum."),
+                F("Beides ist immer gleich möglich.", "Nein, die Regel ist eindeutig.")]},
+     {frage:"Was steht also in der Lücke?",
+      tippAntwort: f.loes,
+      tipp:"Aussage → some. Verneinung und Frage → any.",
+      tipp2:`Es heißt „${f.loes}“.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(f.loes === "some" ? "any" : "some", "Das passt zum anderen Satztyp."),
+                F("no", "„no“ wäre möglich, aber dann müsste die Verneinung am Verb wegfallen — hier ist some oder any gefragt.")]}]};
+ },
+
+ /* Angebote und Bitten — die Ausnahme */
+ () => {
+   const f = pick([
+     {satz:"Would you like ___ tea?",             loes:"some", art:"Angebot", grund:"Bei einem Angebot steht some, obwohl es eine Frage ist."},
+     {satz:"Could I have ___ water, please?",     loes:"some", art:"Bitte",   grund:"Bei einer Bitte steht some, obwohl es eine Frage ist."},
+     {satz:"Shall I get you ___ help?",           loes:"some", art:"Angebot", grund:"Bei einem Angebot steht some, obwohl es eine Frage ist."},
+     {satz:"Are there ___ shops near the station?", loes:"any", art:"echte Frage", grund:"Das ist eine echte Frage nach Information — also any."},
+     {satz:"Do you know ___ good electricians?",  loes:"any",  art:"echte Frage", grund:"Das ist eine echte Frage nach Information — also any."},
+     {satz:"Have you got ___ brothers or sisters?", loes:"any", art:"echte Frage", grund:"Das ist eine echte Frage nach Information — also any."}
+   ]);
+   const angebot = f.loes === "some";
+   return {
+    typ:"text",
+    text:`Achtung, hier ist es kniffliger. Setz <b>some</b> oder <b>any</b> ein:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.loes,
+    schluss:"Die Grundregel gilt weiter — aber bei Angeboten und Bitten steht some, obwohl ein Fragezeichen dahinter steht. Der Grund: Du erwartest ein Ja.",
+    schritte:[
+     {frage:"Ist das eine echte Frage oder ein Angebot beziehungsweise eine Bitte?",
+      tipp:"Willst du etwas wissen — oder etwas anbieten oder haben?",
+      tipp2: angebot ? `Es ist ${f.art === "Bitte" ? "eine Bitte" : "ein Angebot"} — du rechnest mit einem Ja.` : "Es ist eine echte Frage — du weißt die Antwort wirklich nicht.",
+      optionen:[R(angebot ? (f.art === "Bitte" ? "Eine Bitte" : "Ein Angebot") : "Eine echte Frage", "Richtig."),
+                F(angebot ? "Eine echte Frage" : "Ein Angebot", angebot ? "Du fragst hier nicht nach einer Information, du bietest etwas an oder bittest darum." : "Es wird nichts angeboten — es wird nach einer Information gefragt."),
+                F("Eine Verneinung", "Ein not oder n't steht nicht im Satz.")]},
+     {frage:"Was folgt daraus für some und any?",
+      tipp:"Bei Angeboten und Bitten wird die Grundregel durchbrochen.",
+      tipp2:f.grund,
+      optionen:[R(f.grund, "Richtig."),
+                F(angebot ? "Nach einem Fragezeichen steht immer any." : "In jeder Frage steht some.", angebot ? "Bei Angeboten und Bitten gerade nicht." : "Nein — some steht in Fragen nur bei Angeboten und Bitten."),
+                F("Das ist Geschmackssache.", "Nein, die Unterscheidung ist fest.")]},
+     {frage:"Was steht in der Lücke?",
+      tippAntwort: f.loes,
+      tipp: angebot ? "Angebot oder Bitte → some." : "Echte Frage → any.",
+      tipp2:`Es heißt „${f.loes}“.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(f.loes === "some" ? "any" : "some", angebot ? "any passt bei echten Fragen, hier wird aber etwas angeboten." : "some steht in Fragen nur bei Angeboten und Bitten."),
+                F("no", "Das wäre eine Verneinung — der Satz ist aber eine Frage.")]}]};
+ }
+],
+
+
+"Possessivbegleiter":[
+
+ /* die richtige Form zur Person */
+ () => {
+   const f = pick([
+     {p:"I",    poss:"my",    satz:"I lost ___ keys."},
+     {p:"you",  poss:"your",  satz:"You forgot ___ bag."},
+     {p:"he",   poss:"his",   satz:"He is looking for ___ tools."},
+     {p:"she",  poss:"her",   satz:"She showed me ___ new phone."},
+     {p:"it",   poss:"its",   satz:"The dog wants ___ food."},
+     {p:"we",   poss:"our",   satz:"We finished ___ homework."},
+     {p:"they", poss:"their", satz:"They parked ___ car outside."}
+   ]);
+   const perslich = {my:"I", your:"you", his:"he", her:"she", its:"it", our:"we", their:"they"};
+   const andere = Object.keys(perslich).filter(x => x !== f.poss);
+   return {
+    typ:"text",
+    text:`Setz den passenden <b>Possessivbegleiter</b> ein:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.poss,
+    schluss:"Der Possessivbegleiter richtet sich immer nach dem Besitzer — nicht nach dem Ding. Deshalb heißt es „his car“ und „his keys“, egal ob eines oder viele.",
+    schritte:[
+     {frage:"Wer ist hier der Besitzer?",
+      tipp:"Schau auf das Wort am Satzanfang.",
+      tipp2:`Der Besitzer ist „${f.p}“.`,
+      optionen: zieheVerschiedene([
+        R(f.p, "Richtig."),
+        F(pick(andere.map(x => perslich[x])), "Diese Person kommt im Satz gar nicht vor."),
+        F("das Ding hinter der Lücke", "Das ist das Besessene, nicht der Besitzer.")], 3)},
+     {frage:"Richtet sich die Form nach dem Besitzer oder nach dem Ding?",
+      tipp:"Im Deutschen heißt es „sein Auto“ und „seine Autos“ — im Englischen ändert sich nichts.",
+      tipp2:"Nach dem Besitzer. Das Ding dahinter ändert die Form nie.",
+      optionen:[R("Nach dem Besitzer", "Richtig — deshalb his car und his cars."),
+                F("Nach dem Ding dahinter", "Das gilt im Deutschen, im Englischen nicht."),
+                F("Nach der Einzahl oder Mehrzahl des Dings", "Auch das ändert im Englischen nichts.")]},
+     {frage:`Welcher Begleiter gehört zu <b>${f.p}</b>?`,
+      tippAntwort: f.poss,
+      tipp:"I → my, you → your, he → his, she → her, it → its, we → our, they → their.",
+      tipp2:`Es heißt „${f.poss}“.`,
+      optionen: zieheVerschiedene([
+        R(f.poss, "Richtig."),
+        F(pick(andere), "Das gehört zu einer anderen Person."),
+        F(pick(andere), "Das gehört zu einer anderen Person.")], 3)}]};
+ },
+
+ /* its oder it's */
+ () => {
+   const f = pick([
+     {satz:"The machine has lost ___ cover.",   loes:"its",  bed:"sein (dem Gerät gehörend)"},
+     {satz:"___ raining again.",                loes:"it's", bed:"it is — es regnet"},
+     {satz:"The company changed ___ name.",     loes:"its",  bed:"ihren (der Firma gehörend)"},
+     {satz:"___ been a long day.",              loes:"it's", bed:"it has — es ist gewesen"},
+     {satz:"Every tool has ___ own place.",     loes:"its",  bed:"seinen (dem Werkzeug gehörend)"},
+     {satz:"I think ___ too late now.",         loes:"it's", bed:"it is — es ist"}
+   ]);
+   const besitz = f.loes === "its";
+   return {
+    typ:"text",
+    text:`<b>its</b> oder <b>it's</b>? Setz ein:<br><i>${f.satz.replace("___", "<span class='luecke'>___</span>")}</i>`,
+    loesung: f.loes,
+    schluss:"Der Apostroph steht nur für ausgelassene Buchstaben: it's = it is oder it has. Der Possessivbegleiter its hat nie einen — genau wie his und her auch keinen haben.",
+    schritte:[
+     {frage:"Kannst du an der Stelle <b>it is</b> einsetzen, ohne dass der Satz Unsinn wird?",
+      tipp:"Sprich den Satz einmal mit „it is“ durch.",
+      tipp2: besitz ? "Nein — „it is cover“ ergibt keinen Sinn. Es geht um Besitz." : "Ja — der Satz meint genau das.",
+      optionen:[R(besitz ? "Nein" : "Ja", besitz ? "Richtig, hier geht es um Besitz." : "Richtig, hier ist die Kurzform gemeint."),
+                F(besitz ? "Ja" : "Nein", besitz ? "Probier es aus: Der Satz ergibt so keinen Sinn." : "Doch — genau das steht da.")]},
+     {frage:"Wofür steht der Apostroph in <b>it's</b>?",
+      tipp:"Ein Apostroph zeigt an, dass etwas fehlt.",
+      tipp2:"Für ausgelassene Buchstaben: it is oder it has. Für Besitz steht er hier nie.",
+      optionen:[R("Für ausgelassene Buchstaben — it is oder it has", "Richtig."),
+                F("Für den Besitz, wie in Tom's car", "Bei Namen ja, bei it gerade nicht — das ist die Falle."),
+                F("Für die Mehrzahl", "Ein Apostroph bildet nie eine Mehrzahl.")]},
+     {frage:"Was steht also in der Lücke?",
+      tippAntwort: f.loes,
+      tipp: besitz ? "Besitz → ohne Apostroph." : "Kurzform von it is oder it has → mit Apostroph.",
+      tipp2:`Es heißt „${f.loes}“ — ${f.bed}.`,
+      optionen:[R(f.loes, "Richtig."),
+                F(besitz ? "it's" : "its", besitz ? "Mit Apostroph hieße es „it is“ — das passt hier nicht." : "Ohne Apostroph wäre es der Besitz — hier ist die Kurzform gemeint."),
+                F("its'", "Diese Schreibweise gibt es im Englischen überhaupt nicht.")]}]};
+ }
+]
 });
 /* ---------- Erklärungen ----------
    Aufbau: worum · einfach (von ganz vorn) · begriffe (Wörter, die man kennen muss)
@@ -11389,6 +11829,569 @@ const ERKLAERUNGEN = {
           <text x="368" y="${y + 16}" text-anchor="end" font-size="10" fill="currentColor">${r[2]}</text>`;
       }).join("")}
     <text x="200" y="160" text-anchor="middle" font-size="11" fill="currentColor">Die ersten vier Zeilen decken fast alles ab.</text>
+  </svg>`
+},
+
+
+"Simple Past": {
+  worum:"Das Simple Past erzählt von etwas, das vorbei ist. Regelmäßige Verben bekommen -ed, unregelmäßige haben eigene Formen — und beide gelten für alle Personen gleich.",
+  wozu:[
+    "Jeder Bericht über etwas Geschehenes steht im Simple Past: der Unfall, der Fehler, die Reparatur von gestern. Ohne diese Zeit kannst du nichts erzählen.",
+    "Im Betrieb steht es in jedem englischen Prüfbericht: „The fuse blew.“ „We replaced the cable.“ Wer die Formen kennt, versteht solche Sätze auf Anhieb."
+  ],
+  rezept:[
+    "Prüf die Zeitangabe: yesterday, last week, in 2019, an hour ago — das ist abgeschlossene Vergangenheit.",
+    "Ist das Verb regelmäßig, häng -ed an.",
+    "Endet es schon auf e, kommt nur ein -d dazu: live → lived.",
+    "Endet es auf Konsonant + y, wird das y zu -ied: study → studied.",
+    "Steht am Ende ein kurzer Vokal und ein einzelner Konsonant, wird der verdoppelt: stop → stopped.",
+    "Ist das Verb unregelmäßig, nimm die Form aus der Liste: go → went, see → saw.",
+    "Die Form ist für alle Personen gleich — kein zusätzliches -s."
+  ],
+  fehler:[
+    ["Unregelmäßige Verben mit -ed gebildet", "„goed“, „seed“ und „buyed“ gibt es nicht. Diese Formen musst du auswendig können."],
+    ["In der Verneinung zweimal Vergangenheit", "Nach „didn't“ steht die Grundform: „I didn't go“, nicht „I didn't went“. Das did trägt die Zeit schon."],
+    ["In der Frage die Vergangenheitsform benutzt", "„Did you saw it?“ ist falsch. Richtig: „Did you see it?“"],
+    ["Ein -s angehängt", "„He workeds“ gibt es nicht. Das -s der dritten Person gehört nur ins Simple Present."],
+    ["Bei der Verdopplung geschludert", "„stoped“ mit einem p ist falsch. Nach kurzem Vokal wird der Konsonant verdoppelt."]
+  ],
+  einfach:[
+    "Das Simple Past ist die einfache Vergangenheit — für alles, was vorbei ist.",
+    "Man erkennt es an Zeitangaben wie yesterday, last week oder two years ago.",
+    "Bei den meisten Verben hängst du einfach -ed an: work → worked.",
+    "Endet das Verb schon auf e, reicht ein -d: live → lived.",
+    "Endet es auf einen Mitlaut und y, wird das y zu ied: study → studied.",
+    "Steht am Ende ein kurzer Selbstlaut und ein einzelner Mitlaut, verdoppelst du ihn: stop → stopped.",
+    "Etwa hundert Verben sind unregelmäßig und haben eigene Formen.",
+    "Die häufigsten davon sind: go → went, see → saw, take → took, buy → bought.",
+    "Anders als im Simple Present ändert sich nichts, wenn er, sie oder es davorsteht.",
+    "In Frage und Verneinung nimmt did die Vergangenheit auf — das Verb steht dann in der Grundform."
+  ],
+  begriffe:[
+    ["Simple Past","Die einfache Vergangenheit für Abgeschlossenes."],
+    ["Regelmäßiges Verb","Bildet die Vergangenheit mit -ed."],
+    ["Unregelmäßiges Verb","Hat eine eigene Form, die man auswendig lernt."],
+    ["Signalwort","Eine Zeitangabe, die die Zeit verrät: yesterday, last week, ago."],
+    ["Grundform","Das Verb ohne jede Endung — steht nach did und didn't."]
+  ],
+  tabelle:{
+    titel:"Simple Past bilden",
+    kopf:["Fall","Regel","Beispiel"],
+    zeilen:[
+      ["die meisten Verben","-ed","work → worked"],
+      ["Verb endet auf e","nur -d","live → lived"],
+      ["Konsonant + y","y wird zu -ied","study → studied"],
+      ["kurzer Vokal + 1 Konsonant","Konsonant verdoppeln","stop → stopped"],
+      ["unregelmäßig","eigene Form","go → went, buy → bought"],
+      ["Verneinung","didn't + Grundform","I didn't go"],
+      ["Frage","Did + Person + Grundform","Did you see it?"]
+    ],
+    fuss:"Die Zeilen sechs und sieben sind die häufigste Fehlerquelle: Nach did steht nie noch einmal eine Vergangenheitsform."
+  },
+  regeln:[
+    "Regelmäßig: Verb + -ed.",
+    "Auf e: nur -d.",
+    "Konsonant + y: zu -ied.",
+    "Kurzer Vokal + einzelner Konsonant: verdoppeln.",
+    "Unregelmäßige Formen auswendig lernen.",
+    "Für alle Personen dieselbe Form.",
+    "Nach did und didn't steht die Grundform."
+  ],
+  beispiel:{aufgabe:"Setz ins Simple Past: „I (study) all evening.“ und „She (go) home.“",
+    schritte:["study endet auf Konsonant + y → studied","go ist unregelmäßig → went"],
+    ergebnis:"I studied all evening. · She went home."},
+  spiel:{
+    titel:"Vergangenheit bilden",
+    hinweis:"Schieb durch die Verben und sieh, welche Regel greift — und wo das schlichte -ed danebenliegt.",
+    regler:[
+      {id:"i", name:"Verb", von:0, bis:9, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const V = [
+        ["work", "worked", "die meisten: einfach -ed"],
+        ["live", "lived", "endet auf e → nur -d"],
+        ["study", "studied", "Konsonant + y → -ied"],
+        ["play", "played", "Vokal + y → einfach -ed"],
+        ["stop", "stopped", "kurzer Vokal + 1 Konsonant → verdoppeln"],
+        ["plan", "planned", "kurzer Vokal + 1 Konsonant → verdoppeln"],
+        ["go", "went", "unregelmäßig"],
+        ["see", "saw", "unregelmäßig"],
+        ["buy", "bought", "unregelmäßig"],
+        ["make", "made", "unregelmäßig"]
+      ];
+      const [ein, past, regel] = V[w.i];
+      const naiv = ein.slice(-1) === "e" ? ein + "d" : ein + "ed";
+      return {
+        werte:[
+          {name:"Grundform", text:ein},
+          {name:"Simple Past", text:"<b>" + past + "</b>"},
+          {name:"Regel", text:regel},
+          {name:"Naiv wäre", text: naiv === past ? "richtig — " + naiv : naiv + "  ✗"}
+        ],
+        satz: naiv === past
+          ? `Hier trägt das schlichte Anhängen. Das gilt für die große Mehrheit der Verben.`
+          : `Naiv angehängt ergäbe „${naiv}“ — das Wort gibt es nicht. Hier greift: ${regel}.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 165" ${SVG_STIL} role="img" aria-label="Regeln für das Simple Past">
+    ${[["die meisten","-ed","work → worked","#10a37f"],
+       ["endet auf e","-d","live → lived","#3b82f6"],
+       ["Konsonant + y","-ied","study → studied","#f59e0b"],
+       ["kurzer Vokal","verdoppeln","stop → stopped","#6b4fd8"],
+       ["unregelmäßig","auswendig","go → went","#b3382f"]]
+      .map((r, i) => {
+        const y = 14 + i * 29;
+        return `<rect x="20" y="${y}" width="360" height="24" rx="6" fill="${r[3]}" fill-opacity=".18" stroke="${r[3]}" stroke-width="1.5"/>
+          <text x="34" y="${y + 16}" font-size="11" font-weight="700" fill="currentColor">${r[0]}</text>
+          <text x="168" y="${y + 16}" font-size="11" font-weight="800" fill="currentColor">${r[1]}</text>
+          <text x="368" y="${y + 16}" text-anchor="end" font-size="10" fill="currentColor">${r[2]}</text>`;
+      }).join("")}
+    <text x="200" y="160" text-anchor="middle" font-size="11" fill="currentColor">Für alle Personen dieselbe Form — kein zusätzliches -s.</text>
+  </svg>`
+},
+
+
+"Present Progressive": {
+  worum:"Das Present Progressive zeigt, dass gerade jetzt etwas abläuft. Es besteht immer aus zwei Teilen: einer Form von be und dem Verb mit -ing.",
+  wozu:[
+    "Der Unterschied zwischen „I work here“ und „I am working on it“ ist genau der zwischen Beruf und aktueller Tätigkeit. Wer ihn nicht trifft, sagt etwas anderes, als er meint.",
+    "Bei der Arbeit ist das ein echter Unterschied: „The machine runs on 400 volts“ ist eine Tatsache. „The machine is running“ heißt, sie läuft in diesem Moment."
+  ],
+  rezept:[
+    "Frag dich: Läuft es gerade in diesem Augenblick ab?",
+    "Wenn ja: Nimm die passende Form von be — am bei I, is bei he, she, it, are bei we, you, they.",
+    "Häng an das Verb ein -ing an.",
+    "Endet das Verb auf ein stummes e, fällt das weg: write → writing.",
+    "Steht am Ende ein kurzer Vokal und ein einzelner Konsonant, wird der verdoppelt: sit → sitting.",
+    "Beide Teile müssen stehen — die be-Form allein oder das -ing allein reicht nie.",
+    "Signalwörter: now, at the moment, right now, Look!, Listen!"
+  ],
+  fehler:[
+    ["Die be-Form vergessen", "„I working now“ ist falsch. Richtig: „I am working now.“"],
+    ["Bei Gewohnheiten die Verlaufsform benutzt", "„I am going to school every day“ ist falsch. Regelmäßiges steht im Simple Present: „I go to school every day.“"],
+    ["Das stumme e stehen gelassen", "„writeing“ gibt es nicht. Richtig: writing."],
+    ["Bei Zustandsverben die Verlaufsform benutzt", "Verben wie know, like, want und belong stehen fast nie im Progressive. „I am knowing it“ ist falsch."],
+    ["Den Konsonanten nicht verdoppelt", "„siting“ mit einem t ist falsch. Richtig: sitting."]
+  ],
+  einfach:[
+    "Das Present Progressive ist die Verlaufsform der Gegenwart.",
+    "Es sagt: Genau jetzt läuft das ab.",
+    "Es besteht immer aus zwei Teilen: einer Form von be und dem Verb mit -ing.",
+    "Bei I heißt die be-Form am, bei he, she und it heißt sie is.",
+    "Bei we, you und they heißt sie are.",
+    "Also: I am working. He is working. They are working.",
+    "Endet das Verb auf ein stummes e, fällt es weg: write wird zu writing.",
+    "Steht am Ende ein kurzer Selbstlaut und ein einzelner Mitlaut, verdoppelst du ihn: sit wird zu sitting.",
+    "Signalwörter sind now, at the moment, right now sowie Look! und Listen!",
+    "Für Gewohnheiten nimmst du dagegen das Simple Present: I get up at six every morning."
+  ],
+  begriffe:[
+    ["Present Progressive","Die Verlaufsform der Gegenwart — es läuft gerade ab."],
+    ["Verlaufsform","Eine Zeit, die einen Vorgang im Ablauf zeigt."],
+    ["-ing-Form","Das Verb mit angehängtem -ing: working, sitting, writing."],
+    ["Zustandsverb","Ein Verb wie know, like oder want — es steht fast nie im Progressive."],
+    ["Signalwort","now, at the moment, Look!, Listen! — sie zeigen auf genau jetzt."]
+  ],
+  tabelle:{
+    titel:"Simple Present oder Present Progressive?",
+    kopf:["Wann","Zeit","Beispiel"],
+    zeilen:[
+      ["regelmäßig, immer","Simple Present","I get up at six every day."],
+      ["Tatsache","Simple Present","Water boils at 100 degrees."],
+      ["gerade jetzt","Present Progressive","I am working on the wiring."],
+      ["Look! / Listen!","Present Progressive","Listen! Somebody is knocking."],
+      ["Zustand (know, like)","Simple Present","I know the answer."],
+      ["fest geplant, bald","Present Progressive","We are leaving at six."]
+    ],
+    fuss:"Die Signalwörter im mittleren Teil des Satzes entscheiden fast immer — nicht das Gefühl."
+  },
+  regeln:[
+    "be-Form + Verb + -ing.",
+    "I → am, he/she/it → is, we/you/they → are.",
+    "Stummes e fällt weg: write → writing.",
+    "Kurzer Vokal + einzelner Konsonant: verdoppeln.",
+    "Gerade jetzt → Progressive, regelmäßig → Simple Present.",
+    "Zustandsverben stehen nicht im Progressive."
+  ],
+  beispiel:{aufgabe:"Setz ein: „Listen! Somebody (knock) at the door.“",
+    schritte:["Listen! zeigt auf genau jetzt → Present Progressive","somebody ist dritte Person Einzahl → is","knock endet nicht auf e und hat zwei Konsonanten → knocking"],
+    ergebnis:"Listen! Somebody is knocking at the door."},
+  spiel:{
+    titel:"Jetzt oder immer?",
+    hinweis:"Schieb durch die Sätze und sieh, welches Signalwort welche Zeit erzwingt.",
+    regler:[
+      {id:"i", name:"Satz", von:0, bis:7, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["I ___ up at six every morning.", "get", "get up", "every morning", "Simple Present"],
+        ["Look! The lamp ___ again.", "flicker", "is flickering", "Look!", "Present Progressive"],
+        ["Water ___ at 100 degrees.", "boil", "boils", "immer gültig", "Simple Present"],
+        ["Be quiet — the baby ___ .", "sleep", "is sleeping", "Be quiet", "Present Progressive"],
+        ["She usually ___ to school.", "walk", "walks", "usually", "Simple Present"],
+        ["At the moment I ___ on the wiring.", "work", "am working", "At the moment", "Present Progressive"],
+        ["We ___ a test every Friday.", "have", "have", "every Friday", "Simple Present"],
+        ["Listen! Somebody ___ at the door.", "knock", "is knocking", "Listen!", "Present Progressive"]
+      ];
+      const [satz, verb, form, signal, zeit] = S[w.i];
+      return {
+        werte:[
+          {name:"Satz", text:satz.replace("___", "<b>___</b>")},
+          {name:"Verb", text:verb},
+          {name:"Signal", text:signal},
+          {name:"Zeit", text:"<b>" + zeit + "</b>"},
+          {name:"Eingesetzt", text:"<b>" + form + "</b>"}
+        ],
+        satz: zeit === "Present Progressive"
+          ? `„${signal}“ zeigt auf genau diesen Augenblick — deshalb die Verlaufsform mit be und -ing.`
+          : `„${signal}“ zeigt auf Regelmäßiges oder immer Gültiges — deshalb das Simple Present.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="Simple Present gegen Present Progressive">
+    <rect x="18" y="14" width="170" height="120" rx="10" fill="#3b82f6" fill-opacity=".14" stroke="#3b82f6" stroke-width="1.6"/>
+    <text x="103" y="34" text-anchor="middle" font-size="12" font-weight="800" fill="currentColor">Simple Present</text>
+    <text x="103" y="53" text-anchor="middle" font-size="10" fill="currentColor">immer · regelmäßig · Tatsache</text>
+    ${[0,1,2,3,4].map(i => `<circle cx="${44 + i * 24}" cy="76" r="6" fill="#3b82f6"/>`).join("")}
+    <text x="103" y="105" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">I work here.</text>
+    <text x="103" y="123" text-anchor="middle" font-size="10" fill="currentColor">every day, usually, always</text>
+
+    <rect x="212" y="14" width="170" height="120" rx="10" fill="#f59e0b" fill-opacity=".16" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="297" y="34" text-anchor="middle" font-size="12" font-weight="800" fill="currentColor">Present Progressive</text>
+    <text x="297" y="53" text-anchor="middle" font-size="10" fill="currentColor">gerade jetzt · im Ablauf</text>
+    <rect x="248" y="70" width="98" height="12" rx="6" fill="#f59e0b"/>
+    <text x="297" y="105" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor">I am working on it.</text>
+    <text x="297" y="123" text-anchor="middle" font-size="10" fill="currentColor">now, at the moment, Look!</text>
+  </svg>`
+},
+
+
+"Steigerung von Adjektiven": {
+  worum:"Beim Vergleichen bekommt das Adjektiv eine Stufe: kurze Wörter mit -er und -est, lange mit more und most. Ein paar wenige sind völlig unregelmäßig.",
+  wozu:[
+    "Vergleichen musst du dauernd: billiger, schneller, sicherer. Wer die Stufen nicht bilden kann, kann keine Empfehlung aussprechen.",
+    "Im Angebotsvergleich, beim Werkzeugkauf und in jeder Begründung steckt eine Steigerung: „This cable is thicker and therefore safer.“"
+  ],
+  rezept:[
+    "Zähl die Silben des Adjektivs.",
+    "Eine Silbe: -er für die erste Stufe, the ...est für die zweite. cheap → cheaper → the cheapest.",
+    "Zwei Silben mit -y am Ende: genauso, aber das y wird zu i. easy → easier → the easiest.",
+    "Ab zwei Silben sonst: more davor, the most davor. expensive → more expensive → the most expensive.",
+    "Endet ein kurzes Wort auf kurzen Vokal + einzelnen Konsonanten, wird der verdoppelt: big → bigger.",
+    "Vor der zweiten Stufe steht immer the.",
+    "Beim Vergleich zweier Dinge steht than, bei Gleichheit as ... as."
+  ],
+  fehler:[
+    ["Doppelt gesteigert", "„more cheaper“ ist falsch. Entweder -er oder more, nie beides."],
+    ["Lange Wörter mit -er gesteigert", "„expensiver“ und „difficulter“ gibt es nicht. Richtig: more expensive, more difficult."],
+    ["Das the bei der zweiten Stufe vergessen", "Es heißt „the cheapest“, nicht „cheapest“ allein."],
+    ["Unregelmäßige Formen regelmäßig gebildet", "„gooder“, „bader“ und „mucher“ gibt es nicht. Richtig: better, worse, more."],
+    ["as statt than benutzt", "Beim Vergleich zweier ungleicher Dinge steht than: „cheaper than“, nicht „cheaper as“."]
+  ],
+  einfach:[
+    "Beim Vergleichen gibt es drei Stufen: die Grundform, die erste Stufe und die zweite Stufe.",
+    "Bei kurzen Wörtern hängst du -er und -est an: small, smaller, the smallest.",
+    "Endet ein kurzes Wort auf einen kurzen Selbstlaut und einen einzelnen Mitlaut, verdoppelst du ihn: big, bigger, the biggest.",
+    "Zweisilbige Wörter auf y zählen als kurz, das y wird zu i: easy, easier, the easiest.",
+    "Bei langen Wörtern setzt du more und the most davor: expensive, more expensive, the most expensive.",
+    "Vor der zweiten Stufe steht immer the.",
+    "Ein paar Wörter sind unregelmäßig und müssen auswendig gelernt werden.",
+    "Die wichtigsten sind: good, better, the best und bad, worse, the worst.",
+    "Beim Vergleich zweier Dinge steht than: This one is cheaper than that one.",
+    "Sind zwei Dinge gleich, sagst du as ... as: This one is as cheap as that one."
+  ],
+  begriffe:[
+    ["Adjektiv","Ein Eigenschaftswort: klein, teuer, gefährlich."],
+    ["Erste Stufe","Der Vergleich zweier Dinge: cheaper, more expensive."],
+    ["Zweite Stufe","Das Herausragende von allen: the cheapest, the most expensive."],
+    ["Silbe","Ein Sprechabschnitt — ex-pen-sive hat drei."],
+    ["than","Das Wort, das den Vergleich anschließt: cheaper than."]
+  ],
+  tabelle:{
+    titel:"Steigerung",
+    kopf:["Adjektiv","erste Stufe","zweite Stufe"],
+    zeilen:[
+      ["small","smaller","the smallest"],
+      ["big","bigger","the biggest"],
+      ["easy","easier","the easiest"],
+      ["expensive","more expensive","the most expensive"],
+      ["good","better","the best"],
+      ["bad","worse","the worst"],
+      ["far","further","the furthest"]
+    ],
+    fuss:"Die letzten drei Zeilen folgen keiner Regel — genau die kommen am häufigsten vor."
+  },
+  regeln:[
+    "Eine Silbe: -er und the ...est.",
+    "Zwei Silben auf -y: y wird zu i, dann -er und -est.",
+    "Ab zwei Silben sonst: more und the most.",
+    "Kurzer Vokal + einzelner Konsonant: verdoppeln.",
+    "Nie doppelt steigern.",
+    "Vor der zweiten Stufe steht the.",
+    "Beim Vergleich steht than, bei Gleichheit as ... as."
+  ],
+  beispiel:{aufgabe:"Steigere „big“ und „dangerous“ in der ersten Stufe.",
+    schritte:["big hat eine Silbe, kurzer Vokal + einzelner Konsonant → bigger","dangerous hat drei Silben → more dangerous"],
+    ergebnis:"bigger · more dangerous"},
+  spiel:{
+    titel:"Kurz oder lang?",
+    hinweis:"Schieb durch die Adjektive und sieh, ab wann die Silbenzahl die Regel kippen lässt.",
+    regler:[
+      {id:"i", name:"Adjektiv", von:0, bis:8, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const A = [
+        ["small", 1, "smaller", "the smallest", "kurz: -er und -est"],
+        ["big", 1, "bigger", "the biggest", "kurz, Konsonant verdoppelt"],
+        ["easy", 2, "easier", "the easiest", "zwei Silben auf -y: zählt als kurz"],
+        ["happy", 2, "happier", "the happiest", "zwei Silben auf -y: zählt als kurz"],
+        ["modern", 2, "more modern", "the most modern", "zwei Silben ohne -y: lang"],
+        ["expensive", 3, "more expensive", "the most expensive", "lang: more und most"],
+        ["dangerous", 3, "more dangerous", "the most dangerous", "lang: more und most"],
+        ["good", 1, "better", "the best", "unregelmäßig"],
+        ["bad", 1, "worse", "the worst", "unregelmäßig"]
+      ];
+      const [wort, silben, komp, sup, regel] = A[w.i];
+      const naiv = wort + "er";
+      return {
+        werte:[
+          {name:"Adjektiv", text:wort},
+          {name:"Silben", text:String(silben)},
+          {name:"erste Stufe", text:"<b>" + komp + "</b>"},
+          {name:"zweite Stufe", text:"<b>" + sup + "</b>"},
+          {name:"Regel", text:regel}
+        ],
+        satz: komp === naiv
+          ? `Ein Wort mit ${silben} ${silben === 1 ? "Silbe" : "Silben"} — hier trägt das angehängte -er.`
+          : `„${naiv}“ gibt es nicht. ${regel}.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Drei Stufen der Steigerung">
+    ${[["small", 30, "#10a37f"], ["smaller", 60, "#3b82f6"], ["the smallest", 96, "#6b4fd8"]]
+      .map((r, i) => {
+        const x = 30 + i * 125;
+        const h = r[1];
+        return `<rect x="${x}" y="${124 - h}" width="90" height="${h}" rx="8" fill="${r[2]}" fill-opacity=".22" stroke="${r[2]}" stroke-width="1.8"/>
+          <text x="${x + 45}" y="${124 - h - 8}" text-anchor="middle" font-size="11" font-weight="800" fill="currentColor">${r[0]}</text>
+          <text x="${x + 45}" y="${140}" text-anchor="middle" font-size="10" fill="currentColor">${["Grundform","erste Stufe","zweite Stufe"][i]}</text>`;
+      }).join("")}
+    <text x="200" y="156" text-anchor="middle" font-size="10" fill="currentColor">Lang gilt: more small ✗ — aber more expensive ✓</text>
+  </svg>`
+},
+
+
+"some und any": {
+  worum:"some und any stehen vor unbestimmten Mengen. some in der bejahten Aussage, any in Verneinung und Frage — mit einer wichtigen Ausnahme bei Angeboten und Bitten.",
+  wozu:[
+    "Beide Wörter kommen in fast jedem Satz über Mengen vor. Wer sie verwechselt, klingt sofort nach Anfänger, obwohl der Rest stimmt.",
+    "Im Betrieb: „Have we got any spare fuses?“ ist die Frage. „We have got some in the van“ ist die Antwort. Genau dieses Paar brauchst du dauernd."
+  ],
+  rezept:[
+    "Schau dir den Satz an: bejahte Aussage, Verneinung oder Frage?",
+    "Bejahte Aussage: some. There are some tools in the box.",
+    "Verneinung: any. There aren't any sockets in this room.",
+    "Frage: any. Are there any apples in the kitchen?",
+    "Ausnahme: Bei einem Angebot oder einer Bitte steht some, obwohl es eine Frage ist. Would you like some tea?",
+    "Der Grund für die Ausnahme: Du rechnest mit einem Ja.",
+    "Im Deutschen bleiben beide Wörter meist unübersetzt — lass dich davon nicht verwirren."
+  ],
+  fehler:[
+    ["some in der Verneinung benutzt", "„There aren't some tools“ ist falsch. Nach einer Verneinung steht any."],
+    ["any in der bejahten Aussage benutzt", "„We have got any milk“ ist falsch. In der Aussage steht some."],
+    ["Bei Angeboten any benutzt", "„Would you like any tea?“ klingt unfreundlich bis seltsam. Bei einem Angebot steht some."],
+    ["not und no zusammen benutzt", "„We haven't got no money“ ist doppelt verneint. Entweder haven't got any oder have got no."],
+    ["some und any vor Zahlen benutzt", "Vor einer genauen Zahl steht keines von beiden: „three tools“, nicht „some three tools“."]
+  ],
+  einfach:[
+    "some und any stehen vor Mengen, die man nicht genau angibt.",
+    "Auf Deutsch übersetzt man sie oft gar nicht: There are some tools heißt einfach Da sind Werkzeuge.",
+    "In einer normalen bejahten Aussage steht some.",
+    "Beispiel: There are some tools in the box.",
+    "In einer Verneinung steht any.",
+    "Beispiel: There aren't any sockets in this room.",
+    "In einer Frage steht ebenfalls any.",
+    "Beispiel: Are there any apples in the kitchen?",
+    "Eine Ausnahme gibt es: Wenn du etwas anbietest oder um etwas bittest, steht some, obwohl es eine Frage ist.",
+    "Beispiel: Would you like some tea? Oder: Could I have some water, please?"
+  ],
+  begriffe:[
+    ["some","Etwas, einige — in der bejahten Aussage."],
+    ["any","Irgendwelche — in Verneinung und Frage."],
+    ["Bejahte Aussage","Ein normaler Satz ohne not und ohne Fragezeichen."],
+    ["Angebot","Du bietest etwas an: Would you like ...?"],
+    ["Bitte","Du bittest um etwas: Could I have ...?"]
+  ],
+  tabelle:{
+    titel:"some oder any?",
+    kopf:["Satztyp","Wort","Beispiel"],
+    zeilen:[
+      ["bejahte Aussage","some","There are some tools in the box."],
+      ["Verneinung","any","There aren't any sockets here."],
+      ["echte Frage","any","Are there any shops nearby?"],
+      ["Angebot","some","Would you like some tea?"],
+      ["Bitte","some","Could I have some water, please?"],
+      ["vor genauer Zahl","keines","There are three tools in the box."]
+    ],
+    fuss:"Die Zeilen vier und fünf sind die Ausnahme, die man sich merken muss — sonst klingt jedes Angebot schroff."
+  },
+  regeln:[
+    "Bejahte Aussage: some.",
+    "Verneinung: any.",
+    "Echte Frage: any.",
+    "Angebot und Bitte: some.",
+    "Nie doppelt verneinen.",
+    "Vor genauen Zahlen steht keines von beiden."
+  ],
+  beispiel:{aufgabe:"Setz ein: „We haven't got ___ milk, but would you like ___ tea?“",
+    schritte:["haven't got ist eine Verneinung → any","would you like ist ein Angebot → some"],
+    ergebnis:"We haven't got any milk, but would you like some tea?"},
+  spiel:{
+    titel:"some oder any?",
+    hinweis:"Schieb durch die Sätze — bei den letzten beiden kippt die Regel.",
+    regler:[
+      {id:"i", name:"Satz", von:0, bis:6, schritt:1, start:0}
+    ],
+    ausgabe:(w) => {
+      const S = [
+        ["There are ___ tools in the box.", "some", "bejahte Aussage"],
+        ["We have got ___ milk in the fridge.", "some", "bejahte Aussage"],
+        ["There aren't ___ sockets in this room.", "any", "Verneinung"],
+        ["He hasn't got ___ money left.", "any", "Verneinung"],
+        ["Are there ___ apples in the kitchen?", "any", "echte Frage"],
+        ["Would you like ___ tea?", "some", "Angebot — trotz Fragezeichen"],
+        ["Could I have ___ water, please?", "some", "Bitte — trotz Fragezeichen"]
+      ];
+      const [satz, wort, art] = S[w.i];
+      return {
+        werte:[
+          {name:"Satz", text:satz.replace("___", "<b>" + wort + "</b>")},
+          {name:"Satztyp", text:art},
+          {name:"Eingesetzt", text:"<b>" + wort + "</b>"}
+        ],
+        satz: art.indexOf("trotz") >= 0
+          ? `Nach der Grundregel müsste hier any stehen — aber bei Angebot und Bitte rechnest du mit einem Ja, deshalb some.`
+          : `${art.charAt(0).toUpperCase() + art.slice(1)} — daraus folgt ${wort} ohne Ausnahme.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 150" ${SVG_STIL} role="img" aria-label="some und any im Überblick">
+    <rect x="18" y="16" width="170" height="60" rx="10" fill="#10a37f" fill-opacity=".16" stroke="#10a37f" stroke-width="1.6"/>
+    <text x="103" y="40" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">some</text>
+    <text x="103" y="60" text-anchor="middle" font-size="10" fill="currentColor">bejahte Aussage</text>
+
+    <rect x="212" y="16" width="170" height="60" rx="10" fill="#b3382f" fill-opacity=".16" stroke="#b3382f" stroke-width="1.6"/>
+    <text x="297" y="40" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">any</text>
+    <text x="297" y="60" text-anchor="middle" font-size="10" fill="currentColor">Verneinung und Frage</text>
+
+    <rect x="18" y="88" width="364" height="46" rx="10" fill="#f59e0b" fill-opacity=".16" stroke="#f59e0b" stroke-width="1.6" stroke-dasharray="5 3"/>
+    <text x="200" y="108" text-anchor="middle" font-size="11" font-weight="800" fill="currentColor">Ausnahme: Angebot und Bitte</text>
+    <text x="200" y="126" text-anchor="middle" font-size="10" fill="currentColor">Would you like some tea? · Could I have some water?</text>
+  </svg>`
+},
+
+
+"Possessivbegleiter": {
+  worum:"my, your, his, her, its, our und their sagen, wem etwas gehört. Sie richten sich nach dem Besitzer — das Ding dahinter ändert nichts.",
+  wozu:[
+    "Ohne sie kannst du nicht sagen, wem etwas gehört. Und die Verwechslung von his und her ändert den Sinn komplett.",
+    "Im Betrieb steht das in jeder Anweisung: „Check your tools before you start.“ Wer das mit „check the tools“ verwechselt, meint etwas anderes."
+  ],
+  rezept:[
+    "Frag: Wem gehört das Ding?",
+    "Nimm den Begleiter, der zu dieser Person gehört: I → my, you → your, he → his, she → her, it → its, we → our, they → their.",
+    "Die Form ändert sich nicht, egal ob ein Ding oder viele folgen: his car, his cars.",
+    "Nach dem Begleiter steht nie noch ein Artikel: „my the car“ gibt es nicht.",
+    "its ohne Apostroph heißt sein oder ihr. it's mit Apostroph heißt it is oder it has.",
+    "Bei einem Namen bildest du den Besitz mit 's: Tom's car."
+  ],
+  fehler:[
+    ["his und her nach dem Ding gerichtet", "Im Deutschen heißt es „ihr Auto“ bei einer Frau. Im Englischen genauso — her car. Aber „sein Auto“ bei einem Mann ist his car, auch wenn car sächlich wäre. Entscheidend ist immer der Besitzer."],
+    ["its und it's verwechselt", "„The machine lost it's cover“ ist falsch. Der Possessivbegleiter hat keinen Apostroph: its cover."],
+    ["Begleiter und Artikel zusammen", "„my the bag“ gibt es nicht. Entweder my bag oder the bag."],
+    ["your und you're verwechselt", "your bag heißt deine Tasche, you're heißt du bist."],
+    ["Bei Mehrzahl ein -s angehängt", "„ours car“ gibt es nicht. Es heißt our car — auch bei mehreren Dingen: our cars."]
+  ],
+  einfach:[
+    "Possessivbegleiter sagen, wem etwas gehört.",
+    "Sie stehen vor dem Ding, um das es geht: my bag, your keys.",
+    "Zu I gehört my, zu you gehört your.",
+    "Zu he gehört his, zu she gehört her, zu it gehört its.",
+    "Zu we gehört our, zu they gehört their.",
+    "Sie richten sich immer nach dem Besitzer, nie nach dem Ding.",
+    "Deshalb heißt es his car und his cars — die Form bleibt gleich.",
+    "Nach einem Possessivbegleiter steht nie noch ein a oder the.",
+    "Achtung bei its: Ohne Apostroph heißt es sein oder ihr.",
+    "Mit Apostroph — it's — ist es die Kurzform von it is oder it has."
+  ],
+  begriffe:[
+    ["Possessivbegleiter","Ein Wort, das den Besitz anzeigt und vor dem Ding steht: my, your, his."],
+    ["Besitzer","Die Person oder Sache, der etwas gehört."],
+    ["Apostroph","Das Zeichen ', das ausgelassene Buchstaben anzeigt."],
+    ["its","Der Possessivbegleiter zu it — ohne Apostroph."],
+    ["it's","Die Kurzform von it is oder it has — mit Apostroph."]
+  ],
+  tabelle:{
+    titel:"Die sieben Formen",
+    kopf:["Person","Begleiter","Beispiel"],
+    zeilen:[
+      ["I","my","I lost my keys."],
+      ["you","your","You forgot your bag."],
+      ["he","his","He is looking for his tools."],
+      ["she","her","She showed me her new phone."],
+      ["it","its","The dog wants its food."],
+      ["we","our","We finished our homework."],
+      ["they","their","They parked their car outside."]
+    ],
+    fuss:"Alle sieben bleiben gleich, egal ob ein Ding oder viele folgen."
+  },
+  regeln:[
+    "I → my, you → your, he → his, she → her.",
+    "it → its, we → our, they → their.",
+    "Die Form richtet sich nach dem Besitzer.",
+    "Einzahl oder Mehrzahl des Dings ändert nichts.",
+    "Kein Artikel dahinter oder davor.",
+    "its ohne Apostroph, it's nur als Kurzform von it is oder it has."
+  ],
+  beispiel:{aufgabe:"Setz ein: „She is looking for ___ tools, and the machine lost ___ cover.“",
+    schritte:["Besitzer ist she → her","Besitzer ist the machine, also it → its, ohne Apostroph"],
+    ergebnis:"She is looking for her tools, and the machine lost its cover."},
+  spiel:{
+    titel:"Wem gehört es?",
+    hinweis:"Schieb durch die Personen und sieh, dass sich beim Wechsel auf Mehrzahl nichts ändert.",
+    regler:[
+      {id:"p", name:"Besitzer", von:0, bis:6, schritt:1, start:0},
+      {id:"n", name:"Wie viele Dinge", von:1, bis:2, schritt:1, start:1}
+    ],
+    ausgabe:(w) => {
+      const P = [["I","my"],["you","your"],["he","his"],["she","her"],["it","its"],["we","our"],["they","their"]];
+      const [pers, poss] = P[w.p];
+      const ding = w.n === 1 ? "car" : "cars";
+      const deutsch = {my:"mein", your:"dein", his:"sein", her:"ihr", its:"sein", our:"unser", their:"ihr"}[poss];
+      return {
+        werte:[
+          {name:"Besitzer", text:pers},
+          {name:"Begleiter", text:"<b>" + poss + "</b>"},
+          {name:"Auf Deutsch", text:deutsch},
+          {name:"Ganzer Ausdruck", text:"<b>" + poss + " " + ding + "</b>"}
+        ],
+        satz: w.n === 1
+          ? `Ein Ding: ${poss} ${ding}. Schieb den zweiten Regler auf 2 und achte darauf, was sich am Begleiter ändert.`
+          : `Zwei Dinge: ${poss} ${ding}. Am Begleiter hat sich nichts geändert — nur das Ding steht in der Mehrzahl.`
+      };
+    }
+  },
+  bild:`<svg viewBox="0 0 400 160" ${SVG_STIL} role="img" aria-label="Possessivbegleiter nach Person">
+    ${[["I","my"],["you","your"],["he","his"],["she","her"],["it","its"],["we","our"],["they","their"]]
+      .map((r, i) => {
+        const x = 22 + (i % 4) * 92;
+        const y = 20 + Math.floor(i / 4) * 62;
+        return `<rect x="${x}" y="${y}" width="82" height="48" rx="8" fill="#6b4fd8" fill-opacity=".16" stroke="#6b4fd8" stroke-width="1.5"/>
+          <text x="${x + 41}" y="${y + 20}" text-anchor="middle" font-size="11" fill="currentColor">${r[0]}</text>
+          <text x="${x + 41}" y="${y + 38}" text-anchor="middle" font-size="13" font-weight="800" fill="currentColor">${r[1]}</text>`;
+      }).join("")}
+    <text x="200" y="152" text-anchor="middle" font-size="10" fill="currentColor">Immer nach dem Besitzer — nie nach dem Ding dahinter.</text>
   </svg>`
 },
 
@@ -25639,6 +26642,21 @@ function render(gewaehlt){
     return;
   }
 
+  /* Englisch hat neben der Grammatik einen eigenen Vokabelbereich — Wörter lernt
+     man anders als Regeln. Der Einstieg steht auf jeder Englischseite sichtbar,
+     damit man ihn nicht suchen muss. */
+  function vokabelEinstiegHtml(f){
+    if (!KATALOG[f] || !KATALOG[f].vokabeln) return "";
+    return `
+      <div class="card vokeinstieg">
+        <span class="tag">Eigener Bereich</span>
+        <h2 style="margin:8px 0 6px">Vokabeln üben</h2>
+        <p class="soft" style="margin:0 0 14px">${z(vokabelAnzahl())} Wörter nach Klasse und Thema geordnet —
+          in beide Richtungen, mit Hilfe in Stufen. Unabhängig von der Grammatik.</p>
+        ${navLink("/vokabeln", "zeigeVokabeln()", "Zum Vokabeltrainer", "btn full")}
+      </div>`;
+  }
+
   /* ---- Klassenwahl ---- */
   if (ansicht === "klassenwahl"){
     const themen = KATALOG[fach].themen;
@@ -25661,17 +26679,7 @@ function render(gewaehlt){
           `, "grosswahl mitfarbe");
         }).join("")}
       </div>
-      ${/* Englisch hat neben der Grammatik einen eigenen Vokabelbereich —
-            Wörter lernt man anders als Regeln. Der Einstieg gehört sichtbar
-            hierher, nicht ins Menü. */
-        KATALOG[fach].vokabeln ? `
-      <div class="card vokeinstieg">
-        <span class="tag">Extra</span>
-        <h2 style="margin:8px 0 6px">Vokabeln üben</h2>
-        <p class="soft" style="margin:0 0 14px">${z(vokabelAnzahl())} Wörter nach Klasse und Thema geordnet —
-          in beide Richtungen, mit Hilfe in Stufen. Unabhängig von der Grammatik.</p>
-        ${navLink("/vokabeln", "zeigeVokabeln()", "Zum Vokabeltrainer", "btn full")}
-      </div>` : ""}`;
+      ${vokabelEinstiegHtml(fach)}`;
     return;
   }
 
@@ -25717,6 +26725,7 @@ function render(gewaehlt){
           </div>
         </div>` : ""}
 
+        ${vokabelEinstiegHtml(fach)}
         ${themenwunschHtml()}`;
       return;
     }
@@ -25751,6 +26760,7 @@ function render(gewaehlt){
         </div>
       </div>
 
+      ${vokabelEinstiegHtml(fach)}
       ${fertig.length < themen.length ? themenwunschHtml(true) : ""}`;
     return;
   }
