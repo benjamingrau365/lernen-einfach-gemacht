@@ -18,32 +18,71 @@
 <style>
 :root{--bg:#f4f8f7;--card:#fff;--ink:#16211e;--soft:#5b6b66;--line:#dfe8e5;
   --ac:#10a37f;--ac-soft:#e4f5ef;--ac-dark:#0b7a5f;--red:#b3382f;--red-soft:#fdecea;
-  --amber:#8a5a09;--amber-soft:#fdf3e0}
+  --amber:#8a5a09;--amber-soft:#fdf3e0;--knopfschrift:#fff;--schatten:0 1px 2px rgba(16,33,30,.05),0 8px 24px -18px rgba(16,33,30,.5)}
 @media (prefers-color-scheme:dark){:root{--bg:#101614;--card:#18201d;--ink:#e8efec;
   --soft:#9bada7;--line:#2a3733;--ac:#2fbf99;--ac-soft:#17302a;--ac-dark:#7fe0c4;
-  --red:#f08a80;--red-soft:#301a18;--amber:#e0b467;--amber-soft:#2c2415}}
+  --red:#f08a80;--red-soft:#301a18;--amber:#e0b467;--amber-soft:#2c2415;
+  /* Im Dunkelmodus ist das Grün heller — dann braucht der Knopf dunkle Schrift,
+     sonst steht Weiß auf Hellgrün und man liest es kaum. */
+  --knopfschrift:#06231c;
+  --schatten:0 1px 2px rgba(0,0,0,.3)}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);
+body{margin:0;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%;
   font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-.huelle{max-width:760px;margin:0 auto;padding:20px 18px 60px}
-a{color:var(--ac-dark)}
-.pfad{font-size:14px;color:var(--soft);margin:0 0 18px}
+.huelle{max-width:760px;margin:0 auto;padding:0 18px 60px}
+a{color:var(--fach-dark)}
+
+/* Kopfleiste wie in der App, damit man merkt: gleiches Haus */
+.leiste{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 0 18px;margin-bottom:6px}
+.wortmarke{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);
+  font-weight:900;letter-spacing:-.02em;font-size:18px}
+.zeichen{width:32px;height:32px;border-radius:10px;background:var(--ac);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
+.leiste .mini{font-size:14px;font-weight:700;color:var(--fach-dark);text-decoration:none;
+  border:1.5px solid var(--fach);border-radius:999px;padding:7px 15px;white-space:nowrap}
+
+.pfad{font-size:14px;color:var(--soft);margin:0 0 16px}
 .pfad a{color:var(--soft)}
-.karte{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
-  padding:22px 24px;margin-bottom:16px}
-h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 10px;letter-spacing:-.02em}
-h2{font-size:20px;margin:0 0 10px;letter-spacing:-.01em}
+.karte{background:var(--card);border:1.5px solid var(--line);border-radius:18px;
+  padding:24px 26px;margin-bottom:16px;box-shadow:var(--schatten)}
+.karte.kopf{border-color:transparent;background:var(--fach-soft)}
+h1{font-size:clamp(28px,6vw,38px);line-height:1.15;margin:0 0 12px;letter-spacing:-.025em}
+h2{font-size:21px;margin:0 0 12px;letter-spacing:-.015em}
 h3{font-size:16px;margin:18px 0 6px}
 p{margin:0 0 12px}
 p:last-child{margin-bottom:0}
 ul,ol{margin:0 0 12px;padding-left:22px}
 li{margin-bottom:7px}
-.marke{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.06em;
-  text-transform:uppercase;color:var(--ac-dark);background:var(--ac-soft);
-  border-radius:999px;padding:4px 12px;margin-bottom:12px}
-.knopf{display:block;text-align:center;background:var(--ac);color:#fff;text-decoration:none;
-  font-weight:700;border-radius:13px;padding:15px 20px;margin-top:6px}
-.knopf.leise{background:transparent;color:var(--ac-dark);border:1.6px solid var(--ac);margin-top:10px}
+.vorsatz{font-size:17px;color:var(--fach-dark);font-weight:600}
+.marke{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;color:#fff;background:var(--fach);
+  border-radius:999px;padding:5px 13px;margin-bottom:14px}
+.auch{font-size:14.5px;color:var(--soft);margin:0 0 14px}
+.knopf{display:block;text-align:center;background:var(--ac);color:var(--knopfschrift);text-decoration:none;
+  font-weight:700;border-radius:14px;padding:16px 20px;margin-top:8px;font-size:17px}
+.knopf.leise{background:transparent;color:var(--fach-dark);border:1.6px solid var(--fach);margin-top:10px}
+.knopf small{display:block;font-weight:500;font-size:13.5px;opacity:.85;margin-top:2px}
+
+/* Was einen hier erwartet — die drei Punkte, die uns von anderen unterscheiden */
+.punkte{display:grid;gap:12px;margin:0}
+.punkt{display:flex;gap:13px;align-items:flex-start}
+.punkt .haken{flex:none;width:24px;height:24px;border-radius:8px;background:var(--ac-soft);
+  color:var(--ac-dark);display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;margin-top:2px}
+.punkt b{display:block;margin-bottom:1px}
+.punkt span{font-size:15.5px;color:var(--soft)}
+
+/* Eine echte Aufgabe als Vorschau */
+.probe{border:1.5px dashed var(--fach);border-radius:14px;padding:17px 19px;background:var(--fach-soft)}
+.probefrage{font-size:18px;font-weight:700;margin:0 0 14px}
+.probeschritt{font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--fach-dark);margin:0 0 6px}
+.wahl{display:grid;gap:8px;margin-top:12px}
+.wahl div{background:var(--card);border:1.5px solid var(--line);border-radius:11px;
+  padding:11px 14px;font-size:15.5px}
+.abbruch{margin:14px 0 0;font-size:15px;color:var(--soft)}
+
 table{width:100%;border-collapse:collapse;font-size:15px;margin-bottom:12px}
 th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-weight:800;color:var(--soft);font-size:13.5px}
@@ -56,31 +95,72 @@ th{font-weight:800;color:var(--soft);font-size:13.5px}
 .begriff b{display:block}
 .begriff span{color:var(--soft);font-size:15px}
 svg{width:100%;max-width:420px;height:auto;display:block;margin:14px auto;color:var(--ink)}
-.fuss{font-size:14px;color:var(--soft);text-align:center;margin-top:26px}
+.fuss{font-size:14px;color:var(--soft);text-align:center;margin-top:26px;line-height:2}
 .fuss a{color:var(--soft)}
 .andere{display:grid;gap:8px}
-.andere a{display:block;background:var(--card);border:1.5px solid var(--line);
-  border-radius:12px;padding:12px 15px;text-decoration:none;color:var(--ink);font-weight:600}
+.andere a{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:var(--card);border:1.5px solid var(--line);
+  border-radius:12px;padding:13px 16px;text-decoration:none;color:var(--ink);font-weight:600}
+.andere a span{color:var(--soft);font-weight:400;font-size:20px;line-height:1}
+</style>
+<style>
+:root{--fach:#a06c00;--fach-soft:#fbf2dd;--fach-dark:#7f5600}
+@media (prefers-color-scheme:dark){:root{--fach:#e3bd6a;--fach-soft:#2a2211;--fach-dark:#e3bd6a}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Angebot kalkulieren — einfach erklärt","description":"Angebot kalkulieren für Lehrjahr 4: Ein Angebot besteht aus Material, Arbeitszeit und Zuschlägen. Am Ende steht ein Preis, mit dem du selbst noch etwas verdienst.","url":"https://endlichkapiert.com/erklaerung/angebot-kalkulieren","inLanguage":"de","isAccessibleForFree":true,"learningResourceType":"Erklärung und Übungen","educationalLevel":"Lehrjahr 4","about":{"@type":"Thing","name":"Angebot kalkulieren"},"teaches":"Angebot kalkulieren","provider":{"@type":"Organization","name":"Endlich kapiert","url":"https://endlichkapiert.com"}}</script>
 </head>
 <body>
 <div class="huelle">
+<div class="leiste">
+  <a class="wortmarke" href="/"><span class="zeichen">Ek</span>Endlich kapiert</a>
+  <a class="mini" href="/faecher">Üben</a>
+</div>
 
 <p class="pfad"><a href="/">Startseite</a> › <a href="/elektroniker">Elektroniker</a> › Lehrjahr 4</p>
 
-<div class="karte">
+<div class="karte kopf">
   <span class="marke">Elektroniker · Lehrjahr 4</span>
   <h1>Angebot kalkulieren — einfach erklärt</h1>
   
-  <p>Ein Angebot besteht aus Material, Arbeitszeit und Zuschlägen. Am Ende steht ein Preis, mit dem du selbst noch etwas verdienst.</p>
-  <a class="knopf" href="/elektroniker/4">Jetzt üben — du bekommst nie die Lösung, nur Fragen</a>
-  <a class="knopf leise" href="/elektroniker/4">Alle Themen in Lehrjahr 4</a>
+  <p class="vorsatz">Ein Angebot besteht aus Material, Arbeitszeit und Zuschlägen. Am Ende steht ein Preis, mit dem du selbst noch etwas verdienst.</p>
+  <a class="knopf" href="/elektroniker/4">Angebot kalkulieren jetzt üben
+    <small>Kostenlos, ohne Anmeldung · du bekommst nie die Lösung, nur Fragen</small></a>
 </div>
 
 <div class="karte">
-  <h2>Von ganz vorn</h2>
-  <p style="color:var(--soft);font-size:15px">Ein Satz nach dem anderen, ohne Vorwissen.</p>
+  <h2>Was dich hier erwartet</h2>
+  <div class="punkte">
+    <div class="punkt"><span class="haken">✓</span><div><b>Erklärt von ganz vorn</b>
+      <span>Ohne Vorwissen, ein Satz nach dem anderen. Wer es schon kann, überspringt es.</span></div></div>
+    <div class="punkt"><span class="haken">✓</span><div><b>Nie die fertige Lösung</b>
+      <span>Du bekommst Fragen, die dich hinführen. Abschreiben geht hier nicht — verstehen schon.</span></div></div>
+    <div class="punkt"><span class="haken">✓</span><div><b>Was hakt, kommt wieder</b>
+      <span>Nach einem Tag, nach drei Tagen, nach einer Woche. So lange, bis es sitzt.</span></div></div>
+  </div>
+</div>
+
+
+<div class="karte">
+  <h2>So sieht das beim Üben aus</h2>
+  <p style="color:var(--soft);font-size:15.5px;margin-bottom:16px">Eine echte Aufgabe aus diesem Thema.
+    Du bekommst sie nicht vorgerechnet — du wirst hingeführt.</p>
+  <div class="probe">
+    <p class="probeschritt">Die Aufgabe</p>
+    <p class="probefrage">Für einen Auftrag rechnest du 4 Stunden zu 55,00 € je Stunde und 640,00 € Material.<br>Wie hoch ist der Nettobetrag in Euro?</p>
+    <p class="probeschritt">Erste Frage an dich</p>
+    <p style="margin:0">Wie hoch sind die <b>Lohnkosten</b>?</p>
+    <div class="wahl">
+      <div>220,00 €</div><div>55,00 €</div><div>13,75 €</div>
+    </div>
+    <p class="abbruch">Danach kommen 2 weitere Fragen —
+      und am Schluss schreibst du die Antwort selbst hin.
+      Wenn du nicht weiterweißt, gibt es einen Tipp: <i>Stunden mal Stundensatz.</i></p>
+  </div>
+</div>
+
+<div class="karte">
+  <h2>Angebot kalkulieren von ganz vorn</h2>
+  <p style="color:var(--soft);font-size:15.5px">Ein Satz nach dem anderen, ohne Vorwissen.</p>
   <p>Ein Angebot hat zwei große Blöcke: Material und Lohn.</p><p>Die Lohnkosten rechnest du aus Stunden mal Stundenverrechnungssatz. Der Satz enthält schon Lohn, Lohnnebenkosten und einen Anteil an den Gemeinkosten.</p><p>Beim Material rechnest du mit dem Einkaufspreis und schlägst einen Prozentsatz auf — für Lagerung, Beschaffung und Verschnitt.</p><p>Lohn und Material zusammen ergeben die Nettosumme. Das ist die Zahl, mit der intern gerechnet wird.</p><p>Auf die Nettosumme kommt die Mehrwertsteuer, derzeit 19 %. Das Ergebnis ist der Bruttobetrag — das, was der Kunde bezahlt.</p><p>Die Mehrwertsteuer gehört nicht dir. Sie wird ans Finanzamt weitergegeben.</p><p>Gibst du einen Rabatt, wird er vom Nettobetrag abgezogen, bevor die Mehrwertsteuer gerechnet wird.</p><p>Vergiss die Anfahrt und die kleinen Verbrauchsmaterialien nicht. Sie summieren sich.</p>
 </div>
 
@@ -150,19 +230,25 @@ svg{width:100%;max-width:420px;height:auto;display:block;margin:14px auto;color:
 <div class="karte">
   <h2>Weiter in Lehrjahr 4</h2>
   <div class="andere">
-    <a href="/erklaerung/kondensator-laden">Kondensator laden — einfach erklärt</a><a href="/erklaerung/blindleistung-und-cos">Blindleistung und cos φ — einfach erklärt</a><a href="/erklaerung/energiekosten">Energiekosten — einfach erklärt</a><a href="/erklaerung/logikverknuepfungen">Logikverknüpfungen — einfach erklärt</a><a href="/erklaerung/fehler-suchen">Fehler suchen — einfach erklärt</a><a href="/erklaerung/instandhaltung-und-verfuegbarkeit">Instandhaltung und Verfügbarkeit — einfach erklärt</a>
+    <a href="/erklaerung/kondensator-laden">Kondensator laden — einfach erklärt<span>›</span></a><a href="/erklaerung/blindleistung-und-cos">Blindleistung und cos φ — einfach erklärt<span>›</span></a><a href="/erklaerung/energiekosten">Energiekosten — einfach erklärt<span>›</span></a><a href="/erklaerung/logikverknuepfungen">Logikverknüpfungen — einfach erklärt<span>›</span></a><a href="/erklaerung/fehler-suchen">Fehler suchen — einfach erklärt<span>›</span></a><a href="/erklaerung/instandhaltung-und-verfuegbarkeit">Instandhaltung und Verfügbarkeit — einfach erklärt<span>›</span></a>
   </div>
+  <a class="knopf leise" href="/erklaerungen">Alle Erklärungen ansehen</a>
 </div>
 
-<div class="karte">
-  <h2>Und dann?</h2>
-  <p>Lesen reicht nicht. Verstanden hast du es erst, wenn du es selbst hinschreiben kannst —
-    deshalb bekommst du in der App nie die Lösung, sondern Fragen, die dich hinführen.
-    Was hakt, kommt von allein wieder: nach einem Tag, nach drei Tagen, nach einer Woche.</p>
-  <a class="knopf" href="/elektroniker/4">Angebot kalkulieren jetzt üben</a>
+<div class="karte kopf">
+  <h2>Lesen reicht nicht</h2>
+  <p>Verstanden hast du es erst, wenn du es selbst hinschreiben kannst. Genau dafür ist
+    diese Seite gebaut: Du bekommst nie die fertige Lösung, sondern Fragen, die dich
+    hinführen — und am Schluss schreibst du die Antwort selbst.</p>
+  <p>Kostenlos, ohne Werbung. Ein Konto brauchst du nur, wenn sich die Seite merken soll,
+    was bei dir noch hakt.</p>
+  <a class="knopf" href="/elektroniker/4">Angebot kalkulieren jetzt üben
+    <small>2 Aufgabentypen, immer neue Zahlen</small></a>
 </div>
-<p class="fuss"><a href="/">Endlich kapiert</a> · <a href="/erklaerungen">Alle Erklärungen</a>
-  · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
+<p class="fuss"><a href="/">Startseite</a> · <a href="/erklaerungen">Alle Erklärungen</a>
+  · <a href="/warum">Warum keine KI-Lösungen?</a><br>
+  <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a><br>
+  Ein Lernprojekt aus Deutschland · kostenlos, ohne Werbung</p>
 </div>
 </body>
 </html>
