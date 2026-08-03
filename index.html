@@ -120,9 +120,17 @@
   html{zoom:var(--fs,1)}
   /* … nur das Logo bleibt konstant (Gegen-Zoom) */
   .marke{zoom:calc(1 / var(--fs,1))}
+  /* Ein einziger Grauton über die ganze Höhe wirkt flach wie Druckerpapier.
+     Der Hauch Fachfarbe oben gibt der Seite Tiefe, ohne dass jemand sagen
+     könnte, welche Farbe das eigentlich ist — und er wechselt mit dem Fach. */
   body{background:var(--bg);color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:340px;pointer-events:none;z-index:0;
+    background:linear-gradient(180deg,
+      color-mix(in srgb, var(--fach) 7%, var(--bg)) 0%,
+      var(--bg) 100%)}
+  .shell, .kopfleiste, .baustelle{position:relative;z-index:1}
 
   .shell{max-width:1140px;margin:0 auto;padding:14px 20px 64px;display:grid;grid-template-columns:1fr;gap:0}
 
@@ -172,6 +180,10 @@
   @media (prefers-reduced-motion:reduce){ .einblenden{animation:none} }
   .card{background:var(--card);border:1px solid var(--line);border-radius:18px;
     padding:26px;margin-bottom:14px;box-shadow:var(--schatten)}
+  /* Die Karte mit der Überschrift ist der Anfang der Seite. Ein Hauch
+     Fachfarbe darin sagt das, ohne ein Wort dafür zu brauchen — und sie
+     wechselt mit dem Fach, in dem man gerade ist. */
+  .card:has(> h1){background:linear-gradient(158deg, var(--fach-soft) 0%, var(--card) 64%)}
   h1{font-size:28px;line-height:1.2;letter-spacing:-.02em;margin:0 0 10px}
   h2{font-size:20px;margin:0 0 16px}
   p{margin:0 0 14px} p:last-child{margin-bottom:0}
@@ -185,8 +197,13 @@
   .kopf .tag{min-width:0;overflow-wrap:break-word;hyphens:auto}
   .aufgabenzaehler{flex:none;white-space:nowrap;font-size:13px}
 
-  /* Aufgabe: ganz ohne Kasten */
-  .aufg{padding:14px 0 22px;border-bottom:1px solid var(--line);margin-bottom:24px}
+  /* Aufgabe: eine eigene Fläche in der Farbe des Fachs.
+     Vorher stand sie weiß auf weiß zwischen zwei dünnen Linien — man sah nicht
+     auf einen Blick, was hier die Aufgabe ist und was schon die Frage dazu.
+     Der getönte Grund beantwortet das ohne ein einziges zusätzliches Wort. */
+  .aufg{position:relative;padding:20px 20px 22px;margin-bottom:24px;
+    background:var(--fach-soft);border-radius:16px;
+    box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--fach) 16%, transparent)}
   /* Beim Scrollen durch die Antworten bleibt die Aufgabe oben stehen — sonst
      vergisst man auf halber Strecke, worum es überhaupt ging. Sie hängt sich
      unter die Kopfleiste, deren Höhe nach jedem Zeichnen gemessen wird.
@@ -195,7 +212,8 @@
   /* top:0 — die Kopfleiste bleibt beim Scrollen nicht stehen (ihr Elternelement
      ist genauso hoch wie sie), es ist also kein Platz dafür freizuhalten. */
   .aufg.klebt{position:sticky;top:0;z-index:20;
-    background:var(--card);margin:0 -26px 20px;padding:12px 26px 14px;
+    background:var(--fach-soft);margin:0 -26px 20px;padding:12px 26px 14px;
+    border-radius:0;box-shadow:0 1px 0 color-mix(in srgb, var(--fach) 22%, transparent);
     max-height:38vh;overflow:auto}   /* Notbremse: nie mehr als gut ein Drittel des Bildes */
   .aufg .zeile1{font-size:38px;font-weight:600;text-align:center;letter-spacing:-.01em;line-height:1.25}
   /* Die große Schrift ist für Gleichungen gedacht („3x + 4 = 19“). Ganze Sätze
@@ -206,6 +224,20 @@
   .aufg.text .zeile1{font-size:22px;font-weight:500;text-align:left;line-height:1.5;letter-spacing:0}
   .aufg .luecke{color:var(--ac);font-weight:700}
 
+  /* Bruch: Zähler über Nenner, dazwischen ein Strich in der Schriftfarbe.
+     Die Maße hängen an der Schriftgröße (em), damit der Bruch in der großen
+     Aufgabenzeile genauso sitzt wie klein in einer Antwortmöglichkeit. */
+  .bruch{display:inline-flex;flex-direction:column;align-items:center;
+    vertical-align:middle;line-height:1.06;margin:0 .14em;font-size:.82em;
+    font-variant-numeric:lining-nums}
+  .bruch i{font-style:normal;padding:0 .2em}
+  .bruch i:first-child{border-bottom:.085em solid currentColor;padding-bottom:.04em}
+  .bruch i:last-child{padding-top:.04em}
+  /* In der großen Aufgabenzeile stehen die Brüche allein da und dürfen ruhig
+     wirken; in einer Antwortzeile stehen sie mitten im Satz und müssen die
+     Zeilenhöhe halten. */
+  .picktext .bruch, .frage .bruch, .blattfrage .bruch{font-size:.9em;margin:0 .1em}
+
   .frage{font-size:19.5px;margin:0 0 18px;line-height:1.45}
 
   .optionen{display:grid;gap:10px}
@@ -213,13 +245,17 @@
      Vorher sahen sie aus wie die Hilfeknöpfe darunter — man tippte daneben. */
   .pick{width:100%;text-align:left;background:var(--card);border:2px solid var(--line);
     border-radius:13px;padding:14px 16px;font:inherit;font-size:16.5px;color:var(--ink);
-    cursor:pointer;transition:border-color .12s,background .12s,transform .08s;line-height:1.4;
+    cursor:pointer;line-height:1.4;
+    transition:border-color .14s,background .14s,transform .1s,box-shadow .14s;
     display:flex;align-items:flex-start;gap:12px}
-  .pickbuchstabe{flex:none;width:29px;height:29px;border-radius:9px;background:var(--bg);
-    border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;
-    font-size:14px;font-weight:800;color:var(--soft);transition:inherit}
+  /* Der Buchstabe trägt die Fachfarbe. Grau sah er aus wie ausgegraut —
+     als wäre die Antwort gar nicht anwählbar. */
+  .pickbuchstabe{flex:none;width:29px;height:29px;border-radius:9px;background:var(--fach-soft);
+    border:1.5px solid transparent;display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:800;color:var(--fach-dark);transition:inherit}
   .picktext{min-width:0;padding-top:2px}
-  button.pick:not(:disabled):not(.richtig):not(.falsch):hover{border-color:var(--ac);background:var(--ac-soft)}
+  button.pick:not(:disabled):not(.richtig):not(.falsch):hover{border-color:var(--ac);background:var(--ac-soft);
+    transform:translateY(-1px);box-shadow:0 6px 16px -10px color-mix(in srgb, var(--ac) 70%, transparent)}
   button.pick:not(:disabled):hover .pickbuchstabe{border-color:var(--ac);color:var(--ac-dark);background:var(--card)}
   button.pick:not(:disabled):active{transform:scale(.985)}
   button.pick:disabled{cursor:default;opacity:.5}
@@ -255,12 +291,23 @@
   /* Im Dunkelmodus sind die Akzentfarben heller als im Hellen. Weiße Schrift
      darauf ist dann kaum zu lesen — deshalb entscheidet eine eigene Variable
      über die Schriftfarbe im Knopf, nicht ein festes Weiß. */
-  .btn{display:inline-block;background:var(--ac);color:var(--knopfschrift);border:none;border-radius:12px;
-    padding:14px 24px;font:inherit;font-weight:600;font-size:16.5px;cursor:pointer}
+  /* Der Knopf war eine flache Fläche — richtig, aber leblos. Ein Hauch Verlauf
+     und ein farbiger Schatten darunter lassen ihn aus der Karte heraustreten,
+     ohne dass er bunt wird. */
+  .btn{display:inline-block;border:none;border-radius:12px;
+    background:linear-gradient(180deg, color-mix(in srgb, var(--ac) 88%, #fff) 0%, var(--ac) 100%);
+    color:var(--knopfschrift);
+    box-shadow:0 1px 0 rgba(255,255,255,.18) inset,
+               0 10px 20px -12px color-mix(in srgb, var(--ac) 85%, transparent);
+    padding:14px 24px;font:inherit;font-weight:600;font-size:16.5px;cursor:pointer;
+    transition:background .14s,transform .1s,box-shadow .14s}
   .btn:hover{color:var(--knopfschrift)}
-  .btn:hover{background:var(--ac-dark)}
-  .btn.ghost{background:none;color:var(--soft);border:1.5px solid var(--line);font-weight:500}
-  .btn.ghost:hover{color:var(--ac-dark);border-color:var(--ac);background:none}
+  .btn:hover{background:var(--ac-dark);transform:translateY(-1px);
+    box-shadow:0 14px 24px -12px color-mix(in srgb, var(--ac) 85%, transparent)}
+  .btn:active{transform:translateY(0) scale(.99)}
+  .btn.ghost{background:none;color:var(--soft);border:1.5px solid var(--line);font-weight:500;
+    box-shadow:none}
+  .btn.ghost:hover{color:var(--ac-dark);border-color:var(--ac);background:var(--ac-soft);box-shadow:none}
   .btn.full{display:block;width:100%;text-align:center}
 
   .vokeinstieg{border:1.5px solid var(--englisch);background:var(--englisch-soft)}
@@ -272,6 +319,7 @@
   .vokknopf:hover{border-color:var(--ac)}
   .vokknopf.an{background:var(--ac-soft);border-color:var(--ac);color:var(--ac-dark)}
   /* Bei fast hundert Themen hilft die Zahl bei der Auswahl: wie viel steckt drin? */
+  .vokknopf.mehr{border-style:dashed;color:var(--ac-dark);border-color:var(--ac)}
   .vokknopf > em{font-style:normal;font-weight:600;font-size:12.5px;color:var(--soft);margin-left:5px}
   .vokknopf.an > em{color:var(--ac-dark);opacity:.75}
   /* ---------- Arbeitsblatt ----------
@@ -346,8 +394,12 @@
   .vokschlecht{border-color:var(--red)}
   .vokschlecht .vokergebnis{color:var(--red)}
   .fortschritt{display:flex;gap:5px;margin-bottom:18px}
-  .fortschritt i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+  .fortschritt i{flex:1;height:6px;border-radius:999px;background:var(--fach-soft);
+    transition:background .25s}
   .fortschritt i.an{background:var(--fach)}
+  /* Der gerade laufende Schritt ist der erste, der noch nicht „an“ ist —
+     er bekommt einen leichten Puls, damit man sieht, wo man steht. */
+  .fortschritt i.an + i:not(.an){background:color-mix(in srgb, var(--fach) 45%, var(--fach-soft))}
   /* ---------- Prüfungsmodus ---------- */
   .pruefbalken{border:1.5px solid var(--ac);background:var(--ac-soft)}
   .pruefbalken.eng{border-color:var(--amber);background:var(--amber-soft)}
@@ -451,14 +503,17 @@
   .thema{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
     min-height:56px;text-align:left;background:var(--card);border:1.5px solid var(--line);
     border-radius:14px;padding:12px 14px 12px 16px;font:inherit;font-size:16.5px;
-    color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
+    color:var(--ink);cursor:pointer;
+    transition:border-color .14s,background .14s,transform .1s,box-shadow .14s}
   /* Der Themenname darf umbrechen — aber an einer Silbengrenze, nicht mitten
      im Wort. „overflow-wrap:anywhere“ machte aus Dezimalzahlen ein
      „Dezimalzahle n“. Mit hyphens:auto trennt der Browser deutsch richtig,
      und break-word greift nur, wenn ein Wort wirklich nicht passt. */
   .thema > span:first-child{min-width:0;overflow-wrap:break-word;hyphens:auto;
     font-weight:600;line-height:1.3}
-  .thema:hover{border-color:var(--fach);background:var(--fach-soft)}
+  .thema:hover{border-color:var(--fach);background:var(--fach-soft);
+    transform:translateY(-1px);box-shadow:0 8px 18px -12px color-mix(in srgb, var(--fach) 75%, transparent)}
+  .thema:active{transform:scale(.995)}
   /* fertige Themen tragen die Farbe ihres Fachs an der linken Kante */
   .thema:not(.aus){border-left:5px solid var(--fach)}
   .thema.aus{cursor:default;color:var(--soft);background:var(--bg);border-style:dashed}
@@ -26585,6 +26640,21 @@ function aufgabenGroesse(a){
   return "lang";                          /* ganze Sätze */
 }
 
+/* Brüche sieht man in keinem Heft mit Schrägstrich: Zähler oben, Bruchstrich,
+   Nenner unten. Genau so werden sie hier gesetzt — aber nur dann, wenn der Text
+   nichts anderes ist als eine Rechnung. Sobald ein Buchstabe darin vorkommt,
+   bleibt alles, wie es ist; sonst würde aus einem Datum oder einer Einheit
+   plötzlich ein Bruch. */
+const NUR_RECHNUNG = /^[\d\s+\-−·×*:÷=()/,.…]+$/;
+function bruecheSetzen(text){
+  const roh = String(text == null ? "" : text);
+  if (!/\d\/\d/.test(roh)) return roh;
+  if (/[<>]/.test(roh)) return roh;              /* schon ausgezeichnet */
+  if (!NUR_RECHNUNG.test(roh)) return roh;
+  return roh.replace(/(\d+)\/(\d+)/g,
+    (_, oben, unten) => `<span class="bruch"><i>${oben}</i><i>${unten}</i></span>`);
+}
+
 function kopfleisteHtml(){
   return `
     <div class="kopfleiste${amLoesen() ? " schlank" : ""}">
@@ -28249,13 +28319,34 @@ function abZiehen(){
        liest man den letzten Schritt erst, wenn man vorher geantwortet hat.
        Auf dem Blatt stehen alle Fragen gleichzeitig da, und eine Kontrollfrage
        wie „Ist 287 ungefähr 10-mal so groß wie 28,7?“ wäre die Antwort. */
-    const nackt = (x) => String(x).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-    const loesung = nackt(a.loesung);
-    const hilfen = (a.schritte || []).map(s => s.frage)
-      .filter(f => f && !(loesung.length > 1 && nackt(f).includes(loesung)));
-    raus.push({thema, aufgabe: a, hilfen});
+    raus.push({thema, aufgabe: a, hilfen: (a.schritte || []).map(s => s.frage).filter(Boolean)});
   }
   if (!raus.length){ abMeldung = "Für diese Auswahl gibt es keine Aufgaben."; render(); return; }
+
+  /* Auf einem Blatt stehen alle Aufgaben nebeneinander. Eine Kontrollfrage wie
+     „Ist 287 ungefähr 10-mal so groß wie 28,7?“ verrät nicht nur die eigene
+     Lösung — sie kann auch die einer anderen Aufgabe weiter unten sein.
+     Deshalb wird gegen alle Lösungen des Blattes geprüft, nicht nur gegen die
+     der jeweiligen Aufgabe. */
+  const nackt = (x) => String(x).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const loesungen = raus.map(e => nackt(e.aufgabe.loesung)).filter(l => l.length > 2);
+  const verraet = (text) => loesungen.some(l => nackt(text).includes(l));
+  raus.forEach(e => { e.hilfen = e.hilfen.filter(f => !verraet(f)); });
+
+  /* Bleibt eine Lösung trotzdem im Aufgabentext einer anderen Aufgabe stehen,
+     hilft kein Filtern mehr — dann wird neu gewürfelt. */
+  for (let versuch = 0; versuch < 12; versuch++){
+    const schlimm = raus.findIndex((e, i) =>
+      loesungen.some((l, j) => j !== i && l && nackt(e.aufgabe.text).includes(l)));
+    if (schlimm < 0) break;
+    const e = raus[schlimm];
+    const neu = baueAufgabe(e.thema, rnd(0, Math.max(0, anzahlAufgaben(e.thema) - 1)));
+    entdoppeln(neu);
+    e.aufgabe = neu;
+    e.hilfen = (neu.schritte || []).map(s => s.frage).filter(Boolean);
+    loesungen[schlimm] = nackt(neu.loesung).length > 2 ? nackt(neu.loesung) : "";
+    raus.forEach(x => { x.hilfen = x.hilfen.filter(f => !verraet(f)); });
+  }
   abBlatt = raus;
   ansicht = "arbeitsblattDruck"; render();
 }
@@ -29404,10 +29495,22 @@ function vokListePdf(){
 }
 
 /* ---------- Auswahlseite ---------- */
+/* Bei „alle Klassen“ standen 97 Themenknöpfe untereinander — die Seite war
+   sieben Bildschirme lang und man scrollte an der Auswahl vorbei, statt sie zu
+   benutzen. Es werden deshalb erst einmal nur so viele gezeigt, wie auf ein
+   Bild passen; der Rest kommt auf Wunsch. */
+const VOK_THEMEN_KURZ = 14;
+let vokThemenOffen = false;
+function vokThemenAufklappen(){ vokThemenOffen = true; render(); }
+
 function vokabelnHtml(){
   const themen = vokThemenFuer(vokKlasse);
   if (vokThema !== "alle" && !themen.includes(vokThema)) vokThema = "alle";
   const anzahl = vokabelListe(vokKlasse, vokThema).length;
+  /* Ein gewähltes Thema muss sichtbar bleiben, auch wenn es weiter hinten steht. */
+  const gekuerzt = !vokThemenOffen && themen.length > VOK_THEMEN_KURZ
+    && !themen.slice(VOK_THEMEN_KURZ).includes(vokThema);
+  const sichtbar = gekuerzt ? themen.slice(0, VOK_THEMEN_KURZ) : themen;
   return `
     <div class="card">
       ${navLink("/englisch", "waehleFach('englisch')", "← Zurück zu Englisch", "zurueck")}
@@ -29442,9 +29545,11 @@ function vokabelnHtml(){
       <p class="ueberschrift">Thema</p>
       <div class="vokwahl">
         <button class="vokknopf ${vokThema === "alle" ? "an" : ""}" onclick="vokThema='alle';render()">alle Themen</button>
-        ${themen.map(t =>
+        ${sichtbar.map(t =>
           `<button class="vokknopf ${vokThema === t ? "an" : ""}" onclick="vokThema=${JSON.stringify(t).replace(/"/g, "&quot;")};render()">${t}
              <em>${z(vokabelListe(vokKlasse, t).length)}</em></button>`).join("")}
+        ${gekuerzt ? `<button class="vokknopf mehr" onclick="vokThemenAufklappen()">
+             + ${z(themen.length - VOK_THEMEN_KURZ)} weitere Themen</button>` : ""}
       </div>
     </div>
 
@@ -30239,7 +30344,7 @@ function render(gewaehlt){
   if (demoEl){
     const st = baustelleStand();
     demoEl.textContent = WARTUNG
-      ? `Stand heute: ${st.fertig} von ${st.gesamt} Themen sind fertig — die übrigen kommen nach und nach.`
+      ? `Stand heute: ${z(st.fertig)} Themen sind fertig — ${z(st.offen)} fehlen noch, neue kommen dazu.`
       : "";
   }
 
@@ -30862,7 +30967,7 @@ function render(gewaehlt){
              onkeydown="if(event.key==='Enter')eingabePruefen()">
       ${beantwortet ? "" : `<button class="btn" onclick="eingabePruefen()">Prüfen</button>`}
     </div>
-    ${beantwortet ? `<div class="pick richtig" style="cursor:default"><span class="pickbuchstabe">✓</span><span class="picktext">${s.tippAntwort || richtigeOption.t}</span></div>` : ""}
+    ${beantwortet ? `<div class="pick richtig" style="cursor:default"><span class="pickbuchstabe">✓</span><span class="picktext">${bruecheSetzen(s.tippAntwort || richtigeOption.t)}</span></div>` : ""}
     <p class="small soft" style="margin-top:10px">Hier gibt es nichts zum Anklicken — schreib das Ergebnis selbst hin.</p>`
    : reihenfolge.map((i, platz) => {
     const o = s.optionen[i];
@@ -30877,7 +30982,7 @@ function render(gewaehlt){
     return `<div class="pickblock${cls ? " mitgrund" : ""}">
               <button class="pick ${cls}" ${gesperrt ? "disabled" : ""} onclick="antwort(${i})">
                 <span class="pickbuchstabe">${zeichen}</span>
-                <span class="picktext">${o.t}</span>
+                <span class="picktext">${bruecheSetzen(o.t)}</span>
               </button>
               ${cls ? `<div class="pickgrund ${cls}">${o.fb}</div>` : ""}
             </div>`;
@@ -30919,7 +31024,7 @@ function render(gewaehlt){
         <span class="tag" style="margin-bottom:0">${aktuellName}</span>
         <span class="small soft aufgabenzaehler">${anz > 1 ? `Aufgabe ${variante + 1} von ${anz} · ` : ""}Schritt ${schrittNr + 1} von ${aktuell.schritte.length}</span>
       </div>
-      <div class="aufg klebt ${aufgabenGroesse(aktuell)}"><div class="zeile1">${aktuell.text}</div></div>
+      <div class="aufg klebt ${aufgabenGroesse(aktuell)}"><div class="zeile1">${bruecheSetzen(aktuell.text)}</div></div>
       <p class="frage">${s.frage}</p>
       <div class="optionen ${tippen ? "" : "breit"}">${optionenHtml}</div>
       ${fb}
@@ -30993,7 +31098,7 @@ function probeHtml(){
           return `<div class="pickblock${falsch ? " mitgrund" : ""}">
                     <button class="pick ${falsch ? "falsch" : ""}" ${falsch ? "disabled" : ""} onclick="probeAntwort(${idx})">
                       <span class="pickbuchstabe">${falsch ? "✗" : ("ABCDEFGH"[platz] || "•")}</span>
-                      <span class="picktext">${o.t}</span>
+                      <span class="picktext">${bruecheSetzen(o.t)}</span>
                     </button>
                     ${falsch ? `<div class="pickgrund falsch">${o.fb}</div>` : ""}
                   </div>`;
@@ -31068,7 +31173,7 @@ function willkommenHtml(){
       <div class="zahlen">
         <div><b>${Object.keys(KATALOG).length}</b><span>Fächer</span></div>
         <div><b>${anzahlStufen()}</b><span>Klassen und Lehrjahre</span></div>
-        <div><b>${anzahlGeplant()}</b><span>Themen</span></div>
+        <div><b>${z(baustelleStand().fertig)}</b><span>fertige Themen</span></div>
         <div><b>0 €</b><span>und das bleibt so</span></div>
       </div>
       <div class="fachliste">
