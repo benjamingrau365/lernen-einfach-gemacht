@@ -9,6 +9,12 @@
 
    Aufruf:  node seiten-bauen.js
    Ergebnis: erklaerung/<thema>.html, erklaerungen.html, sitemap.xml, robots.txt
+
+   Warum die Endung .html in den Adressen steht: vercel.json schreibt jede
+   Adresse OHNE Punkt auf index.html um, damit die App ihre eigenen Wege
+   auflösen kann. Eine Adresse mit .html enthält einen Punkt, wird also nicht
+   umgeschrieben und landet direkt bei der Datei. Ein Versuch mit cleanUrls
+   hat die Umschreibung zerschossen — dann waren alle App-Adressen 404.
    ========================================================================== */
 const fs = require("fs");
 const pfad = require("path");
@@ -259,7 +265,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script
   <a class="mini" href="/faecher">Üben</a>
 </div>
 ${inhalt}
-<p class="fuss"><a href="/">Startseite</a> · <a href="/erklaerungen">Alle Erklärungen</a>
+<p class="fuss"><a href="/">Startseite</a> · <a href="/erklaerungen.html">Alle Erklärungen</a>
   · <a href="/warum">Warum keine KI-Lösungen?</a><br>
   <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a><br>
   Ein Lernprojekt aus Deutschland · kostenlos, ohne Werbung</p>
@@ -322,7 +328,7 @@ function probeAufgabe(thema){
 /* ---------- Eine Themenseite ---------- */
 function themenseite(thema, e, ort, nachbarn){
   const stufe = stufenText(ort.fach, ort.klasse);
-  const adresse = `/erklaerung/${schnipsel(thema)}`;
+  const adresse = `/erklaerung/${schnipsel(thema)}.html`;
   const anzahl = (AUFGABEN[thema] || []).length;
 
   const abschnitt = (titel, drin) => drin ? `<div class="karte"><h2>${titel}</h2>${drin}</div>` : "";
@@ -411,9 +417,9 @@ ${e.spiel ? `<div class="karte">
 <div class="karte">
   <h2>Weiter in ${esc(stufe)}</h2>
   <div class="andere">
-    ${nachbarn.map(n => `<a href="/erklaerung/${schnipsel(n)}">${esc(n)} — einfach erklärt<span>›</span></a>`).join("")}
+    ${nachbarn.map(n => `<a href="/erklaerung/${schnipsel(n)}.html">${esc(n)} — einfach erklärt<span>›</span></a>`).join("")}
   </div>
-  <a class="knopf leise" href="/erklaerungen">Alle Erklärungen ansehen</a>
+  <a class="knopf leise" href="/erklaerungen.html">Alle Erklärungen ansehen</a>
 </div>
 
 <div class="karte kopf">
@@ -476,13 +482,13 @@ ${Object.values(nachFach).map(({ort, themen}) => `
 <div class="karte">
   <h2>${esc(ort.fachname)} · ${esc(stufenText(ort.fach, ort.klasse))}</h2>
   <div class="andere">
-    ${themen.map(t => `<a href="/erklaerung/${schnipsel(t)}">${esc(t)} — einfach erklärt</a>`).join("")}
+    ${themen.map(t => `<a href="/erklaerung/${schnipsel(t)}.html">${esc(t)} — einfach erklärt</a>`).join("")}
   </div>
 </div>`).join("")}`;
   return huelle({
     titel: "Alle Erklärungen — Mathe, Deutsch, Englisch, Elektrotechnik | Endlich kapiert",
     text: `${alle.length} Themen von Klasse 5 bis 10 und für die Ausbildung zum Elektroniker für Betriebstechnik — jedes einzeln und von ganz vorn erklärt.`,
-    adresse: "/erklaerungen",
+    adresse: "/erklaerungen.html",
     inhalt
   });
 }
@@ -514,7 +520,7 @@ const heute = new Date().toISOString().slice(0, 10);
 const adressen = [
   {a: "/", p: "1.0"},
   {a: "/faecher", p: "0.9"},
-  {a: "/erklaerungen", p: "0.9"},
+  {a: "/erklaerungen.html", p: "0.9"},
   {a: "/vokabeln", p: "0.7"},
   {a: "/warum", p: "0.5"},
   {a: "/ueber", p: "0.4"},
@@ -524,7 +530,7 @@ Object.entries(KATALOG).forEach(([f, v]) => {
   adressen.push({a: `/${f}`, p: "0.8"});
   Object.keys(v.themen).forEach(k => adressen.push({a: `/${f}/${k}`, p: "0.8"}));
 });
-alle.forEach(({thema}) => adressen.push({a: `/erklaerung/${schnipsel(thema)}`, p: "0.9"}));
+alle.forEach(({thema}) => adressen.push({a: `/erklaerung/${schnipsel(thema)}.html`, p: "0.9"}));
 
 fs.writeFileSync(pfad.join(ORDNER, "sitemap.xml"),
 `<?xml version="1.0" encoding="UTF-8"?>
