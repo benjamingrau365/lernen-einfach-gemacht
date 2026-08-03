@@ -1,8 +1,9 @@
 {
   "name": "endlich-kapiert",
   "private": true,
-  "description": "Endlich kapiert — Mathe und Deutsch, Klasse 5 bis 10. Nie die Lösung, nur Fragen, die hinführen.",
+  "description": "Endlich kapiert — Mathe, Deutsch, Englisch und Elektroniker für Betriebstechnik. Nie die Lösung, nur Fragen, die hinführen.",
   "scripts": {
+    "bauen": "node seiten-bauen.js",
     "pruefen": "node pruefe-seite.js && node pruefe-aufbau.js && node pruefe-inhalt.js && node pruefe-quellen.js",
     "pruefe:seite": "node pruefe-seite.js",
     "pruefe:aufbau": "node pruefe-aufbau.js",

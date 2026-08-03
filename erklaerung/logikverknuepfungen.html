@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logikverknüpfungen einfach erklärt (Lehrjahr 4) | Endlich kapiert</title>
+<meta name="description" content="Logikverknüpfungen für Lehrjahr 4: Steuerungen kennen nur 0 und 1. Wie aus mehreren Eingängen ein Ausgang wird, legen Verknüpfungen fest.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://endlichkapiert.com/erklaerung/logikverknuepfungen">
+<meta property="og:site_name" content="Endlich kapiert">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Logikverknüpfungen einfach erklärt (Lehrjahr 4) | Endlich kapiert">
+<meta property="og:description" content="Logikverknüpfungen für Lehrjahr 4: Steuerungen kennen nur 0 und 1. Wie aus mehreren Eingängen ein Ausgang wird, legen Verknüpfungen fest.">
+<meta property="og:url" content="https://endlichkapiert.com/erklaerung/logikverknuepfungen">
+<meta name="theme-color" content="#10a37f">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#f4f8f7;--card:#fff;--ink:#16211e;--soft:#5b6b66;--line:#dfe8e5;
+  --ac:#10a37f;--ac-soft:#e4f5ef;--ac-dark:#0b7a5f;--red:#b3382f;--red-soft:#fdecea;
+  --amber:#8a5a09;--amber-soft:#fdf3e0}
+@media (prefers-color-scheme:dark){:root{--bg:#101614;--card:#18201d;--ink:#e8efec;
+  --soft:#9bada7;--line:#2a3733;--ac:#2fbf99;--ac-soft:#17302a;--ac-dark:#7fe0c4;
+  --red:#f08a80;--red-soft:#301a18;--amber:#e0b467;--amber-soft:#2c2415}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.huelle{max-width:760px;margin:0 auto;padding:20px 18px 60px}
+a{color:var(--ac-dark)}
+.pfad{font-size:14px;color:var(--soft);margin:0 0 18px}
+.pfad a{color:var(--soft)}
+.karte{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+  padding:22px 24px;margin-bottom:16px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 10px;letter-spacing:-.02em}
+h2{font-size:20px;margin:0 0 10px;letter-spacing:-.01em}
+h3{font-size:16px;margin:18px 0 6px}
+p{margin:0 0 12px}
+p:last-child{margin-bottom:0}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:7px}
+.marke{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ac-dark);background:var(--ac-soft);
+  border-radius:999px;padding:4px 12px;margin-bottom:12px}
+.knopf{display:block;text-align:center;background:var(--ac);color:#fff;text-decoration:none;
+  font-weight:700;border-radius:13px;padding:15px 20px;margin-top:6px}
+.knopf.leise{background:transparent;color:var(--ac-dark);border:1.6px solid var(--ac);margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-bottom:12px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:800;color:var(--soft);font-size:13.5px}
+.rollen{overflow-x:auto}
+.fehler{background:var(--red-soft);border-radius:12px;padding:13px 15px;margin-bottom:10px}
+.fehler b{color:var(--red);display:block;margin-bottom:3px}
+.merke{background:var(--amber-soft);border-radius:12px;padding:13px 15px}
+.begriff{border-bottom:1px solid var(--line);padding:9px 0}
+.begriff:last-child{border-bottom:none}
+.begriff b{display:block}
+.begriff span{color:var(--soft);font-size:15px}
+svg{width:100%;max-width:420px;height:auto;display:block;margin:14px auto;color:var(--ink)}
+.fuss{font-size:14px;color:var(--soft);text-align:center;margin-top:26px}
+.fuss a{color:var(--soft)}
+.andere{display:grid;gap:8px}
+.andere a{display:block;background:var(--card);border:1.5px solid var(--line);
+  border-radius:12px;padding:12px 15px;text-decoration:none;color:var(--ink);font-weight:600}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Logikverknüpfungen — einfach erklärt","description":"Logikverknüpfungen für Lehrjahr 4: Steuerungen kennen nur 0 und 1. Wie aus mehreren Eingängen ein Ausgang wird, legen Verknüpfungen fest.","url":"https://endlichkapiert.com/erklaerung/logikverknuepfungen","inLanguage":"de","isAccessibleForFree":true,"learningResourceType":"Erklärung und Übungen","educationalLevel":"Lehrjahr 4","about":{"@type":"Thing","name":"Logikverknüpfungen"},"teaches":"Logikverknüpfungen","provider":{"@type":"Organization","name":"Endlich kapiert","url":"https://endlichkapiert.com"}}</script>
+</head>
+<body>
+<div class="huelle">
+
+<p class="pfad"><a href="/">Startseite</a> › <a href="/elektroniker">Elektroniker</a> › Lehrjahr 4</p>
+
+<div class="karte">
+  <span class="marke">Elektroniker · Lehrjahr 4</span>
+  <h1>Logikverknüpfungen — einfach erklärt</h1>
+  
+  <p>Steuerungen kennen nur 0 und 1. Wie aus mehreren Eingängen ein Ausgang wird, legen Verknüpfungen fest.</p>
+  <a class="knopf" href="/elektroniker/4">Jetzt üben — du bekommst nie die Lösung, nur Fragen</a>
+  <a class="knopf leise" href="/elektroniker/4">Alle Themen in Lehrjahr 4</a>
+</div>
+
+<div class="karte">
+  <h2>Von ganz vorn</h2>
+  <p style="color:var(--soft);font-size:15px">Ein Satz nach dem anderen, ohne Vorwissen.</p>
+  <p>In der Digitaltechnik gibt es nur zwei Zustände: 0 und 1. Nichts dazwischen.</p><p>0 heißt „liegt nicht an“, 1 heißt „liegt an“. Ein Taster ist gedrückt oder nicht.</p><p>Ein Gatter verknüpft Eingänge zu einem Ausgang. Welche Regel dabei gilt, sagt der Name.</p><p>UND: Der Ausgang ist nur 1, wenn alle Eingänge 1 sind. Wie zwei Schalter hintereinander.</p><p>ODER: Der Ausgang ist 1, sobald mindestens ein Eingang 1 ist. Wie zwei Schalter nebeneinander.</p><p>NICHT: Dreht einfach um. Aus 0 wird 1, aus 1 wird 0.</p><p>NAND und NOR sind UND und ODER mit einem NICHT dahinter — deshalb der Strich über dem Ausgang im Schaltzeichen.</p><p>EXKLUSIV-ODER (XOR) ist 1, wenn die Eingänge verschieden sind. Genau so funktioniert eine Wechselschaltung im Treppenhaus.</p><p>Um ein Gatter zu verstehen, schreibt man die Wahrheitstabelle hin: alle Eingangskombinationen und den zugehörigen Ausgang.</p><p>Bei zwei Eingängen hat sie vier Zeilen, bei drei Eingängen acht. Allgemein sind es 2 hoch n.</p>
+</div>
+
+<div class="karte"><h2>Wozu man das braucht</h2><ul><li>Jede Steuerung arbeitet so. Wenn du eine SPS programmierst oder einen Schaltplan liest, übersetzt du Sätze wie „Der Motor läuft nur, wenn beide Zustimmtaster gedrückt sind“ direkt in Verknüpfungen.</li><li>Auch Sicherheitsschaltungen beruhen darauf: Not-Aus, Schutztür und Zustimmung sind eine UND-Kette.</li></ul></div>
+<div class="karte"><h2>Schritt für Schritt</h2><ol><li>Lies die Beschreibung und unterstreich die Signalwörter: „beide“, „mindestens einer“, „keiner“, „verschieden“.</li><li>Ordne das passende Gatter zu.</li><li>Schreib die Wahrheitstabelle vollständig hin — bei zwei Eingängen vier Zeilen, bei drei acht.</li><li>Geh jede Zeile einzeln durch und trag den Ausgang ein.</li><li>Prüf zum Schluss, ob die Tabelle die Beschreibung wirklich abbildet.</li></ol></div>
+
+<div class="karte">
+  <h2>Ein durchgerechnetes Beispiel</h2>
+  <p><b>Aufgabe:</b> Der Motor läuft nur, wenn beide Zustimmtaster gedrückt sind. Welches Gatter?</p>
+  <ol><li>Das Wort „beide“ zeigt auf UND.</li><li>Wahrheitstabelle: nur 1 und 1 ergibt 1.</li><li>Von vier Zeilen ist genau eine Zeile 1.</li></ol>
+  <p><b>Ergebnis:</b> UND-Gatter, eine Eins in vier Zeilen</p>
+</div>
+
+<div class="karte">
+  <h2>Die häufigsten Fehler</h2>
+  <div class="fehler"><b>Wahrheitstabelle nicht vollständig</b>Wer eine Zeile vergisst, übersieht genau den Fall, der in der Anlage später Probleme macht.</div><div class="fehler"><b>UND und ODER verwechselt</b>„Beide“ heißt UND, „mindestens einer“ heißt ODER. Im Alltag benutzen wir „oder“ oft im Sinne von „entweder … oder“ — das wäre XOR.</div><div class="fehler"><b>Den Kreis am Ausgang übersehen</b>Ein kleiner Kreis im Schaltzeichen bedeutet Negation. Aus UND wird NAND, und das Verhalten kehrt sich um.</div><div class="fehler"><b>Bei drei Eingängen mit vier Zeilen gerechnet</b>Es sind 2 hoch n Zeilen. Drei Eingänge ergeben acht.</div>
+</div>
+
+<div class="karte">
+  <h2>Wahrheitstabelle der wichtigsten Gatter</h2>
+  <div class="rollen"><table>
+    <thead><tr><th>E1</th><th>E2</th><th>UND</th><th>ODER</th><th>NAND</th><th>NOR</th><th>XOR</th></tr></thead>
+    <tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+  </table></div>
+  <p style="color:var(--soft);font-size:15px">NAND ist die Umkehrung von UND, NOR die von ODER — die Spalten sind jeweils genau vertauscht. Zähl die Einsen: UND und NOR haben eine, ODER und NAND drei, XOR zwei.</p>
+</div>
+
+<div class="karte"><h2>Zum Ansehen</h2><svg viewBox="0 0 400 190" style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto" role="img" aria-label="Schaltzeichen von UND, ODER und XOR mit ihren Kennzeichen">
+    <g fill="none" stroke="#10a37f" stroke-width="2.5">
+      <rect x="30" y="46" width="66" height="66" rx="4"/>
+      <rect x="167" y="46" width="66" height="66" rx="4"/>
+      <rect x="304" y="46" width="66" height="66" rx="4"/>
+    </g>
+    <g stroke="currentColor" stroke-width="2">
+      <path d="M10 66h20M10 92h20M96 79h20"/>
+      <path d="M147 66h20M147 92h20M233 79h20"/>
+      <path d="M284 66h20M284 92h20M370 79h20"/>
+    </g>
+    <g font-size="17" font-weight="700" fill="currentColor" text-anchor="middle">
+      <text x="63" y="86">&amp;</text><text x="200" y="86">≥1</text><text x="337" y="86">=1</text>
+    </g>
+    <g font-size="12" font-weight="700" fill="currentColor" text-anchor="middle">
+      <text x="63" y="36">UND</text><text x="200" y="36">ODER</text><text x="337" y="36">XOR</text>
+    </g>
+    <g font-size="11" fill="currentColor" text-anchor="middle">
+      <text x="63" y="134">beide 1</text><text x="200" y="134">mindestens</text><text x="200" y="148">einer 1</text>
+      <text x="337" y="134">verschieden</text>
+    </g>
+    <text x="200" y="180" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Ein Kreis am Ausgang bedeutet: das Ganze noch negiert</text>
+  </svg></div>
+
+<div class="karte">
+  <h2>Wörter, die man kennen muss</h2>
+  <div class="begriff"><b>Gatter</b><span>Ein Baustein, der Eingänge nach einer festen Regel verknüpft.</span></div><div class="begriff"><b>Wahrheitstabelle</b><span>Eine Tabelle mit allen Eingangskombinationen und dem Ausgang.</span></div><div class="begriff"><b>Negation</b><span>Die Umkehrung: aus 0 wird 1 und umgekehrt.</span></div><div class="begriff"><b>XOR</b><span>Exklusiv-ODER — 1, wenn die Eingänge verschieden sind.</span></div>
+</div>
+
+<div class="karte">
+  <h2>Das Wichtigste in Kürze</h2>
+  <div class="merke"><ul><li>UND: Ausgang 1 nur, wenn alle Eingänge 1 sind.</li><li>ODER: Ausgang 1, sobald ein Eingang 1 ist.</li><li>NICHT: dreht den Wert um.</li><li>NAND = UND mit NICHT dahinter. NOR = ODER mit NICHT dahinter.</li><li>XOR: Ausgang 1, wenn die Eingänge verschieden sind.</li><li>Zahl der Zeilen in der Wahrheitstabelle: 2 hoch n bei n Eingängen.</li><li>Aus dem Text der Anlagenbeschreibung liest du das Gatter heraus: „beide“ → UND, „mindestens einer“ → ODER, „keiner“ → NOR, „verschieden“ → XOR.</li></ul></div>
+</div>
+
+<div class="karte">
+  <h2>Schalter umlegen — zum Ausprobieren</h2>
+  <p>Zwei Eingänge, alle Grundverknüpfungen auf einmal. Schieb E1 und E2 zwischen 0 und 1.</p>
+  <p style="color:var(--soft);font-size:15px">Das Modell zum Schieben steht in der App —
+    dort siehst du sofort, was sich ändert, wenn du an einem Wert drehst.</p>
+  <a class="knopf" href="/elektroniker/4">Modell ausprobieren</a>
+</div>
+
+<div class="karte">
+  <h2>Weiter in Lehrjahr 4</h2>
+  <div class="andere">
+    <a href="/erklaerung/kondensator-laden">Kondensator laden — einfach erklärt</a><a href="/erklaerung/blindleistung-und-cos">Blindleistung und cos φ — einfach erklärt</a><a href="/erklaerung/energiekosten">Energiekosten — einfach erklärt</a><a href="/erklaerung/fehler-suchen">Fehler suchen — einfach erklärt</a><a href="/erklaerung/instandhaltung-und-verfuegbarkeit">Instandhaltung und Verfügbarkeit — einfach erklärt</a><a href="/erklaerung/angebot-kalkulieren">Angebot kalkulieren — einfach erklärt</a>
+  </div>
+</div>
+
+<div class="karte">
+  <h2>Und dann?</h2>
+  <p>Lesen reicht nicht. Verstanden hast du es erst, wenn du es selbst hinschreiben kannst —
+    deshalb bekommst du in der App nie die Lösung, sondern Fragen, die dich hinführen.
+    Was hakt, kommt von allein wieder: nach einem Tag, nach drei Tagen, nach einer Woche.</p>
+  <a class="knopf" href="/elektroniker/4">Logikverknüpfungen jetzt üben</a>
+</div>
+<p class="fuss"><a href="/">Endlich kapiert</a> · <a href="/erklaerungen">Alle Erklärungen</a>
+  · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diode und Gleichrichter einfach erklärt (Lehrjahr 2) | Endlich kapiert</title>
+<meta name="description" content="Diode und Gleichrichter für Lehrjahr 2: Eine Diode lässt Strom nur in eine Richtung durch. Aus dieser einen Eigenschaft wird alles gebaut, was aus Wechselspannung Gleichspannung macht.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://endlichkapiert.com/erklaerung/diode-und-gleichrichter">
+<meta property="og:site_name" content="Endlich kapiert">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Diode und Gleichrichter einfach erklärt (Lehrjahr 2) | Endlich kapiert">
+<meta property="og:description" content="Diode und Gleichrichter für Lehrjahr 2: Eine Diode lässt Strom nur in eine Richtung durch. Aus dieser einen Eigenschaft wird alles gebaut, was aus Wechselspannung Gleichspannung macht.">
+<meta property="og:url" content="https://endlichkapiert.com/erklaerung/diode-und-gleichrichter">
+<meta name="theme-color" content="#10a37f">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#f4f8f7;--card:#fff;--ink:#16211e;--soft:#5b6b66;--line:#dfe8e5;
+  --ac:#10a37f;--ac-soft:#e4f5ef;--ac-dark:#0b7a5f;--red:#b3382f;--red-soft:#fdecea;
+  --amber:#8a5a09;--amber-soft:#fdf3e0}
+@media (prefers-color-scheme:dark){:root{--bg:#101614;--card:#18201d;--ink:#e8efec;
+  --soft:#9bada7;--line:#2a3733;--ac:#2fbf99;--ac-soft:#17302a;--ac-dark:#7fe0c4;
+  --red:#f08a80;--red-soft:#301a18;--amber:#e0b467;--amber-soft:#2c2415}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.huelle{max-width:760px;margin:0 auto;padding:20px 18px 60px}
+a{color:var(--ac-dark)}
+.pfad{font-size:14px;color:var(--soft);margin:0 0 18px}
+.pfad a{color:var(--soft)}
+.karte{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+  padding:22px 24px;margin-bottom:16px}
+h1{font-size:clamp(26px,5vw,34px);line-height:1.2;margin:0 0 10px;letter-spacing:-.02em}
+h2{font-size:20px;margin:0 0 10px;letter-spacing:-.01em}
+h3{font-size:16px;margin:18px 0 6px}
+p{margin:0 0 12px}
+p:last-child{margin-bottom:0}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:7px}
+.marke{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ac-dark);background:var(--ac-soft);
+  border-radius:999px;padding:4px 12px;margin-bottom:12px}
+.knopf{display:block;text-align:center;background:var(--ac);color:#fff;text-decoration:none;
+  font-weight:700;border-radius:13px;padding:15px 20px;margin-top:6px}
+.knopf.leise{background:transparent;color:var(--ac-dark);border:1.6px solid var(--ac);margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-bottom:12px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:800;color:var(--soft);font-size:13.5px}
+.rollen{overflow-x:auto}
+.fehler{background:var(--red-soft);border-radius:12px;padding:13px 15px;margin-bottom:10px}
+.fehler b{color:var(--red);display:block;margin-bottom:3px}
+.merke{background:var(--amber-soft);border-radius:12px;padding:13px 15px}
+.begriff{border-bottom:1px solid var(--line);padding:9px 0}
+.begriff:last-child{border-bottom:none}
+.begriff b{display:block}
+.begriff span{color:var(--soft);font-size:15px}
+svg{width:100%;max-width:420px;height:auto;display:block;margin:14px auto;color:var(--ink)}
+.fuss{font-size:14px;color:var(--soft);text-align:center;margin-top:26px}
+.fuss a{color:var(--soft)}
+.andere{display:grid;gap:8px}
+.andere a{display:block;background:var(--card);border:1.5px solid var(--line);
+  border-radius:12px;padding:12px 15px;text-decoration:none;color:var(--ink);font-weight:600}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Diode und Gleichrichter — einfach erklärt","description":"Diode und Gleichrichter für Lehrjahr 2: Eine Diode lässt Strom nur in eine Richtung durch. Aus dieser einen Eigenschaft wird alles gebaut, was aus Wechselspannung Gleichspannung macht.","url":"https://endlichkapiert.com/erklaerung/diode-und-gleichrichter","inLanguage":"de","isAccessibleForFree":true,"learningResourceType":"Erklärung und Übungen","educationalLevel":"Lehrjahr 2","about":{"@type":"Thing","name":"Diode und Gleichrichter"},"teaches":"Diode und Gleichrichter","provider":{"@type":"Organization","name":"Endlich kapiert","url":"https://endlichkapiert.com"}}</script>
+</head>
+<body>
+<div class="huelle">
+
+<p class="pfad"><a href="/">Startseite</a> › <a href="/elektroniker">Elektroniker</a> › Lehrjahr 2</p>
+
+<div class="karte">
+  <span class="marke">Elektroniker · Lehrjahr 2</span>
+  <h1>Diode und Gleichrichter — einfach erklärt</h1>
+  
+  <p>Eine Diode lässt Strom nur in eine Richtung durch. Aus dieser einen Eigenschaft wird alles gebaut, was aus Wechselspannung Gleichspannung macht.</p>
+  <a class="knopf" href="/elektroniker/2">Jetzt üben — du bekommst nie die Lösung, nur Fragen</a>
+  <a class="knopf leise" href="/elektroniker/2">Alle Themen in Lehrjahr 2</a>
+</div>
+
+<div class="karte">
+  <h2>Von ganz vorn</h2>
+  <p style="color:var(--soft);font-size:15px">Ein Satz nach dem anderen, ohne Vorwissen.</p>
+  <p>Eine Diode ist ein Ventil für Strom. In die eine Richtung lässt sie durch, in die andere sperrt sie.</p><p>Sie hat zwei Anschlüsse: die Anode und die Kathode. Der Ring auf dem Gehäuse markiert die Kathode.</p><p>Liegt die Anode am Plus, leitet die Diode. Das nennt man Durchlassrichtung.</p><p>Liegt die Kathode am Plus, sperrt sie. Das ist die Sperrrichtung.</p><p>Auch in Durchlassrichtung ist die Diode nicht widerstandslos: Bei Silizium fallen etwa 0,7 V an ihr ab.</p><p>Mit einer einzelnen Diode kannst du eine Halbwelle der Wechselspannung abschneiden — das ist ein Einweggleichrichter.</p><p>Vier Dioden in einer Brücke nutzen beide Halbwellen. Das ist der Brückengleichrichter, und er ist der Normalfall.</p><p>Hinter dem Gleichrichter sitzt ein Kondensator, der die Lücken auffüllt und die Spannung glättet.</p><p>Dieser Kondensator lädt sich auf den Spitzenwert auf. Der ist das 1,41-fache des Effektivwerts.</p><p>Bei einer LED begrenzt immer ein Vorwiderstand den Strom. Die LED selbst tut das nicht.</p>
+</div>
+
+<div class="karte"><h2>Wozu man das braucht</h2><ul><li>Jedes Netzteil im Betrieb arbeitet mit Dioden. Was aus der Steckdose kommt, ist Wechselspannung — was die Steuerung braucht, ist Gleichspannung. Dazwischen sitzt ein Gleichrichter.</li><li>Freilaufdioden an Schützen und Relais fangen die Spannungsspitze ab, die beim Abschalten einer Spule entsteht. Ohne sie brennen Kontakte weg und Halbleiter sterben.</li></ul></div>
+<div class="karte"><h2>Schritt für Schritt</h2><ol><li>Kläre die Richtung: Liegt die Anode am Plus, leitet die Diode.</li><li>Rechne mit dem Spannungsabfall: bei Silizium rund 0,7 V, bei Schottky rund 0,3 V.</li><li>Beim Gleichrichter zuerst den Spitzenwert bilden: Effektivwert mal 1,41.</li><li>Davon den Abfall der Dioden abziehen — beim Brückengleichrichter zweimal 0,7 V.</li><li>Für den Vorwiderstand einer LED: Restspannung durch gewünschten Strom.</li><li>Sperrspannung prüfen: Die Diode muss die Spitzenspannung aushalten, nicht nur den Effektivwert.</li></ol></div>
+
+<div class="karte">
+  <h2>Ein durchgerechnetes Beispiel</h2>
+  <p><b>Aufgabe:</b> Eine rote LED (2 V) soll mit 20 mA an 12 V laufen. Wie groß ist der Vorwiderstand?</p>
+  <ol><li>Restspannung: 12 V − 2 V = 10 V</li><li>Strom in Ampere: 20 mA = 0,02 A</li><li>R = 10 V : 0,02 A</li></ol>
+  <p><b>Ergebnis:</b> 500 Ω — genommen wird der nächste Normwert, 470 Ω</p>
+</div>
+
+<div class="karte">
+  <h2>Die häufigsten Fehler</h2>
+  <div class="fehler"><b>Mit dem Effektivwert statt dem Spitzenwert gerechnet</b>Der Ladekondensator lädt sich auf den Spitzenwert auf. Aus 12 V Wechselspannung werden rund 17 V Gleichspannung, nicht 12 V.</div><div class="fehler"><b>LED ohne Vorwiderstand angeschlossen</b>Eine LED begrenzt ihren Strom nicht selbst. Ohne Vorwiderstand zieht sie, bis sie durchbrennt — meist in Sekundenbruchteilen.</div><div class="fehler"><b>Beim Brückengleichrichter nur einmal 0,7 V abgezogen</b>Der Strom fließt immer durch zwei Dioden gleichzeitig. Es sind also 1,4 V, nicht 0,7 V.</div><div class="fehler"><b>Kathode und Anode verwechselt</b>Der Ring auf dem Gehäuse markiert die Kathode — die Seite, die zum Minus zeigt. Falsch herum leitet gar nichts.</div>
+</div>
+
+<div class="karte">
+  <h2>Dioden und ihre Werte</h2>
+  <div class="rollen"><table>
+    <thead><tr><th>Bauteil</th><th>Durchlassspannung</th><th>Wofür</th></tr></thead>
+    <tbody><tr><td>Silizium-Diode</td><td>≈ 0,7 V</td><td>Standard, Gleichrichter, Freilauf</td></tr><tr><td>Schottky-Diode</td><td>≈ 0,3 V</td><td>schnelle Schaltungen, wenig Verlust</td></tr><tr><td>Germanium-Diode</td><td>≈ 0,3 V</td><td>alt, kaum noch verwendet</td></tr><tr><td>LED rot</td><td>≈ 1,8 bis 2,0 V</td><td>Anzeige</td></tr><tr><td>LED gelb / grün</td><td>≈ 2,0 bis 2,2 V</td><td>Anzeige</td></tr><tr><td>LED blau / weiß</td><td>≈ 3,0 bis 3,4 V</td><td>Anzeige, Beleuchtung</td></tr><tr><td>Z-Diode</td><td>je nach Typ</td><td>Spannung stabilisieren, arbeitet in Sperrrichtung</td></tr></tbody>
+  </table></div>
+  <p style="color:var(--soft);font-size:15px">Die Werte sind Anhaltspunkte. Der genaue Wert steht im Datenblatt und hängt vom Strom ab.</p>
+</div>
+
+<div class="karte"><h2>Zum Ansehen</h2><svg viewBox="0 0 400 200" style="width:100%;max-width:420px;height:auto;display:block;margin:14px auto" role="img" aria-label="Diode in Durchlass- und in Sperrrichtung">
+    <text x="100" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Durchlassrichtung</text>
+    <line x1="20" y1="60" x2="70" y2="60" stroke="currentColor" stroke-width="2"/>
+    <path d="M70 44l30 16-30 16Z" fill="#10a37f" stroke="#10a37f" stroke-width="2"/>
+    <line x1="100" y1="42" x2="100" y2="78" stroke="currentColor" stroke-width="3"/>
+    <line x1="100" y1="60" x2="180" y2="60" stroke="currentColor" stroke-width="2"/>
+    <text x="26" y="52" font-size="12" font-weight="700" fill="currentColor">+</text>
+    <text x="172" y="52" font-size="12" font-weight="700" fill="currentColor">−</text>
+    <text x="100" y="94" text-anchor="middle" font-size="11" fill="#10a37f">Strom fließt</text>
+    <text x="300" y="20" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Sperrrichtung</text>
+    <line x1="220" y1="60" x2="270" y2="60" stroke="currentColor" stroke-width="2"/>
+    <path d="M270 44l30 16-30 16Z" fill="none" stroke="currentColor" stroke-width="2"/>
+    <line x1="300" y1="42" x2="300" y2="78" stroke="currentColor" stroke-width="3"/>
+    <line x1="300" y1="60" x2="380" y2="60" stroke="currentColor" stroke-width="2"/>
+    <text x="226" y="52" font-size="12" font-weight="700" fill="currentColor">−</text>
+    <text x="372" y="52" font-size="12" font-weight="700" fill="currentColor">+</text>
+    <text x="300" y="94" text-anchor="middle" font-size="11" fill="currentColor">kein Strom</text>
+    <text x="200" y="130" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Der Strich ist die Kathode — dort sitzt der Ring.</text>
+    <path d="M40 168h60" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="100" y="152" width="80" height="32" rx="4" fill="#333" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="164" y="152" width="8" height="32" fill="#ddd"/>
+    <path d="M180 168h60" stroke="currentColor" stroke-width="1.5"/>
+    <text x="168" y="146" text-anchor="middle" font-size="10" fill="currentColor">Ring = Kathode</text>
+  </svg></div>
+
+<div class="karte">
+  <h2>Wörter, die man kennen muss</h2>
+  <div class="begriff"><b>Anode</b><span>Der Anschluss, der zum Plus zeigt, damit die Diode leitet.</span></div><div class="begriff"><b>Kathode</b><span>Der Anschluss mit dem Ring, zeigt zum Minus.</span></div><div class="begriff"><b>Durchlassspannung</b><span>Was in Durchlassrichtung an der Diode abfällt — bei Silizium rund 0,7 V.</span></div><div class="begriff"><b>Sperrspannung</b><span>Die Spannung, die die Diode in Sperrrichtung aushalten muss.</span></div><div class="begriff"><b>Brückengleichrichter</b><span>Vier Dioden, die beide Halbwellen nutzen.</span></div><div class="begriff"><b>Ladekondensator</b><span>Glättet die gleichgerichtete Spannung.</span></div>
+</div>
+
+<div class="karte">
+  <h2>Das Wichtigste in Kürze</h2>
+  <div class="merke"><ul><li>Anode am Plus heißt Durchlass, Kathode am Plus heißt Sperren.</li><li>Der Ring markiert die Kathode.</li><li>Silizium: rund 0,7 V Durchlassspannung.</li><li>Spitzenwert = Effektivwert · 1,41.</li><li>Brückengleichrichter: zwei Dioden im Strompfad, also 1,4 V Abfall.</li><li>LED nie ohne Vorwiderstand betreiben.</li></ul></div>
+</div>
+
+<div class="karte">
+  <h2>Vorwiderstand für eine LED — zum Ausprobieren</h2>
+  <p>Zieh Betriebsspannung, LED-Farbe und Strom. Der Widerstand ergibt sich daraus.</p>
+  <p style="color:var(--soft);font-size:15px">Das Modell zum Schieben steht in der App —
+    dort siehst du sofort, was sich ändert, wenn du an einem Wert drehst.</p>
+  <a class="knopf" href="/elektroniker/2">Modell ausprobieren</a>
+</div>
+
+<div class="karte">
+  <h2>Weiter in Lehrjahr 2</h2>
+  <div class="andere">
+    <a href="/erklaerung/spannungsteiler">Spannungsteiler — einfach erklärt</a><a href="/erklaerung/frequenz-und-periodendauer">Frequenz und Periodendauer — einfach erklärt</a><a href="/erklaerung/leiterquerschnitt">Leiterquerschnitt — einfach erklärt</a><a href="/erklaerung/schutzmassnahmen">Schutzmaßnahmen — einfach erklärt</a><a href="/erklaerung/gemischte-schaltungen">Gemischte Schaltungen — einfach erklärt</a><a href="/erklaerung/spule-und-induktivitaet">Spule und Induktivität — einfach erklärt</a>
+  </div>
+</div>
+
+<div class="karte">
+  <h2>Und dann?</h2>
+  <p>Lesen reicht nicht. Verstanden hast du es erst, wenn du es selbst hinschreiben kannst —
+    deshalb bekommst du in der App nie die Lösung, sondern Fragen, die dich hinführen.
+    Was hakt, kommt von allein wieder: nach einem Tag, nach drei Tagen, nach einer Woche.</p>
+  <a class="knopf" href="/elektroniker/2">Diode und Gleichrichter jetzt üben</a>
+</div>
+<p class="fuss"><a href="/">Endlich kapiert</a> · <a href="/erklaerungen">Alle Erklärungen</a>
+  · <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a></p>
+</div>
+</body>
+</html>

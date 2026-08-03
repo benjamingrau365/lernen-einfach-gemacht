@@ -11,9 +11,15 @@
 <link rel="apple-touch-icon" href="/icon.svg">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Endlich kapiert">
-<!-- Solange gebaut wird: nicht bei Google aufnehmen. Wird automatisch entfernt,
-     sobald WARTUNG im Code auf false steht. -->
-<meta name="robots" content="noindex, nofollow" id="robots">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://endlichkapiert.com/" id="kanonisch">
+<meta property="og:site_name" content="Endlich kapiert">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="Endlich kapiert" id="ogtitel">
+<meta property="og:description" content="Du bekommst nie die Lösung, nur Fragen, die dich hinführen." id="ogtext">
+<meta property="og:url" content="https://endlichkapiert.com/" id="ogadresse">
+<meta name="twitter:card" content="summary">
 <style>
   :root{
     --bg:#f4f8f7; --card:#ffffff; --ink:#16211e; --soft:#5b6b66; --line:#dfe8e5;
@@ -24860,6 +24866,9 @@ function fussleisteHtml(){
             /* Unterbereiche stehen eingerückt unter ihrem Fach */
             (v.vokabeln ? navLink("/vokabeln", "zeigeVokabeln()", "Vokabeln", "fusslink fussunter")
                         + navLink("/vokabeln/eigene", "zeigeEigene()", "Eigene Wörter", "fusslink fussunter") : "")).join("")}
+          ${/* Echter Link, kein navLink: Die Erklärungsseiten sind feste HTML-Dateien
+                außerhalb der App — sie sollen wirklich geladen werden. */""}
+          <a class="fusslink" href="/erklaerungen">Alle Erklärungen</a>
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
         <div class="fussspalte">
@@ -25261,14 +25270,78 @@ function wartungZeigen(){
   render();
 }
 
-/* Solange gebaut wird, soll Google die Seite nicht in die Suche aufnehmen.
-   Der Eintrag steht fest im Kopf der Seite und wird hier wieder entfernt,
-   sobald WARTUNG auf false steht. */
+/* ---------- Gefundenwerden ----------
+   Früher stand im Kopf der Seite ein festes „noindex“, das an WARTUNG hing.
+   Damit war die Seite für Google unsichtbar, solange irgendwo noch gebaut
+   wurde — und gebaut wird immer. Deshalb ist es jetzt umgedreht: Der Kopf
+   erlaubt die Aufnahme, und nur wenn SUCHMASCHINEN auf false steht, wird
+   sie nachträglich verboten. Diese Richtung ist die sichere: Ein Verbot,
+   das man vergisst, kostet Monate; eine Aufnahme, die man vergisst, nicht.
+   Zum Ausschalten: SUCHMASCHINEN auf false setzen. */
+const SUCHMASCHINEN = true;
 (function(){
-  if (WARTUNG || WARTUNG_HART) return;
-  const m = document.getElementById("robots");
-  if (m) m.remove();
+  if (SUCHMASCHINEN) return;
+  const m = document.querySelector('meta[name="robots"]');
+  if (m) m.setAttribute("content", "noindex, nofollow");
 })();
+
+/* Titel, Beschreibung und kanonische Adresse je Seite.
+   Eine App aus einer einzigen Datei sieht für eine Suchmaschine sonst auf
+   jeder Adresse gleich aus — gleicher Titel, gleicher Text. Dann steht in
+   der Trefferliste überall dasselbe, und Google hält die Seiten für
+   Dubletten. Deshalb wird beides bei jeder Ansicht neu gesetzt. */
+const SEITENTITEL = {
+  willkommen:  ["Endlich kapiert — verstehen statt auswendig lernen",
+    "Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe, Deutsch, Englisch und Elektroniker für Betriebstechnik."],
+  fachwahl:    ["Fächer — Mathe, Deutsch, Englisch, Elektroniker | Endlich kapiert",
+    "Such dir dein Fach: Mathe und Deutsch Klasse 5 bis 10, Englisch mit Vokabeltrainer, Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr."],
+  vokabeln:    ["Englisch Vokabeln üben — mit Hilfe in Stufen | Endlich kapiert",
+    "Englische Vokabeln von Klasse 5 bis 10 üben, in beide Richtungen. Die Lösung wird nie hingelegt — die Hilfe kommt in vier Stufen."],
+  vokabelnEigene: ["Eigene Vokabeln eintragen und üben | Endlich kapiert",
+    "Schreib deine eigene Vokabelliste hin — einzeln oder als ganze Liste aus dem Heft — und übe sie sofort."],
+  plan:        ["Dein Wiederholungsplan | Endlich kapiert",
+    "Alles, woran du hängengeblieben bist, kommt von allein wieder — nach einem Tag, nach drei Tagen, nach einer Woche."],
+  warum:       ["Warum nicht einfach KI? | Endlich kapiert",
+    "Eine KI gibt dir die Lösung. Genau das ist das Problem — verstanden hast du dann nichts."],
+  ueber:       ["Über das Projekt | Endlich kapiert",
+    "Ein Lernprojekt aus Deutschland, gebaut für Leute, die es wirklich nicht verstehen."],
+  faq:         ["Häufige Fragen | Endlich kapiert",
+    "Was kostet es, was wird gespeichert, wie funktioniert das Wiederholen?"]
+};
+function seitenkopfSetzen(){
+  let titel, text;
+  const adresse = "https://endlichkapiert.com" + aktuellerPfad();
+
+  if ((ansicht === "loesen" || ansicht === "erklaerung") && aktuellName){
+    const k = themaInfo(aktuellName);
+    const stufe = k ? stufenText(k.fach, k.klasse) : "";
+    titel = `${aktuellName} — einfach erklärt und üben${stufe ? " (" + stufe + ")" : ""} | Endlich kapiert`;
+    const e = ERKLAERUNGEN[aktuellName];
+    text = e && e.worum ? String(e.worum).replace(/<[^>]+>/g, "").slice(0, 230)
+                        : `${aktuellName} Schritt für Schritt üben — ohne dass dir jemand die Lösung hinlegt.`;
+  } else if (ansicht === "start" && KATALOG[fach]){
+    titel = `${KATALOG[fach].name} ${stufenText(fach, klasse)} — Themen üben | Endlich kapiert`;
+    text = `Alle Themen für ${KATALOG[fach].name} ${stufenText(fach, klasse)}: ${(KATALOG[fach].themen[klasse] || []).slice(0, 6).join(", ")}.`;
+  } else if (ansicht === "klassenwahl" && KATALOG[fach]){
+    titel = `${KATALOG[fach].name} üben — ${stufenwort(fach) === "Lehrjahr" ? "1. bis 4. Lehrjahr" : "Klasse 5 bis 10"} | Endlich kapiert`;
+    text = `${KATALOG[fach].name} verstehen statt auswendig lernen — mit Fragen, die dich hinführen, statt mit fertigen Lösungen.`;
+  } else if (SEITENTITEL[ansicht]){
+    [titel, text] = SEITENTITEL[ansicht];
+  } else {
+    [titel, text] = SEITENTITEL.willkommen;
+  }
+
+  document.title = titel;
+  const setz = (wahl, wert, attr) => {
+    const el = document.querySelector(wahl);
+    if (el) el.setAttribute(attr || "content", wert);
+  };
+  setz('meta[name="description"]', text);
+  setz("#kanonisch", adresse, "href");
+  setz("#ogtitel", titel);
+  setz("#ogtext", text);
+  setz("#ogadresse", adresse);
+}
 
 /* ---------- Was ist wirklich fertig? ----------
    Wird aus dem Katalog und den vorhandenen Aufgaben ausgerechnet.
@@ -26861,6 +26934,7 @@ function render(gewaehlt){
     if (navPop){ letzterPfad = pfad; ladebalkenStart(); }
     else if (ansichtWechsel || pfad !== letzterPfad){ navSpeichern(); letzterPfad = pfad; ladebalkenStart(); }
   }
+  if (ansicht !== "laden") seitenkopfSetzen();
   renderSeite();
   const shell = document.getElementById("shell");
   shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
