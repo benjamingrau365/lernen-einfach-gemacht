@@ -271,6 +271,9 @@
     color:var(--ink);font-size:14.5px;font-weight:600;cursor:pointer;font-family:inherit}
   .vokknopf:hover{border-color:var(--ac)}
   .vokknopf.an{background:var(--ac-soft);border-color:var(--ac);color:var(--ac-dark)}
+  /* Bei fast hundert Themen hilft die Zahl bei der Auswahl: wie viel steckt drin? */
+  .vokknopf > em{font-style:normal;font-weight:600;font-size:12.5px;color:var(--soft);margin-left:5px}
+  .vokknopf.an > em{color:var(--ac-dark);opacity:.75}
   /* ---------- Arbeitsblatt ----------
      Am Bildschirm sieht man eine Vorschau, die schon wie Papier aussieht.
      Beim Drucken wird alles andere ausgeblendet — Kopfleiste, Baustellenband,
@@ -11807,6 +11810,126 @@ const VOKABELN = {
       ["market", "der Markt", "We buy vegetables at the ___ ."],
       ["bridge", "die Brücke", "Cross the ___ and turn left."],
       ["park", "der Park", "We play football in the ___ ."]
+    ],
+    "Anweisungen im Unterricht": [
+      ["to open", "öffnen", "Please ___ your books on page five."],
+      ["to close", "schließen", "___ the window, it is cold."],
+      ["to listen", "zuhören", "Please ___ carefully now."],
+      ["to repeat", "wiederholen", "Can you ___ that sentence?"],
+      ["to write down", "aufschreiben", "___ the new words in your book."],
+      ["to read out", "vorlesen", "Who wants to ___ the text?"],
+      ["to look up", "nachschlagen", "___ the word in a dictionary."],
+      ["to raise", "heben", "___ your hand if you know it."],
+      ["quietly", "leise", "Work ___ , please."],
+      ["together", "zusammen", "We do this exercise ___ ."]
+    ],
+    "Essen und Trinken": [
+      ["bread", "das Brot", "We eat fresh ___ every morning."],
+      ["butter", "die Butter", "Put some ___ on it."],
+      ["milk", "die Milch", "I drink ___ with my cereal."],
+      ["juice", "der Saft", "Would you like some apple ___ ?"],
+      ["egg", "das Ei", "I had a boiled ___ ."],
+      ["apple", "der Apfel", "An ___ a day is healthy."],
+      ["potato", "die Kartoffel", "We eat ___ with almost everything."],
+      ["cake", "der Kuchen", "My grandma bakes a good ___ ."],
+      ["sweets", "die Süßigkeiten", "Too many ___ are bad for you."],
+      ["water", "das Wasser", "Drink enough ___ every day."]
+    ],
+    "Möbel und Dinge im Zimmer": [
+      ["chair", "der Stuhl", "Sit down on the ___ ."],
+      ["table", "der Tisch", "The keys are on the ___ ."],
+      ["bed", "das Bett", "I go to ___ at nine."],
+      ["cupboard", "der Schrank", "The plates are in the ___ ."],
+      ["shelf", "das Regal", "Put the book on the ___ ."],
+      ["lamp", "die Lampe", "Switch on the ___ , please."],
+      ["mirror", "der Spiegel", "She looked in the ___ ."],
+      ["carpet", "der Teppich", "Do not walk on the ___ with wet shoes."],
+      ["curtain", "der Vorhang", "Please close the ___ ."],
+      ["drawer", "die Schublade", "The scissors are in the ___ ."]
+    ],
+    "Fragen und kleine Wörter": [
+      ["where", "wo", "___ do you live?"],
+      ["when", "wann", "___ does the film start?"],
+      ["why", "warum", "___ are you late?"],
+      ["how much", "wie viel", "___ does the ticket cost?"],
+      ["how many", "wie viele", "___ people are coming?"],
+      ["who", "wer", "___ is knocking at the door?"],
+      ["because", "weil", "I stayed at home ___ I was ill."],
+      ["but", "aber", "I like maths, ___ I hate tests."],
+      ["also", "auch", "My sister is ___ coming."],
+      ["only", "nur", "There is ___ one seat left."]
+    ],
+    "Wochenende und Feste": [
+      ["birthday", "der Geburtstag", "My ___ is in April."],
+      ["present", "das Geschenk", "She gave me a nice ___ ."],
+      ["party", "die Feier", "We are having a ___ on Saturday."],
+      ["Christmas", "das Weihnachtsfest", "We visit my grandma at ___ ."],
+      ["Easter", "das Osterfest", "At ___ we paint eggs."],
+      ["holidays", "die Ferien", "The summer ___ start in July."],
+      ["to invite", "einladen", "I want to ___ ten friends."],
+      ["to celebrate", "feiern", "We ___ every year."],
+      ["candle", "die Kerze", "Blow out the ___ ."],
+      ["card", "die Karte", "I wrote her a birthday ___ ."]
+    ],
+    "Mein Tagesablauf": [
+      ["to get up", "aufstehen", "I ___ at half past six."],
+      ["to wash", "waschen", "I ___ my hands before dinner."],
+      ["to have breakfast", "frühstücken", "We ___ at seven."],
+      ["to brush", "putzen", "Do not forget to ___ your teeth."],
+      ["to leave", "verlassen, losgehen", "I ___ the house at seven."],
+      ["to arrive", "ankommen", "We ___ at school at eight."],
+      ["afternoon", "der Nachmittag", "In the ___ I do my homework."],
+      ["evening", "der Abend", "In the ___ we watch television."],
+      ["to fall asleep", "einschlafen", "I ___ very quickly."],
+      ["early", "früh", "She always gets up ___ ."]
+    ],
+    "Auf dem Bauernhof": [
+      ["farm", "der Bauernhof", "My uncle has a small ___ ."],
+      ["farmer", "der Bauer", "The ___ gets up very early."],
+      ["tractor", "der Traktor", "A big red ___ drove past."],
+      ["hen", "das Huhn", "The ___ laid three eggs."],
+      ["goat", "die Ziege", "The ___ ate my paper."],
+      ["cat", "die Katze", "Our ___ sleeps all day."],
+      ["dog", "der Hund", "The ___ barks at strangers."],
+      ["barn", "die Scheune", "The hay is in the ___ ."],
+      ["grass", "das Gras", "The cows eat fresh ___ ."],
+      ["hay", "das Heu", "We carry the ___ inside."]
+    ],
+    "Wo etwas liegt": [
+      ["in front of", "vor", "The car is ___ the house."],
+      ["behind", "hinter", "The garden is ___ the house."],
+      ["under", "unter", "The ball is ___ the table."],
+      ["on", "auf", "The book is ___ the desk."],
+      ["over", "über", "A plane flew ___ our school."],
+      ["near", "in der Nähe von", "We live ___ the station."],
+      ["inside", "drinnen", "The children stayed ___ ."],
+      ["outside", "draußen", "We play ___ every day."],
+      ["upstairs", "oben", "My room is ___ ."],
+      ["downstairs", "unten", "The kitchen is ___ ."]
+    ],
+    "Zahlen und Rechnen": [
+      ["hundred", "hundert", "The book has two ___ pages."],
+      ["thousand", "tausend", "That costs one ___ euros."],
+      ["first", "erster", "He was the ___ to finish."],
+      ["second", "zweiter", "She came in ___ place."],
+      ["to count", "zählen", "Can you ___ to twenty?"],
+      ["plus", "plus", "Two ___ three is five."],
+      ["minus", "minus", "Ten ___ four is six."],
+      ["times", "mal", "Three ___ three is nine."],
+      ["half", "die Hälfte", "I ate ___ of the cake."],
+      ["pair", "das Paar", "I need a new ___ of shoes."]
+    ],
+    "Freunde und Gefühle": [
+      ["happy", "glücklich", "I am very ___ today."],
+      ["sad", "traurig", "Why are you so ___ ?"],
+      ["angry", "wütend", "My mother was really ___ ."],
+      ["afraid", "ängstlich", "The dog is ___ of water."],
+      ["tired", "müde", "I am much too ___ ."],
+      ["funny", "lustig", "That film was really ___ ."],
+      ["nice", "nett", "Your friend is very ___ ."],
+      ["best friend", "der beste Freund", "She is my ___ ."],
+      ["to laugh", "lachen", "We had to ___ a lot."],
+      ["to cry", "weinen", "Do not ___ , please."]
     ]
   },
   6: {
@@ -11901,6 +12024,126 @@ const VOKABELN = {
       ["wrong", "falsch", "That answer is ___ ."],
       ["important", "wichtig", "This rule is very ___ ."],
       ["ready", "fertig", "Are you ___ to start?"]
+    ],
+    "Musik und Kunst": [
+      ["guitar", "die Gitarre", "He plays the ___ every evening."],
+      ["drums", "das Schlagzeug", "The ___ are far too loud."],
+      ["band", "die Band", "She sings in a school ___ ."],
+      ["concert", "das Konzert", "We went to a ___ last week."],
+      ["song", "das Lied", "That ___ is stuck in my head."],
+      ["voice", "die Stimme", "She has a beautiful ___ ."],
+      ["picture", "das Bild", "He painted a ___ of the harbour."],
+      ["colour", "die Farbe", "Which ___ do you want?"],
+      ["to paint", "malen", "I like to ___ in my free time."],
+      ["stage", "die Bühne", "The band came onto the ___ ."]
+    ],
+    "Beim Arzt": [
+      ["appointment", "der Termin", "I have an ___ at four."],
+      ["pain", "der Schmerz", "The ___ is getting worse."],
+      ["fever", "das Fieber", "He has a high ___ ."],
+      ["cold", "die Erkältung", "I have a bad ___ ."],
+      ["cough", "der Husten", "That ___ sounds terrible."],
+      ["to hurt", "wehtun", "Does it ___ when I press here?"],
+      ["injury", "die Verletzung", "It was only a small ___ ."],
+      ["plaster", "das Pflaster", "Put a ___ on the cut."],
+      ["treatment", "die Behandlung", "The ___ takes two weeks."],
+      ["to recover", "sich erholen", "You need time to ___ ."]
+    ],
+    "Natur": [
+      ["forest", "der Wald", "We walked through the ___ ."],
+      ["mountain", "der Berg", "That ___ is very steep."],
+      ["river", "der Fluss", "The ___ runs through the town."],
+      ["lake", "der See", "We swim in the ___ in summer."],
+      ["field", "das Feld", "The farmer works on the ___ ."],
+      ["tree", "der Baum", "A ___ fell across the road."],
+      ["flower", "die Blume", "She picked a yellow ___ ."],
+      ["leaf", "das Blatt", "A brown ___ fell from the branch."],
+      ["stone", "der Stein", "Do not throw that ___ ."],
+      ["sand", "der Sand", "The children play in the ___ ."]
+    ],
+    "Essen bestellen": [
+      ["menu", "die Speisekarte", "Could I see the ___ , please?"],
+      ["waiter", "der Kellner", "The ___ brought our drinks."],
+      ["starter", "die Vorspeise", "I will take soup as a ___ ."],
+      ["main course", "das Hauptgericht", "What is your ___ today?"],
+      ["dessert", "die Nachspeise", "We had ice cream for ___ ."],
+      ["to book a table", "einen Tisch reservieren", "We should ___ for Friday."],
+      ["knife", "das Messer", "Could I have a clean ___ ?"],
+      ["fork", "die Gabel", "My ___ has fallen down."],
+      ["spoon", "der Löffel", "Stir it with a ___ ."],
+      ["plate", "der Teller", "Put the food on a ___ ."]
+    ],
+    "Im Ort": [
+      ["town hall", "das Rathaus", "The ___ is in the centre."],
+      ["chemist", "die Apotheke", "You get that at the ___ ."],
+      ["post office", "das Postamt", "The ___ closes at five."],
+      ["petrol station", "die Tankstelle", "We stopped at the ___ ."],
+      ["car park", "der Parkplatz", "The ___ was completely full."],
+      ["cinema", "das Kino", "We go to the ___ on Fridays."],
+      ["hospital", "das Krankenhaus", "He works at the ___ ."],
+      ["playground", "der Spielplatz", "The children ran to the ___ ."],
+      ["pavement", "der Gehweg", "Walk on the ___ , not the road."],
+      ["roundabout", "der Kreisverkehr", "Take the second exit at the ___ ."]
+    ],
+    "Im Haushalt helfen": [
+      ["to wash up", "abspülen", "I have to ___ after dinner."],
+      ["to hoover", "staubsaugen", "Please ___ the living room."],
+      ["to iron", "bügeln", "I ___ my shirts on Sunday."],
+      ["to feed", "füttern", "Do not forget to ___ the cat."],
+      ["bin", "der Mülleimer", "Put it in the ___ ."],
+      ["broom", "der Besen", "The ___ is behind the door."],
+      ["bucket", "der Eimer", "Fill the ___ with water."],
+      ["towel", "das Handtuch", "Take a clean ___ ."],
+      ["chore", "die Hausarbeit", "That is my worst ___ ."],
+      ["to help out", "mithelfen", "The children ___ at home."]
+    ],
+    "Tiere in aller Welt": [
+      ["elephant", "der Elefant", "An ___ never forgets."],
+      ["lion", "der Löwe", "The ___ sleeps most of the day."],
+      ["bear", "der Bär", "A brown ___ crossed the river."],
+      ["snake", "die Schlange", "That ___ is not dangerous."],
+      ["whale", "der Wal", "A ___ is not a fish."],
+      ["shark", "der Hai", "We saw a small ___ ."],
+      ["monkey", "der Affe", "The ___ took my banana."],
+      ["eagle", "der Adler", "An ___ flew over the valley."],
+      ["insect", "das Insekt", "Every ___ has six legs."],
+      ["wildlife", "die Tierwelt", "The park protects the ___ ."]
+    ],
+    "Meinung und Gespräch": [
+      ["to think", "denken, meinen", "What do you ___ about it?"],
+      ["to mean", "bedeuten", "What does that word ___ ?"],
+      ["maybe", "vielleicht", "___ we will go tomorrow."],
+      ["of course", "natürlich", "___ you can come."],
+      ["sure", "sicher, klar", "Are you ___ about that?"],
+      ["really", "wirklich", "Is that ___ true?"],
+      ["probably", "wahrscheinlich", "He is ___ still at work."],
+      ["opinion", "die Meinung", "Everybody has an ___ ."],
+      ["to be right", "recht haben", "I think you ___ ."],
+      ["nonsense", "der Unsinn", "That is complete ___ ."]
+    ],
+    "Ferien und Urlaub": [
+      ["beach", "der Strand", "We spent the day at the ___ ."],
+      ["sea", "das Meer", "The ___ was quite cold."],
+      ["tent", "das Zelt", "We slept in a small ___ ."],
+      ["campsite", "der Campingplatz", "The ___ was right by the lake."],
+      ["suitcase", "der Koffer", "My ___ is far too heavy."],
+      ["sunglasses", "die Sonnenbrille", "I lost my ___ again."],
+      ["postcard", "die Postkarte", "I sent her a ___ ."],
+      ["souvenir", "das Andenken", "He bought a small ___ ."],
+      ["trip", "der Ausflug", "We made a day ___ ."],
+      ["to relax", "sich ausruhen", "You can ___ here."]
+    ],
+    "Zeit und Häufigkeit": [
+      ["yesterday", "gestern", "___ we had a test."],
+      ["tomorrow", "morgen", "___ is a holiday."],
+      ["last week", "letzte Woche", "We met ___ ."],
+      ["next month", "nächsten Monat", "The course starts ___ ."],
+      ["often", "oft", "We ___ go by bike."],
+      ["seldom", "selten", "He is ___ ill."],
+      ["once a week", "einmal pro Woche", "I train ___ ."],
+      ["twice", "zweimal", "I read it ___ ."],
+      ["for a long time", "lange", "We waited ___ ."],
+      ["until", "bis", "Wait ___ the light turns green."]
     ]
   },
   7: {
@@ -11981,6 +12224,126 @@ const VOKABELN = {
       ["crossroads", "die Kreuzung", "Turn right at the ___ ."],
       ["to get lost", "sich verlaufen", "It is easy to ___ here."],
       ["direction", "die Richtung", "You are going in the wrong ___ ."]
+    ],
+    "Freundschaft und Streit": [
+      ["to trust", "vertrauen", "You can ___ him completely."],
+      ["to argue", "streiten", "They ___ about everything."],
+      ["to apologise", "sich entschuldigen", "You should ___ to her."],
+      ["to forgive", "verzeihen", "It is hard to ___ that."],
+      ["honest", "ehrlich", "Just be ___ with me."],
+      ["jealous", "eifersüchtig", "He was ___ of her marks."],
+      ["reliable", "zuverlässig", "She is a very ___ friend."],
+      ["to fall out", "sich zerstreiten", "They did ___ over nothing."],
+      ["on my own", "allein", "I did it ___ ."],
+      ["to get on with", "auskommen mit", "I ___ my colleagues well."]
+    ],
+    "Regeln und Erlaubnis": [
+      ["to allow", "erlauben", "They do not ___ phones in class."],
+      ["to forbid", "verbieten", "The rules ___ smoking here."],
+      ["permission", "die Erlaubnis", "You need ___ from your boss."],
+      ["rule", "die Regel", "That is a strict ___ ."],
+      ["to obey", "befolgen", "You have to ___ the safety rules."],
+      ["punishment", "die Strafe", "The ___ was quite hard."],
+      ["strict", "streng", "Our teacher is very ___ ."],
+      ["to warn", "warnen", "I did ___ you about that."],
+      ["fair", "gerecht", "That decision was not ___ ."],
+      ["to break a rule", "gegen eine Regel verstoßen", "Do not ___ again."]
+    ],
+    "Zukunftspläne": [
+      ["career", "die Laufbahn", "She wants a ___ in engineering."],
+      ["to plan", "planen", "We ___ to move next year."],
+      ["future", "die Zukunft", "Nobody knows the ___ ."],
+      ["goal", "das Ziel", "My ___ is to finish the training."],
+      ["to expect", "erwarten", "I ___ good results."],
+      ["chance", "die Möglichkeit", "This is a real ___ ."],
+      ["apprenticeship", "die Ausbildung", "My ___ takes three years."],
+      ["to succeed", "Erfolg haben", "You will ___ if you keep going."],
+      ["degree", "der Abschluss", "She has a ___ in physics."],
+      ["ambition", "der Ehrgeiz", "He has a lot of ___ ."]
+    ],
+    "Am Telefon": [
+      ["to call back", "zurückrufen", "I will ___ in ten minutes."],
+      ["to hang up", "auflegen", "Do not ___ yet."],
+      ["to hold on", "am Apparat bleiben", "Could you ___ a moment?"],
+      ["message", "die Nachricht", "Can I leave a ___ ?"],
+      ["number", "die Nummer", "You dialled the wrong ___ ."],
+      ["to speak to", "sprechen mit", "May I ___ Mr Smith?"],
+      ["engaged", "besetzt", "The line is ___ ."],
+      ["to spell", "buchstabieren", "Could you ___ your name?"],
+      ["to reach", "erreichen", "You can ___ me until six."],
+      ["voicemail", "die Mailbox", "Leave it on my ___ ."]
+    ],
+    "Menschen beschreiben": [
+      ["tall", "groß (Person)", "Her brother is very ___ ."],
+      ["polite", "höflich", "He is always ___ to customers."],
+      ["patient", "geduldig", "You have to be ___ with beginners."],
+      ["lazy", "faul", "He is not stupid, just ___ ."],
+      ["clever", "klug", "That was a ___ idea."],
+      ["shy", "schüchtern", "She is a bit ___ at first."],
+      ["friendly", "freundlich", "The staff were very ___ ."],
+      ["hard-working", "fleißig", "He is a ___ apprentice."],
+      ["curly", "lockig", "She has ___ hair."],
+      ["beard", "der Bart", "He has grown a ___ ."]
+    ],
+    "Sport und Wettkampf": [
+      ["competition", "der Wettkampf", "She won the ___ last year."],
+      ["opponent", "der Gegner", "Our ___ was much stronger."],
+      ["coach", "der Trainer", "Our ___ shouted the whole game."],
+      ["victory", "der Sieg", "It was a clear ___ ."],
+      ["defeat", "die Niederlage", "The ___ hurt the whole team."],
+      ["to beat", "schlagen", "We ___ them three to one."],
+      ["injured", "verletzt", "Two players were ___ ."],
+      ["prize", "der Preis, die Auszeichnung", "She got the first ___ ."],
+      ["championship", "die Meisterschaft", "They lost the ___ again."],
+      ["fan", "der Fan", "Every ___ was shouting loudly."]
+    ],
+    "Einkaufen und Mode": [
+      ["fashion", "die Mode", "She follows every new ___ ."],
+      ["size", "die Größe", "Do you have this in my ___ ?"],
+      ["to fit", "passen", "These shoes do not ___ ."],
+      ["to try on", "anprobieren", "Can I ___ this jacket?"],
+      ["brand", "die Marke", "That ___ is very expensive."],
+      ["second-hand", "gebraucht", "I bought it ___ ."],
+      ["to swap", "tauschen", "We can ___ our jackets."],
+      ["queue", "die Warteschlange", "There was a long ___ ."],
+      ["shop assistant", "die Verkaufskraft", "The ___ was very helpful."],
+      ["bargain", "das Schnäppchen", "Ten euros is a real ___ ."]
+    ],
+    "Handy und Netz": [
+      ["app", "die App", "I deleted that ___ ."],
+      ["to upload", "hochladen", "Do not ___ private photos."],
+      ["to follow", "folgen", "Many people ___ her online."],
+      ["comment", "der Kommentar", "He wrote a rude ___ ."],
+      ["profile", "das Profil", "Check your ___ settings."],
+      ["to block", "blockieren", "You can ___ that user."],
+      ["screen time", "die Bildschirmzeit", "My ___ is far too high."],
+      ["charger", "das Ladegerät", "I forgot my ___ at home."],
+      ["to text", "eine Nachricht schreiben", "Just ___ me later."],
+      ["addicted", "süchtig", "He is ___ to games."]
+    ],
+    "Gesundheit und Ernährung": [
+      ["diet", "die Ernährung", "A balanced ___ is important."],
+      ["vitamin", "das Vitamin", "Fruit contains a lot of ___ ."],
+      ["sugar", "der Zucker", "There is too much ___ in it."],
+      ["fat", "das Fett", "Too much ___ is unhealthy."],
+      ["to avoid", "vermeiden", "You should ___ fast food."],
+      ["to gain weight", "zunehmen", "It is easy to ___ in winter."],
+      ["to lose weight", "abnehmen", "He wants to ___ before summer."],
+      ["exercise", "die Bewegung", "Regular ___ keeps you fit."],
+      ["sleep", "der Schlaf", "You need enough ___ ."],
+      ["stress", "der Stress", "Too much ___ makes you ill."]
+    ],
+    "Erzählen: was geschah": [
+      ["suddenly", "plötzlich", "___ the lights went out."],
+      ["at first", "zuerst", "___ I did not believe it."],
+      ["after that", "danach", "___ we went home."],
+      ["in the end", "schließlich", "___ everything worked out."],
+      ["while", "während", "It happened ___ I was away."],
+      ["ago", "vor (zeitlich)", "That was three years ___ ."],
+      ["to realise", "merken", "I did not ___ the time."],
+      ["to remember", "sich erinnern", "I cannot ___ his name."],
+      ["luckily", "zum Glück", "___ nobody was hurt."],
+      ["unfortunately", "leider", "___ the shop was closed."]
     ]
   },
   8: {
@@ -12065,6 +12428,126 @@ const VOKABELN = {
       ["to divide", "teilen", "___ the result by four."],
       ["approximately", "ungefähr", "It costs ___ fifty euros."],
       ["accurate", "genau", "The measurement must be ___ ."]
+    ],
+    "Bewerbung und Praktikum": [
+      ["work experience", "das Praktikum", "I did two weeks of ___ ."],
+      ["certificate", "die Bescheinigung", "Keep the ___ for your file."],
+      ["to sign", "unterschreiben", "Please ___ the form here."],
+      ["contract", "der Vertrag", "Read the ___ carefully."],
+      ["probation", "die Probezeit", "The ___ lasts three months."],
+      ["department", "die Abteilung", "Which ___ do you work in?"],
+      ["to introduce", "vorstellen", "Let me ___ our new apprentice."],
+      ["punctual", "pünktlich", "Be ___ on your first day."],
+      ["duty", "die Aufgabe, die Pflicht", "That is not my ___ ."],
+      ["to take over", "übernehmen", "Can you ___ this job?"]
+    ],
+    "Maschinen und Anlagen": [
+      ["motor", "der Motor", "The ___ is running smoothly."],
+      ["pump", "die Pumpe", "The ___ moves the water."],
+      ["belt", "der Riemen", "The ___ has to be replaced."],
+      ["gear", "das Zahnrad", "One ___ is broken."],
+      ["bearing", "das Lager", "The ___ makes a strange noise."],
+      ["valve", "das Ventil", "Close the ___ before you start."],
+      ["compressor", "der Kompressor", "The ___ builds up the pressure."],
+      ["conveyor", "das Förderband", "The parts come off the ___ ."],
+      ["control panel", "das Bedienfeld", "The switch is on the ___ ."],
+      ["to adjust", "einstellen", "You have to ___ the speed."]
+    ],
+    "Messen und Prüfen": [
+      ["multimeter", "das Vielfachmessgerät", "Take the ___ from the case."],
+      ["reading", "der Messwert", "Write down every ___ ."],
+      ["scale", "die Skala", "Read the value on the ___ ."],
+      ["probe", "die Messspitze", "Touch the terminal with the ___ ."],
+      ["range", "der Messbereich", "Set the correct ___ first."],
+      ["value", "der Wert", "The measured ___ is too low."],
+      ["to compare", "vergleichen", "___ it with the rated value."],
+      ["tolerance", "die Toleranz", "That is still within ___ ."],
+      ["result", "das Ergebnis", "Note the ___ in the report."],
+      ["to record", "aufzeichnen", "You must ___ every test."]
+    ],
+    "Computer und Büro": [
+      ["file", "die Datei", "Save the ___ on the server."],
+      ["folder", "der Ordner", "Put it in the right ___ ."],
+      ["spreadsheet", "die Tabellenkalkulation", "Enter the values in the ___ ."],
+      ["printer", "der Drucker", "The ___ is out of paper."],
+      ["keyboard", "die Tastatur", "My ___ is not working."],
+      ["to save", "speichern", "___ your work every ten minutes."],
+      ["to send", "senden", "Please ___ me the report."],
+      ["attachment", "der Anhang", "The plan is in the ___ ."],
+      ["settings", "die Einstellungen", "Change it in the ___ ."],
+      ["update", "die Aktualisierung", "The ___ takes five minutes."]
+    ],
+    "Zeit und Termine": [
+      ["appointment", "der Termin", "I have an ___ with the customer."],
+      ["to postpone", "verschieben", "Can we ___ the meeting?"],
+      ["to cancel", "absagen", "We had to ___ the visit."],
+      ["urgent", "dringend", "This job is ___ ."],
+      ["as soon as possible", "so bald wie möglich", "Send it ___ ."],
+      ["in advance", "im Voraus", "Please pay ___ ."],
+      ["to be late", "sich verspäten", "Do not ___ tomorrow."],
+      ["break", "die Pause", "We take a ___ at twelve."],
+      ["duration", "die Dauer", "What is the ___ of the job?"],
+      ["daily", "täglich", "We check the machine ___ ."]
+    ],
+    "Werkstoffe und Eigenschaften": [
+      ["aluminium", "das Aluminium", "The case is made of ___ ."],
+      ["brass", "das Messing", "A ___ screw does not rust."],
+      ["iron", "das Eisen", "Pure ___ rusts very quickly."],
+      ["conductive", "leitfähig", "Copper is very ___ ."],
+      ["insulating", "isolierend", "Rubber is a good ___ material."],
+      ["hard", "hart", "This steel is extremely ___ ."],
+      ["soft", "weich", "Lead is quite ___ ."],
+      ["brittle", "spröde", "Cold plastic becomes ___ ."],
+      ["flexible", "biegsam", "The cable must stay ___ ."],
+      ["heat resistant", "hitzebeständig", "The sleeve has to be ___ ."]
+    ],
+    "Auftrag und Baustelle": [
+      ["job", "der Auftrag", "We finished the ___ on time."],
+      ["building site", "die Baustelle", "The ___ is closed today."],
+      ["tool box", "der Werkzeugkoffer", "Bring the whole ___ ."],
+      ["van", "der Transporter", "The parts are in the ___ ."],
+      ["ladder", "die Leiter", "Hold the ___ firmly."],
+      ["to unload", "abladen", "We have to ___ the van."],
+      ["material list", "die Materialliste", "Tick everything on the ___ ."],
+      ["to hand over", "übergeben", "We ___ the room at five."],
+      ["complaint", "die Beschwerde", "There was one ___ about the noise."],
+      ["on site", "vor Ort", "The engineer works ___ ."]
+    ],
+    "Elektrische Bauteile": [
+      ["resistor", "der Widerstand (Bauteil)", "Solder the ___ onto the board."],
+      ["capacitor", "der Kondensator", "The ___ stores a charge."],
+      ["diode", "die Diode", "Current flows through the ___ in one direction."],
+      ["transformer", "der Transformator", "The ___ lowers the voltage."],
+      ["circuit breaker", "der Leitungsschutzschalter", "The ___ tripped again."],
+      ["junction box", "die Abzweigdose", "The joint sits in the ___ ."],
+      ["cable", "das Kabel", "Lay the ___ along the wall."],
+      ["lamp holder", "die Fassung", "Screw the bulb into the ___ ."],
+      ["bulb", "die Glühlampe", "The ___ burnt out yesterday."],
+      ["switch cabinet", "der Schaltschrank", "Do not open the ___ ."]
+    ],
+    "Zeichnung und Plan": [
+      ["drawing", "die Zeichnung", "Look at the ___ on page two."],
+      ["symbol", "das Symbol", "Every ___ has a meaning."],
+      ["legend", "die Legende", "The ___ explains the signs."],
+      ["dimension", "das Maß", "Check every ___ twice."],
+      ["view", "die Ansicht", "This is the side ___ ."],
+      ["section", "der Schnitt", "The ___ shows the inside."],
+      ["sketch", "die Skizze", "Make a quick ___ first."],
+      ["layout", "die Anordnung", "The ___ of the room is fixed."],
+      ["to label", "beschriften", "Please ___ every wire."],
+      ["line", "die Linie", "Draw a straight ___ here."]
+    ],
+    "Arbeitsanweisungen": [
+      ["instruction", "die Anweisung", "Read the ___ before you start."],
+      ["manual", "die Bedienungsanleitung", "The ___ is in the drawer."],
+      ["step", "der Schritt", "The next ___ is easy."],
+      ["to prepare", "vorbereiten", "___ the tools first."],
+      ["to clean up", "aufräumen", "Please ___ after the job."],
+      ["to check off", "abhaken", "___ every point on the list."],
+      ["carefully", "sorgfältig", "Work ___ and slowly."],
+      ["by hand", "von Hand", "This part is made ___ ."],
+      ["to report", "melden", "You must ___ every fault."],
+      ["to ask for help", "um Hilfe bitten", "Do not be afraid to ___ ."]
     ]
   },
   9: {
@@ -12135,6 +12618,126 @@ const VOKABELN = {
       ["for example", "zum Beispiel", "Take copper, ___ ."],
       ["compared to", "verglichen mit", "___ last year, it is cheaper."],
       ["mainly", "hauptsächlich", "We ___ work on old buildings."]
+    ],
+    "Energie und Umwelt": [
+      ["solar panel", "das Solarmodul", "They fitted a new ___ on the roof."],
+      ["wind turbine", "die Windkraftanlage", "The ___ turns very slowly today."],
+      ["power station", "das Kraftwerk", "The ___ supplies the whole region."],
+      ["grid", "das Stromnetz", "The house is connected to the ___ ."],
+      ["consumption", "der Verbrauch", "Our ___ went down last year."],
+      ["efficiency", "der Wirkungsgrad", "The ___ is about ninety percent."],
+      ["fuel", "der Brennstoff", "This ___ is very expensive."],
+      ["emission", "der Ausstoß", "We must reduce every ___ ."],
+      ["storage", "der Speicher", "The battery is a kind of ___ ."],
+      ["sustainable", "nachhaltig", "That is a ___ solution."]
+    ],
+    "Zeitung und Bericht": [
+      ["article", "der Artikel", "I read an ___ about it."],
+      ["report", "der Bericht", "Write a short ___ about the fault."],
+      ["to describe", "beschreiben", "Please ___ what happened."],
+      ["to mention", "erwähnen", "You did not ___ the cost."],
+      ["according to", "laut", "___ the manual, it is safe."],
+      ["statement", "die Aussage", "That ___ is not correct."],
+      ["fact", "die Tatsache", "That is a simple ___ ."],
+      ["to claim", "behaupten", "They ___ it was our fault."],
+      ["editor", "der Redakteur", "The ___ shortened my text."],
+      ["headline", "die Überschrift", "Choose a short ___ ."]
+    ],
+    "Verben mit Präposition": [
+      ["to depend on", "abhängen von", "It will ___ the weather."],
+      ["to belong to", "gehören", "This tool does ___ me."],
+      ["to apply for", "sich bewerben um", "I want to ___ that job."],
+      ["to consist of", "bestehen aus", "The team does ___ five people."],
+      ["to insist on", "bestehen auf", "They ___ a written order."],
+      ["to succeed in", "gelingen", "We did ___ finishing on time."],
+      ["to complain about", "sich beschweren über", "He likes to ___ the food."],
+      ["to think of", "denken an", "What do you ___ this plan?"],
+      ["to wait for", "warten auf", "We ___ the delivery."],
+      ["to care about", "sich kümmern um", "They really ___ safety."]
+    ],
+    "Gebäudetechnik": [
+      ["heating", "die Heizung", "The ___ is not working."],
+      ["ventilation", "die Lüftung", "Check the ___ in the cellar."],
+      ["lighting", "die Beleuchtung", "The ___ is too dark here."],
+      ["alarm", "die Alarmanlage", "The ___ went off at night."],
+      ["smoke detector", "der Rauchmelder", "Every room needs a ___ ."],
+      ["lift", "der Aufzug", "The ___ is out of order."],
+      ["water pipe", "die Wasserleitung", "A ___ has burst."],
+      ["insulation", "die Dämmung", "Better ___ saves energy."],
+      ["cable duct", "der Kabelkanal", "Lay the wire in the ___ ."],
+      ["floor plan", "der Grundriss", "Look at the ___ first."]
+    ],
+    "Zahlen und Statistik": [
+      ["percentage", "der Prozentsatz", "The ___ went up by five."],
+      ["to increase", "steigen", "Costs will ___ next year."],
+      ["to decrease", "sinken", "The values ___ slowly."],
+      ["figure", "die Zahl", "That ___ cannot be right."],
+      ["survey", "die Umfrage", "We did a short ___ ."],
+      ["diagram", "das Diagramm", "The ___ shows the trend."],
+      ["column", "die Spalte", "Enter it in the second ___ ."],
+      ["row", "die Zeile", "Read the first ___ ."],
+      ["total", "die Gesamtsumme", "The ___ is two thousand euros."],
+      ["roughly", "grob", "It takes ___ two hours."]
+    ],
+    "Schaltungen berechnen": [
+      ["formula", "die Formel", "Write down the ___ first."],
+      ["to calculate", "berechnen", "You have to ___ the current."],
+      ["unit", "die Einheit", "Do not forget the ___ ."],
+      ["ratio", "das Verhältnis", "The ___ stays the same."],
+      ["to convert", "umrechnen", "___ the value into millimetres."],
+      ["to estimate", "schätzen", "First ___ the result roughly."],
+      ["decimal", "die Dezimalstelle", "Round it to one ___ ."],
+      ["square metre", "der Quadratmeter", "The room has twenty ___ ."],
+      ["cross section", "der Querschnitt", "Choose a bigger ___ ."],
+      ["voltage drop", "der Spannungsfall", "The ___ is too high."]
+    ],
+    "Ausbildung und Berufsschule": [
+      ["vocational school", "die Berufsschule", "I go to ___ twice a week."],
+      ["theory", "die Theorie", "The ___ is harder than the practice."],
+      ["practical", "praktisch", "The ___ part went well."],
+      ["final exam", "die Abschlussprüfung", "The ___ is in June."],
+      ["grade", "die Note", "I got a good ___ ."],
+      ["report book", "das Berichtsheft", "Fill in your ___ every week."],
+      ["instructor", "der Ausbilder", "My ___ explained it twice."],
+      ["workshop", "die Lehrwerkstatt", "We practise in the ___ ."],
+      ["knowledge", "das Wissen", "You need basic ___ of physics."],
+      ["journeyman", "der Geselle", "After the exam you are a ___ ."]
+    ],
+    "Ursache und Folge": [
+      ["because of", "wegen", "The train was late ___ the snow."],
+      ["due to", "aufgrund", "The fault was ___ a loose wire."],
+      ["as a result", "infolgedessen", "___ , the machine stopped."],
+      ["so that", "damit", "Switch it off ___ nobody gets hurt."],
+      ["in order to", "um zu", "We came early ___ finish the job."],
+      ["unless", "es sei denn", "Do not start ___ I tell you."],
+      ["in spite of", "trotz", "He came ___ the rain."],
+      ["moreover", "außerdem", "___ , the price went up."],
+      ["nevertheless", "trotzdem", "It was hard, ___ we finished."],
+      ["consequence", "die Folge", "That has a serious ___ ."]
+    ],
+    "Physik im Alltag": [
+      ["force", "die Kraft", "A strong ___ pushed the door."],
+      ["speed", "die Geschwindigkeit", "The ___ was much too high."],
+      ["mass", "die Masse", "The ___ of the part is known."],
+      ["pressure", "der Druck", "The ___ dropped quickly."],
+      ["heat", "die Wärme", "The ___ escapes through the roof."],
+      ["friction", "die Reibung", "Oil reduces the ___ ."],
+      ["gravity", "die Schwerkraft", "___ pulls everything down."],
+      ["motion", "die Bewegung", "The sensor detects ___ ."],
+      ["magnet", "der Magnet", "Hold the ___ near the plate."],
+      ["frequency", "die Frequenz", "The ___ is fifty hertz."]
+    ],
+    "Werkzeug für Elektroniker": [
+      ["side cutter", "der Seitenschneider", "Cut the wire with the ___ ."],
+      ["crimping tool", "die Crimpzange", "Use the ___ for the ferrule."],
+      ["stripping tool", "die Abisolierzange", "The ___ removes the insulation."],
+      ["torch", "die Taschenlampe", "Take a ___ into the cellar."],
+      ["cable tie", "der Kabelbinder", "Fix it with a ___ ."],
+      ["ferrule", "die Aderendhülse", "Press a ___ onto the wire."],
+      ["voltage tester", "der Spannungsprüfer", "Always use a ___ first."],
+      ["hammer drill", "der Bohrhammer", "The ___ made a lot of noise."],
+      ["spirit level", "die Wasserwaage", "Check it with the ___ ."],
+      ["tool bag", "die Werkzeugtasche", "Everything fits in one ___ ."]
     ]
   },
   10: {
@@ -12209,6 +12812,126 @@ const VOKABELN = {
       ["to check", "prüfen", "___ the voltage first."],
       ["cause", "die Ursache", "What was the ___ of the fault?"],
       ["to reset", "zurücksetzen", "___ the circuit breaker."]
+    ],
+    "Vertrag und Recht": [
+      ["agreement", "die Vereinbarung", "We have a clear ___ ."],
+      ["clause", "die Klausel", "Read that ___ again."],
+      ["liability", "die Haftung", "The ___ is limited."],
+      ["warranty", "die Garantie", "The ___ runs for two years."],
+      ["to comply with", "einhalten", "We must ___ the standard."],
+      ["regulation", "die Vorschrift", "That ___ changed last year."],
+      ["to terminate", "kündigen", "You can ___ the contract in writing."],
+      ["obligation", "die Verpflichtung", "That is a legal ___ ."],
+      ["breach", "der Verstoß", "That was a ___ of the rules."],
+      ["valid", "gültig", "The certificate is still ___ ."]
+    ],
+    "Vortrag halten": [
+      ["slide", "die Folie", "Go back one ___ , please."],
+      ["to present", "vortragen", "I have to ___ the results."],
+      ["audience", "das Publikum", "The ___ asked good questions."],
+      ["overview", "der Überblick", "First I will give an ___ ."],
+      ["to sum up", "zusammenfassen", "Let me ___ the main points."],
+      ["to focus on", "sich konzentrieren auf", "We will ___ the costs."],
+      ["question", "die Frage", "Is there any ___ so far?"],
+      ["handout", "das Handout", "Take a ___ from the table."],
+      ["to point at", "zeigen auf", "Let me ___ this detail."],
+      ["finally", "abschließend", "___ , I want to thank you."]
+    ],
+    "Automatisierung und Steuerung": [
+      ["sensor", "der Sensor", "The ___ detects the part."],
+      ["actuator", "der Stellantrieb", "The ___ opens the valve."],
+      ["relay", "das Relais", "The ___ switches the motor."],
+      ["contactor", "das Schütz", "The ___ clicked twice."],
+      ["input", "der Eingang", "Connect it to the first ___ ."],
+      ["output", "der Ausgang", "The lamp is on the second ___ ."],
+      ["program", "das Programm", "Load the ___ into the controller."],
+      ["signal", "das Signal", "The ___ is too weak."],
+      ["automatic", "automatisch", "The door closes ___ ."],
+      ["remote", "fern, entfernt", "You can control it by ___ ."]
+    ],
+    "Qualität und Prüfung": [
+      ["quality", "die Qualität", "The ___ has to be checked."],
+      ["standard", "die Norm", "This meets the German ___ ."],
+      ["sample", "die Stichprobe", "We take a ___ every hour."],
+      ["defect", "der Mangel", "The part had a small ___ ."],
+      ["to inspect", "begutachten", "We must ___ every delivery."],
+      ["approval", "die Freigabe", "We are waiting for the ___ ."],
+      ["to reject", "zurückweisen", "We had to ___ the whole batch."],
+      ["checklist", "die Prüfliste", "Work through the ___ ."],
+      ["documentation", "die Dokumentation", "The ___ has to be complete."],
+      ["traceable", "nachvollziehbar", "Every step must be ___ ."]
+    ],
+    "Abkürzungen im Betrieb": [
+      ["asap", "so schnell wie möglich", "Send the parts ___ ."],
+      ["approx.", "ungefähr", "It weighs ___ ten kilos."],
+      ["max.", "höchstens", "The load is ___ two tons."],
+      ["min.", "mindestens", "You need ___ three people."],
+      ["e.g.", "zum Beispiel", "Use a soft metal, ___ copper."],
+      ["etc.", "und so weiter", "Bring pliers, screwdrivers, ___ ."],
+      ["p.a.", "pro Jahr", "The cost is 500 euros ___ ."],
+      ["no.", "die Nummer", "Order ___ 4711 is ready."],
+      ["incl.", "einschließlich", "The price is ___ delivery."],
+      ["excl.", "ausschließlich", "That is ___ value added tax."]
+    ],
+    "Instandhaltung und Störungssuche": [
+      ["wear", "der Verschleiß", "Normal ___ is not a defect."],
+      ["lubrication", "die Schmierung", "Regular ___ prevents damage."],
+      ["inspection", "die Inspektion", "The yearly ___ is due."],
+      ["downtime", "der Stillstand", "Every hour of ___ costs money."],
+      ["root cause", "die eigentliche Ursache", "We still look for the ___ ."],
+      ["symptom", "das Anzeichen", "Describe the ___ exactly."],
+      ["log book", "das Betriebsbuch", "Enter the repair in the ___ ."],
+      ["to isolate", "freischalten", "___ the circuit before you work."],
+      ["intermittent", "sporadisch", "The error is ___ ."],
+      ["to restore", "wiederherstellen", "We could ___ the supply quickly."]
+    ],
+    "Kosten und Kalkulation": [
+      ["budget", "das Budget", "The ___ is already spent."],
+      ["labour cost", "die Lohnkosten", "The ___ is the biggest part."],
+      ["material cost", "die Materialkosten", "We calculate the ___ per metre."],
+      ["profit", "der Gewinn", "The ___ was rather small."],
+      ["loss", "der Verlust", "The job ended with a ___ ."],
+      ["surcharge", "der Zuschlag", "There is a ___ for weekends."],
+      ["value added tax", "die Mehrwertsteuer", "Add the ___ at the end."],
+      ["estimate", "der Kostenvoranschlag", "Send the customer an ___ ."],
+      ["to charge", "berechnen", "We ___ forty euros an hour."],
+      ["payment", "die Zahlung", "The ___ is due in two weeks."]
+    ],
+    "Führung und Zusammenarbeit": [
+      ["to delegate", "übertragen", "A good boss can ___ work."],
+      ["responsible", "verantwortlich", "Who is ___ for this area?"],
+      ["to coordinate", "abstimmen", "We have to ___ the two teams."],
+      ["feedback", "die Rückmeldung", "Thank you for your ___ ."],
+      ["to motivate", "anspornen", "It is hard to ___ tired people."],
+      ["conflict", "der Konflikt", "We solved the ___ quickly."],
+      ["to agree on", "sich einigen auf", "Let us ___ a date."],
+      ["meeting", "die Besprechung", "The ___ starts at nine."],
+      ["minutes", "das Protokoll", "Who writes the ___ today?"],
+      ["teamwork", "die Teamarbeit", "Good ___ saves a lot of time."]
+    ],
+    "Kundengespräch": [
+      ["request", "die Anfrage", "We answered the ___ at once."],
+      ["to confirm", "bestätigen", "Please ___ the date in writing."],
+      ["to clarify", "klären", "We should ___ that point."],
+      ["expectation", "die Erwartung", "The ___ was too high."],
+      ["satisfied", "zufrieden", "The customer was very ___ ."],
+      ["to recommend", "empfehlen", "I would ___ the bigger model."],
+      ["explanation", "die Erklärung", "He gave a short ___ ."],
+      ["misunderstanding", "das Missverständnis", "It was only a ___ ."],
+      ["patience", "die Geduld", "That job needs a lot of ___ ."],
+      ["to reply", "antworten", "Please ___ by Friday."]
+    ],
+    "Netzwerk und Daten": [
+      ["network", "das Netzwerk", "The machine is on our ___ ."],
+      ["router", "der Router", "Restart the ___ , please."],
+      ["data", "die Daten", "The ___ are stored locally."],
+      ["interface", "die Schnittstelle", "The ___ uses two wires."],
+      ["bus system", "das Bussystem", "The ___ links all devices."],
+      ["address", "die Adresse", "Every device needs its own ___ ."],
+      ["to transmit", "übertragen", "The sensor can ___ live values."],
+      ["wireless", "drahtlos", "The connection is ___ ."],
+      ["backup", "die Datensicherung", "Make a ___ every evening."],
+      ["access", "der Zugang", "Only the boss has ___ ."]
     ]
   }
 };
@@ -28696,7 +29419,8 @@ function vokabelnHtml(){
       <div class="vokwahl">
         <button class="vokknopf ${vokThema === "alle" ? "an" : ""}" onclick="vokThema='alle';render()">alle Themen</button>
         ${themen.map(t =>
-          `<button class="vokknopf ${vokThema === t ? "an" : ""}" onclick="vokThema=${JSON.stringify(t).replace(/"/g, "&quot;")};render()">${t}</button>`).join("")}
+          `<button class="vokknopf ${vokThema === t ? "an" : ""}" onclick="vokThema=${JSON.stringify(t).replace(/"/g, "&quot;")};render()">${t}
+             <em>${z(vokabelListe(vokKlasse, t).length)}</em></button>`).join("")}
       </div>
     </div>
 
