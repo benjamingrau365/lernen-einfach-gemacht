@@ -88,16 +88,19 @@ if (!bekannteDirekt.size) melde("Wegweiser", "die Zuordnung Adresse → Ansicht 
 const faecher = umgebung ? Object.keys(umgebung.KATALOG) : ["mathe", "deutsch"];
 const adressen = new Set();
 for (const m of h.matchAll(/navLink\(\s*[`"']([^`"'$]*)/g)) if (m[1].startsWith("/")) adressen.add(m[1]);
-for (const m of h.matchAll(/href="(\/[^"${]*)"/g))
-  if (!/\.[a-z0-9]+$/i.test(m[1])) adressen.add(m[1]);   /* .svg, .webmanifest … sind Dateien, keine Routen */
+for (const m of h.matchAll(/href="(\/[^"${]*)"/g)){
+  /* .svg, .webmanifest … sind Dateien, keine Routen — die festen
+     Erklärseiten tragen die Endung aber bewusst und werden geprüft. */
+  if (!/\.[a-z0-9]+$/i.test(m[1]) || /^\/erklaerung/.test(m[1])) adressen.add(m[1]);
+}
 
 /* Feste Seiten außerhalb der App: Sie werden nicht von der App aufgelöst,
    sondern liegen als eigene HTML-Datei auf der Platte. Für sie gilt die
    umgekehrte Prüfung — es muss die Datei geben. */
 const feste = (adr) => {
-  if (adr === "/erklaerungen") return "erklaerungen.html";
-  const m = adr.match(/^\/erklaerung\/(.+)$/);
-  return m ? "erklaerung/" + m[1] + ".html" : null;
+  if (adr === "/erklaerungen.html") return "erklaerungen.html";
+  const m = adr.match(/^\/erklaerung\/(.+\.html)$/);
+  return m ? "erklaerung/" + m[1] : null;
 };
 
 adressen.forEach((adr) => {

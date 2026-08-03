@@ -24926,7 +24926,7 @@ function fussleisteHtml(){
                         + navLink("/vokabeln/eigene", "zeigeEigene()", "Eigene Wörter", "fusslink fussunter") : "")).join("")}
           ${/* Echter Link, kein navLink: Die Erklärungsseiten sind feste HTML-Dateien
                 außerhalb der App — sie sollen wirklich geladen werden. */""}
-          <a class="fusslink" href="/erklaerungen">Alle Erklärungen</a>
+          <a class="fusslink" href="/erklaerungen.html">Alle Erklärungen</a>
           ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "fusslink")}
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
@@ -28235,7 +28235,7 @@ function willkommenHtml(){
       <p class="soft" style="margin:0 0 14px;max-width:54ch">Zu jedem Thema gibt es eine Seite, auf der alles von
         ganz vorn erklärt steht — mit Beispiel, den häufigsten Fehlern und einer Tabelle zum Nachschlagen.
         Ohne Anmeldung, ohne Konto, einfach zum Lesen.</p>
-      <a class="btn ghost full" href="/erklaerungen">Alle ${anzahlFertig()} Erklärungen ansehen</a>
+      <a class="btn ghost full" href="/erklaerungen.html">Alle ${anzahlFertig()} Erklärungen ansehen</a>
     </div>
 
     <div class="card" style="text-align:center">
