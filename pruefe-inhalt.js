@@ -1275,11 +1275,174 @@ const matheProben2 = {
   }
 };
 
+/* ------------------------------------------------- ELEKTRONIKER, DRITTE RUNDE */
+
+const FARBZIFFER = {schwarz:0, braun:1, rot:2, orange:3, gelb:4, grün:5, blau:6, violett:7, grau:8, weiß:9};
+/* Text der fünf Sicherheitsregeln, an einem eindeutigen Stichwort erkannt */
+const SICHERHEITSREGELN = [
+  [1, /allpolig vom Netz getrennt/, "Freischalten"],
+  [2, /blockiert/, "Gegen Wiedereinschalten sichern"],
+  [3, /nachgemessen/, "Spannungsfreiheit feststellen"],
+  [4, /kurzgeschlossen/, "Erden und kurzschließen"],
+  [5, /abgedeckt oder abgeschrankt/, "Benachbarte Teile abdecken"]
+];
+const NETZFORMEN = [
+  ["TN-S", /getrennt geführt/, 5],
+  ["TN-C", /PEN-Leiter zusammengefasst/, 4],
+  ["TT", /eigenen Erder/, 4],
+  ["IT", /hochohmig/, 4]
+];
+const text2 = (a) => roh(a.loesung).trim();
+
+const elektroProben3 = {
+
+  "Widerstände und Farbcode": (a) => {
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    /* roh() macht aus dem Halbgeviertstrich einen normalen Bindestrich */
+    const ringe = t.match(/Ringe (\S+) - (\S+) - (\S+) - gold/);
+    if (ringe) {                                                     // Farbringe ablesen
+      const [d1, d2, m] = [FARBZIFFER[ringe[1]], FARBZIFFER[ringe[2]], FARBZIFFER[ringe[3]]];
+      if ([d1, d2, m].some(x => x === undefined)) return "unbekannte Farbe: " + ringe.slice(1).join(", ");
+      if (d1 === 0) return "der erste Ring darf keine führende Null sein";
+      return stimmt((d1 * 10 + d2) * Math.pow(10, m), l);
+    }
+    const w = groesse(t, "Ω");
+    const tol = dz((t.match(/±([\d.,]+)\s*%/) || [])[1]);
+    if (w !== null && isFinite(tol)) {                               // obere Toleranzgrenze
+      if (!/höchstens/.test(f)) return "die Frage passt nicht zum Aufgabentyp: " + f;
+      const ab = Math.round(w * tol / 100 * 100) / 100;
+      return stimmt(Math.round((w + ab) * 100) / 100, l, 1e-6);
+    }
+    const ziffern = dz((t.match(/Ziffern ([\d.,]+)/) || [])[1]);     // Zahl der Nullen
+    if (w === null || !isFinite(ziffern)) return "konnte die Angaben nicht lesen: " + t;
+    if (w % ziffern !== 0) return `${w} lässt sich nicht als ${ziffern} mit Nullen schreiben`;
+    const e = Math.round(Math.log10(w / ziffern));
+    if (Math.abs(ziffern * Math.pow(10, e) - w) > 1e-9)
+      return `${ziffern} mit ${e} Nullen ergibt nicht ${w}`;
+    return stimmt(e, l);
+  },
+
+  "Sicherheitsregeln": (a) => {
+    const t = vorne(a), l = loes(a);
+    const m = t.match(/Regel ([\d]+) von fünf/);
+    if (m) {                                                         // nächste Regel
+      const nr = Number(m[1]);
+      if (nr >= 5) return "nach der fünften Regel kommt keine weitere";
+      return stimmt(nr + 1, l);
+    }
+    const treffer = SICHERHEITSREGELN.find(([, muster]) => muster.test(t));
+    if (!treffer) return "konnte die Regel nicht zuordnen: " + t;
+    return stimmt(treffer[0], l);
+  },
+
+  "Ladung und Strom": (a) => {
+    const t = vorne(a), l = loes(a);
+    const min = groesse(t, "Minuten");
+    if (min !== null) {                                              // Q = I · t
+      const i = groesse(t, "A");
+      if (i === null) return "Stromstärke nicht lesbar: " + t;
+      return stimmt(Math.round(i * min * 60 * 100) / 100, l, 1e-6);
+    }
+    const ah = groesse(t, "Ah");
+    if (ah !== null) {                                               // Akkulaufzeit
+      const i = groesse(t, "A");
+      if (i === null) return "Stromstärke nicht lesbar: " + t;
+      return stimmt(Math.round(ah / i * 100) / 100, l, 1e-6);
+    }
+    const c = groesse(t, "[µμ]F"), u = groesse(t, "V");              // Q = C · U
+    if (c === null || u === null) return "Kapazität oder Spannung nicht lesbar: " + t;
+    return stimmt(Math.round(c * u * 100) / 100, l, 1e-6);
+  },
+
+  "Spule und Induktivität": (a) => {
+    const t = vorne(a), l = loes(a);
+    const mh = groesse(t, "mH");
+    if (mh !== null) {                                               // X L
+      const f = groesse(t, "Hz");
+      if (f === null) return "Frequenz nicht lesbar: " + t;
+      return stimmt(Math.round(2 * Math.PI * f * mh / 1000 * 100) / 100, l, 1e-6);
+    }
+    const r = alleGroessen(t, "Ω");                                  // Scheinwiderstand
+    if (r.length < 2) return "Wirk- oder Blindwiderstand fehlt: " + t;
+    const soll = Math.sqrt(r[0] * r[0] + r[1] * r[1]);
+    if (soll <= Math.max(r[0], r[1])) return "der Scheinwiderstand muss größer sein als jeder Einzelwert";
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Kondensator im Wechselstrom": (a) => {
+    const t = vorne(a), l = loes(a);
+    const c = groesse(t, "[µμ]F");
+    if (c === null) return "Kapazität nicht lesbar: " + t;
+    if (/Gleichspannung/.test(t)) return stimmt(0, l);                // sperrt vollständig
+    const f = groesse(t, "Hz");
+    if (f === null) return "Frequenz nicht lesbar: " + t;
+    return stimmt(Math.round(1 / (2 * Math.PI * f * c / 1e6) * 100) / 100, l, 1e-6);
+  },
+
+  "Netzformen": (a) => {
+    const t = vorne(a);
+    const genannt = t.match(/als ([A-Z]{2}(?:-[A-Z])?) ausgeführt/);
+    if (genannt) {                                                   // Zahl der Leiter
+      const netz = NETZFORMEN.find(([name]) => name === genannt[1]);
+      if (!netz) return "unbekannte Netzform: " + genannt[1];
+      return stimmt(netz[2], loes(a));
+    }
+    const treffer = NETZFORMEN.find(([, muster]) => muster.test(t));  // Netzform erkennen
+    if (!treffer) return "konnte die Netzform nicht zuordnen: " + t;
+    return text2(a) === treffer[0] ? null
+      : `beschrieben ist ${treffer[0]}, angegeben ist „${text2(a)}“`;
+  },
+
+  "Frequenzumrichter": (a) => {
+    const t = vorne(a), l = loes(a);
+    const p = dz((t.match(/([\d.,]+) Polpaar/) || [])[1]);
+    if (!isFinite(p) || p <= 0) return "Polpaarzahl nicht lesbar: " + t;
+    const f = groesse(t, "Hz");
+    if (f !== null) return stimmt(Math.round(60 * f / p), l);         // Drehzahl aus der Frequenz
+    const n = groesse(t, "1/min");
+    if (n === null) return "weder Frequenz noch Drehzahl gefunden: " + t;
+    const soll = n * p / 60;                                         // Frequenz aus der Drehzahl
+    if (soll <= 0) return "es kommt keine sinnvolle Frequenz heraus";
+    return stimmt(soll, l, 1e-6);
+  },
+
+  "Instandhaltung und Verfügbarkeit": (a) => {
+    const t = vorne(a), l = loes(a);
+    const proz = dz((t.match(/([\d.,]+)\s*%/) || [])[1]);
+    if (isFinite(proz)) {                                            // Ausfallzeit im Jahr
+      if (proz <= 0 || proz > 100) return `eine Verfügbarkeit von ${proz} % gibt es nicht`;
+      return stimmt(Math.round(8760 * (100 - proz) / 100 * 100) / 100, l, 1e-6);
+    }
+    const std = alleGroessen(t, "Stunden");                          // Verfügbarkeit
+    if (std.length < 2) return "MTBF oder MTTR nicht lesbar: " + t;
+    const [mtbf, mttr] = std;
+    const v = Math.round(mtbf / (mtbf + mttr) * 10000) / 100;
+    if (v >= 100) return "die Verfügbarkeit kann nicht 100 % erreichen";
+    return stimmt(v, l, 1e-6);
+  },
+
+  "Angebot kalkulieren": (a) => {
+    const t = vorne(a), l = loes(a);
+    const betraege = alleGroessen(t, "€");
+    if (/netto bei/.test(t)) {                                       // Brutto aus Netto
+      if (!betraege.length) return "Nettobetrag nicht lesbar: " + t;
+      const netto = betraege[0];
+      const mwst = Math.round(netto * 0.19 * 100) / 100;
+      return stimmt(Math.round((netto + mwst) * 100) / 100, l, 1e-6);
+    }
+    const std = groesse(t, "Stunden");                               // Netto aus Lohn und Material
+    if (std === null || betraege.length < 2) return "konnte die Angaben nicht lesen: " + t;
+    const [satz, material] = betraege;
+    return stimmt(std * satz + material, l, 1e-6);
+  }
+};
+
 /* --------------------------------------------------------------- LAUF */
 const NICHT_PRUEFBAR = {
 };
 
-const proben = { ...matheProben, ...matheProben2, ...deutschProben, ...elektroProben, ...elektroProben2 };
+const proben = { ...matheProben, ...matheProben2, ...deutschProben,
+                 ...elektroProben, ...elektroProben2, ...elektroProben3 };
 
 for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
   const probe = proben[thema];
