@@ -522,6 +522,9 @@ const adressen = [
   {a: "/faecher", p: "0.9"},
   {a: "/erklaerungen.html", p: "0.9"},
   {a: "/vokabeln", p: "0.7"},
+  /* Wer „Elektroniker Abschlussprüfung Teil 1“ sucht, sucht genau diese Seite */
+  {a: "/elektroniker/teil-1", p: "0.8"},
+  {a: "/elektroniker/teil-2", p: "0.8"},
   {a: "/warum", p: "0.5"},
   {a: "/ueber", p: "0.4"},
   {a: "/faq", p: "0.4"}

@@ -409,6 +409,24 @@
   .pruefkopf div{flex:1;background:var(--bg);border-radius:12px;padding:12px 10px;text-align:center}
   .pruefkopf b{display:block;font-size:23px;font-weight:800;line-height:1.1}
   .pruefkopf span{display:block;font-size:12.5px;color:var(--soft);margin-top:2px}
+  /* ---------- Prüfungsteile der Ausbildung ---------- */
+  .pruefeinstieg{border:1.5px solid var(--elektroniker);background:var(--elektroniker-soft)}
+  .pruefeinstieg .tag{background:var(--elektroniker);color:#fff}
+  .teilwahl{display:grid;gap:10px}
+  @media(min-width:520px){ .teilwahl{grid-template-columns:1fr 1fr} }
+  .teilknopf{display:block;width:100%;text-align:left;background:var(--card);
+    border:2px solid var(--line);border-radius:14px;padding:14px 16px;font:inherit;
+    color:var(--ink);cursor:pointer;
+    transition:border-color .14s,transform .1s,box-shadow .14s}
+  .teilknopf:hover{border-color:var(--elektroniker);transform:translateY(-1px);
+    box-shadow:0 8px 18px -12px color-mix(in srgb, var(--elektroniker) 80%, transparent)}
+  .teilknopf:active{transform:scale(.99)}
+  .teilknopf b{display:block;font-size:19px;color:var(--elektroniker-dark);letter-spacing:-.01em}
+  .teilknopf span{display:block;font-size:14px;color:var(--soft);margin-top:2px}
+  .teilzahl{font-weight:700}
+  .vokknopf.pruefteilknopf{border-color:var(--elektroniker);color:var(--elektroniker-dark)}
+  .vokknopf.pruefteilknopf.an{background:var(--elektroniker-soft)}
+
   /* ---------- Kalender ----------
      Der Kalender des Browsers ist auf jedem Gerät ein anderer, immer winzig
      und nie in unseren Farben. Dieser hier ist so breit wie die Karte, seine
@@ -1624,6 +1642,9 @@ function stufenVon(f){ return (KATALOG[f] && KATALOG[f].stufen) || [5,6,7,8,9,10
 function stufenwort(f){ return (KATALOG[f] && KATALOG[f].stufenwort) || "Klasse"; }
 /* „Klasse 7" bzw. „2. Lehrjahr" */
 function stufenText(f, k){
+  /* Bei der Ausbildung kann statt eines Lehrjahres auch ein Prüfungsteil
+     dastehen — dann heißt der Abschnitt so, wie er im Betrieb heißt. */
+  if (typeof PRUEFTEILE !== "undefined" && PRUEFTEILE[k]) return PRUEFTEILE[k].lang;
   return stufenwort(f) === "Lehrjahr" ? `${k}. Lehrjahr` : `Klasse ${k}`;
 }
 
@@ -27703,6 +27724,11 @@ function seitenkopfSetzen(){
   } else if (ansicht === "start" && KATALOG[fach]){
     titel = `${KATALOG[fach].name} ${stufenText(fach, klasse)} — Themen üben | Endlich kapiert`;
     text = `Alle Themen für ${KATALOG[fach].name} ${stufenText(fach, klasse)}: ${(KATALOG[fach].themen[klasse] || []).slice(0, 6).join(", ")}.`;
+  } else if (ansicht === "pruefteil" && PRUEFTEILE[pruefTeil]){
+    const t = PRUEFTEILE[pruefTeil];
+    titel = `Elektroniker ${t.lang} — Themen üben | Endlich kapiert`;
+    text = `Alle Themen für ${t.lang} Elektroniker für Betriebstechnik auf einmal — `
+         + `mit Lernplan bis zum Termin. ${pruefTeilAlleThemen(pruefTeil).slice(0, 5).join(", ")}.`;
   } else if (ansicht === "klassenwahl" && KATALOG[fach]){
     titel = `${KATALOG[fach].name} üben — ${stufenwort(fach) === "Lehrjahr" ? "1. bis 4. Lehrjahr" : "Klasse 5 bis 10"} | Endlich kapiert`;
     text = `${KATALOG[fach].name} verstehen statt auswendig lernen — mit Fragen, die dich hinführen, statt mit fertigen Lösungen.`;
@@ -28944,6 +28970,66 @@ let pruefAuswahl = [];
 let pruefOffen = null;        /* welche Prüfung wird gerade angesehen */
 let pruefMeldung = "";
 
+/* ---------- Die gestreckte Abschlussprüfung ----------
+   Wer eine Ausbildung macht, denkt nicht in Lehrjahren, sondern in zwei
+   Terminen: Teil 1 und Teil 2. Danach richtet sich, was man üben muss — die
+   Einteilung nach Lehrjahren ist dafür die falsche Schublade.
+
+   Welche Themen bei welcher Kammer genau drankommen, steht im
+   Ausbildungsrahmenplan und im Prüfungskatalog. Hier steht deshalb nur, was
+   ehrlich zu sagen ist: welche unserer Themen zeitlich davorliegen. */
+const PRUEFTEILE = {
+  teil1: {
+    name: "Teil 1",
+    lang: "Abschlussprüfung Teil 1",
+    stufen: [1, 2],
+    wann: "meist gegen Ende des zweiten Lehrjahres",
+    worum: "Alles aus dem ersten und zweiten Lehrjahr — die Grundlagen, auf denen später alles aufbaut."
+  },
+  teil2: {
+    name: "Teil 2",
+    lang: "Abschlussprüfung Teil 2",
+    stufen: [3, 4],
+    wann: "am Ende der Ausbildung",
+    worum: "Die Themen aus dem dritten und vierten Lehrjahr. Was in Teil 1 dran war, gilt weiter — es kann jederzeit wieder vorkommen."
+  }
+};
+let pruefTeil = null;              /* "teil1" | "teil2", solange man dort ist */
+
+/* Alle Themen eines Prüfungsteils, nach Lehrjahr geordnet */
+function pruefTeilThemen(schluessel){
+  const t = PRUEFTEILE[schluessel];
+  if (!t) return [];
+  return t.stufen
+    .map(j => ({jahr: j, themen: (KATALOG.elektroniker.themen[j] || [])}))
+    .filter(g => g.themen.length);
+}
+function pruefTeilAlleThemen(schluessel){
+  return pruefTeilThemen(schluessel).flatMap(g => g.themen);
+}
+function zeigePruefTeil(schluessel){
+  if (!PRUEFTEILE[schluessel]) return;
+  menueOffen = false;
+  pruefTeil = schluessel; fach = "elektroniker"; klasse = null;
+  ansicht = "pruefteil"; render();
+}
+/* Aus dem Prüfungsteil heraus einen Lernplan anlegen: Fach, Abschnitt und
+   Themen stehen schon fest, es fehlt nur noch der Termin. */
+function pruefPlanAus(schluessel){
+  const t = PRUEFTEILE[schluessel];
+  if (!t) return;
+  pruefFach = "elektroniker";
+  pruefKlasse = schluessel;
+  pruefAuswahl = pruefTeilAlleThemen(schluessel).filter(x => anzahlAufgaben(x) > 0);
+  pruefName = t.lang;
+  pruefMeldung = ""; pruefOffen = null; pruefKalMonat = null; menueOffen = false;
+  ansicht = "pruefungen"; render();
+  setTimeout(() => {
+    const k = document.querySelector(".kalender");
+    if (k) k.scrollIntoView({behavior: "smooth", block: "center"});
+  }, 60);
+}
+
 /* ---------- Kalender ----------
    Der eingebaute Kalender des Browsers lässt sich nicht gestalten: Er sieht auf
    jedem Gerät anders aus, ist winzig und hat mit dem Rest der Seite nichts zu
@@ -29045,7 +29131,9 @@ function pruefOeffnen(id){
 }
 function pruefFachWahl(f){
   pruefFach = f;
-  if (!stufenVon(f).includes(pruefKlasse)) pruefKlasse = stufenVon(f)[0];
+  const gueltig = stufenVon(f).includes(pruefKlasse)
+    || (f === "elektroniker" && PRUEFTEILE[pruefKlasse]);
+  if (!gueltig) pruefKlasse = stufenVon(f)[0];
   pruefAuswahl = [];
   render();
 }
@@ -29110,7 +29198,12 @@ function pruefLaufAbbrechen(){
 
 /* ---------- Übersichtsseite: alle Prüfungen und das Anlegen ---------- */
 function pruefungenHtml(){
-  const themen = (KATALOG[pruefFach] && KATALOG[pruefFach].themen[pruefKlasse] || [])
+  /* pruefKlasse ist meistens eine Klasse oder ein Lehrjahr — bei der Ausbildung
+     kann dort auch „teil1“ oder „teil2“ stehen. Dann sind es die Themen aus
+     zwei Lehrjahren auf einmal. */
+  const themen = (PRUEFTEILE[pruefKlasse]
+      ? pruefTeilAlleThemen(pruefKlasse)
+      : (KATALOG[pruefFach] && KATALOG[pruefFach].themen[pruefKlasse] || []))
     .filter(t => anzahlAufgaben(t) > 0);
   const sicher = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   const kommend = PRUEFUNGEN.filter(p => pruefTageBis(p.datum) >= 0)
@@ -29162,6 +29255,11 @@ function pruefungenHtml(){
       <div class="vokwahl">
         ${stufenVon(pruefFach).map(k =>
           `<button class="vokknopf ${pruefKlasse === k ? "an" : ""}" onclick="pruefKlasseWahl(${k})">${stufenText(pruefFach, k)}</button>`).join("")}
+        ${/* Bei der Ausbildung stehen die beiden Prüfungstermine gleichberechtigt
+              neben den Lehrjahren — danach lernt man am Ende ohnehin. */""}
+        ${pruefFach === "elektroniker" ? Object.entries(PRUEFTEILE).map(([k, t]) =>
+          `<button class="vokknopf pruefteilknopf ${pruefKlasse === k ? "an" : ""}"
+                   onclick="pruefKlasseWahl('${k}')">Prüfung ${t.name}</button>`).join("") : ""}
       </div>
 
       <p class="ueberschrift" style="margin-top:18px">Was kommt dran?</p>
@@ -29933,6 +30031,7 @@ function pfadFuer(a, f, k){
     case "pruefungen":
     case "pruefung":
     case "pruefungFertig": return "/pruefung";
+    case "pruefteil":    return pruefTeil === "teil2" ? "/elektroniker/teil-2" : "/elektroniker/teil-1";
     case "arbeitsblatt":
     case "arbeitsblattDruck": return "/arbeitsblatt";
     case "dashboard":    return "/dashboard";
@@ -29950,6 +30049,9 @@ function ansichtAusPfad(){
   if (KATALOG[p]){
     fach = p;
     if (teile[1] && KATALOG[p].themen[teile[1]]){ klasse = Number(teile[1]); ansicht = "start"; }
+    else if (p === "elektroniker" && (teile[1] === "teil-1" || teile[1] === "teil-2")){
+      zeigePruefTeil(teile[1] === "teil-2" ? "teil2" : "teil1"); return;
+    }
     else { ansicht = "klassenwahl"; }
     return;
   }
@@ -30549,7 +30651,7 @@ function render(gewaehlt){
      Rechnen. Damit „falsch“ auf einer roten Seite trotzdem eindeutig bleibt,
      zeigt das Kästchen der Antwort nach dem Tippen ✗ statt des Buchstabens
      (und ✓ bei der richtigen). Die Farbe ist dann nur noch der zweite Hinweis. */
-  const mitFach = ["start","klassenwahl","loesen","fertig","erklaerung"].includes(ansicht);
+  const mitFach = ["start","klassenwahl","loesen","fertig","erklaerung","pruefteil"].includes(ansicht);
   document.documentElement.dataset.fach = (mitFach && fach) ? fach : "";
 
   if (ansicht === "laden"){
@@ -30637,6 +30739,31 @@ function render(gewaehlt){
       </div>`;
   }
 
+  /* In einer Ausbildung zählt nicht das Lehrjahr, sondern der Prüfungstermin.
+     Deshalb steht die Wahl „Teil 1 oder Teil 2“ gleich unter den Lehrjahren —
+     wer darauf lernt, sucht sich seine Themen nicht Jahr für Jahr zusammen. */
+  function pruefTeileEinstiegHtml(f){
+    if (f !== "elektroniker") return "";
+    return `
+      <div class="card pruefeinstieg">
+        <span class="tag">Elektroniker · Prüfung</span>
+        <h2 style="margin:8px 0 6px">Lernst du auf die Abschlussprüfung?</h2>
+        <p class="soft" style="margin:0 0 14px">Dann such dir nicht Lehrjahr für Lehrjahr zusammen,
+          was drankommt. Sag, welcher Teil ansteht — du bekommst alle Themen dazu auf einmal
+          und daraus einen Lernplan bis zum Termin.</p>
+        <div class="teilwahl">
+          ${Object.entries(PRUEFTEILE).map(([k, t]) => {
+            const n = pruefTeilAlleThemen(k).filter(x => anzahlAufgaben(x) > 0).length;
+            return `<button class="teilknopf" onclick="zeigePruefTeil('${k}')">
+              <b>${t.name}</b>
+              <span>${t.stufen[0]}. und ${t.stufen[1]}. Lehrjahr</span>
+              <span class="teilzahl">${z(n)} Themen</span>
+            </button>`;
+          }).join("")}
+        </div>
+      </div>`;
+  }
+
   /* ---- Klassenwahl ---- */
   if (ansicht === "klassenwahl"){
     const themen = KATALOG[fach].themen;
@@ -30659,7 +30786,70 @@ function render(gewaehlt){
           `, "grosswahl mitfarbe");
         }).join("")}
       </div>
+      ${pruefTeileEinstiegHtml(fach)}
       ${vokabelEinstiegHtml(fach)}`;
+    return;
+  }
+
+  /* ---- Ein Prüfungsteil: was drankommt, üben und einplanen ---- */
+  if (ansicht === "pruefteil" && PRUEFTEILE[pruefTeil]){
+    const t = PRUEFTEILE[pruefTeil];
+    const gruppen = pruefTeilThemen(pruefTeil);
+    const alle = pruefTeilAlleThemen(pruefTeil);
+    const fertig = alle.filter(x => anzahlAufgaben(x) > 0);
+    const geuebt = fertig.filter(x => zeileZu(x)).length;
+
+    el.innerHTML = `
+      <div class="card">
+        ${navLink("/elektroniker", "zurKlassenwahl()", "← Zurück zur Ausbildung", "zurueck")}
+        <span class="tag">Elektroniker · Prüfung</span>
+        <h1>${t.lang}</h1>
+        <p class="soft" style="margin:10px 0 0">${t.worum}</p>
+        <p class="small soft" style="margin:12px 0 0">Der Termin steht ${t.wann} an — das genaue Datum
+          bekommst du von deiner Kammer. Was bei dir wirklich abgefragt wird, sagt dein
+          Ausbildungsrahmenplan; hier stehen die Themen, die wir dafür haben.</p>
+        <div class="pruefkopf">
+          <div><b>${z(fertig.length)}</b><span>Themen zum Üben</span></div>
+          <div><b>${z(geuebt)}</b><span>schon angefangen</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <p class="ueberschrift">Einen Lernplan daraus machen</p>
+        <p class="small soft" style="margin:0 0 14px">Sag, wann geprüft wird — die App teilt die
+          ${z(fertig.length)} Themen auf die Tage bis dahin auf, das Wackeligste zuerst,
+          und sagt dir jeden Tag, was dran ist.</p>
+        <button class="btn full" onclick="pruefPlanAus('${pruefTeil}')">Plan bis zur Prüfung erstellen</button>
+      </div>
+
+      ${gruppen.map(g => `
+        <div class="card">
+          <p class="ueberschrift">${g.jahr}. Lehrjahr</p>
+          <div class="themen">
+            ${g.themen.map(th => {
+              const n = anzahlAufgaben(th);
+              if (!n) return `<div class="thema aus"><span>${th}</span><span class="pill bald">kommt</span></div>`;
+              const zeile = zeileZu(th);
+              const w = zeile ? wannText(zeile) : null;
+              const pille = w
+                ? `<span class="pill ${w.stil === "sitzt" ? "" : "neutral"}">${w.text}</span>`
+                : `<span class="pill">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
+              const sicher = th.replace(/'/g, "\\'");
+              return `<div class="themazeile">
+                <button class="thema" onclick="starte('${sicher}')"><span>${th}</span>${pille}</button>
+                ${hatErklaerung(th) ? `<button class="erklknopf" title="Erklärung" onclick="zeigeErklaerung('${sicher}')">?</button>` : ""}
+              </div>`;
+            }).join("")}
+          </div>
+        </div>`).join("")}
+
+      <div class="card">
+        <p class="ueberschrift">Der andere Teil</p>
+        ${Object.entries(PRUEFTEILE).filter(([k]) => k !== pruefTeil).map(([k, a]) =>
+          `<button class="thema" style="width:100%" onclick="zeigePruefTeil('${k}')">
+             <span>${a.lang}</span><span class="pill">${z(pruefTeilAlleThemen(k).filter(x => anzahlAufgaben(x) > 0).length)} Themen</span>
+           </button>`).join("")}
+      </div>`;
     return;
   }
 
