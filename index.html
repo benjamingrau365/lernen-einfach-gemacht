@@ -4202,6 +4202,102 @@ const AUFGABEN = {
       optionen:[R(`${z(r)} Ω`, "Richtig."),
                 F(`${z(Math.round(u * i * 1000) / 1000)} Ω`, "Das ist U mal I — das wäre die Leistung in Watt."),
                 F(`${z(u)} Ω`, "Das ist die Spannung, nicht der Widerstand.")]}]};
+ },
+
+ /* Strom gesucht — Signalleuchte im Schaltschrank */
+ () => {
+   const u = pick([12, 24]);
+   const r = pick([48, 60, 80, 120, 240, 480]);
+   const i = Math.round(u / r * 10000) / 10000;
+   return {
+    typ:"formel",
+    text:`Eine Meldeleuchte im Schaltschrank hat ${z(r)} Ω und liegt an ${z(u)} V.<br>Welcher Strom fließt in Ampere?`,
+    loesung: z(i),
+    schluss:"Kleine Verbraucher ziehen wenig Strom, weil ihr Widerstand groß ist. Das ist keine eigene Regel — das steckt schon im Ohmschen Gesetz.",
+    schritte:[
+     {frage:"Welche beiden Größen stehen in der Aufgabe?",
+      tipp:"Schau auf die Einheiten hinter den Zahlen.",
+      tipp2:"Ω ist die Einheit des Widerstands, V die der Spannung.",
+      optionen:[R("Widerstand und Spannung", "Richtig — daraus lässt sich der Strom ausrechnen."),
+                F("Strom und Spannung", "Der Strom ist gerade das, was gesucht ist."),
+                F("Widerstand und Leistung", "Von Leistung steht in der Aufgabe nichts.")]},
+     {frage:"Was passiert mit dem Strom, wenn du dieselbe Leuchte an <b>doppelt so viel Spannung</b> legen würdest?",
+      tipp:"In I = U : R steht U oben.",
+      tipp2:"Verdoppelst du den Zähler und lässt den Nenner gleich, verdoppelt sich das Ergebnis.",
+      optionen:[R("Er wäre doppelt so groß", "Genau — Strom und Spannung gehen im gleichen Takt."),
+                F("Er wäre halb so groß", "Das gilt für den Widerstand, nicht für die Spannung."),
+                F("Er bliebe gleich", "Nein, die Spannung treibt den Strom.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(r)} Ω</b>?`,
+      tippAntwort: z(i),
+      tipp:"Spannung durch Widerstand.",
+      tipp2:`Rechne ${z(u)} : ${z(r)}. Weil der Widerstand größer ist als die Spannungszahl, kommt weniger als 1 heraus.`,
+      optionen:[R(`${z(i)} A`, "Richtig."),
+                F(`${z(Math.round(r / u * 10000) / 10000)} A`, "Verkehrt herum geteilt — die Spannung gehört nach oben."),
+                F(`${z(u * r)} A`, "Malgenommen. So viel Strom zieht keine Meldeleuchte.")]}]};
+ },
+
+ /* Widerstand gesucht — Heizelement */
+ () => {
+   const u = pick([24, 230, 400]);
+   const i = pick([1.6, 2.5, 4, 5, 8]);
+   const r = Math.round(u / i * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Heizelement zieht bei ${z(u)} V einen Strom von ${z(i)} A.<br>Wie groß ist sein Widerstand in Ohm?`,
+    loesung: z(r),
+    schluss:"Den Widerstand eines Verbrauchers kann man nicht ansehen — man misst Spannung und Strom und rechnet ihn aus.",
+    schritte:[
+     {frage:"Welche Formel führt hier zum Ziel?",
+      tipp:"Gesucht ist R, gegeben sind U und I.",
+      tipp2:"Geh von U = R · I aus und teile beide Seiten durch I.",
+      optionen:[R("R = U : I", "Richtig."),
+                F("R = U · I", "Das ergäbe die Leistung, nicht den Widerstand."),
+                F("R = I : U", "Vertauscht — die Spannung gehört nach oben.")]},
+     {frage:"Wenn das Element <b>mehr Strom</b> zieht, ist sein Widerstand dann größer oder kleiner?",
+      tipp:"Bei gleicher Spannung.",
+      tipp2:"In R = U : I steht I unten. Wird der Nenner größer, wird das Ergebnis kleiner.",
+      optionen:[R("Kleiner", "Genau. Viel Strom bei wenig Spannung heißt: wenig Widerstand."),
+                F("Größer", "Umgekehrt."),
+                F("Gleich", "Nein, beides hängt zusammen.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(i)} A</b>?`,
+      tippAntwort: z(r),
+      tipp:"Teile die Spannung durch den Strom.",
+      tipp2:`Rechne ${z(u)} : ${z(i)}. Volt durch Ampere ergibt Ohm.`,
+      optionen:[R(`${z(r)} Ω`, "Richtig."),
+                F(`${z(Math.round(u * i * 1000) / 1000)} Ω`, "Das wäre malgenommen — und ergäbe Watt, nicht Ohm."),
+                F(`${z(Math.round(i / u * 10000) / 10000)} Ω`, "Verkehrt herum geteilt.")]}]};
+ },
+
+ /* Spannung gesucht — Vorwiderstand */
+ () => {
+   const r = pick([33, 47, 68, 82, 120, 150]);
+   const i = pick([0.02, 0.05, 0.1, 0.2]);
+   const u = Math.round(r * i * 10000) / 10000;
+   return {
+    typ:"formel",
+    text:`Durch einen Vorwiderstand von ${z(r)} Ω sollen ${z(i)} A fließen.<br>Welche Spannung fällt dabei an ihm ab, in Volt?`,
+    loesung: z(u),
+    schluss:"An jedem Widerstand fällt Spannung ab, sobald Strom fließt. Wie viel, sagt U = R · I.",
+    schritte:[
+     {frage:"Was heißt „Spannung fällt ab“?",
+      tipp:"Der Widerstand nimmt einen Teil der Spannung auf.",
+      tipp2:"Was am Widerstand abfällt, steht dem Verbraucher dahinter nicht mehr zur Verfügung.",
+      optionen:[R("Ein Teil der Spannung liegt am Widerstand selbst an", "Richtig — genau dafür setzt man ihn ein."),
+                F("Die Spannung wird kleiner, weil der Strom sie verbraucht", "Strom wird nicht verbraucht, er fließt durch."),
+                F("Der Widerstand erzeugt Spannung", "Erzeugen tut er nichts, er bremst nur.")]},
+     {frage:"Welche Formel brauchst du?",
+      tipp:"Widerstand und Strom sind gegeben.",
+      tipp2:"Im Ohmschen Gesetz steht die Spannung allein auf einer Seite: U = R · I.",
+      optionen:[R("U = R · I", "Richtig."),
+                F("U = R : I", "Geteilt statt mal — das ergibt keine Spannung."),
+                F("U = I : R", "Vertauscht und geteilt.")]},
+     {frage:`Was ergibt <b>${z(r)} Ω · ${z(i)} A</b>?`,
+      tippAntwort: z(u),
+      tipp:"Die beiden Zahlen malnehmen.",
+      tipp2:`Rechne ${z(r)} · ${z(i)}. Weil der Strom klein ist, bleibt auch das Ergebnis klein.`,
+      optionen:[R(`${z(u)} V`, "Richtig."),
+                F(`${z(Math.round(r / i * 100) / 100)} V`, "Geteilt statt malgenommen — viel zu groß."),
+                F(`${z(Math.round((r + i) * 100) / 100)} V`, "Ohm und Ampere kann man nicht addieren.")]}]};
  }
 ],
 
@@ -4302,6 +4398,102 @@ const AUFGABEN = {
       optionen:[R(`${z(i)} A`, "Richtig."),
                 F(`${z(Math.round(u / p * 10000) / 10000)} A`, "Verkehrt herum geteilt — die Leistung gehört nach oben."),
                 F(`${z(Math.round(u / i * 100) / 100)} A`, "Das ist der Widerstand in Ohm, nicht der Strom.")]}]};
+ },
+
+ /* Leistung aus Spannung und Strom — Werkzeug an der Steckdose */
+ () => {
+   const u = 230;
+   const i = pick([1.3, 2.6, 4.5, 6, 7.5, 9]);
+   const p = Math.round(u * i * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Handkreissäge läuft an ${z(u)} V und zieht ${z(i)} A.<br>Welche Leistung nimmt sie auf, in Watt?`,
+    loesung: z(p),
+    schluss:"P = U · I. Was auf dem Typenschild als Leistungsaufnahme steht, ist genau dieses Produkt.",
+    schritte:[
+     {frage:"Was bedeutet <b>Leistung</b> bei einem Gerät?",
+      tipp:"Denk daran, wofür der Wert auf dem Typenschild gut ist.",
+      tipp2:"Die Leistung sagt, wie viel elektrische Energie das Gerät in jeder Sekunde umsetzt.",
+      optionen:[R("Wie viel Energie es pro Sekunde umsetzt", "Richtig — deshalb ist Watt eine Einheit je Zeit."),
+                F("Wie viel Energie insgesamt drinsteckt", "Das wäre die Arbeit in Wattstunden."),
+                F("Wie lange es laufen darf", "Damit hat die Leistung nichts zu tun.")]},
+     {frage:"Welche Formel gehört dazu?",
+      tipp:"Spannung und Strom sind gegeben.",
+      tipp2:"Volt mal Ampere ergibt Watt.",
+      optionen:[R("P = U · I", "Richtig."),
+                F("P = U : I", "Geteilt ergibt Ohm, nicht Watt."),
+                F("P = I : U", "Auch geteilt, nur andersherum.")]},
+     {frage:`Was ergibt <b>${z(u)} V · ${z(i)} A</b>?`,
+      tippAntwort: z(p),
+      tipp:"Die beiden Zahlen malnehmen.",
+      tipp2:`Rechne ${z(u)} · ${z(i)}. Rund gerechnet sind das gut ${z(Math.round(u * i / 100) * 100)} W.`,
+      optionen:[R(`${z(p)} W`, "Richtig."),
+                F(`${z(Math.round(u / i * 100) / 100)} W`, "Geteilt statt malgenommen."),
+                F(`${z(Math.round((u + i) * 100) / 100)} W`, "Addiert — Volt und Ampere sind verschiedene Größen.")]}]};
+ },
+
+ /* Arbeit in Kilowattstunden — Dauerverbraucher */
+ () => {
+   const p = pick([40, 75, 120, 250, 400]);
+   const t = pick([12, 18, 24, 36, 48]);
+   const w = Math.round(p / 1000 * t * 10000) / 10000;
+   return {
+    typ:"formel",
+    text:`Eine Umwälzpumpe mit ${z(p)} W läuft ${z(t)} Stunden durch.<br>Wie viele Kilowattstunden sind das?`,
+    loesung: z(w),
+    schluss:"Erst durch 1000 teilen, dann mit den Stunden malnehmen — die Reihenfolge ist egal, das Ergebnis dasselbe.",
+    schritte:[
+     {frage:"Warum muss man die Watt erst umrechnen?",
+      tipp:"Schau auf die gesuchte Einheit.",
+      tipp2:"Gesucht sind Kilowattstunden. Kilo heißt tausend.",
+      optionen:[R("Weil Kilowattstunden gefragt sind, nicht Wattstunden", "Richtig — 1 kW sind 1000 W."),
+                F("Weil Watt keine richtige Einheit ist", "Doch, Watt ist die Einheit der Leistung."),
+                F("Weil die Stunden sonst nicht passen", "Die Stunden bleiben, wie sie sind.")]},
+     {frage:`Wie viel <b>Kilowatt</b> sind ${z(p)} W?`,
+      tipp:"Durch 1000 teilen.",
+      tipp2:`Rechne ${z(p)} : 1000. Das Komma wandert drei Stellen nach links.`,
+      optionen:[R(`${z(p / 1000)} kW`, "Richtig."),
+                F(`${z(p * 1000)} kW`, "Malgenommen statt geteilt."),
+                F(`${z(p / 100)} kW`, "Nur durch hundert — Kilo heißt aber tausend.")]},
+     {frage:`Was ergibt <b>${z(p / 1000)} kW · ${z(t)} Stunden</b>?`,
+      tippAntwort: z(w),
+      tipp:"Leistung mal Zeit ergibt Arbeit.",
+      tipp2:`Rechne ${z(p / 1000)} · ${z(t)}.`,
+      optionen:[R(`${z(w)} kWh`, "Richtig."),
+                F(`${z(Math.round(p * t / 1000) / 1000)} kWh`, "Da wurde zweimal durch tausend geteilt."),
+                F(`${z(Math.round(p / 1000 / t * 10000) / 10000)} kWh`, "Geteilt statt malgenommen — je länger sie läuft, desto mehr wird es.")]}]};
+ },
+
+ /* Strom aus Leistung und Spannung — Absicherung */
+ () => {
+   const p = pick([1100, 1800, 2200, 3000, 3500]);
+   const u = 230;
+   const i = Math.round(p / u * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Heizlüfter mit ${z(p)} W hängt an ${z(u)} V.<br>Wie groß ist der Strom in Ampere?`,
+    loesung: z(i),
+    schluss:"Erst wenn man den Strom kennt, weiß man, ob die Leitung und die Sicherung das aushalten.",
+    schritte:[
+     {frage:"Wozu braucht man diesen Strom in der Praxis?",
+      tipp:"Denk an den Sicherungskasten.",
+      tipp2:"Eine Leitung und ihre Sicherung sind für einen bestimmten Strom ausgelegt, nicht für eine Leistung.",
+      optionen:[R("Um zu wissen, ob Leitung und Sicherung reichen", "Genau darum geht es."),
+                F("Um den Preis auszurechnen", "Dafür bräuchte man die Zeit und den Arbeitspreis."),
+                F("Um den Widerstand zu bestimmen", "Das ginge auch, ist hier aber nicht gefragt.")]},
+     {frage:"Wie stellst du P = U · I nach I um?",
+      tipp:"I soll allein stehen.",
+      tipp2:"Beide Seiten durch U teilen: I = P : U.",
+      optionen:[R("I = P : U", "Richtig."),
+                F("I = P · U", "Dann käme ein unmöglich großer Strom heraus."),
+                F("I = U : P", "Vertauscht.")]},
+     {frage:`Was ergibt <b>${z(p)} W : ${z(u)} V</b>?`,
+      tippAntwort: z(i),
+      tipp:"Leistung durch Spannung.",
+      tipp2:`Rechne ${z(p)} : ${z(u)}. Grob geschätzt sind das etwa ${z(Math.round(p / u))} A.`,
+      optionen:[R(`${z(i)} A`, "Richtig."),
+                F(`${z(Math.round(u / p * 10000) / 10000)} A`, "Verkehrt herum geteilt."),
+                F(`${z(Math.round(p * u / 1000) / 1)} A`, "Malgenommen — das ergäbe keinen sinnvollen Strom.")]}]};
  }
 ],
 
@@ -4370,6 +4562,100 @@ const AUFGABEN = {
       optionen:[R(`${z(u1)} V`, "Richtig."),
                 F(`${z(u2)} V`, `Das ist die Spannung am ${z(r2)}-Ω-Widerstand.`),
                 F(`${z(ug)} V`, "Das ist die Gesamtspannung über beide zusammen.")]}]};
+ },
+
+ /* Gesamtwiderstand mit drei ungleichen Werten */
+ () => {
+   const [r1, r2, r3] = zieheVerschiedene([12, 18, 22, 27, 33, 39, 47, 56, 68, 82], 3);
+   const rg = r1 + r2 + r3;
+   return {
+    typ:"formel",
+    text:`Eine Kette aus ${z(r1)} Ω, ${z(r2)} Ω und ${z(r3)} Ω hängt an einer Klemme.<br>Wie groß ist der Gesamtwiderstand in Ohm?`,
+    loesung: z(rg),
+    schluss:"In Reihe zählt jeder Widerstand voll mit. Der Gesamtwiderstand ist immer größer als der größte Einzelwert.",
+    schritte:[
+     {frage:"Woran erkennst du eine <b>Reihenschaltung</b>?",
+      tipp:"Denk an den Weg, den der Strom nimmt.",
+      tipp2:"Es gibt nur einen einzigen Weg — der Strom muss durch alle drei hindurch.",
+      optionen:[R("Der Strom hat nur einen Weg und fließt durch alle", "Richtig."),
+                F("Der Strom teilt sich auf", "Das ist die Parallelschaltung."),
+                F("An jedem liegt die volle Spannung", "Auch das gilt nur bei Parallelschaltung.")]},
+     {frage:"Muss der Gesamtwiderstand größer oder kleiner sein als der <b>größte Einzelwiderstand</b>?",
+      tipp:"Alle drei bremsen nacheinander.",
+      tipp2:`Nach ${z(Math.max(r1, r2, r3))} Ω kommen ja noch die beiden anderen dazu.`,
+      optionen:[R("Größer", "Richtig — es kommt nur etwas dazu, nie etwas weg."),
+                F("Kleiner", "Das gilt bei der Parallelschaltung."),
+                F("Genauso groß", "Nein, die anderen beiden zählen mit.")]},
+     {frage:`Was ergibt <b>${z(r1)} + ${z(r2)} + ${z(r3)}</b>?`,
+      tippAntwort: z(rg),
+      tipp:"Einfach zusammenzählen.",
+      tipp2:`Rechne erst ${z(r1)} + ${z(r2)} = ${z(r1 + r2)}, dann + ${z(r3)}.`,
+      optionen:[R(`${z(rg)} Ω`, "Richtig."),
+                F(`${z(Math.max(r1, r2, r3))} Ω`, "Das ist nur der größte einzelne — die anderen fehlen."),
+                F(`${z(Math.round(rg / 3 * 100) / 100)} Ω`, "Das wäre der Durchschnitt. Gefragt ist die Summe.")]}]};
+ },
+
+ /* Teilspannung am zweiten Widerstand */
+ () => {
+   const [r1, r2] = zieheVerschiedene([15, 22, 27, 33, 47, 56, 68, 100], 2);
+   const i = pick([0.05, 0.1, 0.2, 0.25, 0.5]);
+   const u2 = Math.round(i * r2 * 10000) / 10000;
+   return {
+    typ:"formel",
+    text:`In einer Reihenschaltung aus ${z(r1)} Ω und ${z(r2)} Ω fließen ${z(i)} A.<br>Wie groß ist die Spannung am ${z(r2)}-Ω-Widerstand in Volt?`,
+    loesung: z(u2),
+    schluss:"In der Reihe ist der Strom überall gleich — deshalb reicht für jede Teilspannung ein einziges Malnehmen.",
+    schritte:[
+     {frage:"Welcher <b>Strom</b> fließt durch den zweiten Widerstand?",
+      tipp:"In der Reihe gibt es nur einen Weg.",
+      tipp2:"Was vorne hineinfließt, fließt hinten wieder heraus — überall dieselbe Stromstärke.",
+      optionen:[R(`${z(i)} A — derselbe wie überall`, "Richtig. Das ist der ganze Trick an der Reihenschaltung."),
+                F(`${z(Math.round(i / 2 * 10000) / 10000)} A — die Hälfte`, "Der Strom teilt sich nur bei Parallelschaltung auf."),
+                F("Das lässt sich nicht sagen", "Doch — in der Reihe ist er überall gleich.")]},
+     {frage:"An welchem der beiden Widerstände fällt <b>mehr</b> Spannung ab?",
+      tipp:"Gleicher Strom, verschiedener Widerstand.",
+      tipp2:`Bei U = R · I entscheidet allein das R. ${z(Math.max(r1, r2))} Ω ist mehr als ${z(Math.min(r1, r2))} Ω.`,
+      optionen:[R(`Am ${z(Math.max(r1, r2))}-Ω-Widerstand`, "Richtig — der größere Widerstand nimmt den größeren Anteil."),
+                F(`Am ${z(Math.min(r1, r2))}-Ω-Widerstand`, "Umgekehrt."),
+                F("An beiden gleich viel", "Nur wenn beide gleich groß wären.")]},
+     {frage:`Was ergibt <b>${z(i)} A · ${z(r2)} Ω</b>?`,
+      tippAntwort: z(u2),
+      tipp:"Strom mal Widerstand ergibt die Teilspannung.",
+      tipp2:`Rechne ${z(i)} · ${z(r2)}.`,
+      optionen:[R(`${z(u2)} V`, "Richtig."),
+                F(`${z(Math.round(i * (r1 + r2) * 10000) / 10000)} V`, "Das ist die Spannung über beide zusammen."),
+                F(`${z(Math.round(r2 / i * 100) / 100)} V`, "Geteilt statt malgenommen.")]}]};
+ },
+
+ /* Gesamtwiderstand: einer fehlt in der Kette */
+ () => {
+   const [r1, r2, r3] = zieheVerschiedene([10, 15, 20, 25, 30, 40, 50, 60], 3);
+   const rg = r1 + r2 + r3;
+   return {
+    typ:"formel",
+    text:`Drei Heizwendeln liegen in Reihe: ${z(r1)} Ω, ${z(r2)} Ω und ${z(r3)} Ω.<br>Welchen Widerstand misst du an den Außenklemmen, in Ohm?`,
+    loesung: z(rg),
+    schluss:"Was das Messgerät an den Außenklemmen anzeigt, ist die Summe aller Widerstände dazwischen.",
+    schritte:[
+     {frage:"Was misst du an den <b>Außenklemmen</b>?",
+      tipp:"Das Messgerät sieht die ganze Kette auf einmal.",
+      tipp2:"Es kann die einzelnen Wendeln nicht unterscheiden — für das Gerät ist das ein einziger Widerstand.",
+      optionen:[R("Alle drei zusammen", "Richtig — das nennt man den Ersatzwiderstand."),
+                F("Nur den ersten", "Das Gerät misst über die ganze Kette."),
+                F("Den kleinsten der drei", "Nein, alle liegen im Weg.")]},
+     {frage:"Wie rechnet man Widerstände in <b>Reihe</b> zusammen?",
+      tipp:"Es ist die einfachste der beiden Regeln.",
+      tipp2:"In Reihe: einfach addieren. Nur bei Parallelschaltung wird es komplizierter.",
+      optionen:[R("Addieren", "Richtig."),
+                F("Kehrwerte addieren", "Das gilt für die Parallelschaltung."),
+                F("Multiplizieren", "Kommt in keiner der beiden Regeln vor.")]},
+     {frage:`Was ergibt <b>${z(r1)} + ${z(r2)} + ${z(r3)}</b>?`,
+      tippAntwort: z(rg),
+      tipp:"Der Reihe nach zusammenzählen.",
+      tipp2:`${z(r1)} + ${z(r2)} sind ${z(r1 + r2)}, dazu noch ${z(r3)}.`,
+      optionen:[R(`${z(rg)} Ω`, "Richtig."),
+                F(`${z(r1 + r2)} Ω`, "Da fehlt die dritte Wendel."),
+                F(`${z(Math.round(1 / (1 / r1 + 1 / r2 + 1 / r3) * 100) / 100)} Ω`, "So rechnet man parallel, nicht in Reihe.")]}]};
  }
 ],
 
@@ -4439,6 +4725,69 @@ const AUFGABEN = {
       optionen:[R(`${z(ig)} A`, "Richtig — die Zweigströme addieren sich."),
                 F(`${z(Math.max(i1, i2))} A`, "Der zweite Zweig fehlt noch."),
                 F(`${z(Math.round(Math.abs(i1 - i2) * 1000) / 1000)} A`, "Abziehen ist falsch — beide Ströme fließen zur Quelle zurück.")]}]};
+ },
+
+ /* Gesamtwiderstand zweier gleich großer Zweige */
+ () => {
+   const r = pick([20, 30, 40, 50, 60, 80, 100]);
+   const rg = r / 2;
+   return {
+    typ:"formel",
+    text:`Zwei gleiche Widerstände von je ${z(r)} Ω und ${z(r)} Ω liegen parallel.<br>Wie groß ist der Gesamtwiderstand in Ohm?`,
+    loesung: z(rg),
+    schluss:"Zwei gleiche Widerstände parallel ergeben immer genau die Hälfte. Das kann man sich merken und spart jedes Mal die Rechnung.",
+    schritte:[
+     {frage:"Wie viele <b>Wege</b> hat der Strom hier?",
+      tipp:"Parallel heißt nebeneinander.",
+      tipp2:"An der Verzweigung teilt sich der Strom auf zwei Zweige auf.",
+      optionen:[R("Zwei", "Richtig — und deshalb kommt insgesamt mehr Strom durch."),
+                F("Einen", "Das wäre eine Reihenschaltung."),
+                F("Keinen bestimmten", "Doch, genau zwei.")]},
+     {frage:"Muss der Gesamtwiderstand <b>größer oder kleiner</b> als ein einzelner Zweig sein?",
+      tipp:"Zwei offene Türen statt einer.",
+      tipp2:"Wenn der Strom mehr Wege hat, kommt er leichter durch — also weniger Widerstand.",
+      optionen:[R("Kleiner", "Richtig — parallel ist immer kleiner als der kleinste Einzelwert."),
+                F("Größer", "Das gilt für die Reihenschaltung."),
+                F("Gleich", "Nein, der zweite Weg macht es leichter.")]},
+     {frage:`Was ergibt <b>${z(r)} Ω parallel zu ${z(r)} Ω</b>?`,
+      tippAntwort: z(rg),
+      tipp:"Bei zwei gleichen Werten die Hälfte.",
+      tipp2:`Rechne ${z(r)} : 2 — oder über die Formel ${z(r)} · ${z(r)} geteilt durch ${z(r + r)}.`,
+      optionen:[R(`${z(rg)} Ω`, "Richtig."),
+                F(`${z(r * 2)} Ω`, "Addiert — so rechnet man in Reihe."),
+                F(`${z(r)} Ω`, "Der zweite Zweig macht den Gesamtwiderstand kleiner.")]}]};
+ },
+
+ /* Gesamtstrom über die Einzelströme */
+ () => {
+   const u = pick([12, 24, 48]);
+   const [r1, r2] = zieheVerschiedene([12, 24, 48, 60, 120, 240], 2);
+   const ig = Math.round((u / r1 + u / r2) * 10000) / 10000;
+   return {
+    typ:"formel",
+    text:`An ${z(u)} V hängen zwei Verbraucher parallel: ${z(r1)} Ω und ${z(r2)} Ω.<br>Wie groß ist der Gesamtstrom in Ampere?`,
+    loesung: z(ig),
+    schluss:"Bei Parallelschaltung rechnet man jeden Zweig für sich und zählt die Ströme zusammen. Das ist meist einfacher als über den Ersatzwiderstand.",
+    schritte:[
+     {frage:"Welche <b>Spannung</b> liegt am zweiten Verbraucher?",
+      tipp:"Beide hängen an denselben zwei Klemmen.",
+      tipp2:"Parallel heißt: an beiden liegt dieselbe Spannung — hier die volle.",
+      optionen:[R(`${z(u)} V — die volle Spannung`, "Richtig. Das ist das Kennzeichen der Parallelschaltung."),
+                F(`${z(u / 2)} V — die Hälfte`, "Aufteilen tut sich die Spannung nur in Reihe."),
+                F("Das hängt vom Widerstand ab", "Nein, die Spannung ist an beiden gleich.")]},
+     {frage:`Welcher Strom fließt durch den <b>${z(r1)}-Ω-Zweig</b>?`,
+      tipp:"Ohmsches Gesetz für diesen einen Zweig.",
+      tipp2:`Rechne ${z(u)} : ${z(r1)}.`,
+      optionen:[R(`${z(Math.round(u / r1 * 10000) / 10000)} A`, "Richtig."),
+                F(`${z(Math.round(u / (r1 + r2) * 10000) / 10000)} A`, "Da wurden beide Widerstände addiert — das gilt in Reihe."),
+                F(`${z(Math.round(r1 / u * 10000) / 10000)} A`, "Verkehrt herum geteilt.")]},
+     {frage:`Was ergibt <b>${z(Math.round(u / r1 * 10000) / 10000)} A + ${z(Math.round(u / r2 * 10000) / 10000)} A</b>?`,
+      tippAntwort: z(ig),
+      tipp:"Die beiden Zweigströme zusammenzählen.",
+      tipp2:"Was sich an der Verzweigung aufteilt, kommt hinter der Verzweigung wieder zusammen.",
+      optionen:[R(`${z(ig)} A`, "Richtig."),
+                F(`${z(Math.round(u / (r1 + r2) * 10000) / 10000)} A`, "So rechnet man in Reihe."),
+                F(`${z(Math.round(Math.abs(u / r1 - u / r2) * 10000) / 10000)} A`, "Abgezogen statt zusammengezählt.")]}]};
  }
 ],
 
@@ -4517,6 +4866,70 @@ const AUFGABEN = {
       optionen:[R(`${z(u1)} V`, "Richtig."),
                 F(`${z(u2)} V`, "Das ist der Anteil an R2."),
                 F(`${z(u)} V`, "Das ist die ganze Spannung.")]}]};
+ },
+
+ /* Teilspannung an R2 — Messgeber am Sollwertpoti */
+ () => {
+   const [r1, r2] = zieheVerschiedene([470, 680, 1000, 1500, 2200, 3300, 4700], 2);
+   const u = pick([10, 12, 15, 24]);
+   const u2 = Math.round(u * r2 / (r1 + r2) * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Zur Sollwertvorgabe liegen R1 = ${z(r1)} Ω und R2 = ${z(r2)} Ω in Reihe an ${z(u)} V.<br>Wie groß ist die Spannung an R2 in Volt?`,
+    loesung: z(u2),
+    schluss:"Der Teiler gibt die Spannung im Verhältnis der Widerstände weiter. Die Summe der Teilspannungen ist immer die Gesamtspannung.",
+    schritte:[
+     {frage:"Welchen Widerstand <b>sieht</b> die Quelle insgesamt?",
+      tipp:"Die beiden liegen in Reihe.",
+      tipp2:`Rechne ${z(r1)} + ${z(r2)}.`,
+      optionen:[R(`${z(r1 + r2)} Ω`, "Richtig — in Reihe wird addiert."),
+                F(`${z(Math.round(r1 * r2 / (r1 + r2) * 100) / 100)} Ω`, "So rechnet man parallel."),
+                F(`${z(Math.max(r1, r2))} Ω`, "Nur der größere — der andere zählt aber mit.")]},
+     {frage:`Welchen <b>Anteil</b> der Gesamtspannung bekommt R2?`,
+      tipp:"Sein Anteil am Gesamtwiderstand.",
+      tipp2:`R2 ist ${z(r2)} von insgesamt ${z(r1 + r2)} Ω.`,
+      optionen:[R(`${z(r2)} von ${z(r1 + r2)}`, "Richtig — das Verhältnis der Widerstände ist auch das der Spannungen."),
+                F(`${z(r2)} von ${z(r1)}`, "Verglichen wird mit der Summe, nicht mit dem anderen Widerstand."),
+                F("Immer die Hälfte", "Nur wenn beide gleich groß wären.")]},
+     {frage:`Was ergibt <b>${z(u)} V · ${z(r2)} : ${z(r1 + r2)}</b>?`,
+      tippAntwort: z(u2),
+      tipp:"Erst malnehmen, dann teilen.",
+      tipp2:`Rechne ${z(u)} · ${z(r2)} = ${z(u * r2)}, dann geteilt durch ${z(r1 + r2)}.`,
+      optionen:[R(`${z(u2)} V`, "Richtig."),
+                F(`${z(Math.round(u * r1 / (r1 + r2) * 1000) / 1000)} V`, "Das ist die Spannung an R1 — zusammen ergeben beide die Gesamtspannung."),
+                F(`${z(u)} V`, "Das ist die volle Spannung. Ein Teil davon fällt an R1 ab.")]}]};
+ },
+
+ /* Teilspannung an R1 — Vorwiderstand vor einem Messgerät */
+ () => {
+   const [r1, r2] = zieheVerschiedene([100, 150, 220, 330, 470, 560], 2);
+   const u = pick([9, 12, 24, 30]);
+   const u1 = Math.round(u * r1 / (r1 + r2) * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`R1 = ${z(r1)} Ω und R2 = ${z(r2)} Ω bilden einen Teiler an ${z(u)} V.<br>Wie groß ist die Spannung an R1 in Volt?`,
+    loesung: z(u1),
+    schluss:"Am größeren Widerstand fällt die größere Spannung ab — immer, weil beide vom gleichen Strom durchflossen werden.",
+    schritte:[
+     {frage:"Welcher <b>Strom</b> fließt durch R1 und R2?",
+      tipp:"Reihenschaltung.",
+      tipp2:"In der Reihe gibt es nur einen Weg, also überall denselben Strom.",
+      optionen:[R("Bei beiden derselbe", "Richtig — daraus folgt alles Weitere."),
+                F("Durch den kleineren mehr", "Das gilt nur bei Parallelschaltung."),
+                F("Durch den größeren mehr", "Auch nein — in der Reihe ist der Strom überall gleich.")]},
+     {frage:`An welchem Widerstand fällt <b>mehr</b> Spannung ab?`,
+      tipp:"Gleicher Strom, verschiedene Widerstände.",
+      tipp2:`${z(Math.max(r1, r2))} Ω ist größer als ${z(Math.min(r1, r2))} Ω.`,
+      optionen:[R(`Am ${z(Math.max(r1, r2))}-Ω-Widerstand`, "Richtig."),
+                F(`Am ${z(Math.min(r1, r2))}-Ω-Widerstand`, "Umgekehrt."),
+                F("An beiden gleich viel", "Nur bei gleich großen Widerständen.")]},
+     {frage:`Was ergibt <b>${z(u)} V · ${z(r1)} : ${z(r1 + r2)}</b>?`,
+      tippAntwort: z(u1),
+      tipp:"Erst malnehmen, dann durch die Summe teilen.",
+      tipp2:`${z(u)} · ${z(r1)} = ${z(u * r1)}, geteilt durch ${z(r1 + r2)}.`,
+      optionen:[R(`${z(u1)} V`, "Richtig."),
+                F(`${z(Math.round(u * r2 / (r1 + r2) * 1000) / 1000)} V`, "Das ist die Spannung an R2."),
+                F(`${z(Math.round(u / 2 * 1000) / 1000)} V`, "Die Hälfte käme nur bei gleich großen Widerständen heraus.")]}]};
  }
 ],
 
@@ -4582,6 +4995,56 @@ const AUFGABEN = {
       optionen:[R(`${z(f)} Hz`, "Richtig."),
                 F(`${z(t)} Hz`, "Das ist die Zeit in Millisekunden, nicht die Frequenz."),
                 F(`${z(Math.round(t / 1000 * 1000) / 1000)} Hz`, "Da hast du verkehrt herum geteilt.")]}]};
+ },
+
+ /* Periodendauer aus der Frequenz — Frequenzumrichter */
+ () => {
+   const f = pick([25, 40, 60, 80, 100, 125]);
+   const t = Math.round(1000 / f * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Frequenzumrichter gibt ${z(f)} Hz aus.<br>Wie lang ist eine Periode in Millisekunden?`,
+    loesung: z(t),
+    schluss:"Frequenz und Periodendauer sind Kehrwerte. Wer eine kennt, kennt auch die andere.",
+    schritte:[
+     {frage:"Was sagt die <b>Frequenz</b>?",
+      tipp:"Hertz heißt „pro Sekunde“.",
+      tipp2:`${z(f)} Hz heißt: ${z(f)} volle Schwingungen in einer Sekunde.`,
+      optionen:[R("Wie viele Schwingungen in einer Sekunde passieren", "Richtig."),
+                F("Wie lange eine Schwingung dauert", "Das ist die Periodendauer — genau das Gegenteil."),
+                F("Wie hoch die Spannung ist", "Damit hat die Frequenz nichts zu tun.")]},
+     {frage:`Wenn ${z(f)} Schwingungen in <b>1000 ms</b> passen, wie lang ist dann eine?`,
+      tipp:"Die Sekunde gerecht aufteilen.",
+      tipp2:`Rechne 1000 : ${z(f)}.`,
+      tippAntwort: z(t),
+      optionen:[R(`${z(t)} ms`, "Richtig."),
+                F(`${z(Math.round(f / 1000 * 10000) / 10000)} ms`, "Verkehrt herum geteilt."),
+                F(`${z(f * 1000)} ms`, "Malgenommen — eine Periode ist kürzer als eine Sekunde, nicht länger.")]}]};
+ },
+
+ /* Frequenz aus der Periodendauer — Impulsgeber */
+ () => {
+   const t = pick([2, 4, 5, 8, 10, 25, 50]);
+   const f = Math.round(1000 / t * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Impulsgeber liefert Impulse im Abstand von ${z(t)} ms.<br>Wie groß ist die Frequenz in Hertz?`,
+    loesung: z(f),
+    schluss:"Je kürzer der Abstand, desto höher die Frequenz. Die Rechnung ist immer dieselbe: 1000 durch die Millisekunden.",
+    schritte:[
+     {frage:"Wie viele Millisekunden hat eine <b>Sekunde</b>?",
+      tipp:"Milli heißt ein Tausendstel.",
+      tipp2:"Eine Sekunde sind 1000 Millisekunden.",
+      optionen:[R("1000", "Richtig."),
+                F("100", "Das wären Hundertstel, also Zentisekunden."),
+                F("60", "Das gilt für Minuten und Sekunden.")]},
+     {frage:`Wie oft passt <b>${z(t)} ms</b> in eine Sekunde?`,
+      tipp:"1000 durch die Dauer einer Periode.",
+      tipp2:`Rechne 1000 : ${z(t)}.`,
+      tippAntwort: z(f),
+      optionen:[R(`${z(f)}-mal`, "Richtig — und genau das ist die Frequenz in Hertz."),
+                F(`${z(Math.round(t / 1000 * 10000) / 10000)}-mal`, "Verkehrt herum geteilt."),
+                F(`${z(t * 1000)}-mal`, "Malgenommen statt geteilt.")]}]};
  }
 ],
 
@@ -4649,6 +5112,68 @@ const AUFGABEN = {
       optionen:[R(`${z(il)} A`, "Richtig."),
                 F(`${z(Math.round(istr / Math.sqrt(3) * 10) / 10)} A`, "Da hast du geteilt — der Leiterstrom ist größer."),
                 F(`${z(istr)} A`, "Das ist der Strangstrom, der war gegeben.")]}]};
+ },
+
+ /* Sternschaltung: von der Strang- auf die Leiterspannung */
+ () => {
+   const ustr = pick([127, 133, 150, 220, 230]);
+   const ul = Math.round(ustr * Math.sqrt(3));
+   return {
+    typ:"formel",
+    text:`Eine Heizung ist im Stern geschaltet, an jedem Strang liegen ${z(ustr)} V.<br>Wie groß ist die Leiterspannung in Volt? (auf ganze Volt runden)`,
+    loesung: z(ul),
+    schluss:"Im Stern ist die Leiterspannung um den Faktor Wurzel 3 größer als die Strangspannung — rund das 1,73-fache.",
+    schritte:[
+     {frage:"Was ist die <b>Strangspannung</b>?",
+      tipp:"Strang heißt: ein einzelner Verbraucherzweig.",
+      tipp2:"Die Strangspannung liegt an einem Zweig, die Leiterspannung zwischen zwei Außenleitern.",
+      optionen:[R("Die Spannung an einem einzelnen Zweig", "Richtig."),
+                F("Die Spannung zwischen zwei Außenleitern", "Das ist die Leiterspannung."),
+                F("Die Spannung gegen Erde", "Damit hat die Bezeichnung nichts zu tun.")]},
+     {frage:"Mit welchem <b>Faktor</b> rechnest du im Stern von Strang auf Leiter?",
+      tipp:"Es ist eine Wurzel.",
+      tipp2:"Wurzel 3 ist rund 1,732.",
+      optionen:[R("Mal Wurzel 3", "Richtig — im Stern ist die Leiterspannung größer."),
+                F("Geteilt durch Wurzel 3", "Dann käme weniger heraus, das ist verkehrt."),
+                F("Mal 3", "Zu viel — es ist die Wurzel aus 3.")]},
+     {frage:`Was ergibt <b>${z(ustr)} · 1,732</b>, auf ganze Volt gerundet?`,
+      tippAntwort: z(ul),
+      tipp:"Malnehmen und runden.",
+      tipp2:`Rechne ${z(ustr)} · 1,732 und runde.`,
+      optionen:[R(`${z(ul)} V`, "Richtig."),
+                F(`${z(Math.round(ustr / Math.sqrt(3)))} V`, "Geteilt statt malgenommen."),
+                F(`${z(ustr * 3)} V`, "Mal drei statt mal Wurzel drei.")]}]};
+ },
+
+ /* Dreieckschaltung: vom Strang- auf den Leiterstrom */
+ () => {
+   const istr = pick([3, 5.5, 7.2, 9, 12.5, 16]);
+   const il = Math.round(istr * Math.sqrt(3) * 10) / 10;
+   return {
+    typ:"formel",
+    text:`Ein Drehstrommotor ist im Dreieck geschaltet, durch jeden Strang fließen ${z(istr)} A.<br>Wie groß ist der Leiterstrom in Ampere? (auf eine Nachkommastelle runden)`,
+    loesung: z(il),
+    schluss:"Im Dreieck ist der Leiterstrom um Wurzel 3 größer als der Strangstrom — spiegelbildlich zur Spannung im Stern.",
+    schritte:[
+     {frage:"Warum ist der <b>Leiterstrom</b> im Dreieck größer als der Strangstrom?",
+      tipp:"Schau auf die Knotenpunkte der Dreieckschaltung.",
+      tipp2:"An jeder Ecke des Dreiecks treffen zwei Strangströme zusammen und fließen gemeinsam in den Außenleiter.",
+      optionen:[R("An jeder Ecke laufen zwei Strangströme zusammen", "Richtig."),
+                F("Weil die Spannung höher ist", "Die Spannung ist im Dreieck bei Strang und Leiter gleich."),
+                F("Weil der Motor mehr Leistung hat", "Mit der Leistung hat der Faktor nichts zu tun.")]},
+     {frage:"Welcher <b>Faktor</b> gehört dazu?",
+      tipp:"Derselbe wie beim Stern, nur bei der anderen Größe.",
+      tipp2:"Wurzel 3, also rund 1,732.",
+      optionen:[R("Mal Wurzel 3", "Richtig."),
+                F("Mal 2", "Es sind nicht einfach zwei — die Ströme sind zeitlich versetzt."),
+                F("Geteilt durch Wurzel 3", "Dann käme weniger heraus.")]},
+     {frage:`Was ergibt <b>${z(istr)} · 1,732</b>, auf eine Stelle gerundet?`,
+      tippAntwort: z(il),
+      tipp:"Malnehmen und runden.",
+      tipp2:`Rechne ${z(istr)} · 1,732.`,
+      optionen:[R(`${z(il)} A`, "Richtig."),
+                F(`${z(Math.round(istr / Math.sqrt(3) * 10) / 10)} A`, "Geteilt statt malgenommen."),
+                F(`${z(istr * 3)} A`, "Mal drei ist zu viel.")]}]};
  }
 ],
 
@@ -4719,6 +5244,39 @@ const AUFGABEN = {
       optionen:[R(`${z(n2)} Windungen`, "Richtig."),
                 F(`${z(n1)} Windungen`, "Das ist die Primärwicklung."),
                 F(`${z(Math.round(n1 * u1 / u2))} Windungen`, "Da hast du verkehrt herum geteilt — die Sekundärseite hat weniger Windungen.")]}]};
+ },
+
+ /* Sekundärspannung aus dem Windungsverhältnis */
+ () => {
+   const n1 = pick([500, 800, 1000, 1200, 1500]);
+   const n2 = pick([25, 40, 50, 60, 100]);
+   const u1 = pick([230, 400]);
+   const u2 = Math.round(u1 * n2 / n1 * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Klingeltrafo hat ${z(n1)} Windungen auf der Primärseite und ${z(n2)} auf der Sekundärseite. Primär liegen ${z(u1)} V an.<br>Wie groß ist die Sekundärspannung in Volt?`,
+    loesung: z(u2),
+    schluss:"Die Spannungen verhalten sich wie die Windungszahlen. Weniger Windungen heißt weniger Spannung.",
+    schritte:[
+     {frage:"Welche Seite hat <b>mehr</b> Windungen?",
+      tipp:"Vergleich die beiden Zahlen.",
+      tipp2:`${z(n1)} gegen ${z(n2)}.`,
+      optionen:[R("Die Primärseite", "Richtig — deshalb wird die Spannung heruntergesetzt."),
+                F("Die Sekundärseite", "Dort sind es weniger."),
+                F("Beide gleich viel", "Nein, die Zahlen sind verschieden.")]},
+     {frage:"Was folgt daraus für die <b>Sekundärspannung</b>?",
+      tipp:"Spannungen verhalten sich wie Windungszahlen.",
+      tipp2:"Weniger Windungen auf der Sekundärseite heißt weniger Spannung.",
+      optionen:[R("Sie ist kleiner als die Primärspannung", "Richtig."),
+                F("Sie ist größer", "Das wäre bei mehr Sekundärwindungen so."),
+                F("Sie ist gleich groß", "Nur bei gleicher Windungszahl.")]},
+     {frage:`Was ergibt <b>${z(u1)} V · ${z(n2)} : ${z(n1)}</b>?`,
+      tippAntwort: z(u2),
+      tipp:"Erst malnehmen, dann teilen.",
+      tipp2:`${z(u1)} · ${z(n2)} = ${z(u1 * n2)}, geteilt durch ${z(n1)}.`,
+      optionen:[R(`${z(u2)} V`, "Richtig."),
+                F(`${z(Math.round(u1 * n1 / n2 * 100) / 100)} V`, "Die Windungszahlen sind vertauscht — so käme eine viel zu hohe Spannung heraus."),
+                F(`${z(u1)} V`, "Ein Trafo, der nichts ändert, wäre sinnlos.")]}]};
  }
 ],
 
@@ -4797,6 +5355,38 @@ const AUFGABEN = {
       optionen:[R(`${z(fuenf)} ms`, "Richtig."),
                 F(`${z(tau)} ms`, "Das ist eine einzelne Zeitkonstante."),
                 F(`${z(tau * 2)} ms`, "Das sind erst zwei Zeitkonstanten.")]}]};
+ },
+
+ /* Zeitkonstante */
+ () => {
+   const c = pick([10, 22, 47, 100, 220, 470]);
+   const r = pick([1, 2.2, 4.7, 10, 22]);
+   const tau = Math.round(r * c * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein Glättungskondensator mit ${z(c)} µF wird über ${z(r)} kΩ geladen.<br>Wie groß ist die Zeitkonstante in Millisekunden?`,
+    loesung: z(tau),
+    schluss:"τ = R · C. In Kiloohm mal Mikrofarad kommt das Ergebnis direkt in Millisekunden heraus — das spart jedes Umrechnen.",
+    schritte:[
+     {frage:"Was sagt die <b>Zeitkonstante</b>?",
+      tipp:"Sie beschreibt, wie schnell der Kondensator geladen wird.",
+      tipp2:"Nach einer Zeitkonstante ist er auf rund 63 % der Endspannung geladen.",
+      optionen:[R("Nach dieser Zeit ist er auf rund 63 % geladen", "Richtig."),
+                F("Nach dieser Zeit ist er voll", "Voll ist er erst nach etwa fünf Zeitkonstanten."),
+                F("So lange hält die Ladung", "Damit hat τ nichts zu tun.")]},
+     {frage:"Warum kommen bei <b>kΩ · µF</b> direkt Millisekunden heraus?",
+      tipp:"Rechne mit den Zehnerpotenzen.",
+      tipp2:"Kilo ist mal tausend, mikro ist durch eine Million — zusammen bleibt ein Tausendstel, also die Millisekunde.",
+      optionen:[R("Weil sich tausend und ein Millionstel zu einem Tausendstel verrechnen", "Richtig — ein praktischer Zufall, den man ausnutzt."),
+                F("Weil Millisekunden die übliche Einheit sind", "Üblich ja, aber das ist nicht der Grund."),
+                F("Das ist nur eine Faustregel", "Nein, das stimmt exakt.")]},
+     {frage:`Was ergibt <b>${z(r)} · ${z(c)}</b>?`,
+      tippAntwort: z(tau),
+      tipp:"Die beiden Zahlen malnehmen.",
+      tipp2:`Rechne ${z(r)} · ${z(c)}.`,
+      optionen:[R(`${z(tau)} ms`, "Richtig."),
+                F(`${z(Math.round(c / r * 1000) / 1000)} ms`, "Geteilt statt malgenommen."),
+                F(`${z(Math.round(5 * r * c * 1000) / 1000)} ms`, "Das ist die Zeit bis „praktisch voll“ — also fünf Zeitkonstanten.")]}]};
  }
 ],
 
@@ -4868,6 +5458,39 @@ const AUFGABEN = {
       optionen:[R(`${z(cos)}`, "Richtig."),
                 F(`${z(Math.round(s / p * 1000) / 1000)}`, "Über 1 kann der cos φ nicht sein — du hast verkehrt herum geteilt."),
                 F(`${z(p)}`, "Das ist die Wirkleistung, nicht der Faktor.")]}]};
+ },
+
+ /* Wirkleistung aus Spannung, Strom und cos φ */
+ () => {
+   const u = pick([230, 400]);
+   const i = pick([2.5, 4, 6.3, 8, 10, 16]);
+   const cos = pick([0.7, 0.75, 0.8, 0.85, 0.9]);
+   const p = Math.round(u * i * cos * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Motor zieht an ${z(u)} V einen Strom von ${z(i)} A bei cos φ = ${z(cos)}.<br>Wie groß ist die Wirkleistung in Watt?`,
+    loesung: z(p),
+    schluss:"Nur die Wirkleistung leistet Arbeit. Spannung mal Strom allein ergibt die Scheinleistung — die ist immer größer.",
+    schritte:[
+     {frage:"Was ergibt <b>Spannung mal Strom</b> allein?",
+      tipp:"Ohne den cos φ ist es noch nicht die Wirkleistung.",
+      tipp2:"U · I ist die Scheinleistung S, angegeben in Voltampere.",
+      optionen:[R("Die Scheinleistung", "Richtig — sie wird in VA angegeben, nicht in W."),
+                F("Die Wirkleistung", "Dafür fehlt noch der cos φ."),
+                F("Die Blindleistung", "Die ist der Anteil, der hin und her pendelt.")]},
+     {frage:`Was bedeutet <b>cos φ = ${z(cos)}</b>?`,
+      tipp:"Es ist ein Anteil zwischen 0 und 1.",
+      tipp2:`Von der Scheinleistung sind ${z(Math.round(cos * 100))} % Wirkleistung.`,
+      optionen:[R(`${z(Math.round(cos * 100))} % der Scheinleistung sind Wirkleistung`, "Richtig."),
+                F(`${z(Math.round(cos * 100))} % gehen verloren`, "Blindleistung geht nicht verloren, sie pendelt nur hin und her."),
+                F("Der Motor hat einen Fehler", "Ein cos φ unter 1 ist bei Motoren normal.")]},
+     {frage:`Was ergibt <b>${z(u)} · ${z(i)} · ${z(cos)}</b>?`,
+      tippAntwort: z(p),
+      tipp:"Alle drei Zahlen malnehmen.",
+      tipp2:`${z(u)} · ${z(i)} = ${z(Math.round(u * i * 100) / 100)}, mal ${z(cos)}.`,
+      optionen:[R(`${z(p)} W`, "Richtig."),
+                F(`${z(Math.round(u * i * 100) / 100)} W`, "Das ist die Scheinleistung — der cos φ fehlt."),
+                F(`${z(Math.round(u * i / cos * 100) / 100)} W`, "Geteilt statt malgenommen — dann käme mehr als die Scheinleistung heraus.")]}]};
  }
 ],
 
@@ -4976,6 +5599,72 @@ const AUFGABEN = {
       optionen:[R(`${z(erg)} m${g.e}`, "Richtig."),
                 F(`${z(Math.round(wert / 1000 * 1e8) / 1e8)} m${g.e}`, "Das wäre geteilt."),
                 F(`${z(wert * 100)} m${g.e}`, "Du hast nur mit 100 malgenommen.")]}]};
+ },
+
+ /* Von der Grundeinheit in Mikro */
+ () => {
+   const g = pick([{e:"F", n:"Farad"}, {e:"A", n:"Ampere"}, {e:"s", n:"Sekunden"}]);
+   /* Nur Werte mit höchstens vier Nachkommastellen: Die Anzeige rundet
+      danach ab, und aus 0,000012 würde auf dem Bildschirm eine 0. */
+   const wert = pick([0.0005, 0.0012, 0.0033, 0.0047, 0.0082, 0.015]);
+   const erg = Math.round(wert * 1e6 * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Wandle <b>${z(wert)} ${g.e}</b> in µ${g.e} um.<br>Wie viel ist das?`,
+    loesung: z(erg),
+    schluss:"Mikro ist ein Millionstel. Von der Grundeinheit nach Mikro wandert das Komma sechs Stellen nach rechts.",
+    schritte:[
+     {frage:"Wofür steht der Vorsatz <b>µ</b> (mikro)?",
+      tipp:"Er ist noch einmal viel kleiner als milli.",
+      tipp2:"Milli ist ein Tausendstel, mikro ein Millionstel — also noch einmal durch tausend.",
+      optionen:[R("Ein Millionstel", "Richtig — 1 µF sind 0,000001 F."),
+                F("Ein Tausendstel", "Das ist milli."),
+                F("Eine Million", "Das wäre Mega, mit großem M.")]},
+     {frage:"Wird die <b>Zahl</b> beim Umwandeln größer oder kleiner?",
+      tipp:"Die Einheit wird kleiner.",
+      tipp2:"Je kleiner die Einheit, desto mehr davon braucht man — die Zahl wird größer.",
+      optionen:[R("Größer", "Richtig — kleine Einheit, große Zahl."),
+                F("Kleiner", "Umgekehrt."),
+                F("Sie bleibt gleich", "Nein, nur die Menge bleibt gleich, nicht die Zahl.")]},
+     {frage:`Was ergibt <b>${z(wert)} · 1.000.000</b>?`,
+      tippAntwort: z(erg),
+      tipp:"Das Komma sechs Stellen nach rechts.",
+      tipp2:`Aus ${z(wert)} wird ${z(erg)}.`,
+      optionen:[R(`${z(erg)} µ${g.e}`, "Richtig."),
+                F(`${z(Math.round(wert * 1000 * 10000) / 10000)} µ${g.e}`, "Nur drei Stellen — das wäre milli."),
+                F(`${z(wert / 1e6)} µ${g.e}`, "Geteilt statt malgenommen.")]}]};
+ },
+
+ /* Von Mega in die Grundeinheit */
+ () => {
+   const g = pick([{e:"Ω", n:"Ohm"}, {e:"W", n:"Watt"}, {e:"Hz", n:"Hertz"}]);
+   const wert = pick([1.2, 2.2, 3.3, 4.7, 6.8, 10]);
+   const erg = Math.round(wert * 1e6 * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Wandle <b>${z(wert)} M${g.e}</b> in ${g.e} um.<br>Wie viel ist das?`,
+    loesung: z(erg),
+    schluss:"Mega ist eine Million. Ein großes M und ein kleines m sind zwei völlig verschiedene Dinge — das eine mal einer Million, das andere durch tausend.",
+    schritte:[
+     {frage:"Wofür steht das große <b>M</b>?",
+      tipp:"Groß geschrieben heißt groß gemeint.",
+      tipp2:"M ist Mega und steht für eine Million. Das kleine m wäre milli.",
+      optionen:[R("Eine Million", `Richtig — 1 M${g.e} sind 1.000.000 ${g.e}.`),
+                F("Ein Tausendstel", "Das ist das kleine m."),
+                F("Tausend", "Das wäre k für Kilo.")]},
+     {frage:"Wird die Zahl beim Umwandeln <b>größer oder kleiner</b>?",
+      tipp:"Die Einheit wird kleiner.",
+      tipp2:"Von einer großen Einheit in eine kleine: Die Zahl wächst.",
+      optionen:[R("Größer", "Richtig."),
+                F("Kleiner", "Umgekehrt — man geht ja zur kleineren Einheit."),
+                F("Gleich", "Nein.")]},
+     {frage:`Was ergibt <b>${z(wert)} · 1.000.000</b>?`,
+      tippAntwort: z(erg),
+      tipp:"Sechs Nullen anhängen beziehungsweise das Komma sechs Stellen nach rechts.",
+      tipp2:`Aus ${z(wert)} wird ${z(erg)}.`,
+      optionen:[R(`${z(erg)} ${g.e}`, "Richtig."),
+                F(`${z(Math.round(wert * 1000 * 1000) / 1000)} ${g.e}`, "Nur tausend — das wäre Kilo."),
+                F(`${z(wert / 1e6)} ${g.e}`, "Geteilt statt malgenommen.")]}]};
  }
 ],
 
@@ -5081,6 +5770,71 @@ const AUFGABEN = {
       optionen:[R(`${z(norm)} mm²`, "Richtig — immer auf den nächsten Normwert aufrunden."),
                 F(`${z(kleiner)} mm²`, "Zu klein — dann wäre der Spannungsfall größer als erlaubt."),
                 F(`${z(gerundet)} mm²`, "Diesen Querschnitt gibt es nicht zu kaufen.")]}]};
+ },
+
+ /* Leitungswiderstand — Zuleitung in der Halle */
+ () => {
+   const l = pick([30, 45, 60, 80, 120]);
+   const a = pick([2.5, 4, 6, 10, 16]);
+   const r = Math.round(l / (56 * a) * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Eine Kupferleitung zur Halle ist ${z(l)} m lang und hat ${z(a)} mm² Querschnitt.<br>Wie groß ist ihr Widerstand in Ohm? (κ = 56, auf drei Stellen runden)`,
+    loesung: z(r),
+    schluss:"R = l : (κ · A). Der Querschnitt steht unten — doppelter Querschnitt heißt halber Widerstand.",
+    schritte:[
+     {frage:"Was macht eine Leitung <b>hochohmiger</b>?",
+      tipp:"Zwei Größen stehen in der Aufgabe.",
+      tipp2:"Länge steht in der Formel oben, Querschnitt unten.",
+      optionen:[R("Mehr Länge oder weniger Querschnitt", "Richtig — beides erhöht den Widerstand."),
+                F("Mehr Querschnitt", "Ein dickerer Leiter hat weniger Widerstand."),
+                F("Weniger Länge", "Kurze Leitungen haben weniger Widerstand.")]},
+     {frage:`Was ergibt <b>56 · ${z(a)}</b>?`,
+      tipp:"Der Nenner der Formel.",
+      tipp2:`Rechne 56 · ${z(a)}.`,
+      optionen:[R(`${z(Math.round(56 * a * 100) / 100)}`, "Richtig."),
+                F(`${z(Math.round(56 / a * 100) / 100)}`, "Geteilt statt malgenommen."),
+                F(`${z(Math.round((56 + a) * 100) / 100)}`, "Addiert — in der Formel stehen sie als Produkt.")]},
+     {frage:`Was ergibt <b>${z(l)} : ${z(Math.round(56 * a * 100) / 100)}</b>?`,
+      tippAntwort: z(r),
+      tipp:"Länge durch den Nenner.",
+      tipp2:`Rechne ${z(l)} : ${z(Math.round(56 * a * 100) / 100)} und runde auf drei Stellen.`,
+      optionen:[R(`${z(r)} Ω`, "Richtig."),
+                F(`${z(Math.round(l * 56 * a * 100) / 100)} Ω`, "Alles malgenommen — dann käme ein unmöglich hoher Wert heraus."),
+                F(`${z(Math.round(2 * l / (56 * a) * 1000) / 1000)} Ω`, "Das ist die doppelte Länge — die zählt nur beim Spannungsfall, weil Hin- und Rückleiter zählen.")]}]};
+ },
+
+ /* Spannungsfall — Maschinenzuleitung */
+ () => {
+   const l = pick([25, 40, 50, 75, 100]);
+   const a = pick([1.5, 2.5, 4, 6]);
+   const i = pick([8, 10, 13, 16, 20]);
+   const du = Math.round(2 * l * i / (56 * a) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Über eine ${z(l)} m lange Leitung mit ${z(a)} mm² fließen ${z(i)} A zu einer Maschine.<br>Wie groß ist der Spannungsfall in Volt? (κ = 56, auf zwei Stellen runden)`,
+    loesung: z(du),
+    schluss:"Beim Spannungsfall zählt die doppelte Länge — der Strom muss hin und wieder zurück.",
+    schritte:[
+     {frage:"Warum steht in der Formel die <b>doppelte</b> Länge?",
+      tipp:"Denk an den Weg des Stroms.",
+      tipp2:"Der Strom fließt über den Hinleiter zur Maschine und über den Rückleiter zurück.",
+      optionen:[R("Weil Hin- und Rückleiter zählen", "Richtig — beide sind gleich lang und beide haben Widerstand."),
+                F("Als Sicherheitszuschlag", "Nein, das ist keine Reserve, sondern der tatsächliche Weg."),
+                F("Weil Wechselstrom fließt", "Mit der Stromart hat das nichts zu tun.")]},
+     {frage:`Wie lang ist der <b>Weg</b> des Stroms insgesamt?`,
+      tipp:"Hin und zurück.",
+      tipp2:`Rechne 2 · ${z(l)}.`,
+      optionen:[R(`${z(2 * l)} m`, "Richtig."),
+                F(`${z(l)} m`, "Das ist nur der einfache Weg."),
+                F(`${z(Math.round(l / 2 * 100) / 100)} m`, "Halbiert statt verdoppelt.")]},
+     {frage:`Was ergibt <b>${z(2 * l)} · ${z(i)} : (56 · ${z(a)})</b>?`,
+      tippAntwort: z(du),
+      tipp:"Erst oben malnehmen, dann durch den Nenner teilen.",
+      tipp2:`Oben: ${z(2 * l)} · ${z(i)} = ${z(2 * l * i)}. Unten: 56 · ${z(a)} = ${z(Math.round(56 * a * 100) / 100)}.`,
+      optionen:[R(`${z(du)} V`, "Richtig."),
+                F(`${z(Math.round(l * i / (56 * a) * 100) / 100)} V`, "Da wurde die einfache Länge gerechnet."),
+                F(`${z(Math.round(2 * l * i * 56 * a / 100) / 100)} V`, "Der Nenner wurde malgenommen statt geteilt.")]}]};
  }
 ],
 
@@ -5181,6 +5935,69 @@ const AUFGABEN = {
       optionen:[R(`${z(ub)} V`, `Richtig — ${ub <= 50 ? "das bleibt unter der Grenze" : "das liegt über der Grenze von 50 V"}.`),
                 F(`${z(Math.round(ra * ma * 100) / 100)} V`, "Da hast du mit Milliampere statt Ampere gerechnet."),
                 F(`${z(Math.round(ra / idn * 100) / 100)} V`, "Hier wird malgenommen, nicht geteilt.")]}]};
+ },
+
+ /* Kurzschlussstrom aus der Schleifenimpedanz */
+ () => {
+   const zs = pick([0.4, 0.6, 0.85, 1.2, 1.5, 2.3]);
+   const ik = Math.round(230 / zs * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Bei der Messung an einer Steckdose ergibt sich eine Schleifenimpedanz von ${z(zs)} Ω.<br>Wie groß ist der Kurzschlussstrom in Ampere? (U<sub>0</sub> = 230 V)`,
+    loesung: z(ik),
+    schluss:"Nur wenn dieser Strom groß genug ist, löst die Sicherung schnell genug aus. Deshalb wird die Schleifenimpedanz überhaupt gemessen.",
+    schritte:[
+     {frage:"Wozu misst man die <b>Schleifenimpedanz</b>?",
+      tipp:"Es geht um den Fall, dass ein Fehler auftritt.",
+      tipp2:"Aus ihr folgt der Strom im Fehlerfall — und davon hängt ab, ob die Sicherung rechtzeitig auslöst.",
+      optionen:[R("Um zu wissen, ob die Sicherung im Fehlerfall auslöst", "Genau darum geht es bei der Prüfung."),
+                F("Um den Betriebsstrom zu bestimmen", "Der hat mit der Schleife nichts zu tun."),
+                F("Um die Leistung zu messen", "Nein, gemessen wird ein Widerstand.")]},
+     {frage:"Welche Formel steckt dahinter?",
+      tipp:"Spannung und Widerstand sind bekannt.",
+      tipp2:"Es ist das Ohmsche Gesetz: Strom gleich Spannung durch Widerstand.",
+      optionen:[R("I = U : Z", "Richtig — nichts anderes als das Ohmsche Gesetz."),
+                F("I = U · Z", "Malnehmen ergäbe einen absurd großen Strom."),
+                F("I = Z : U", "Vertauscht.")]},
+     {frage:`Was ergibt <b>230 V : ${z(zs)} Ω</b>?`,
+      tippAntwort: z(ik),
+      tipp:"Spannung durch Impedanz.",
+      tipp2:`Rechne 230 : ${z(zs)} und runde auf zwei Stellen.`,
+      optionen:[R(`${z(ik)} A`, "Richtig."),
+                F(`${z(Math.round(230 * zs * 100) / 100)} A`, "Malgenommen — dann wäre ein größerer Widerstand besser, und das ist verkehrt."),
+                F(`${z(Math.round(zs / 230 * 10000) / 10000)} A`, "Verkehrt herum geteilt.")]}]};
+ },
+
+ /* Berührungsspannung am Erder */
+ () => {
+   const ra = pick([15, 25, 40, 60, 80, 100]);
+   const ma = pick([10, 30, 100, 300]);
+   const ub = Math.round(ra * ma / 1000 * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Erder hat ${z(ra)} Ω. Der Schutzschalter löst bei ${z(ma)} mA aus.<br>Welche Berührungsspannung entsteht bis zum Abschalten? (in Volt)`,
+    loesung: z(ub),
+    schluss:"Solange der Fehlerstrom fließt, liegt am Erdungswiderstand eine Spannung. Sie muss unter 50 V bleiben.",
+    schritte:[
+     {frage:`Wie viele <b>Ampere</b> sind ${z(ma)} mA?`,
+      tipp:"Milli heißt ein Tausendstel.",
+      tipp2:`Rechne ${z(ma)} : 1000.`,
+      optionen:[R(`${z(ma / 1000)} A`, "Richtig."),
+                F(`${z(ma * 1000)} A`, "Malgenommen — Milliampere sind kleiner als Ampere."),
+                F(`${z(ma)} A`, "Die Einheit darf man nicht einfach weglassen.")]},
+     {frage:"Welche Formel gibt die <b>Spannung</b> am Erder?",
+      tipp:"Widerstand und Strom sind bekannt.",
+      tipp2:"Wieder das Ohmsche Gesetz: U = R · I.",
+      optionen:[R("U = R · I", "Richtig."),
+                F("U = R : I", "Geteilt ergibt keine Spannung."),
+                F("U = I : R", "Vertauscht und geteilt.")]},
+     {frage:`Was ergibt <b>${z(ra)} Ω · ${z(ma / 1000)} A</b>?`,
+      tippAntwort: z(ub),
+      tipp:"Die beiden Zahlen malnehmen.",
+      tipp2:`Rechne ${z(ra)} · ${z(ma / 1000)}.`,
+      optionen:[R(`${z(ub)} V`, ub > 50 ? "Rechnerisch richtig — und dieser Wert liegt über 50 V, die Anlage wäre so nicht zulässig." : "Richtig — und der Wert bleibt unter 50 V."),
+                F(`${z(Math.round(ra * ma * 100) / 100)} V`, "Da wurde mit Milliampere statt mit Ampere gerechnet."),
+                F(`${z(Math.round(ra / (ma / 1000) * 100) / 100)} V`, "Geteilt statt malgenommen.")]}]};
  }
 ],
 
@@ -5256,6 +6073,74 @@ const AUFGABEN = {
       optionen:[R(`${z(i)} A`, "Richtig."),
                 F(`${z(Math.round(u / r1 * 1000) / 1000)} A`, "Das wäre der Strom, wenn nur R1 in der Schaltung läge."),
                 F(`${z(Math.round(u * rg * 1000) / 1000)} A`, "Hier wird geteilt, nicht malgenommen.")]}]};
+ },
+
+ /* Gesamtwiderstand — Reihe zu einer Parallelgruppe */
+ () => {
+   const r1 = pick([10, 15, 20, 25, 30]);
+   const [r2, r3] = zieheVerschiedene([20, 30, 40, 60, 80, 120], 2);
+   const rp = Math.round(r2 * r3 / (r2 + r3) * 1000) / 1000;
+   const rg = Math.round((r1 + rp) * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`In einer Baugruppe liegt R1 = ${z(r1)} Ω in Reihe zu R2 = ${z(r2)} Ω und R3 = ${z(r3)} Ω, die parallel geschaltet sind.<br>Wie groß ist der Gesamtwiderstand in Ohm?`,
+    loesung: z(rg),
+    schluss:"Erst die Parallelgruppe zu einem Ersatzwiderstand zusammenfassen, dann in Reihe addieren. Immer von innen nach außen.",
+    schritte:[
+     {frage:"Womit fängst du an?",
+      tipp:"Eine der beiden Gruppen muss zuerst zusammengefasst werden.",
+      tipp2:"Die Parallelgruppe wird zu einem einzigen Ersatzwiderstand — danach ist alles nur noch eine Reihenschaltung.",
+      optionen:[R("Mit der Parallelgruppe", "Richtig — von innen nach außen."),
+                F("Mit R1", "R1 steht schon allein, da gibt es nichts zusammenzufassen."),
+                F("Alle drei auf einmal addieren", "Das gilt nur, wenn alle in Reihe lägen.")]},
+     {frage:`Was ergibt <b>${z(r2)} Ω parallel zu ${z(r3)} Ω</b>?`,
+      tipp:"Produkt durch Summe.",
+      tipp2:`Rechne ${z(r2)} · ${z(r3)} = ${z(r2 * r3)}, geteilt durch ${z(r2 + r3)}.`,
+      optionen:[R(`${z(rp)} Ω`, "Richtig — und kleiner als jeder der beiden."),
+                F(`${z(r2 + r3)} Ω`, "Addiert — so rechnet man in Reihe."),
+                F(`${z(Math.round((r2 + r3) / 2 * 1000) / 1000)} Ω`, "Der Durchschnitt ist es nicht, außer zufällig bei gleichen Werten.")]},
+     {frage:`Was ergibt <b>${z(r1)} Ω + ${z(rp)} Ω</b>?`,
+      tippAntwort: z(rg),
+      tipp:"Jetzt ist es eine reine Reihenschaltung.",
+      tipp2:`Rechne ${z(r1)} + ${z(rp)}.`,
+      optionen:[R(`${z(rg)} Ω`, "Richtig."),
+                F(`${z(Math.round(r1 * rp / (r1 + rp) * 1000) / 1000)} Ω`, "Hier wurde noch einmal parallel gerechnet — R1 liegt aber in Reihe."),
+                F(`${z(rp)} Ω`, "Da fehlt R1.")]}]};
+ },
+
+ /* Gesamtstrom der gemischten Schaltung */
+ () => {
+   const r1 = pick([5, 10, 12, 20]);
+   const [r2, r3] = zieheVerschiedene([30, 40, 60, 100, 120], 2);
+   const u = pick([24, 48, 60, 100]);
+   const rp = Math.round(r2 * r3 / (r2 + r3) * 1000) / 1000;
+   const rg = Math.round((r1 + rp) * 1000) / 1000;
+   const ig = Math.round(u / rg * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`R1 = ${z(r1)} Ω in Reihe zu R2 = ${z(r2)} Ω parallel R3 = ${z(r3)} Ω, das Ganze an ${z(u)} V.<br>Wie groß ist der Gesamtstrom in Ampere?`,
+    loesung: z(ig),
+    schluss:"Der Gesamtstrom hängt nur am Gesamtwiderstand. Wie er sich in der Parallelgruppe aufteilt, ist eine andere Frage.",
+    schritte:[
+     {frage:"Was brauchst du zuerst?",
+      tipp:"Der Strom folgt aus zwei Größen.",
+      tipp2:"Die Spannung steht schon da — es fehlt der Gesamtwiderstand.",
+      optionen:[R("Den Gesamtwiderstand", "Richtig — erst zusammenfassen, dann rechnen."),
+                F("Den Strom durch R2", "Der ergibt sich später, wird hier aber nicht gebraucht."),
+                F("Die Leistung", "Von Leistung ist nicht die Rede.")]},
+     {frage:`Wie groß ist der <b>Gesamtwiderstand</b>?`,
+      tipp:"Erst R2 parallel R3, dann R1 dazu.",
+      tipp2:`${z(r2)} parallel ${z(r3)} sind ${z(rp)} Ω, plus ${z(r1)} Ω.`,
+      optionen:[R(`${z(rg)} Ω`, "Richtig."),
+                F(`${z(Math.round((r1 + r2 + r3) * 1000) / 1000)} Ω`, "Alle drei addiert — R2 und R3 liegen aber parallel."),
+                F(`${z(rp)} Ω`, "Da fehlt R1.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(rg)} Ω</b>?`,
+      tippAntwort: z(ig),
+      tipp:"Ohmsches Gesetz mit dem Gesamtwiderstand.",
+      tipp2:`Rechne ${z(u)} : ${z(rg)}.`,
+      optionen:[R(`${z(ig)} A`, "Richtig."),
+                F(`${z(Math.round(u / r1 * 1000) / 1000)} A`, "Hier wurde nur mit R1 gerechnet."),
+                F(`${z(Math.round(u * rg * 100) / 100)} A`, "Malgenommen statt geteilt.")]}]};
  }
 ],
 
@@ -5358,6 +6243,72 @@ const AUFGABEN = {
       optionen:[R(`${z(pv)} W`, "Richtig."),
                 F(`${z(Math.round((pzu + pab) * 100) / 100)} W`, "Addieren ergibt mehr, als überhaupt hineingeht."),
                 F(`${z(pab)} W`, "Das ist die abgegebene Leistung.")]}]};
+ },
+
+ /* Wirkungsgrad aus beiden Leistungen */
+ () => {
+   const pab = pick([750, 1100, 1500, 2200, 3000, 4000]);
+   const eta = pick([0.75, 0.8, 0.82, 0.85, 0.88, 0.9]);
+   const pzu = Math.round(pab / eta);
+   const proz = Math.round(pab / pzu * 10000) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Pumpenmotor nimmt ${z(pzu)} W aus dem Netz auf und gibt ${z(pab)} W an der Welle ab.<br>Wie groß ist der Wirkungsgrad in Prozent?`,
+    loesung: z(proz),
+    schluss:"Der Wirkungsgrad ist das Verhältnis von abgegebener zu aufgenommener Leistung. Über 100 % geht nicht.",
+    schritte:[
+     {frage:"Wo bleibt die <b>Differenz</b> zwischen beiden Leistungen?",
+      tipp:"Sie verschwindet nicht.",
+      tipp2:"Sie wird zu Wärme in Wicklung, Lager und Lüfter.",
+      optionen:[R("Sie wird zu Wärme", "Richtig — deshalb wird ein Motor im Betrieb warm."),
+                F("Sie geht verloren, ohne Wirkung", "Verloren im Sinne von unbrauchbar, aber sie ist als Wärme da."),
+                F("Sie kommt später wieder zurück", "Nein, sie ist weg.")]},
+     {frage:"Was steht beim Wirkungsgrad <b>oben</b> im Bruch?",
+      tipp:"Das, was hinten herauskommt.",
+      tipp2:"η = P_ab : P_zu. Die abgegebene Leistung steht oben.",
+      optionen:[R("Die abgegebene Leistung", "Richtig — sonst käme mehr als 100 % heraus."),
+                F("Die aufgenommene Leistung", "Dann wäre das Ergebnis größer als eins."),
+                F("Die Differenz", "Das wäre der Verlustanteil.")]},
+     {frage:`Was ergibt <b>${z(pab)} : ${z(pzu)} · 100</b>?`,
+      tippAntwort: z(proz),
+      tipp:"Teilen und mal hundert.",
+      tipp2:`${z(pab)} : ${z(pzu)} = ${z(Math.round(pab / pzu * 10000) / 10000)}, mal 100.`,
+      optionen:[R(`${z(proz)} %`, "Richtig."),
+                F(`${z(Math.round(pzu / pab * 10000) / 100)} %`, "Verkehrt herum geteilt — über 100 % gibt es beim Wirkungsgrad nicht."),
+                F(`${z(Math.round((pzu - pab) / pzu * 10000) / 100)} %`, "Das ist der Verlustanteil, nicht der Wirkungsgrad.")]}]};
+ },
+
+ /* Verlustleistung */
+ () => {
+   const pab = pick([1100, 1500, 2200, 3000, 5500]);
+   const eta = pick([0.78, 0.82, 0.86, 0.9]);
+   const pzu = Math.round(pab / eta);
+   const pv = Math.round((pzu - pab) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Antrieb nimmt ${z(pzu)} W auf und gibt ${z(pab)} W ab.<br>Wie groß ist die Verlustleistung in Watt?`,
+    loesung: z(pv),
+    schluss:"Die Verlustleistung ist der Teil, der als Wärme abgeführt werden muss. Bei der Auslegung des Schaltschranks zählt genau dieser Wert.",
+    schritte:[
+     {frage:"Was ist die <b>Verlustleistung</b>?",
+      tipp:"Der Unterschied zwischen hinein und heraus.",
+      tipp2:"Was aufgenommen, aber nicht abgegeben wird.",
+      optionen:[R("Die Differenz zwischen aufgenommener und abgegebener Leistung", "Richtig."),
+                F("Die abgegebene Leistung", "Die ist der nutzbare Teil."),
+                F("Die aufgenommene Leistung", "Das ist alles zusammen.")]},
+     {frage:"Wozu braucht man diesen Wert in der Praxis?",
+      tipp:"Denk an den Schaltschrank.",
+      tipp2:"Die Verlustwärme muss abgeführt werden — daraus wird die Lüftung oder Kühlung ausgelegt.",
+      optionen:[R("Um die Kühlung auszulegen", "Genau — jedes Watt Verlust wird zu Wärme."),
+                F("Um den Preis zu bestimmen", "Damit hat sie nichts zu tun."),
+                F("Um die Drehzahl zu berechnen", "Auch nicht.")]},
+     {frage:`Was ergibt <b>${z(pzu)} − ${z(pab)}</b>?`,
+      tippAntwort: z(pv),
+      tipp:"Abziehen.",
+      tipp2:`Rechne ${z(pzu)} − ${z(pab)}.`,
+      optionen:[R(`${z(pv)} W`, "Richtig."),
+                F(`${z(pzu + pab)} W`, "Addiert statt abgezogen."),
+                F(`${z(Math.round(pab / pzu * 10000) / 100)} W`, "Das wäre der Wirkungsgrad in Prozent, keine Leistung.")]}]};
  }
 ],
 
@@ -5458,6 +6409,69 @@ const AUFGABEN = {
       optionen:[R(`${z(m)} Nm`, "Richtig."),
                 F(`${z(Math.round(9550 * n / pkw) / 1)} Nm`, "Leistung und Drehzahl sind vertauscht."),
                 F(`${z(Math.round(pkw * n / 9550 * 100) / 100)} Nm`, "Die 9550 gehört nach oben.")]}]};
+ },
+
+ /* Synchrondrehzahl aus der Polpaarzahl */
+ () => {
+   const p = pick([1, 2, 3, 4]);
+   const ns = 60 * 50 / p;
+   return {
+    typ:"formel",
+    text:`Ein Drehstrommotor hat ${z(p)} Polpaar${p > 1 ? "e" : ""} und läuft am 50-Hz-Netz.<br>Wie groß ist die Synchrondrehzahl in Umdrehungen je Minute?`,
+    loesung: z(ns),
+    schluss:"n = 60 · f : p. Mehr Polpaare heißt langsameres Drehfeld — deshalb baut man langsame Motoren mit vielen Polen.",
+    schritte:[
+     {frage:"Was ist die <b>Synchrondrehzahl</b>?",
+      tipp:"Sie gehört zum Drehfeld, nicht zum Läufer.",
+      tipp2:"Es ist die Drehzahl des Drehfelds im Ständer. Der Läufer bleibt immer etwas dahinter zurück.",
+      optionen:[R("Die Drehzahl des Drehfelds", "Richtig — der Läufer dreht sich beim Asynchronmotor etwas langsamer."),
+                F("Die Drehzahl des Läufers", "Die liegt darunter, um den Schlupf."),
+                F("Die höchste zulässige Drehzahl", "Damit hat der Begriff nichts zu tun.")]},
+     {frage:`Wie wirken sich <b>mehr Polpaare</b> aus?`,
+      tipp:"Die Polpaarzahl steht in der Formel unten.",
+      tipp2:"n = 60 · f : p. Größerer Nenner, kleineres Ergebnis.",
+      optionen:[R("Das Drehfeld wird langsamer", "Richtig."),
+                F("Das Drehfeld wird schneller", "Umgekehrt."),
+                F("Es ändert sich nichts", "Doch, die Polpaarzahl geht direkt ein.")]},
+     {frage:`Was ergibt <b>60 · 50 : ${z(p)}</b>?`,
+      tippAntwort: z(ns),
+      tipp:"Erst 60 mal 50, dann durch die Polpaarzahl.",
+      tipp2:`60 · 50 = 3000, geteilt durch ${z(p)}.`,
+      optionen:[R(`${z(ns)} 1/min`, "Richtig."),
+                F(`${z(3000 * p)} 1/min`, "Malgenommen statt geteilt — dann würden mehr Pole schneller machen."),
+                F(`${z(Math.round(50 / p * 100) / 100)} 1/min`, "Hier fehlt der Faktor 60 für die Minute.")]}]};
+ },
+
+ /* Drehmoment aus Leistung und Drehzahl */
+ () => {
+   const pkw = pick([1.5, 2.2, 4, 5.5, 7.5, 11]);
+   const n = pick([720, 960, 1450, 2880]);
+   const m = Math.round(9550 * pkw / n * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Motor leistet ${z(pkw)} kW bei ${z(n)} 1/min.<br>Wie groß ist das Drehmoment in Newtonmeter? (auf zwei Stellen runden)`,
+    loesung: z(m),
+    schluss:"M = 9550 · P : n, mit P in Kilowatt. Bei gleicher Leistung gilt: je langsamer, desto mehr Drehmoment.",
+    schritte:[
+     {frage:"Was passiert mit dem Drehmoment, wenn ein Motor bei <b>gleicher Leistung langsamer</b> dreht?",
+      tipp:"Die Drehzahl steht in der Formel unten.",
+      tipp2:"Deshalb hat ein Getriebemotor am Abtrieb viel mehr Drehmoment als der Motor selbst.",
+      optionen:[R("Es wird größer", "Richtig — genau dafür baut man Getriebe ein."),
+                F("Es wird kleiner", "Umgekehrt."),
+                F("Es bleibt gleich", "Nein, Drehzahl und Drehmoment hängen zusammen.")]},
+     {frage:"Wofür steht die Zahl <b>9550</b> in der Formel?",
+      tipp:"Sie fasst Einheiten zusammen.",
+      tipp2:"Sie rechnet Kilowatt und Umdrehungen je Minute so um, dass am Ende Newtonmeter herauskommen.",
+      optionen:[R("Für die Umrechnung der Einheiten", "Richtig — sie steckt 60 Sekunden und 2 · π in sich."),
+                F("Für den Wirkungsgrad", "Der kommt darin nicht vor."),
+                F("Für die Netzfrequenz", "Auch nicht.")]},
+     {frage:`Was ergibt <b>9550 · ${z(pkw)} : ${z(n)}</b>?`,
+      tippAntwort: z(m),
+      tipp:"Erst oben malnehmen, dann durch die Drehzahl.",
+      tipp2:`9550 · ${z(pkw)} = ${z(Math.round(9550 * pkw * 100) / 100)}, geteilt durch ${z(n)}.`,
+      optionen:[R(`${z(m)} Nm`, "Richtig."),
+                F(`${z(Math.round(9550 * pkw * n / 1000) / 1000)} Nm`, "Malgenommen statt geteilt."),
+                F(`${z(Math.round(9550 * pkw / n / 1000 * 100) / 100)} Nm`, "Hier wurde noch einmal durch tausend geteilt — die Leistung steht schon in Kilowatt.")]}]};
  }
 ],
 
@@ -5562,6 +6576,33 @@ const AUFGABEN = {
       optionen:[R(`${z(rp)} Ω`, "Richtig — der Nebenwiderstand ist immer kleiner als der Innenwiderstand."),
                 F(`${z(Math.round(ri * (nfach - 1) * 10000) / 10000)} Ω`, "Das wäre ein Vorwiderstand für einen Spannungsmesser."),
                 F(`${z(Math.round(ri / nfach * 10000) / 10000)} Ω`, "Die 1 muss abgezogen werden.")]}]};
+ },
+
+ /* Messabweichung aus der Genauigkeitsklasse */
+ () => {
+   const g = pick([{n:"Spannungsmesser", e:"V"}, {n:"Strommesser", e:"A"}]);
+   const klasse = pick([0.5, 1, 1.5, 2.5]);
+   const endwert = pick([10, 25, 60, 100, 250, 400]);
+   const ab = Math.round(klasse * endwert / 100 * 1000) / 1000;
+   return {
+    typ:"formel",
+    text:`Ein ${g.n} der Klasse ${z(klasse)} hat den Messbereich ${z(endwert)} ${g.e}.<br>Wie groß ist die höchstmögliche Abweichung in ${g.e}?`,
+    loesung: z(ab),
+    schluss:"Die Klasse bezieht sich immer auf den Messbereichsendwert, nicht auf den angezeigten Wert. Deshalb misst man möglichst im oberen Drittel des Bereichs.",
+    schritte:[
+     {frage:"Worauf bezieht sich die <b>Klasse</b>?",
+      tipp:"Auf einen festen Wert, nicht auf die Anzeige.",
+      tipp2:"Sie gilt für den Endwert des Messbereichs — die Abweichung ist deshalb überall im Bereich gleich groß.",
+      optionen:[R("Auf den Messbereichsendwert", "Richtig — deshalb misst man ungern am unteren Ende der Skala."),
+                F("Auf den gerade angezeigten Wert", "Das wäre schöner, ist aber nicht so."),
+                F("Auf den Innenwiderstand", "Damit hat die Klasse nichts zu tun.")]},
+     {frage:`Was ergibt <b>${z(klasse)} % von ${z(endwert)} ${g.e}</b>?`,
+      tippAntwort: z(ab),
+      tipp:"Prozent heißt „von hundert“.",
+      tipp2:`Rechne ${z(endwert)} : 100 · ${z(klasse)}.`,
+      optionen:[R(`${z(ab)} ${g.e}`, "Richtig."),
+                F(`${z(klasse)} ${g.e}`, "Das ist die Klassenzahl selbst, nicht der Anteil."),
+                F(`${z(Math.round(endwert / klasse * 100) / 100)} ${g.e}`, "Da wurde durch die Klassenzahl geteilt.")]}]};
  }
 ],
 
@@ -5669,6 +6710,41 @@ const AUFGABEN = {
       optionen:[R(`${z(kosten)} €`, "Richtig."),
                 F(`${z(Math.round(kwh / preis * 100) / 100)} €`, "Hier wird malgenommen."),
                 F(`${z(kwh)} €`, "Das sind Kilowattstunden, noch keine Euro.")]}]};
+ },
+
+ /* Kosten über einen Zeitraum */
+ () => {
+   const p = pick([200, 400, 600, 1200, 2000]);
+   const h = pick([2, 3, 4, 6, 8]);
+   const tage = pick([20, 25, 30, 60, 90]);
+   const preis = pick([0.28, 0.32, 0.35, 0.4]);
+   const kwh = Math.round(p / 1000 * h * tage * 1000) / 1000;
+   const kosten = Math.round(kwh * preis * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Absauganlage mit ${z(p)} W läuft ${z(h)} Stunden am Tag, ${z(tage)} Tage lang. Der Strom kostet ${z(preis)} € je kWh.<br>Was kostet das in Euro?`,
+    loesung: z(kosten),
+    schluss:"Erst die Kilowattstunden ausrechnen, dann mit dem Preis malnehmen. Zwei Schritte, nie einer.",
+    schritte:[
+     {frage:"Was brauchst du zuerst?",
+      tipp:"Der Preis gilt je Kilowattstunde.",
+      tipp2:"Also muss zuerst feststehen, wie viele Kilowattstunden zusammenkommen.",
+      optionen:[R("Die Zahl der Kilowattstunden", "Richtig — erst die Menge, dann der Preis."),
+                F("Den Preis pro Tag", "Der ist nicht gegeben und auch nicht nötig."),
+                F("Die Leistung in Kilowatt mal dem Preis", "Da fehlt die Zeit.")]},
+     {frage:`Wie viele <b>Stunden</b> läuft die Anlage insgesamt?`,
+      tipp:"Stunden am Tag mal Zahl der Tage.",
+      tipp2:`Rechne ${z(h)} · ${z(tage)}.`,
+      optionen:[R(`${z(h * tage)} Stunden`, "Richtig."),
+                F(`${z(h + tage)} Stunden`, "Addiert statt malgenommen."),
+                F(`${z(tage)} Stunden`, "Das ist nur die Zahl der Tage.")]},
+     {frage:`Was ergibt <b>${z(kwh)} kWh · ${z(preis)} €</b>?`,
+      tippAntwort: z(kosten),
+      tipp:"Menge mal Preis.",
+      tipp2:`Rechne ${z(kwh)} · ${z(preis)}.`,
+      optionen:[R(eur(kosten), "Richtig."),
+                F(eur(Math.round(kwh * 1000 * preis * 100) / 100), "Hier wurde mit Wattstunden statt Kilowattstunden gerechnet."),
+                F(eur(Math.round(kwh / preis * 100) / 100), "Geteilt statt malgenommen.")]}]};
  }
 ],
 
@@ -5790,6 +6866,39 @@ const AUFGABEN = {
       optionen:[R(`${z(erg)}`, "Richtig."),
                 F(`${z(2 * n)}`, "Das wäre 2 mal n, nicht 2 hoch n."),
                 F(`${z(n * n)}`, "Das wäre n hoch 2.")]}]};
+ },
+
+ /* Zahl der Eingangskombinationen */
+ () => {
+   /* 2 und 4 fallen raus: Dort wäre 2 hoch n dasselbe wie 2 · n oder n · n,
+      und zwei gleiche Antwortmöglichkeiten gehen nicht. */
+   const n = pick([3, 5, 6, 7]);
+   const anz = Math.pow(2, n);
+   return {
+    typ:"formel",
+    text:`Eine Steuerung hat ${z(n)} Eingänge, die jeweils 0 oder 1 sein können.<br>Wie viele verschiedene Eingangskombinationen gibt es?`,
+    loesung: z(anz),
+    schluss:"Jeder zusätzliche Eingang verdoppelt die Zahl der Fälle: 2 hoch der Zahl der Eingänge.",
+    schritte:[
+     {frage:"Wie viele Zustände kann <b>ein einzelner</b> Eingang haben?",
+      tipp:"Es geht um digitale Eingänge.",
+      tipp2:"Entweder 0 oder 1 — mehr gibt es nicht.",
+      optionen:[R("Zwei", "Richtig — 0 und 1."),
+                F("Einen", "Dann könnte man nichts unterscheiden."),
+                F("Zehn", "Das wären Ziffern, keine digitalen Zustände.")]},
+     {frage:"Was passiert mit der Zahl der Fälle, wenn ein Eingang <b>dazukommt</b>?",
+      tipp:"Zu jedem bisherigen Fall kommen zwei neue Möglichkeiten.",
+      tipp2:"Sie verdoppelt sich — deshalb 2 hoch n.",
+      optionen:[R("Sie verdoppelt sich", "Richtig."),
+                F("Sie wird um eins größer", "Nein, sie wächst viel schneller."),
+                F("Sie bleibt gleich", "Der neue Eingang muss ja berücksichtigt werden.")]},
+     {frage:`Was ergibt <b>2 hoch ${z(n)}</b>?`,
+      tippAntwort: z(anz),
+      tipp:"Die 2 so oft mit sich selbst malnehmen, wie Eingänge da sind.",
+      tipp2:`${new Array(n).fill(2).join(" · ")}`,
+      optionen:[R(`${z(anz)}`, "Richtig."),
+                F(`${z(2 * n)}`, "Das ist 2 mal die Zahl der Eingänge — gefragt ist 2 hoch der Zahl."),
+                F(`${z(n * n)}`, "Hier wurde die Zahl der Eingänge quadriert.")]}]};
  }
 ],
 
@@ -5891,6 +7000,31 @@ const AUFGABEN = {
       optionen:[R(`${z(rest)} V`, "Richtig — so viel verheizt die schlechte Klemme."),
                 F("0 V", "Dann wäre alles in Ordnung — die gemessenen Werte ergeben aber nicht die volle Spannung."),
                 F(`${z(u)} V`, "Das ist die ganze Betriebsspannung.")]}]};
+ },
+
+ /* Volle Spannung an der Unterbrechung */
+ () => {
+   const u = pick([12, 24, 48, 230]);
+   const [r1, r2, r3] = zieheVerschiedene([100, 220, 330, 470, 680], 3);
+   return {
+    typ:"formel",
+    text:`Drei Widerstände liegen in Reihe an ${z(u)} V. Eine Leitung ist unterbrochen, es fließt kein Strom.<br>Welche Spannung in Volt misst du über der Unterbrechung?`,
+    loesung: z(u),
+    schluss:"Ohne Strom fällt an keinem Widerstand Spannung ab. Die gesamte Betriebsspannung steht deshalb über der Unterbrechung — genau daran findet man sie.",
+    schritte:[
+     {frage:"Wie viel Spannung fällt an einem Widerstand ab, wenn <b>kein Strom</b> fließt?",
+      tipp:"U = R · I. Setz für I eine Null ein.",
+      tipp2:"Egal wie groß R ist — mal null bleibt null.",
+      optionen:[R("Gar keine", "Richtig — ohne Strom kein Spannungsfall."),
+                F("Ein Drittel", "Das gälte nur bei gleichen Widerständen und fließendem Strom."),
+                F("Das hängt vom Widerstand ab", "Nicht, wenn der Strom null ist.")]},
+     {frage:"Wo bleibt dann die <b>ganze Spannung</b>?",
+      tipp:"Sie muss irgendwo abfallen.",
+      tipp2:"In der Masche muss die Summe stimmen — wenn die Widerstände nichts abbekommen, bleibt nur die Unterbrechung.",
+      tippAntwort: z(u),
+      optionen:[R("An der Unterbrechung", "Richtig — deshalb ist die Spannungsmessung die schnellste Fehlersuche."),
+                F("Am größten Widerstand", "Der bekommt ohne Strom nichts ab."),
+                F("Sie verteilt sich gleichmäßig", "Auch das setzt fließenden Strom voraus.")]}]};
  }
 ],
 
@@ -6886,6 +8020,41 @@ const AUFGABEN = {
       optionen:[R(`${z(oben)} Ω`, "Richtig."),
                 F(`${z(Math.round((wert - ab) * 100) / 100)} Ω`, "Das ist die untere Grenze."),
                 F(`${z(ab)} Ω`, "Das ist nur die Abweichung.")]}]};
+ },
+
+ /* Untere Toleranzgrenze */
+ () => {
+   /* 100 Ω fällt raus: Dort wären „x % von 100“ und die Prozentzahl selbst
+      dieselbe Zahl, und zwei gleiche Antwortmöglichkeiten gehen nicht. */
+   const wert = pick([220, 470, 680, 1200, 2200, 4700]);
+   const tol = pick([{n:"gold", p:5}, {n:"silber", p:10}]);
+   const ab = Math.round(wert * tol.p / 100 * 100) / 100;
+   const unten = Math.round((wert - ab) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Widerstand mit <b>${z(wert)} Ω</b> hat den Toleranzring <b>${tol.n}</b> (±${z(tol.p)} %).<br>Welchen Wert darf er mindestens haben, in Ohm?`,
+    loesung: z(unten),
+    schluss:"Der aufgedruckte Wert ist ein Sollwert. Was das Messgerät zeigt, darf innerhalb der Toleranz davon abweichen — nach oben wie nach unten.",
+    schritte:[
+     {frage:`Was bedeutet <b>±${z(tol.p)} %</b>?`,
+      tipp:"Das Zeichen ± heißt „plus oder minus“.",
+      tipp2:`Der wirkliche Wert darf um bis zu ${z(tol.p)} % nach oben oder nach unten abweichen.`,
+      optionen:[R("Er darf nach oben und nach unten abweichen", "Richtig — deshalb gibt es eine obere und eine untere Grenze."),
+                F("Er ist immer zu klein", "Nein, die Abweichung geht in beide Richtungen."),
+                F("Er wird jedes Jahr um so viel schlechter", "Mit Alterung hat die Toleranz nichts zu tun.")]},
+     {frage:`Wie viel Ohm sind <b>${z(tol.p)} % von ${z(wert)} Ω</b>?`,
+      tipp:"Prozent heißt „von hundert“.",
+      tipp2:`Rechne ${z(wert)} : 100 · ${z(tol.p)}.`,
+      optionen:[R(`${z(ab)} Ω`, "Richtig."),
+                F(`${z(tol.p)} Ω`, "Das ist die Prozentzahl selbst, nicht der Anteil."),
+                F(`${z(Math.round(ab * 10 * 100) / 100)} Ω`, "Zehnmal zu viel — da ist beim Teilen durch hundert eine Stelle verrutscht.")]},
+     {frage:`Was ergibt <b>${z(wert)} − ${z(ab)}</b>?`,
+      tippAntwort: z(unten),
+      tipp:"Für die untere Grenze wird abgezogen.",
+      tipp2:`Rechne ${z(wert)} − ${z(ab)}.`,
+      optionen:[R(`${z(unten)} Ω`, "Richtig."),
+                F(`${z(Math.round((wert + ab) * 100) / 100)} Ω`, "Das ist die obere Grenze."),
+                F(`${z(ab)} Ω`, "Das ist nur die Abweichung, nicht der Wert.")]}]};
  }
 ],
 
@@ -6968,6 +8137,32 @@ const AUFGABEN = {
         R(`${z(f.nr)}`, "Richtig."),
         F(`${z(andere[0].nr)}`, `An dieser Stelle steht „${andere[0].name}“.`),
         F(`${z(andere[1].nr)}`, `An dieser Stelle steht „${andere[1].name}“.`)], 3)}]};
+ },
+
+ /* Welche Regel steht an dieser Stelle */
+ () => {
+   const REGELN = ["Freischalten", "Gegen Wiedereinschalten sichern", "Spannungsfreiheit feststellen",
+                   "Erden und kurzschließen", "Benachbarte Teile abdecken oder abschranken"];
+   const nr = rnd(0, 3);
+   return {
+    typ:"formel",
+    text:`Du hast gerade <b>„${REGELN[nr]}“</b> erledigt — das ist Regel ${z(nr + 1)} von fünf.<br>An welcher Stelle steht die Regel, die als Nächstes kommt?`,
+    loesung: z(nr + 2),
+    schluss:"Die fünf Sicherheitsregeln haben eine feste Reihenfolge. Wer eine überspringt, kann die nächste nicht mehr sicher ausführen.",
+    schritte:[
+     {frage:"Warum haben die fünf Regeln eine <b>feste Reihenfolge</b>?",
+      tipp:"Denk daran, was passieren würde, wenn man sie vertauscht.",
+      tipp2:"Spannungsfreiheit feststellen bringt nichts, solange jemand wieder einschalten kann.",
+      optionen:[R("Jede Regel baut auf der davor auf", "Richtig — die Reihenfolge ist der eigentliche Schutz."),
+                F("Damit man sie sich besser merkt", "Das ist ein Nebeneffekt, nicht der Grund."),
+                F("Sie ist nur eine Empfehlung", "Nein, sie ist verbindlich.")]},
+     {frage:`Du bist bei Regel ${z(nr + 1)}. Welche Nummer kommt <b>danach</b>?`,
+      tipp:"Eins weiter zählen.",
+      tipp2:`Nach ${z(nr + 1)} kommt ${z(nr + 2)}.`,
+      tippAntwort: z(nr + 2),
+      optionen:[R(`Regel ${z(nr + 2)}`, `Richtig — das ist „${REGELN[nr + 1]}“.`),
+                F(`Regel ${z(nr + 1)}`, "Bei der bist du gerade."),
+                F("Regel 5", nr + 2 === 5 ? "Das stimmt zufällig, ist aber nicht der Weg — gezählt wird Schritt für Schritt." : "So weit ist es noch nicht.")]}]};
  }
 ],
 
@@ -7068,6 +8263,70 @@ const AUFGABEN = {
       optionen:[R(`${z(q)} µC`, "Richtig."),
                 F(`${z(Math.round(c / u * 1000) / 1000)} µC`, "Hier wird malgenommen, nicht geteilt."),
                 F(`${z(c + u)} µC`, "Farad und Volt darf man nicht addieren.")]}]};
+ },
+
+ /* Ladung in Amperestunden — Akku laden */
+ () => {
+   const i = pick([0.5, 1.2, 2, 2.5, 4]);
+   const min = pick([15, 30, 45, 90, 120]);
+   const q = Math.round(i * min * 60 * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Ladegerät liefert ${z(i)} A über ${z(min)} Minuten.<br>Welche Ladungsmenge ist geflossen, in Coulomb?`,
+    loesung: z(q),
+    schluss:"Ein Coulomb ist eine Amperesekunde. Deshalb müssen die Minuten vorher in Sekunden umgerechnet werden.",
+    schritte:[
+     {frage:"Was ist ein <b>Coulomb</b>?",
+      tipp:"Schau auf die beiden Größen, aus denen es entsteht.",
+      tipp2:"Q = I · t. Ampere mal Sekunde ergibt Coulomb.",
+      optionen:[R("Eine Amperesekunde", "Richtig — Strom mal Zeit."),
+                F("Ein Ampere pro Sekunde", "Geteilt wäre etwas ganz anderes."),
+                F("Eine Wattsekunde", "Das ist ein Joule, die Einheit der Energie.")]},
+     {frage:`Wie viele <b>Sekunden</b> sind ${z(min)} Minuten?`,
+      tipp:"Eine Minute hat 60 Sekunden.",
+      tipp2:`Rechne ${z(min)} · 60.`,
+      optionen:[R(`${z(min * 60)} s`, "Richtig."),
+                F(`${z(min / 60)} s`, "Geteilt statt malgenommen — Sekunden sind kleiner als Minuten, also mehr davon."),
+                F(`${z(min * 100)} s`, "Eine Minute hat 60 Sekunden, nicht 100.")]},
+     {frage:`Was ergibt <b>${z(i)} A · ${z(min * 60)} s</b>?`,
+      tippAntwort: z(q),
+      tipp:"Strom mal Zeit.",
+      tipp2:`Rechne ${z(i)} · ${z(min * 60)}.`,
+      optionen:[R(`${z(q)} C`, "Richtig."),
+                F(`${z(Math.round(i * min * 100) / 100)} C`, "Da wurde mit Minuten gerechnet statt mit Sekunden."),
+                F(`${z(Math.round(min * 60 / i * 100) / 100)} C`, "Geteilt statt malgenommen.")]}]};
+ },
+
+ /* Laufzeit aus Akkukapazität */
+ () => {
+   const ah = pick([2, 4, 5, 8, 10, 12]);
+   const i = pick([0.4, 0.5, 0.8, 1.6, 2]);
+   const std = Math.round(ah / i * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Akkuleuchte hat ${z(ah)} Ah und zieht im Betrieb ${z(i)} A.<br>Wie viele Stunden hält sie rechnerisch durch?`,
+    loesung: z(std),
+    schluss:"Die Angabe in Amperestunden sagt, wie lange ein bestimmter Strom fließen kann. In der Praxis kommt man nie ganz an diesen Wert heran.",
+    schritte:[
+     {frage:"Was sagt die Angabe <b>Ah</b>?",
+      tipp:"Es sind zwei Einheiten aneinandergehängt.",
+      tipp2:"Ampere mal Stunden — also wie viel Strom wie lange fließen kann.",
+      optionen:[R("Wie viel Strom wie lange fließen kann", "Richtig — es ist ein Vorrat an Ladung."),
+                F("Wie viel Spannung der Akku hat", "Die steht getrennt daneben, in Volt."),
+                F("Wie viele Stunden er zum Laden braucht", "Damit hat die Angabe nichts zu tun.")]},
+     {frage:"Was passiert mit der Laufzeit, wenn der Verbraucher <b>mehr Strom</b> zieht?",
+      tipp:"Der Vorrat bleibt gleich groß.",
+      tipp2:"In t = Q : I steht I unten. Größerer Nenner, kleineres Ergebnis.",
+      optionen:[R("Sie wird kürzer", "Genau — der Vorrat ist schneller aufgebraucht."),
+                F("Sie wird länger", "Umgekehrt."),
+                F("Sie bleibt gleich", "Nein, der Verbrauch bestimmt die Zeit.")]},
+     {frage:`Was ergibt <b>${z(ah)} Ah : ${z(i)} A</b>?`,
+      tippAntwort: z(std),
+      tipp:"Vorrat durch Verbrauch.",
+      tipp2:`Rechne ${z(ah)} : ${z(i)}.`,
+      optionen:[R(`${z(std)} Stunden`, "Richtig."),
+                F(`${z(Math.round(ah * i * 100) / 100)} Stunden`, "Malgenommen — dann würde mehr Verbrauch länger halten."),
+                F(`${z(Math.round(i / ah * 1000) / 1000)} Stunden`, "Verkehrt herum geteilt.")]}]};
  }
 ],
 
@@ -7135,6 +8394,70 @@ const AUFGABEN = {
       optionen:[R(`${z(zges)} Ω`, "Richtig."),
                 F(`${z(r + xl)} Ω`, "So einfach addiert werden dürfen sie nicht."),
                 F(`${z(r * r + xl * xl)} Ω`, "Die Wurzel fehlt noch.")]}]};
+ },
+
+ /* Blindwiderstand einer Drossel */
+ () => {
+   const l = pick([10, 22, 47, 100, 150, 220]);
+   const f = pick([50, 60, 100, 400]);
+   const xl = Math.round(2 * Math.PI * f * l / 1000 * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Drossel mit ${z(l)} mH liegt an einer Wechselspannung mit ${z(f)} Hz.<br>Wie groß ist ihr Blindwiderstand in Ohm? (auf zwei Stellen runden)`,
+    loesung: z(xl),
+    schluss:"X_L = 2 · π · f · L. Je höher die Frequenz, desto mehr bremst die Spule — bei Gleichstrom gar nicht.",
+    schritte:[
+     {frage:"Was passiert mit dem Blindwiderstand, wenn die <b>Frequenz steigt</b>?",
+      tipp:"Die Frequenz steht in der Formel oben.",
+      tipp2:"X_L = 2 · π · f · L — f wird malgenommen, also wächst X_L mit.",
+      optionen:[R("Er wird größer", "Richtig — die Spule bremst hohe Frequenzen stärker."),
+                F("Er wird kleiner", "Das gilt für den Kondensator, nicht für die Spule."),
+                F("Er bleibt gleich", "Nein, die Frequenz geht direkt ein.")]},
+     {frage:`Wie viele <b>Henry</b> sind ${z(l)} mH?`,
+      tipp:"Milli heißt ein Tausendstel.",
+      tipp2:`Rechne ${z(l)} : 1000.`,
+      optionen:[R(`${z(l / 1000)} H`, "Richtig."),
+                F(`${z(l * 1000)} H`, "Malgenommen statt geteilt."),
+                F(`${z(l)} H`, "Die Vorsilbe milli darf nicht wegfallen.")]},
+     {frage:`Was ergibt <b>2 · π · ${z(f)} · ${z(l / 1000)}</b>?`,
+      tippAntwort: z(xl),
+      tipp:"Der Reihe nach malnehmen.",
+      tipp2:`2 · π sind rund 6,2832. Mal ${z(f)} mal ${z(l / 1000)}.`,
+      optionen:[R(`${z(xl)} Ω`, "Richtig."),
+                F(`${z(Math.round(2 * Math.PI * f * l * 100) / 100)} Ω`, "Hier wurden Millihenry statt Henry eingesetzt — tausendmal zu viel."),
+                F(`${z(Math.round(f * l / 1000 * 100) / 100)} Ω`, "Das 2 · π fehlt.")]}]};
+ },
+
+ /* Scheinwiderstand aus Wirk- und Blindwiderstand */
+ () => {
+   const paare = [[30, 40], [60, 80], [90, 120], [20, 21], [15, 20], [45, 60]];
+   const [r, xl] = pick(paare);
+   const zz = Math.round(Math.sqrt(r * r + xl * xl) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Wirkwiderstand von ${z(r)} Ω liegt in Reihe mit einer Spule von ${z(xl)} Ω Blindwiderstand.<br>Wie groß ist der Scheinwiderstand in Ohm?`,
+    loesung: z(zz),
+    schluss:"Wirk- und Blindwiderstand darf man nicht addieren. Sie stehen senkrecht aufeinander — deshalb der Satz des Pythagoras.",
+    schritte:[
+     {frage:"Warum darf man die beiden nicht einfach <b>addieren</b>?",
+      tipp:"Sie wirken nicht gleichzeitig in dieselbe Richtung.",
+      tipp2:"Beim Blindwiderstand sind Strom und Spannung zeitlich versetzt. Im Zeigerbild stehen die beiden senkrecht zueinander.",
+      optionen:[R("Weil sie zeitlich versetzt wirken", "Richtig — im Zeigerbild stehen sie im rechten Winkel."),
+                F("Weil einer negativ ist", "Beide sind positive Werte."),
+                F("Weil sie verschiedene Einheiten haben", "Beide werden in Ohm angegeben.")]},
+     {frage:`Was ergibt <b>${z(r)}² + ${z(xl)}²</b>?`,
+      tipp:"Beide Zahlen quadrieren und zusammenzählen.",
+      tipp2:`${z(r)}² = ${z(r * r)}, ${z(xl)}² = ${z(xl * xl)}.`,
+      optionen:[R(`${z(r * r + xl * xl)}`, "Richtig."),
+                F(`${z((r + xl) * (r + xl))}`, "Hier wurde erst addiert und dann quadriert — das ist etwas anderes."),
+                F(`${z(r * xl)}`, "Malgenommen statt quadriert und addiert.")]},
+     {frage:`Was ist die <b>Wurzel aus ${z(r * r + xl * xl)}</b>?`,
+      tippAntwort: z(zz),
+      tipp:"Die Wurzel macht das Quadrieren rückgängig.",
+      tipp2:`Das Ergebnis muss zwischen ${z(Math.max(r, xl))} und ${z(r + xl)} liegen.`,
+      optionen:[R(`${z(zz)} Ω`, "Richtig."),
+                F(`${z(r + xl)} Ω`, "Das wäre die einfache Summe — sie ist immer zu groß."),
+                F(`${z(Math.round(Math.abs(xl - r) * 100) / 100)} Ω`, "Die Differenz ist es auch nicht.")]}]};
  }
 ],
 
@@ -7201,6 +8524,38 @@ const AUFGABEN = {
       optionen:[R("0 A", "Richtig."),
                 F(`${z(Math.round(u / 1000 * 1000) / 1000)} A`, "Ein Reststrom fließt beim idealen Kondensator nicht."),
                 F(`${z(u)} A`, "Das ist die Spannung, kein Strom.")]}]};
+ },
+
+ /* Blindwiderstand eines Kondensators */
+ () => {
+   const c = pick([1, 2.2, 4.7, 10, 22, 47]);
+   const f = pick([50, 60, 100, 400, 1000]);
+   const xc = Math.round(1 / (2 * Math.PI * f * c / 1e6) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Motorkondensator mit ${z(c)} µF liegt an einer Wechselspannung mit ${z(f)} Hz.<br>Wie groß ist sein Blindwiderstand in Ohm? (auf zwei Stellen runden)`,
+    loesung: z(xc),
+    schluss:"X_C = 1 : (2 · π · f · C). Beim Kondensator steht alles unter dem Bruchstrich — deshalb wirkt er genau umgekehrt wie die Spule.",
+    schritte:[
+     {frage:"Was passiert mit dem Blindwiderstand, wenn die <b>Frequenz steigt</b>?",
+      tipp:"Die Frequenz steht unter dem Bruchstrich.",
+      tipp2:"Wird der Nenner größer, wird das Ergebnis kleiner.",
+      optionen:[R("Er wird kleiner", "Richtig — hohe Frequenzen lässt der Kondensator leicht durch."),
+                F("Er wird größer", "Das gilt für die Spule."),
+                F("Er bleibt gleich", "Nein, die Frequenz geht direkt ein.")]},
+     {frage:`Wie viele <b>Farad</b> sind ${z(c)} µF?`,
+      tipp:"Mikro heißt ein Millionstel.",
+      tipp2:`Rechne ${z(c)} : 1.000.000.`,
+      optionen:[R(`${z(c / 1e6)} F`, "Richtig."),
+                F(`${z(c / 1000)} F`, "Nur durch tausend — das wäre milli."),
+                F(`${z(c * 1e6)} F`, "Malgenommen statt geteilt.")]},
+     {frage:`Was ergibt <b>1 : (2 · π · ${z(f)} · ${z(c / 1e6)})</b>?`,
+      tippAntwort: z(xc),
+      tipp:"Erst den Nenner ausrechnen, dann 1 dadurch teilen.",
+      tipp2:`Der Nenner ist ${z(Math.round(2 * Math.PI * f * c / 1e6 * 1e6) / 1e6)}.`,
+      optionen:[R(`${z(xc)} Ω`, "Richtig."),
+                F(`${z(Math.round(2 * Math.PI * f * c / 1e6 * 100) / 100)} Ω`, "Das ist der Nenner selbst — der Kehrwert fehlt."),
+                F(`${z(Math.round(1 / (2 * Math.PI * f * c) * 100) / 100)} Ω`, "Hier wurden Mikrofarad statt Farad eingesetzt.")]}]};
  }
 ],
 
@@ -7283,6 +8638,41 @@ const AUFGABEN = {
       optionen:[R(`${z(f.leiter)}`, "Richtig."),
                 F(`${z(g.leiter)}`, `So viele wären es bei ${g.name}.`),
                 F("3", "Drei Außenleiter allein reichen für einen Wechselstromverbraucher nicht.")]}]};
+ },
+
+ /* Zahl der Leiter einer Netzform */
+ () => {
+   const f = pick([{name:"TN-S", n:5, was:"Neutralleiter und Schutzleiter getrennt geführt"},
+                   {name:"TN-C", n:4, was:"Neutralleiter und Schutzleiter in einem PEN-Leiter zusammengefasst"},
+                   {name:"TT",   n:4, was:"eigener Erder beim Verbraucher"},
+                   {name:"IT",   n:4, was:"Sternpunkt hochohmig oder gar nicht geerdet"}]);
+   return {
+    typ:"formel",
+    text:`Ein Drehstromnetz einer Werkhalle ist als <b>${f.name}</b> ausgeführt.<br>Wie viele Leiter werden verlegt?`,
+    loesung: z(f.n),
+    schluss:`Kennzeichen von ${f.name}: ${f.was}.`,
+    schritte:[
+     {frage:`Was kennzeichnet das <b>${f.name}</b>-Netz?`,
+      tipp:"Die Buchstaben sagen, wie Neutral- und Schutzleiter geführt werden.",
+      tipp2:`Bei ${f.name} gilt: ${f.was}.`,
+      optionen: (() => {
+        const alle = [{name:"TN-S", was:"Neutralleiter und Schutzleiter getrennt geführt"},
+                      {name:"TN-C", was:"Neutralleiter und Schutzleiter in einem PEN-Leiter zusammengefasst"},
+                      {name:"TT",   was:"eigener Erder beim Verbraucher"},
+                      {name:"IT",   was:"Sternpunkt hochohmig oder gar nicht geerdet"}];
+        const falsch = zieheVerschiedene(alle.filter(x => x.name !== f.name), 2);
+        return [R(f.was.charAt(0).toUpperCase() + f.was.slice(1), "Richtig."),
+                ...falsch.map(x => F(x.was.charAt(0).toUpperCase() + x.was.slice(1), `Das kennzeichnet das ${x.name}-Netz.`))];
+      })()},
+     {frage:"Wie viele Leiter braucht man dafür in einem Drehstromkreis?",
+      tippAntwort: z(f.n),
+      tipp:"Drei Außenleiter sind immer dabei — dazu kommt, was die Netzform verlangt.",
+      tipp2: f.n === 5
+        ? "Drei Außenleiter, Neutralleiter und Schutzleiter getrennt: fünf."
+        : "Drei Außenleiter und ein weiterer Leiter: vier.",
+      optionen:[R(`${z(f.n)}`, "Richtig."),
+                F(`${z(f.n === 5 ? 4 : 5)}`, f.n === 5 ? "Bei getrennter Führung ist einer mehr nötig." : "So viele sind es nur bei getrennt geführtem N und PE."),
+                F("3", "Drei Außenleiter allein reichen hier nicht.")]}]};
  }
 ],
 
@@ -7352,6 +8742,58 @@ const AUFGABEN = {
       optionen:[R(`${z(f)} Hz`, "Richtig."),
                 F("50 Hz", "Das ist die Netzfrequenz — die brauchst du hier gerade nicht."),
                 F(`${z(n * p)} Hz`, "Die Division durch 60 fehlt.")]}]};
+ },
+
+ /* Drehzahl aus der eingestellten Frequenz */
+ () => {
+   const p = pick([1, 2, 3]);
+   const f = pick([20, 25, 30, 35, 40, 60, 70]);
+   const n = Math.round(60 * f / p);
+   return {
+    typ:"formel",
+    text:`Ein Motor mit ${z(p)} Polpaar${p > 1 ? "en" : ""} wird über einen Frequenzumrichter mit ${z(f)} Hz betrieben.<br>Wie groß ist die Synchrondrehzahl in 1/min?`,
+    loesung: z(n),
+    schluss:"Der Umrichter macht die Frequenz einstellbar — und damit die Drehzahl. Das ist der ganze Sinn der Sache.",
+    schritte:[
+     {frage:"Wozu setzt man einen <b>Frequenzumrichter</b> ein?",
+      tipp:"Er verändert etwas am Netz, bevor es zum Motor geht.",
+      tipp2:"Er erzeugt eine einstellbare Frequenz — und die Drehzahl folgt der Frequenz.",
+      optionen:[R("Um die Drehzahl stufenlos einstellen zu können", "Richtig."),
+                F("Um den Motor abzusichern", "Dafür gibt es Schutzschalter."),
+                F("Um die Spannung zu messen", "Das ist nicht seine Aufgabe.")]},
+     {frage:`Was ergibt <b>60 · ${z(f)} : ${z(p)}</b>?`,
+      tippAntwort: z(n),
+      tipp:"Erst 60 mal die Frequenz, dann durch die Polpaarzahl.",
+      tipp2:`60 · ${z(f)} = ${z(60 * f)}, geteilt durch ${z(p)}.`,
+      optionen:[R(`${z(n)} 1/min`, "Richtig."),
+                F(`${z(60 * f * p)} 1/min`, "Malgenommen statt geteilt."),
+                F(`${z(Math.round(f / p * 100) / 100)} 1/min`, "Der Faktor 60 für die Minute fehlt.")]}]};
+ },
+
+ /* Frequenz aus der gewünschten Drehzahl */
+ () => {
+   const p = pick([1, 2]);
+   const f0 = pick([15, 20, 30, 40, 45, 60]);
+   const n = 60 * f0 / p;
+   return {
+    typ:"formel",
+    text:`Ein Motor mit ${z(p)} Polpaar${p > 1 ? "en" : ""} soll mit ${z(n)} 1/min laufen.<br>Auf welche Frequenz stellst du den Umrichter, in Hertz?`,
+    loesung: z(f0),
+    schluss:"Die Formel für die Drehzahl nach f umgestellt: f = n · p : 60.",
+    schritte:[
+     {frage:"Welche Formel steht am Anfang?",
+      tipp:"Die für die Synchrondrehzahl.",
+      tipp2:"n = 60 · f : p — daraus muss f herausgeholt werden.",
+      optionen:[R("n = 60 · f : p", "Richtig."),
+                F("n = 60 · p : f", "Frequenz und Polpaarzahl sind vertauscht."),
+                F("n = f : (60 · p)", "So käme eine viel zu kleine Drehzahl heraus.")]},
+     {frage:`Was ergibt <b>${z(n)} · ${z(p)} : 60</b>?`,
+      tippAntwort: z(f0),
+      tipp:"Drehzahl mal Polpaarzahl, dann durch 60.",
+      tipp2:`${z(n)} · ${z(p)} = ${z(n * p)}, geteilt durch 60.`,
+      optionen:[R(`${z(f0)} Hz`, "Richtig."),
+                F(`${z(Math.round(n / p / 60 * 100) / 100)} Hz`, "Hier wurde durch die Polpaarzahl geteilt statt malgenommen."),
+                F(`${z(Math.round(n * p * 60 / 1000) * 1)} Hz`, "Mal 60 statt geteilt — das ergäbe eine unmögliche Frequenz.")]}]};
  }
 ],
 
@@ -7419,6 +8861,38 @@ const AUFGABEN = {
       optionen:[R(`${z(stunden)} h`, "Richtig."),
                 F(`${z(Math.round(8760 * v / 100 * 100) / 100)} h`, "Das ist die Laufzeit, nicht die Ausfallzeit."),
                 F(`${z(Math.round((100 - v) * 100) / 100)} h`, "Das ist der Prozentsatz, noch keine Stundenzahl.")]}]};
+ },
+
+ /* Verfügbarkeit aus MTBF und MTTR */
+ () => {
+   const mtbf = pick([200, 400, 500, 800, 1200, 2000]);
+   const mttr = pick([2, 4, 5, 8, 12, 20]);
+   const v = Math.round(mtbf / (mtbf + mttr) * 10000) / 100;
+   return {
+    typ:"formel",
+    text:`Eine Abfüllanlage läuft im Schnitt ${z(mtbf)} Stunden zwischen zwei Ausfällen und ist danach ${z(mttr)} Stunden in Reparatur.<br>Wie groß ist die Verfügbarkeit in Prozent?`,
+    loesung: z(v),
+    schluss:"Verfügbarkeit ist Laufzeit geteilt durch Gesamtzeit. Kürzere Reparaturzeiten wirken sich genauso aus wie seltenere Ausfälle.",
+    schritte:[
+     {frage:"Was gehört in den <b>Nenner</b>?",
+      tipp:"Die gesamte betrachtete Zeit.",
+      tipp2:"Laufzeit plus Reparaturzeit — beides zusammen ist die Zeit, um die es geht.",
+      optionen:[R("Laufzeit und Reparaturzeit zusammen", "Richtig."),
+                F("Nur die Laufzeit", "Dann käme immer 100 % heraus."),
+                F("Nur die Reparaturzeit", "Dann käme ein unsinnig großer Wert heraus.")]},
+     {frage:`Was ergibt <b>${z(mtbf)} + ${z(mttr)}</b>?`,
+      tipp:"Die Gesamtzeit eines Zyklus.",
+      tipp2:`Rechne ${z(mtbf)} + ${z(mttr)}.`,
+      optionen:[R(`${z(mtbf + mttr)} Stunden`, "Richtig."),
+                F(`${z(mtbf - mttr)} Stunden`, "Abgezogen statt addiert."),
+                F(`${z(mtbf)} Stunden`, "Die Reparaturzeit fehlt.")]},
+     {frage:`Was ergibt <b>${z(mtbf)} : ${z(mtbf + mttr)} · 100</b>?`,
+      tippAntwort: z(v),
+      tipp:"Teilen und mal hundert.",
+      tipp2:`Das Ergebnis muss knapp unter 100 % liegen.`,
+      optionen:[R(`${z(v)} %`, "Richtig."),
+                F(`${z(Math.round(mttr / (mtbf + mttr) * 10000) / 100)} %`, "Das ist der Ausfallanteil, nicht die Verfügbarkeit."),
+                F("100 %", "Hundert Prozent gibt es nur ohne jeden Ausfall.")]}]};
  }
 ],
 
@@ -7488,6 +8962,38 @@ const AUFGABEN = {
       optionen:[R(`${eur(brutto)}`, "Richtig."),
                 F(`${eur(netto)}`, "Das ist der Nettobetrag ohne Steuer."),
                 F(`${eur(mwst)}`, "Das ist nur die Steuer.")]}]};
+ },
+
+ /* Bruttobetrag aus dem Nettobetrag */
+ () => {
+   const netto = pick([480, 750, 1250, 1890, 2400, 3600]);
+   const mwst = Math.round(netto * 0.19 * 100) / 100;
+   const brutto = Math.round((netto + mwst) * 100) / 100;
+   return {
+    typ:"formel",
+    text:`Ein Angebot für eine Schaltschrankerweiterung liegt netto bei ${eur(netto)}.<br>Wie hoch ist der Bruttobetrag mit 19 % Mehrwertsteuer, in Euro?`,
+    loesung: z(brutto),
+    schluss:"Netto ist ohne, brutto mit Mehrwertsteuer. Auf dem Angebot müssen beide Beträge stehen.",
+    schritte:[
+     {frage:"Was bedeutet <b>netto</b>?",
+      tipp:"Es geht um die Mehrwertsteuer.",
+      tipp2:"Netto ist der Betrag ohne Mehrwertsteuer.",
+      optionen:[R("Ohne Mehrwertsteuer", "Richtig."),
+                F("Mit Mehrwertsteuer", "Das ist brutto."),
+                F("Ohne Materialkosten", "Damit hat netto nichts zu tun.")]},
+     {frage:`Wie viel sind <b>19 % von ${eur(netto)}</b>?`,
+      tipp:"Prozent heißt „von hundert“.",
+      tipp2:`Rechne ${z(netto)} : 100 · 19.`,
+      optionen:[R(eur(mwst), "Richtig."),
+                F(eur(Math.round(netto / 1.19 * 100) / 100), "So rechnet man den Nettobetrag aus einem Bruttobetrag heraus."),
+                F(eur(19), "Das sind 19 Euro — gefragt sind 19 Prozent.")]},
+     {frage:`Was ergibt <b>${eur(netto)} + ${eur(mwst)}</b>?`,
+      tippAntwort: z(brutto),
+      tipp:"Netto plus Steuer.",
+      tipp2:`Rechne ${z(netto)} + ${z(mwst)}.`,
+      optionen:[R(eur(brutto), "Richtig."),
+                F(eur(Math.round((netto - mwst) * 100) / 100), "Abgezogen statt addiert."),
+                F(eur(netto), "Das ist der Nettobetrag ohne Steuer.")]}]};
  }
 ],
 
@@ -8644,6 +10150,87 @@ const AUFGABEN = {
       optionen:[R("0 mA", "Richtig — praktisch fließt nichts."),
                 F(`${z(Math.round(u / r * 1000 * 100) / 100)} mA`, "So wäre es, wenn die Diode leiten würde."),
                 F("0,7 mA", "0,7 ist die Durchlassspannung in Volt, kein Strom.")]}])]};
+ },
+
+ /* Vorwiderstand für eine LED an anderer Betriebsspannung */
+ () => {
+   const led = pick([{farbe:"rot", f:1.8}, {farbe:"gelb", f:2.1}, {farbe:"grün", f:2.2}, {farbe:"blau", f:3.2}]);
+   const i = pick([5, 10, 15, 20]);
+   const ub = pick([9, 12, 24]);
+   const rv = Math.round((ub - led.f) / (i / 1000));
+   return {
+    typ:"formel",
+    text:`Eine <b>${led.farbe}e LED</b> mit ${z(led.f)} V Durchlassspannung soll mit ${z(i)} mA an <b>${z(ub)} V</b> betrieben werden.<br>Wie groß muss der Vorwiderstand sein, in Ω?`,
+    loesung: z(rv),
+    schluss:"Der Vorwiderstand nimmt genau die Spannung auf, die die LED nicht braucht. Ohne ihn wäre die LED sofort kaputt.",
+    schritte:[
+     {frage:"Wie viel Spannung muss der <b>Vorwiderstand</b> aufnehmen?",
+      tipp:"Die LED nimmt sich ihren Teil, der Rest bleibt übrig.",
+      tipp2:`Rechne ${z(ub)} − ${z(led.f)}.`,
+      optionen:[R(`${z(Math.round((ub - led.f) * 100) / 100)} V`, "Richtig — was übrig bleibt, fällt am Widerstand ab."),
+                F(`${z(ub)} V`, "Die volle Spannung — dann bliebe für die LED nichts übrig."),
+                F(`${z(led.f)} V`, "Das ist der Anteil der LED selbst.")]},
+     {frage:`Wie viele <b>Ampere</b> sind ${z(i)} mA?`,
+      tipp:"Milli heißt ein Tausendstel.",
+      tipp2:`Rechne ${z(i)} : 1000.`,
+      optionen:[R(`${z(i / 1000)} A`, "Richtig."),
+                F(`${z(i * 1000)} A`, "Malgenommen — so viel Strom verträgt keine LED."),
+                F(`${z(i)} A`, "Die Vorsilbe milli darf nicht wegfallen.")]},
+     {frage:`Was ergibt <b>${z(Math.round((ub - led.f) * 100) / 100)} V : ${z(i / 1000)} A</b>?`,
+      tippAntwort: z(rv),
+      tipp:"Ohmsches Gesetz für den Vorwiderstand.",
+      tipp2:`Rechne ${z(Math.round((ub - led.f) * 100) / 100)} : ${z(i / 1000)}.`,
+      optionen:[R(`${z(rv)} Ω`, "Richtig."),
+                F(`${z(Math.round(ub / (i / 1000)))} Ω`, "Hier wurde mit der vollen Spannung gerechnet — die LED braucht aber selbst einen Teil."),
+                F(`${z(Math.round((ub - led.f) * i * 100) / 100)} Ω`, "Malgenommen statt geteilt.")]}]};
+ },
+
+ /* Diode in Sperr- oder Durchlassrichtung */
+ () => {
+   const f = pick([{lage:"Anode am Plus", leitet:true}, {lage:"Kathode am Plus", leitet:false}]);
+   const r = pick([220, 330, 470, 680, 1000]);
+   const u = pick([5, 9, 12, 24]);
+   const i = f.leitet ? Math.round((u - 0.7) / r * 1000 * 100) / 100 : 0;
+   return {
+    typ:"formel",
+    text:`Eine Silizium-Diode liegt mit ${z(r)} Ω in Reihe an <b>${z(u)} V</b> Gleichspannung.<br>Anschluss: <b>${f.lage}</b>.<br>Wie groß ist der Strom, in mA?`,
+    loesung: z(i),
+    schluss:"Eine Diode leitet nur in eine Richtung. In Durchlassrichtung bleiben rund 0,7 V an ihr hängen, in Sperrrichtung fließt praktisch nichts.",
+    schritte:[
+     {frage:"Leitet die Diode in dieser <b>Richtung</b>?",
+      tipp:"Der Strom fließt von der Anode zur Kathode.",
+      tipp2:"Liegt die Anode am Pluspol, ist die Diode in Durchlassrichtung geschaltet.",
+      optionen: f.leitet
+        ? [R("Ja — Anode am Plus ist Durchlassrichtung", "Richtig."),
+           F("Nein, sie sperrt", "Bei Anode am Plus leitet sie."),
+           F("Das hängt von der Spannung ab", "Bei diesen Spannungen nicht — die Richtung entscheidet.")]
+        : [R("Nein — Kathode am Plus ist Sperrrichtung", "Richtig."),
+           F("Ja, sie leitet", "Bei Kathode am Plus sperrt sie."),
+           F("Das hängt vom Widerstand ab", "Nein, der Widerstand ändert die Richtung nicht.")]},
+     f.leitet
+      ? {frage:"Wie viel Spannung bleibt für den <b>Widerstand</b> übrig?",
+         tipp:"An der Diode fallen rund 0,7 V ab.",
+         tipp2:`Rechne ${z(u)} − 0,7.`,
+         optionen:[R(`${z(Math.round((u - 0.7) * 100) / 100)} V`, "Richtig."),
+                   F(`${z(u)} V`, "Die 0,7 V der Diode fehlen."),
+                   F(`${z(Math.round((u + 0.7) * 100) / 100)} V`, "Addiert statt abgezogen.")]}
+      : {frage:"Warum fließt hier <b>kein Strom</b>?",
+         tipp:"Die Diode ist falsch herum angeschlossen.",
+         tipp2:"In Sperrrichtung wirkt die Diode wie eine offene Stelle in der Leitung.",
+         optionen:[R("Die Diode sperrt und unterbricht den Kreis", "Richtig — der Widerstand allein nützt dann nichts."),
+                   F("Der Widerstand ist zu groß", `${z(r)} Ω wären in Durchlassrichtung kein Problem.`),
+                   F("Die Spannung ist zu klein", `${z(u)} V reichen in Durchlassrichtung aus.`)]},
+     {frage:`Wie groß ist der <b>Strom</b> in mA?`,
+      tippAntwort: z(i),
+      tipp: f.leitet ? "Spannung am Widerstand durch den Widerstand — und dann in Milliampere." : "In Sperrrichtung fließt praktisch nichts.",
+      tipp2: f.leitet ? `Rechne ${z(Math.round((u - 0.7) * 100) / 100)} : ${z(r)} und nimm das Ergebnis mal 1000.` : "Der Kreis ist unterbrochen.",
+      optionen: f.leitet
+        ? [R(`${z(i)} mA`, "Richtig."),
+           F(`${z(Math.round(u / r * 1000 * 100) / 100)} mA`, "Hier wurden die 0,7 V der Diode vergessen."),
+           F(`${z(Math.round((u - 0.7) / r * 100) / 100)} mA`, "Das ist der Wert in Ampere — gefragt sind Milliampere.")]
+        : [R("0 mA", "Richtig — in Sperrrichtung fließt praktisch nichts."),
+           F(`${z(Math.round(u / r * 1000 * 100) / 100)} mA`, "So viel flösse nur, wenn die Diode leiten würde."),
+           F(`${z(Math.round((u - 0.7) / r * 1000 * 100) / 100)} mA`, "Auch das gilt nur in Durchlassrichtung.")]}]};
  }
 ],
 
@@ -8712,6 +10299,33 @@ const AUFGABEN = {
       optionen:[R(`${z(lm)} lm`, `Richtig. Eine ${f.art} braucht dafür ${z(p)} W.`),
                 F(`${z(Math.round(p / f.eta * 1000) / 1000)} lm`, "Hier wird malgenommen, nicht geteilt."),
                 F(`${z(p)} lm`, "Watt und Lumen sind zwei verschiedene Größen.")]}]};
+ },
+
+ /* Lichtstrom aus Leistung und Lichtausbeute */
+ () => {
+   const f = pick([{art:"LED-Leuchte", eta:120}, {art:"Leuchtstofflampe", eta:80},
+                   {art:"Halogenlampe", eta:20}, {art:"Natriumdampflampe", eta:140}]);
+   const p = pick([9, 15, 18, 36, 58, 70]);
+   const lm = p * f.eta;
+   return {
+    typ:"formel",
+    text:`Eine <b>${f.art}</b> hat ${z(p)} W und eine Lichtausbeute von ${z(f.eta)} lm/W.<br>Wie viel Lichtstrom gibt sie ab, in Lumen?`,
+    loesung: z(lm),
+    schluss:"Watt sagt, was die Lampe verbraucht — Lumen, was sie an Licht abgibt. Die Lichtausbeute verbindet beides.",
+    schritte:[
+     {frage:"Was bedeutet die Einheit <b>lm/W</b>?",
+      tipp:"Lies den Schrägstrich als „je“.",
+      tipp2:"Lumen je Watt — also wie viel Licht aus jedem Watt wird.",
+      optionen:[R("Wie viel Licht aus einem Watt wird", "Richtig — je höher, desto sparsamer die Lampe."),
+                F("Wie viel Strom sie zieht", "Das steht in Watt allein."),
+                F("Wie hell der Raum wird", "Das hängt zusätzlich von der Fläche ab.")]},
+     {frage:`Was ergibt <b>${z(p)} W · ${z(f.eta)} lm/W</b>?`,
+      tippAntwort: z(lm),
+      tipp:"Malnehmen — das W kürzt sich weg.",
+      tipp2:`Rechne ${z(p)} · ${z(f.eta)}.`,
+      optionen:[R(`${z(lm)} lm`, "Richtig."),
+                F(`${z(Math.round(f.eta / p * 100) / 100)} lm`, "Geteilt statt malgenommen."),
+                F(`${z(p + f.eta)} lm`, "Addiert — die Einheiten passen dann nicht zusammen.")]}]};
  }
 ],
 
