@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AP2 Elektroniker Betriebstechnik üben | Endlich kapiert</title>
+<meta name="description" content="Abschlussprüfung Teil 2 — Elektroniker für Betriebstechnik: 32 Themen üben — mit Zwischenschritten statt fertiger Lösungen. Kostenlos, ohne Anmeldung.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://endlichkapiert.com/pruefung/elektroniker-teil-2.html">
+<meta property="og:site_name" content="Endlich kapiert">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="AP2 Elektroniker Betriebstechnik üben | Endlich kapiert">
+<meta property="og:description" content="Abschlussprüfung Teil 2 — Elektroniker für Betriebstechnik: 32 Themen üben — mit Zwischenschritten statt fertiger Lösungen. Kostenlos, ohne Anmeldung.">
+<meta property="og:url" content="https://endlichkapiert.com/pruefung/elektroniker-teil-2.html">
+<meta property="og:image" content="https://endlichkapiert.com/vorschau.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Endlich kapiert — du bekommst nie die Lösung, nur Fragen, die dich hinführen.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://endlichkapiert.com/vorschau.png">
+<meta name="theme-color" content="#10a37f">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#f4f8f7;--card:#fff;--ink:#16211e;--soft:#5b6b66;--line:#dfe8e5;
+  --ac:#10a37f;--ac-soft:#e4f5ef;--ac-dark:#0b7a5f;--red:#b3382f;--red-soft:#fdecea;
+  --amber:#8a5a09;--amber-soft:#fdf3e0;--knopfschrift:#fff;--schatten:0 1px 2px rgba(16,33,30,.05),0 8px 24px -18px rgba(16,33,30,.5)}
+@media (prefers-color-scheme:dark){:root{--bg:#101614;--card:#18201d;--ink:#e8efec;
+  --soft:#9bada7;--line:#2a3733;--ac:#2fbf99;--ac-soft:#17302a;--ac-dark:#7fe0c4;
+  --red:#f08a80;--red-soft:#301a18;--amber:#e0b467;--amber-soft:#2c2415;
+  /* Im Dunkelmodus ist das Grün heller — dann braucht der Knopf dunkle Schrift,
+     sonst steht Weiß auf Hellgrün und man liest es kaum. */
+  --knopfschrift:#06231c;
+  --schatten:0 1px 2px rgba(0,0,0,.3)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);-webkit-text-size-adjust:100%;
+  font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.huelle{max-width:760px;margin:0 auto;padding:0 18px 60px}
+a{color:var(--fach-dark)}
+
+/* Kopfleiste wie in der App, damit man merkt: gleiches Haus */
+.leiste{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 0 18px;margin-bottom:6px}
+.wortmarke{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);
+  font-weight:900;letter-spacing:-.02em;font-size:18px}
+.zeichen{width:32px;height:32px;border-radius:10px;background:var(--ac);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
+.leiste .mini{font-size:14px;font-weight:700;color:var(--fach-dark);text-decoration:none;
+  border:1.5px solid var(--fach);border-radius:999px;padding:7px 15px;white-space:nowrap}
+
+.pfad{font-size:14px;color:var(--soft);margin:0 0 16px}
+.pfad a{color:var(--soft)}
+.karte{background:var(--card);border:1.5px solid var(--line);border-radius:18px;
+  padding:24px 26px;margin-bottom:16px;box-shadow:var(--schatten)}
+.karte.kopf{border-color:transparent;background:var(--fach-soft)}
+h1{font-size:clamp(28px,6vw,38px);line-height:1.15;margin:0 0 12px;letter-spacing:-.025em}
+h2{font-size:21px;margin:0 0 12px;letter-spacing:-.015em}
+h3{font-size:16px;margin:18px 0 6px}
+p{margin:0 0 12px}
+p:last-child{margin-bottom:0}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:7px}
+.vorsatz{font-size:17px;color:var(--fach-dark);font-weight:600}
+.marke{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;color:#fff;background:var(--fach);
+  border-radius:999px;padding:5px 13px;margin-bottom:14px}
+.auch{font-size:14.5px;color:var(--soft);margin:0 0 14px}
+.knopf{display:block;text-align:center;background:var(--ac);color:var(--knopfschrift);text-decoration:none;
+  font-weight:700;border-radius:14px;padding:16px 20px;margin-top:8px;font-size:17px}
+.knopf.leise{background:transparent;color:var(--fach-dark);border:1.6px solid var(--fach);margin-top:10px}
+.knopf small{display:block;font-weight:500;font-size:13.5px;opacity:.85;margin-top:2px}
+
+/* Was einen hier erwartet — die drei Punkte, die uns von anderen unterscheiden */
+.punkte{display:grid;gap:12px;margin:0}
+.punkt{display:flex;gap:13px;align-items:flex-start}
+.punkt .haken{flex:none;width:24px;height:24px;border-radius:8px;background:var(--ac-soft);
+  color:var(--ac-dark);display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;margin-top:2px}
+.punkt b{display:block;margin-bottom:1px}
+.punkt span{font-size:15.5px;color:var(--soft)}
+
+/* Eine echte Aufgabe als Vorschau */
+.probe{border:1.5px dashed var(--fach);border-radius:14px;padding:17px 19px;background:var(--fach-soft)}
+.probefrage{font-size:18px;font-weight:700;margin:0 0 14px}
+.probeschritt{font-size:13px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--fach-dark);margin:0 0 6px}
+.wahl{display:grid;gap:8px;margin-top:12px}
+.wahl div{background:var(--card);border:1.5px solid var(--line);border-radius:11px;
+  padding:11px 14px;font-size:15.5px}
+.abbruch{margin:14px 0 0;font-size:15px;color:var(--soft)}
+
+table{width:100%;border-collapse:collapse;font-size:15px;margin-bottom:12px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:800;color:var(--soft);font-size:13.5px}
+.rollen{overflow-x:auto}
+.fehler{background:var(--red-soft);border-radius:12px;padding:13px 15px;margin-bottom:10px}
+.fehler b{color:var(--red);display:block;margin-bottom:3px}
+.merke{background:var(--amber-soft);border-radius:12px;padding:13px 15px}
+.begriff{border-bottom:1px solid var(--line);padding:9px 0}
+.begriff:last-child{border-bottom:none}
+.begriff b{display:block}
+.begriff span{color:var(--soft);font-size:15px}
+svg{width:100%;max-width:420px;height:auto;display:block;margin:14px auto;color:var(--ink)}
+.fuss{font-size:14px;color:var(--soft);text-align:center;margin-top:26px;line-height:2}
+.fuss a{color:var(--soft)}
+.andere{display:grid;gap:8px}
+.andere a{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:var(--card);border:1.5px solid var(--line);
+  border-radius:12px;padding:13px 16px;text-decoration:none;color:var(--ink);font-weight:600}
+.andere a span{color:var(--soft);font-weight:400;font-size:20px;line-height:1}
+</style>
+<style>
+:root{--fach:#a06c00;--fach-soft:#fbf2dd;--fach-dark:#7f5600}
+@media (prefers-color-scheme:dark){:root{--fach:#e3bd6a;--fach-soft:#2a2211;--fach-dark:#e3bd6a}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Abschlussprüfung Teil 2 — Elektroniker für Betriebstechnik","description":"Abschlussprüfung Teil 2 — Elektroniker für Betriebstechnik: 32 Themen üben — mit Zwischenschritten statt fertiger Lösungen. Kostenlos, ohne Anmeldung.","url":"https://endlichkapiert.com/pruefung/elektroniker-teil-2.html","inLanguage":"de","isAccessibleForFree":true,"learningResourceType":"Prüfungsvorbereitung","educationalLevel":"Berufsausbildung","teaches":["Stern und Dreieck","Transformator","Wirkungsgrad","Motor und Drehzahl","Messen im Betrieb","Netzformen","Frequenzumrichter","Beleuchtung berechnen","Kondensator laden","Blindleistung und cos φ","Energiekosten","Logikverknüpfungen","Fehler suchen","Instandhaltung und Verfügbarkeit","Angebot kalkulieren","Anlage prüfen und protokollieren","Ohmsches Gesetz","Elektrische Leistung und Arbeit","Reihenschaltung","Parallelschaltung","Einheiten und Vorsätze","Widerstände und Farbcode","Sicherheitsregeln","Ladung und Strom","Spannungsteiler","Frequenz und Periodendauer","Leiterquerschnitt","Schutzmaßnahmen","Gemischte Schaltungen","Spule und Induktivität","Kondensator im Wechselstrom","Diode und Gleichrichter"],"provider":{"@type":"Organization","name":"Endlich kapiert","url":"https://endlichkapiert.com"}}</script>
+</head>
+<body>
+<div class="huelle">
+<div class="leiste">
+  <a class="wortmarke" href="/"><span class="zeichen">Ek</span>Endlich kapiert</a>
+  <a class="mini" href="/faecher">Üben</a>
+</div>
+
+  <div class="karte">
+    <span class="marke">AP2</span>
+    <h1>Abschlussprüfung Teil 2 — Elektroniker für Betriebstechnik</h1>
+    <p class="lede">Sie steht am Ende der Ausbildung und zählt mit 60 Prozent. Der Stoff aus Teil 1 kommt dabei wieder vor.</p>
+    <p>Hier übst du die 32 Themen, die dazugehören — und zwar so, dass du
+      am Prüfungstag selbst darauf kommst: Du bekommst nie die fertige Lösung, sondern
+      Fragen, die dich Schritt für Schritt hinführen. Jede Aufgabe wird bei jedem Aufruf
+      neu gewürfelt, auswendig lernen funktioniert also nicht.</p>
+    <p><a class="knopf" href="/elektroniker/teil-2">Mit dem Üben anfangen</a></p>
+    <p class="klein">Kostenlos · ohne Anmeldung · ohne Werbung</p>
+  </div>
+
+  <div class="karte">
+    <h2>Was drankommt</h2>
+    <div class="themenliste">
+    <a href="/erklaerung/stern-und-dreieck.html">
+      <b>Stern und Dreieck</b><span>3. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/transformator.html">
+      <b>Transformator</b><span>3. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/wirkungsgrad.html">
+      <b>Wirkungsgrad</b><span>3. Lehrjahr · 5 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/motor-und-drehzahl.html">
+      <b>Motor und Drehzahl</b><span>3. Lehrjahr · 5 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/messen-im-betrieb.html">
+      <b>Messen im Betrieb</b><span>3. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/netzformen.html">
+      <b>Netzformen</b><span>3. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/frequenzumrichter.html">
+      <b>Frequenzumrichter</b><span>3. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/beleuchtung-berechnen.html">
+      <b>Beleuchtung berechnen</b><span>3. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/kondensator-laden.html">
+      <b>Kondensator laden</b><span>4. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/blindleistung-und-cos.html">
+      <b>Blindleistung und cos φ</b><span>4. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/energiekosten.html">
+      <b>Energiekosten</b><span>4. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/logikverknuepfungen.html">
+      <b>Logikverknüpfungen</b><span>4. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/fehler-suchen.html">
+      <b>Fehler suchen</b><span>4. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/instandhaltung-und-verfuegbarkeit.html">
+      <b>Instandhaltung und Verfügbarkeit</b><span>4. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/angebot-kalkulieren.html">
+      <b>Angebot kalkulieren</b><span>4. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/anlage-pruefen-und-protokollieren.html">
+      <b>Anlage prüfen und protokollieren</b><span>4. Lehrjahr · 2 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/ohmsches-gesetz.html">
+      <b>Ohmsches Gesetz</b><span>1. Lehrjahr · 6 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/elektrische-leistung-und-arbeit.html">
+      <b>Elektrische Leistung und Arbeit</b><span>1. Lehrjahr · 6 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/reihenschaltung.html">
+      <b>Reihenschaltung</b><span>1. Lehrjahr · 5 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/parallelschaltung.html">
+      <b>Parallelschaltung</b><span>1. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/einheiten-und-vorsaetze.html">
+      <b>Einheiten und Vorsätze</b><span>1. Lehrjahr · 5 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/widerstaende-und-farbcode.html">
+      <b>Widerstände und Farbcode</b><span>1. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/sicherheitsregeln.html">
+      <b>Sicherheitsregeln</b><span>1. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/ladung-und-strom.html">
+      <b>Ladung und Strom</b><span>1. Lehrjahr · 5 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/spannungsteiler.html">
+      <b>Spannungsteiler</b><span>2. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/frequenz-und-periodendauer.html">
+      <b>Frequenz und Periodendauer</b><span>2. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/leiterquerschnitt.html">
+      <b>Leiterquerschnitt</b><span>2. Lehrjahr · 5 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/schutzmassnahmen.html">
+      <b>Schutzmaßnahmen</b><span>2. Lehrjahr · 5 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/gemischte-schaltungen.html">
+      <b>Gemischte Schaltungen</b><span>2. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/spule-und-induktivitaet.html">
+      <b>Spule und Induktivität</b><span>2. Lehrjahr · 4 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/kondensator-im-wechselstrom.html">
+      <b>Kondensator im Wechselstrom</b><span>2. Lehrjahr · 3 Aufgaben</span>
+    </a>
+    <a href="/erklaerung/diode-und-gleichrichter.html">
+      <b>Diode und Gleichrichter</b><span>2. Lehrjahr · 5 Aufgaben</span>
+    </a></div>
+  </div>
+
+  <div class="karte">
+    <h2>Wie du dich vorbereitest</h2>
+    <p>Trag in der App deinen Prüfungstermin ein. Daraus entsteht ein Plan, der die
+      Themen über die verbleibenden Tage verteilt und das, was noch nicht sitzt, von
+      allein wiederholt — in wachsenden Abständen, bis es hält.</p>
+    <p>Ein Thema, das du fehlerfrei geschafft hast, kommt nach einem Tag wieder, dann
+      nach drei, nach einer Woche, nach zwei Wochen, nach einem Monat. Machst du einen
+      Fehler, rückt es wieder näher.</p>
+  </div>
+
+  <div class="karte">
+    <h2>Oft auch gesucht als</h2>
+    <p class="auch">AP2 Elektroniker üben · Teil 2 Prüfung Elektroniker Betriebstechnik · Abschlussprüfung Elektroniker Aufgaben · AP2 Vorbereitung kostenlos</p>
+  </div>
+<p class="fuss"><a href="/">Startseite</a> · <a href="/erklaerungen.html">Alle Erklärungen</a>
+  · <a href="/warum">Warum keine KI-Lösungen?</a><br>
+  <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a><br>
+  Ein Lernprojekt aus Deutschland · kostenlos, ohne Werbung</p>
+</div>
+</body>
+</html>
