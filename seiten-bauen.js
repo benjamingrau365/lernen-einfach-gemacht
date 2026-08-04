@@ -442,12 +442,18 @@ ${e.spiel ? `<div class="karte">
   const kern = e.worum
     ? nackt(e.worum).slice(0, 190)
     : `${thema} für ${stufe} von ganz vorn erklärt, mit Beispiel und den häufigsten Fehlern.`;
-  const beschreibung = `${thema} für ${stufe}: ${kern}`;
+  /* Auch der Beschreibungstext soll sagen, dass man hier übt und nicht nur
+     liest — er steht im Suchergebnis direkt unter dem Titel. */
+  const beschreibung = `${thema} üben und verstehen (${stufe}): ${kern} Kostenlos, ohne Anmeldung.`;
   /* Der erste Suchbegriff kommt in den Titel — dort zählt er am meisten. */
   const zusatz = auchGenannt(thema)[0];
 
+  /* Gesucht wird „Brüche üben", nicht „Brüche einfach erklärt". Das Wort
+     „üben" stand bisher in keinem Titel, obwohl die Seite genau das anbietet.
+     Der Titel bleibt trotzdem kurz genug, dass Google ihn nicht abschneidet:
+     Über ungefähr sechzig Zeichen wird hinten gekürzt. */
   return huelle({
-    titel: `${thema} einfach erklärt${zusatz ? " — " + zusatz : ""} (${stufe}) | Endlich kapiert`,
+    titel: `${thema} üben und verstehen${zusatz ? " — " + zusatz : ""} | Endlich kapiert`,
     text: beschreibung,
     adresse,
     inhalt,
