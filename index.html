@@ -5322,54 +5322,73 @@ const AUFGABEN = {
                 F(`${z(Math.round(t / 1000 * 1000) / 1000)} Hz`, "Da hast du verkehrt herum geteilt.")]}]};
  },
 
- /* Periodendauer aus der Frequenz — Frequenzumrichter */
+ /* Nicht noch einmal T aus f, sondern: Wie viele Perioden passen in eine
+    Zeitspanne? Das ist die Frage, die hinter jeder Zeitmessung steckt —
+    und sie braucht dieselbe Beziehung, nur andersherum gedacht. */
  () => {
-   const f = pick([25, 40, 60, 80, 100, 125]);
-   const t = Math.round(1000 / f * 1000) / 1000;
+   const f = pick([25, 50, 60, 100, 400]);
+   const sek = pick([0.1, 0.2, 0.5, 2, 3]);
+   const anzahl = Math.round(f * sek * 1000) / 1000;
    return {
     typ:"formel",
-    text:`Ein Frequenzumrichter gibt ${z(f)} Hz aus.<br>Wie lang ist eine Periode in Millisekunden?`,
-    loesung: z(t),
-    schluss:"Frequenz und Periodendauer sind Kehrwerte. Wer eine kennt, kennt auch die andere.",
+    text:`Eine Wechselspannung mit ${z(f)} Hz liegt ${z(sek)} Sekunden lang an.<br>Wie viele volle Perioden sind das?`,
+    loesung: z(anzahl),
+    schluss:"Hertz heißt „je Sekunde“. Deshalb ist die Anzahl der Perioden einfach Frequenz mal Zeit — man muss die Periodendauer dafür gar nicht ausrechnen.",
     schritte:[
-     {frage:"Was sagt die <b>Frequenz</b>?",
-      tipp:"Hertz heißt „pro Sekunde“.",
-      tipp2:`${z(f)} Hz heißt: ${z(f)} volle Schwingungen in einer Sekunde.`,
-      optionen:[R("Wie viele Schwingungen in einer Sekunde passieren", "Richtig."),
-                F("Wie lange eine Schwingung dauert", "Das ist die Periodendauer — genau das Gegenteil."),
-                F("Wie hoch die Spannung ist", "Damit hat die Frequenz nichts zu tun.")]},
-     {frage:`Wenn ${z(f)} Schwingungen in <b>1000 ms</b> passen, wie lang ist dann eine?`,
-      tipp:"Die Sekunde gerecht aufteilen.",
-      tipp2:`Rechne 1000 : ${z(f)}.`,
-      tippAntwort: z(t),
-      optionen:[R(`${z(t)} ms`, "Richtig."),
-                F(`${z(Math.round(f / 1000 * 10000) / 10000)} ms`, "Verkehrt herum geteilt."),
-                F(`${z(f * 1000)} ms`, "Malgenommen — eine Periode ist kürzer als eine Sekunde, nicht länger.")]}]};
+     {frage:`Was bedeutet <b>${z(f)} Hz</b> genau?`,
+      tipp:"Hertz ist eine Angabe je Sekunde.",
+      tipp2:`${z(f)} Hz heißt: ${z(f)} volle Schwingungen in jeder einzelnen Sekunde.`,
+      optionen:[R(`${z(f)} Schwingungen in einer Sekunde`, "Richtig — genau das steckt in der Einheit Hertz."),
+                F(`Eine Schwingung dauert ${z(f)} Sekunden`, "Das wäre die Periodendauer, und die ist hier viel kürzer."),
+                F(`${z(f)} Volt Spannung`, "Die Frequenz sagt nichts über die Höhe der Spannung.")]},
+     {frage:"Rechnest du <b>mal</b> oder <b>geteilt durch</b> die Zeit?",
+      tipp:"Überleg erst, ob mehr oder weniger Perioden herauskommen müssen als in einer Sekunde.",
+      tipp2: sek >= 1
+        ? "Die Spannung liegt länger als eine Sekunde an — es müssen also mehr Perioden herauskommen."
+        : "Die Spannung liegt kürzer als eine Sekunde an — es müssen also weniger Perioden herauskommen. Mal einer Zahl unter 1 macht kleiner.",
+      optionen:[R("Mal", "Richtig — je Sekunde so viele, also Zeit mal Frequenz."),
+                F("Geteilt", "Dann käme bei längerer Zeit weniger heraus — das kann nicht sein."),
+                F("Weder noch, die Zeit spielt keine Rolle", "Doppelt so lange heißt doppelt so viele Perioden.")]},
+     {frage:`Was ergibt <b>${z(f)} · ${z(sek)}</b>?`,
+      tippAntwort: z(anzahl),
+      tipp:"Frequenz mal Zeit.",
+      tipp2:`Rechne ${z(f)} · ${z(sek)}.`,
+      optionen:[R(`${z(anzahl)} Perioden`, "Richtig."),
+                F(`${z(Math.round(f / sek * 1000) / 1000)} Perioden`, "Geteilt statt malgenommen."),
+                F(`${z(f)} Perioden`, "Das wäre die Zahl für genau eine Sekunde.")]}]};
  },
 
- /* Frequenz aus der Periodendauer — Impulsgeber */
+ /* Die Halbwelle: In der Praxis rechnet man selten mit der ganzen Periode,
+    sondern mit der halben — jeder Nulldurchgang, jede Zündung eines
+    Thyristors, jede Halbwelle eines Gleichrichters hängt daran. */
  () => {
-   const t = pick([2, 4, 5, 8, 10, 25, 50]);
-   const f = Math.round(1000 / t * 1000) / 1000;
+   const f = pick([25, 50, 60, 100, 200]);
+   const halb = Math.round(1000 / f / 2 * 1000) / 1000;
    return {
     typ:"formel",
-    text:`Ein Impulsgeber liefert Impulse im Abstand von ${z(t)} ms.<br>Wie groß ist die Frequenz in Hertz?`,
-    loesung: z(f),
-    schluss:"Je kürzer der Abstand, desto höher die Frequenz. Die Rechnung ist immer dieselbe: 1000 durch die Millisekunden.",
+    text:`Ein Netz hat ${z(f)} Hz.<br>Wie lange dauert eine Halbwelle in Millisekunden?`,
+    loesung: z(halb),
+    schluss:"Bei 50 Hz dauert eine Halbwelle 10 ms. Zwischen zwei Nulldurchgängen liegen also 10 ms — daran hängt jede Phasenanschnittsteuerung.",
     schritte:[
-     {frage:"Wie viele Millisekunden hat eine <b>Sekunde</b>?",
-      tipp:"Milli heißt ein Tausendstel.",
-      tipp2:"Eine Sekunde sind 1000 Millisekunden.",
-      optionen:[R("1000", "Richtig."),
-                F("100", "Das wären Hundertstel, also Zentisekunden."),
-                F("60", "Das gilt für Minuten und Sekunden.")]},
-     {frage:`Wie oft passt <b>${z(t)} ms</b> in eine Sekunde?`,
-      tipp:"1000 durch die Dauer einer Periode.",
-      tipp2:`Rechne 1000 : ${z(t)}.`,
-      tippAntwort: z(f),
-      optionen:[R(`${z(f)}-mal`, "Richtig — und genau das ist die Frequenz in Hertz."),
-                F(`${z(Math.round(t / 1000 * 10000) / 10000)}-mal`, "Verkehrt herum geteilt."),
-                F(`${z(t * 1000)}-mal`, "Malgenommen statt geteilt.")]}]};
+     {frage:"Wie viele <b>Halbwellen</b> hat eine volle Periode?",
+      tipp:"Denk an den Verlauf: erst nach oben, dann nach unten.",
+      tipp2:"Eine volle Periode besteht aus einer positiven und einer negativen Halbwelle.",
+      optionen:[R("Zwei", "Richtig — eine positive und eine negative."),
+                F("Eine", "Dann wären Halbwelle und Periode dasselbe."),
+                F("Vier", "So viele Nulldurchgänge hat sie nicht.")]},
+     {frage:`Wie lang ist bei ${z(f)} Hz eine <b>ganze Periode</b> in Millisekunden?`,
+      tipp:"T = 1 : f, und eine Sekunde sind 1000 ms.",
+      tipp2:`Rechne 1000 : ${z(f)}.`,
+      optionen:[R(`${z(Math.round(1000 / f * 1000) / 1000)} ms`, "Richtig."),
+                F(`${z(f)} ms`, "Das ist die Frequenzzahl, nicht die Dauer."),
+                F(`${z(Math.round(f / 1000 * 10000) / 10000)} ms`, "Verkehrt herum geteilt.")]},
+     {frage:`Und die <b>Hälfte</b> davon?`,
+      tippAntwort: z(halb),
+      tipp:"Die Periodendauer durch zwei.",
+      tipp2:`Rechne ${z(Math.round(1000 / f * 1000) / 1000)} : 2.`,
+      optionen:[R(`${z(halb)} ms`, "Richtig."),
+                F(`${z(Math.round(1000 / f * 1000) / 1000)} ms`, "Das ist die ganze Periode."),
+                F(`${z(Math.round(2000 / f * 1000) / 1000)} ms`, "Verdoppelt statt halbiert.")]}]};
  }
 ],
 
@@ -5862,36 +5881,39 @@ const AUFGABEN = {
                 F(`${z(wert)} ${g.e}`, "Die Zahl muss sich beim Umrechnen ändern.")]}]};
  },
 
- /* Grundeinheit -> Kilo */
+ /* Rechnen mit gemischten Vorsätzen — dafür braucht man sie überhaupt.
+    Nicht noch eine Umrechnung, sondern der Fehler, den sie verhindern soll:
+    mA in eine Formel einsetzen, in die Ampere gehören. */
  () => {
-   const g = pick([{e:"Ω", n:"Widerstand"}, {e:"V", n:"Spannung"}, {e:"W", n:"Leistung"}]);
-   const wert = pick([1500, 2200, 4700, 12000, 47000, 100000, 3300]);
-   const erg = wert / 1000;
+   const r = pick([470, 680, 1200, 2200, 3300]);
+   const ima = pick([15, 25, 40, 60, 80]);
+   const i = ima / 1000;
+   const u = Math.round(r * i * 1e6) / 1e6;
    return {
     typ:"formel",
-    text:`Wandle <b>${z(wert)} ${g.e}</b> in k${g.e} um.<br>Wie viel ist das?`,
-    loesung: z(erg),
-    schluss:"In der Praxis schreibt man selten 4700 Ω — man schreibt 4,7 kΩ. Dasselbe, nur kürzer.",
+    text:`Durch einen Widerstand von ${z(r)} Ω fließen ${z(ima)} mA.<br>Wie groß ist die Spannung in Volt?`,
+    loesung: z(u),
+    schluss:"Formeln kennen keine Vorsätze. In U = R · I gehören Ohm und Ampere — wer Milliampere einsetzt, bekommt ein tausendfach zu großes Ergebnis.",
     schritte:[
-     {frage:"Wie viel ist <b>1 k</b>?",
-      tipp:"Kilo kennst du vom Kilogramm.",
-      tipp2:"1 kg sind 1000 g. Genauso sind 1 kΩ gleich 1000 Ω.",
-      optionen:[R("1000", "Richtig — Kilo heißt tausend."),
-                F("100", "Das wäre Hekto, das benutzt man hier nicht."),
-                F("1 000 000", "Das wäre Mega.")]},
-     {frage:`Musst du <b>mal</b> 1000 oder <b>geteilt durch</b> 1000 rechnen?`,
-      tipp:`k${g.e} ist die größere Einheit — also wird die Zahl kleiner.`,
-      tipp2:"Von der kleinen zur großen Einheit wird geteilt. Aus vielen kleinen werden wenige große.",
-      optionen:[R("Geteilt durch 1000", "Richtig — die Zahl wird kleiner."),
-                F("Mal 1000", "Dann käme eine noch größere Zahl heraus — das passt nicht."),
-                F("Mal 100", "Kilo steht für 1000, nicht für 100.")]},
-     {frage:`Was ergibt <b>${z(wert)} : 1000</b>?`,
-      tippAntwort: z(erg),
-      tipp:"Das Komma wandert drei Stellen nach links.",
-      tipp2:`Streich bei ${z(wert)} gedanklich drei Nullen weg — oder setz das Komma drei Stellen weiter links.`,
-      optionen:[R(`${z(erg)} k${g.e}`, "Richtig."),
-                F(`${z(wert * 1000)} k${g.e}`, "Das wäre malgenommen."),
-                F(`${z(wert / 100)} k${g.e}`, "Du hast nur durch 100 geteilt.")]}]};
+     {frage:"Was musst du tun, <b>bevor</b> du U = R · I rechnest?",
+      tipp:"Schau dir die Einheiten der beiden Werte an.",
+      tipp2:"Der Widerstand steht schon in Ohm. Der Strom steht in Milliampere — die Formel will Ampere.",
+      optionen:[R("Den Strom in Ampere umrechnen", "Genau — sonst stimmt das Ergebnis nicht."),
+                F("Den Widerstand in Kiloohm umrechnen", "Das würde es nur komplizierter machen."),
+                F("Nichts, man kann direkt malnehmen", "Dann kommt ein tausendfach zu großer Wert heraus.")]},
+     {frage:`Wie viele <b>Ampere</b> sind ${z(ima)} mA?`,
+      tipp:"Milli heißt ein Tausendstel.",
+      tipp2:`Rechne ${z(ima)} : 1000 — das Komma wandert drei Stellen nach links.`,
+      optionen:[R(`${z(i)} A`, "Richtig."),
+                F(`${z(ima * 1000)} A`, "Malgenommen statt geteilt — so viel Strom fließt hier nie."),
+                F(`${z(ima / 100)} A`, "Nur durch 100 geteilt. Milli steht für tausend.")]},
+     {frage:`Was ergibt <b>${z(r)} Ω · ${z(i)} A</b>?`,
+      tippAntwort: z(u),
+      tipp:"Jetzt passen die Einheiten zusammen.",
+      tipp2:`Rechne ${z(r)} · ${z(i)}.`,
+      optionen:[R(`${z(u)} V`, "Richtig."),
+                F(`${z(Math.round(r * ima * 1e6) / 1e6)} V`, "Hier steckt noch der Milli-Fehler drin — das ist tausendmal zu viel."),
+                F(`${z(Math.round(ima / r * 1000 * 10000) / 10000)} V`, "Geteilt statt malgenommen.")]}]};
  },
 
  /* Grundeinheit -> Milli */
@@ -5926,70 +5948,84 @@ const AUFGABEN = {
                 F(`${z(wert * 100)} m${g.e}`, "Du hast nur mit 100 malgenommen.")]}]};
  },
 
- /* Von der Grundeinheit in Mikro */
+ /* Der Abstand zwischen zwei Vorsätzen — die Frage hinter jedem
+    Zahlendreher im Protokoll. Hier wird nicht umgerechnet, sondern
+    verglichen: um welchen Faktor liegen die beiden auseinander? */
  () => {
-   const g = pick([{e:"F", n:"Farad"}, {e:"A", n:"Ampere"}, {e:"s", n:"Sekunden"}]);
-   /* Nur Werte mit höchstens vier Nachkommastellen: Die Anzeige rundet
-      danach ab, und aus 0,000012 würde auf dem Bildschirm eine 0. */
-   const wert = pick([0.0005, 0.0012, 0.0033, 0.0047, 0.0082, 0.015]);
-   const erg = Math.round(wert * 1e6 * 1000) / 1000;
+   const e = pick(["Ω", "Hz", "W"]);
+   const BEDEUTUNG = {k:"tausend", M:"eine Million", G:"eine Milliarde"};
+   const paar = pick([{kl:"k", gr:"M", f:1000},
+                      {kl:"M", gr:"G", f:1000},
+                      {kl:"k", gr:"G", f:1000000}]);
+   const w = pick([1.5, 2.2, 4.7, 6.8, 12, 47]);
+   /* Zwei falsche Bedeutungen, die nicht zufällig die richtige treffen. */
+   const falsch = (richtig) => Object.entries(BEDEUTUNG)
+     .filter(([zeichen]) => zeichen !== richtig)
+     .map(([zeichen, wort]) => F(wort, `Das wäre ${zeichen}.`));
    return {
     typ:"formel",
-    text:`Wandle <b>${z(wert)} ${g.e}</b> in µ${g.e} um.<br>Wie viel ist das?`,
-    loesung: z(erg),
-    schluss:"Mikro ist ein Millionstel. Von der Grundeinheit nach Mikro wandert das Komma sechs Stellen nach rechts.",
+    text:`Gemessen wurden ${z(w)} ${paar.kl}${e}.<br>Im Protokoll steht ${z(w)} ${paar.gr}${e}. Um welchen Faktor ist der Eintrag zu groß?`,
+    loesung: z(paar.f),
+    schluss:"Ein falscher Buchstabe im Protokoll ist kein Schönheitsfehler — er verschiebt den Wert um das Tausend- oder Millionenfache.",
     schritte:[
-     {frage:"Wofür steht der Vorsatz <b>µ</b> (mikro)?",
-      tipp:"Er ist noch einmal viel kleiner als milli.",
-      tipp2:"Milli ist ein Tausendstel, mikro ein Millionstel — also noch einmal durch tausend.",
-      optionen:[R("Ein Millionstel", "Richtig — 1 µF sind 0,000001 F."),
-                F("Ein Tausendstel", "Das ist milli."),
-                F("Eine Million", "Das wäre Mega, mit großem M.")]},
-     {frage:"Wird die <b>Zahl</b> beim Umwandeln größer oder kleiner?",
-      tipp:"Die Einheit wird kleiner.",
-      tipp2:"Je kleiner die Einheit, desto mehr davon braucht man — die Zahl wird größer.",
-      optionen:[R("Größer", "Richtig — kleine Einheit, große Zahl."),
-                F("Kleiner", "Umgekehrt."),
-                F("Sie bleibt gleich", "Nein, nur die Menge bleibt gleich, nicht die Zahl.")]},
-     {frage:`Was ergibt <b>${z(wert)} · 1.000.000</b>?`,
-      tippAntwort: z(erg),
-      tipp:"Das Komma sechs Stellen nach rechts.",
-      tipp2:`Aus ${z(wert)} wird ${z(erg)}.`,
-      optionen:[R(`${z(erg)} µ${g.e}`, "Richtig."),
-                F(`${z(Math.round(wert * 1000 * 10000) / 10000)} µ${g.e}`, "Nur drei Stellen — das wäre milli."),
-                F(`${z(wert / 1e6)} µ${g.e}`, "Geteilt statt malgenommen.")]}]};
+     {frage:`Wofür steht der Vorsatz <b>${paar.kl}</b>?`,
+      tipp:"Die drei großen Vorsätze steigen jeweils um das Tausendfache.",
+      tipp2:`k ist tausend, M eine Million, G eine Milliarde. Gefragt ist ${paar.kl}.`,
+      optionen:[R(BEDEUTUNG[paar.kl], "Richtig."), ...falsch(paar.kl)]},
+     {frage:`Und wofür steht <b>${paar.gr}</b>?`,
+      tipp:"Derselbe Dreisprung, eine Stufe weiter.",
+      tipp2:`k ist tausend, M eine Million, G eine Milliarde. Gefragt ist ${paar.gr}.`,
+      optionen:[R(BEDEUTUNG[paar.gr], "Richtig."), ...falsch(paar.gr)]},
+     {frage:`Um welchen <b>Faktor</b> liegen die beiden auseinander?`,
+      tippAntwort: z(paar.f),
+      tipp:"Teile den größeren Faktor durch den kleineren.",
+      tipp2: paar.f === 1000
+        ? "Zwischen zwei benachbarten Vorsätzen liegt immer der Faktor 1000."
+        : "Hier wird eine Stufe übersprungen — also 1000 · 1000.",
+      optionen:[R(z(paar.f), "Richtig."),
+                F(z(paar.f === 1000 ? 1000000 : 1000), "Das wäre eine Stufe daneben."),
+                F("100", "Zwischen diesen Vorsätzen liegt nie der Faktor 100.")]}]};
  },
 
- /* Von Mega in die Grundeinheit */
+ /* Vergleichen statt umrechnen: Drei Werte mit verschiedenen Vorsätzen
+    lassen sich nicht ansehen — erst in einer gemeinsamen Einheit sieht man,
+    welcher der größte ist. Genau das macht man vor jeder Bestellung. */
  () => {
-   const g = pick([{e:"Ω", n:"Ohm"}, {e:"W", n:"Watt"}, {e:"Hz", n:"Hertz"}]);
-   const wert = pick([1.2, 2.2, 3.3, 4.7, 6.8, 10]);
-   const erg = Math.round(wert * 1e6 * 1000) / 1000;
+   /* Die drei Listen sind so gewählt, dass in kΩ nie zwei Werte gleich groß
+      herauskommen — sonst gäbe es zwei richtige Antworten. */
+   const k = pick([4.7, 47, 220, 1500]);
+   const m = pick([0.01, 0.1, 0.68]);
+   const o = pick([820, 68000, 470000]);
+   const werte = [{t:`${z(k)} kΩ`, kohm: k},
+                  {t:`${z(m)} MΩ`, kohm: Math.round(m * 1000 * 1e6) / 1e6},
+                  {t:`${z(o)} Ω`,  kohm: Math.round(o / 1000 * 1e6) / 1e6}];
+   const sortiert = werte.slice().sort((a, b) => b.kohm - a.kohm);
+   const sieger = sortiert[0];
    return {
     typ:"formel",
-    text:`Wandle <b>${z(wert)} M${g.e}</b> in ${g.e} um.<br>Wie viel ist das?`,
-    loesung: z(erg),
-    schluss:"Mega ist eine Million. Ein großes M und ein kleines m sind zwei völlig verschiedene Dinge — das eine mal einer Million, das andere durch tausend.",
+    text:`Drei Widerstände liegen vor dir: ${werte.map(v => v.t).join(", ")}.<br>Wie groß ist der größte von ihnen in kΩ?`,
+    loesung: z(sieger.kohm),
+    schluss:"Werte mit verschiedenen Vorsätzen kann man nicht vergleichen. Erst in einer gemeinsamen Einheit sieht man, was groß ist und was klein.",
     schritte:[
-     {frage:"Wofür steht das große <b>M</b>?",
-      tipp:"Groß geschrieben heißt groß gemeint.",
-      tipp2:"M ist Mega und steht für eine Million. Das kleine m wäre milli.",
-      optionen:[R("Eine Million", `Richtig — 1 M${g.e} sind 1.000.000 ${g.e}.`),
-                F("Ein Tausendstel", "Das ist das kleine m."),
-                F("Tausend", "Das wäre k für Kilo.")]},
-     {frage:"Wird die Zahl beim Umwandeln <b>größer oder kleiner</b>?",
-      tipp:"Die Einheit wird kleiner.",
-      tipp2:"Von einer großen Einheit in eine kleine: Die Zahl wächst.",
-      optionen:[R("Größer", "Richtig."),
-                F("Kleiner", "Umgekehrt — man geht ja zur kleineren Einheit."),
-                F("Gleich", "Nein.")]},
-     {frage:`Was ergibt <b>${z(wert)} · 1.000.000</b>?`,
-      tippAntwort: z(erg),
-      tipp:"Sechs Nullen anhängen beziehungsweise das Komma sechs Stellen nach rechts.",
-      tipp2:`Aus ${z(wert)} wird ${z(erg)}.`,
-      optionen:[R(`${z(erg)} ${g.e}`, "Richtig."),
-                F(`${z(Math.round(wert * 1000 * 1000) / 1000)} ${g.e}`, "Nur tausend — das wäre Kilo."),
-                F(`${z(wert / 1e6)} ${g.e}`, "Geteilt statt malgenommen.")]}]};
+     {frage:"Was musst du <b>zuerst</b> tun, um die drei vergleichen zu können?",
+      tipp:"Die Zahl allein sagt nichts, solange die Einheit eine andere ist.",
+      tipp2:"820 Ω sieht nach viel aus und ist weniger als 4,7 kΩ. Erst in einer gemeinsamen Einheit stimmt der Vergleich.",
+      optionen:[R("Alle in dieselbe Einheit umrechnen", "Genau — sonst vergleicht man Zahlen, nicht Widerstände."),
+                F("Die Zahlen der Größe nach ordnen", "Das führt hier in die Irre — die Einheiten sind verschieden."),
+                F("Den Mittelwert bilden", "Gefragt ist der größte, nicht der Durchschnitt.")]},
+     {frage:"Welcher der drei ist der <b>größte</b>?",
+      tipp:"Rechne jeden in kΩ um: MΩ mal 1000, Ω geteilt durch 1000.",
+      tipp2:`In kΩ sind das ${werte.map(v => z(v.kohm)).join(", ")}.`,
+      optionen: [R(sieger.t, "Richtig."),
+                 F(sortiert[1].t, `In kΩ sind das ${z(sortiert[1].kohm)} — weniger als ${z(sieger.kohm)}.`),
+                 F(sortiert[2].t, `In kΩ sind das nur ${z(sortiert[2].kohm)}.`)]},
+     {frage:`Wie viel sind <b>${sieger.t}</b> in kΩ?`,
+      tippAntwort: z(sieger.kohm),
+      tipp:"MΩ mal 1000, Ω geteilt durch 1000, kΩ bleibt stehen.",
+      tipp2:`Aus ${sieger.t} werden ${z(sieger.kohm)} kΩ.`,
+      optionen:[R(`${z(sieger.kohm)} kΩ`, "Richtig."),
+                F(`${z(Math.round(sortiert[1].kohm * 1e6) / 1e6)} kΩ`, "Das ist der zweitgrößte."),
+                F(`${z(Math.round(sortiert[2].kohm * 1e6) / 1e6)} kΩ`, "Das ist der kleinste von den dreien.")]}]};
  }
 ],
 
@@ -6570,70 +6606,80 @@ const AUFGABEN = {
                 F(`${z(pab)} W`, "Das ist die abgegebene Leistung.")]}]};
  },
 
- /* Wirkungsgrad aus beiden Leistungen */
+ /* Der Gesamtwirkungsgrad einer Kette. In der Anlage steht nie ein Gerät
+    allein — Motor, Getriebe, Pumpe hängen hintereinander, und die
+    Wirkungsgrade multiplizieren sich. Das ist die Rechnung, bei der die
+    meisten addieren oder mitteln wollen. */
  () => {
-   const pab = pick([750, 1100, 1500, 2200, 3000, 4000]);
-   const eta = pick([0.75, 0.8, 0.82, 0.85, 0.88, 0.9]);
-   const pzu = Math.round(pab / eta);
-   const proz = Math.round(pab / pzu * 10000) / 100;
+   const teile = pick([
+     {a:"Motor", b:"Getriebe",    e1:0.85, e2:0.9},
+     {a:"Motor", b:"Getriebe",    e1:0.9,  e2:0.95},
+     {a:"Motor", b:"Pumpe",       e1:0.8,  e2:0.75},
+     {a:"Umrichter", b:"Motor",   e1:0.95, e2:0.88},
+     {a:"Getriebe", b:"Pumpe",    e1:0.92, e2:0.7}
+   ]);
+   const p1 = Math.round(teile.e1 * 100), p2 = Math.round(teile.e2 * 100);
+   const ges = Math.round(teile.e1 * teile.e2 * 10000) / 100;
    return {
     typ:"formel",
-    text:`Ein Pumpenmotor nimmt ${z(pzu)} W aus dem Netz auf und gibt ${z(pab)} W an der Welle ab.<br>Wie groß ist der Wirkungsgrad in Prozent?`,
-    loesung: z(proz),
-    schluss:"Der Wirkungsgrad ist das Verhältnis von abgegebener zu aufgenommener Leistung. Über 100 % geht nicht.",
+    text:`Ein ${teile.a} mit ${z(p1)} % Wirkungsgrad treibt über ein${teile.b === "Getriebe" ? "" : "e"} ${teile.b} mit ${z(p2)} % an.<br>Wie groß ist der Gesamtwirkungsgrad in Prozent?`,
+    loesung: z(ges),
+    schluss:"Wirkungsgrade in einer Kette werden malgenommen, nicht addiert und nicht gemittelt. Deshalb ist der Gesamtwirkungsgrad immer schlechter als der schlechteste Einzelteil.",
     schritte:[
-     {frage:"Wo bleibt die <b>Differenz</b> zwischen beiden Leistungen?",
-      tipp:"Sie verschwindet nicht.",
-      tipp2:"Sie wird zu Wärme in Wicklung, Lager und Lüfter.",
-      optionen:[R("Sie wird zu Wärme", "Richtig — deshalb wird ein Motor im Betrieb warm."),
-                F("Sie geht verloren, ohne Wirkung", "Verloren im Sinne von unbrauchbar, aber sie ist als Wärme da."),
-                F("Sie kommt später wieder zurück", "Nein, sie ist weg.")]},
-     {frage:"Was steht beim Wirkungsgrad <b>oben</b> im Bruch?",
-      tipp:"Das, was hinten herauskommt.",
-      tipp2:"η = P_ab : P_zu. Die abgegebene Leistung steht oben.",
-      optionen:[R("Die abgegebene Leistung", "Richtig — sonst käme mehr als 100 % heraus."),
-                F("Die aufgenommene Leistung", "Dann wäre das Ergebnis größer als eins."),
-                F("Die Differenz", "Das wäre der Verlustanteil.")]},
-     {frage:`Was ergibt <b>${z(pab)} : ${z(pzu)} · 100</b>?`,
-      tippAntwort: z(proz),
-      tipp:"Teilen und mal hundert.",
-      tipp2:`${z(pab)} : ${z(pzu)} = ${z(Math.round(pab / pzu * 10000) / 10000)}, mal 100.`,
-      optionen:[R(`${z(proz)} %`, "Richtig."),
-                F(`${z(Math.round(pzu / pab * 10000) / 100)} %`, "Verkehrt herum geteilt — über 100 % gibt es beim Wirkungsgrad nicht."),
-                F(`${z(Math.round((pzu - pab) / pzu * 10000) / 100)} %`, "Das ist der Verlustanteil, nicht der Wirkungsgrad.")]}]};
+     {frage:"Was passiert mit der Leistung auf dem <b>Weg durch beide Teile</b>?",
+      tipp:"Jedes Teil gibt weniger ab, als es bekommt.",
+      tipp2:`Vom ${teile.a} kommen nur ${z(p1)} % an — und davon gibt ${teile.b === "Getriebe" ? "das" : "die"} ${teile.b} wieder nur ${z(p2)} % weiter.`,
+      optionen:[R("Jedes Teil nimmt sich seinen Anteil vom Rest", "Genau — deshalb wird malgenommen."),
+                F("Die Verluste addieren sich einfach", "Fast, aber nicht genau — der zweite Verlust bezieht sich nur noch auf den Rest."),
+                F("Nur das schlechtere Teil zählt", "Das wäre zu gut gerechnet.")]},
+     {frage:"Wie <b>verrechnet</b> man die beiden Wirkungsgrade?",
+      tipp:"Denk daran, was mit Prozent von Prozent passiert.",
+      tipp2:`${z(p2)} % von ${z(p1)} % — das ist eine Multiplikation.`,
+      optionen:[R("Malnehmen", "Richtig — η ges = η1 · η2."),
+                F("Addieren", `Dann käme ${z(p1 + p2)} % heraus — mehr als 100 %.`),
+                F("Den Mittelwert bilden", "Das ergäbe einen zu guten Wert.")]},
+     {frage:`Was ergibt <b>${z(teile.e1)} · ${z(teile.e2)} · 100</b>?`,
+      tippAntwort: z(ges),
+      tipp:"Erst die beiden Kommazahlen malnehmen, dann mal 100.",
+      tipp2:`Rechne ${z(teile.e1)} · ${z(teile.e2)} und nimm das Ergebnis mal 100.`,
+      optionen:[R(`${z(ges)} %`, "Richtig."),
+                F(`${z(p1 + p2 - 100)} %`, "So kommt man nur zufällig in die Nähe — die Rechnung stimmt nicht."),
+                F(`${z(Math.round((p1 + p2) / 2 * 100) / 100)} %`, "Der Mittelwert ist immer zu gut.")]}]};
  },
 
- /* Verlustleistung */
+ /* Die dritte Richtung im Wirkungsgrad-Dreieck: aufgenommene Leistung und
+    Wirkungsgrad sind bekannt, gesucht ist, was hinten herauskommt. Auf dem
+    Typenschild steht beides — man muss wissen, welches was ist. */
  () => {
-   const pab = pick([1100, 1500, 2200, 3000, 5500]);
-   const eta = pick([0.78, 0.82, 0.86, 0.9]);
-   const pzu = Math.round(pab / eta);
-   const pv = Math.round((pzu - pab) * 100) / 100;
+   const pzu = pick([1200, 2000, 3000, 4500, 7500]);
+   const eta = pick([0.75, 0.8, 0.85, 0.9]);
+   const proz = Math.round(eta * 100);
+   const pab = Math.round(pzu * eta * 100) / 100;
    return {
     typ:"formel",
-    text:`Ein Antrieb nimmt ${z(pzu)} W auf und gibt ${z(pab)} W ab.<br>Wie groß ist die Verlustleistung in Watt?`,
-    loesung: z(pv),
-    schluss:"Die Verlustleistung ist der Teil, der als Wärme abgeführt werden muss. Bei der Auslegung des Schaltschranks zählt genau dieser Wert.",
+    text:`Ein Motor nimmt ${z(pzu)} W aus dem Netz auf, sein Wirkungsgrad beträgt ${z(proz)} %.<br>Wie viel Watt gibt er an der Welle ab?`,
+    loesung: z(pab),
+    schluss:"Auf dem Typenschild steht die abgegebene Leistung — die Nennleistung. Aus dem Netz zieht der Motor mehr. Wer beides verwechselt, legt die Sicherung zu klein aus.",
     schritte:[
-     {frage:"Was ist die <b>Verlustleistung</b>?",
-      tipp:"Der Unterschied zwischen hinein und heraus.",
-      tipp2:"Was aufgenommen, aber nicht abgegeben wird.",
-      optionen:[R("Die Differenz zwischen aufgenommener und abgegebener Leistung", "Richtig."),
-                F("Die abgegebene Leistung", "Die ist der nutzbare Teil."),
-                F("Die aufgenommene Leistung", "Das ist alles zusammen.")]},
-     {frage:"Wozu braucht man diesen Wert in der Praxis?",
-      tipp:"Denk an den Schaltschrank.",
-      tipp2:"Die Verlustwärme muss abgeführt werden — daraus wird die Lüftung oder Kühlung ausgelegt.",
-      optionen:[R("Um die Kühlung auszulegen", "Genau — jedes Watt Verlust wird zu Wärme."),
-                F("Um den Preis zu bestimmen", "Damit hat sie nichts zu tun."),
-                F("Um die Drehzahl zu berechnen", "Auch nicht.")]},
-     {frage:`Was ergibt <b>${z(pzu)} − ${z(pab)}</b>?`,
-      tippAntwort: z(pv),
-      tipp:"Abziehen.",
-      tipp2:`Rechne ${z(pzu)} − ${z(pab)}.`,
-      optionen:[R(`${z(pv)} W`, "Richtig."),
-                F(`${z(pzu + pab)} W`, "Addiert statt abgezogen."),
-                F(`${z(Math.round(pab / pzu * 10000) / 100)} W`, "Das wäre der Wirkungsgrad in Prozent, keine Leistung.")]}]};
+     {frage:"Welcher der beiden Werte ist <b>größer</b> — aufgenommen oder abgegeben?",
+      tipp:"Ein Teil bleibt als Wärme im Motor.",
+      tipp2:"Was hineingeht, muss auch die Verluste decken. Abgegeben wird also weniger.",
+      optionen:[R("Die aufgenommene Leistung", "Richtig — die Differenz ist die Verlustwärme."),
+                F("Die abgegebene Leistung", "Dann würde der Motor Energie erzeugen."),
+                F("Beide sind gleich groß", "Nur bei 100 % Wirkungsgrad, und den gibt es nicht.")]},
+     {frage:"Wie stellst du <b>η = P ab : P zu</b> nach P ab um?",
+      tipp:"P ab steht schon oben im Bruch.",
+      tipp2:"Beide Seiten mit P zu malnehmen: P ab = η · P zu.",
+      optionen:[R("P ab = η · P zu", "Richtig."),
+                F("P ab = P zu : η", "Damit käme mehr heraus als hineingeht."),
+                F("P ab = P zu − η", "Ein Wirkungsgrad ist keine Leistung, den kann man nicht abziehen.")]},
+     {frage:`Was ergibt <b>${z(pzu)} · ${z(eta)}</b>?`,
+      tippAntwort: z(pab),
+      tipp:`${z(proz)} % sind ${z(eta)}.`,
+      tipp2:`Rechne ${z(pzu)} · ${z(eta)}.`,
+      optionen:[R(`${z(pab)} W`, "Richtig."),
+                F(`${z(Math.round(pzu / eta * 100) / 100)} W`, "Geteilt statt malgenommen — mehr als aufgenommen wird, kann nicht abgegeben werden."),
+                F(`${z(Math.round((pzu - pab) * 100) / 100)} W`, "Das ist die Verlustleistung.")]}]};
  }
 ],
 
@@ -6736,67 +6782,79 @@ const AUFGABEN = {
                 F(`${z(Math.round(pkw * n / 9550 * 100) / 100)} Nm`, "Die 9550 gehört nach oben.")]}]};
  },
 
- /* Synchrondrehzahl aus der Polpaarzahl */
+ /* Rückwärts gelesen: Auf dem Typenschild steht die Drehzahl, nicht die
+    Polpaarzahl. Wer wissen will, was für ein Motor vor ihm steht, muss den
+    Weg andersherum gehen — und dabei den Schlupf mitdenken. */
  () => {
-   const p = pick([1, 2, 3, 4]);
-   const ns = 60 * 50 / p;
+   const pz = pick([1, 2, 3, 4]);
+   const ns = 3000 / pz;
+   /* Eine Nenndrehzahl, wie sie auf einem Typenschild steht: knapp unter
+      der Synchrondrehzahl, um den Schlupf. */
+   const n = Math.round(ns * (1 - pick([0.02, 0.033, 0.04, 0.05])));
    return {
     typ:"formel",
-    text:`Ein Drehstrommotor hat ${z(p)} Polpaar${p > 1 ? "e" : ""} und läuft am 50-Hz-Netz.<br>Wie groß ist die Synchrondrehzahl in Umdrehungen je Minute?`,
-    loesung: z(ns),
-    schluss:"n = 60 · f : p. Mehr Polpaare heißt langsameres Drehfeld — deshalb baut man langsame Motoren mit vielen Polen.",
+    text:`Auf dem Typenschild eines Drehstrommotors steht ${z(n)} 1/min, das Netz hat 50 Hz.<br>Wie viele Polpaare hat der Motor?`,
+    loesung: z(pz),
+    schluss:"Die Nenndrehzahl liegt immer knapp unter der Synchrondrehzahl. Aus 1450 wird 1500, aus 2850 wird 3000 — daraus liest man die Polpaarzahl ab.",
     schritte:[
-     {frage:"Was ist die <b>Synchrondrehzahl</b>?",
-      tipp:"Sie gehört zum Drehfeld, nicht zum Läufer.",
-      tipp2:"Es ist die Drehzahl des Drehfelds im Ständer. Der Läufer bleibt immer etwas dahinter zurück.",
-      optionen:[R("Die Drehzahl des Drehfelds", "Richtig — der Läufer dreht sich beim Asynchronmotor etwas langsamer."),
-                F("Die Drehzahl des Läufers", "Die liegt darunter, um den Schlupf."),
-                F("Die höchste zulässige Drehzahl", "Damit hat der Begriff nichts zu tun.")]},
-     {frage:`Wie wirken sich <b>mehr Polpaare</b> aus?`,
-      tipp:"Die Polpaarzahl steht in der Formel unten.",
-      tipp2:"n = 60 · f : p. Größerer Nenner, kleineres Ergebnis.",
-      optionen:[R("Das Drehfeld wird langsamer", "Richtig."),
-                F("Das Drehfeld wird schneller", "Umgekehrt."),
-                F("Es ändert sich nichts", "Doch, die Polpaarzahl geht direkt ein.")]},
-     {frage:`Was ergibt <b>60 · 50 : ${z(p)}</b>?`,
-      tippAntwort: z(ns),
-      tipp:"Erst 60 mal 50, dann durch die Polpaarzahl.",
-      tipp2:`60 · 50 = 3000, geteilt durch ${z(p)}.`,
-      optionen:[R(`${z(ns)} 1/min`, "Richtig."),
-                F(`${z(3000 * p)} 1/min`, "Malgenommen statt geteilt — dann würden mehr Pole schneller machen."),
-                F(`${z(Math.round(50 / p * 100) / 100)} 1/min`, "Hier fehlt der Faktor 60 für die Minute.")]}]};
+     {frage:`Warum steht auf dem Schild <b>${z(n)}</b> und nicht ${z(ns)} 1/min?`,
+      tipp:"Der Läufer hinkt dem Drehfeld hinterher.",
+      tipp2:"Ohne diesen Unterschied — den Schlupf — würde im Läufer keine Spannung entstehen und der Motor hätte kein Drehmoment.",
+      optionen:[R("Wegen des Schlupfes", "Richtig — der Läufer bleibt immer etwas zurück."),
+                F("Weil die Frequenz schwankt", "Die Netzfrequenz liegt fest bei 50 Hz."),
+                F("Weil das Schild ungenau ist", "Es ist genau — es nennt die Nenndrehzahl unter Last.")]},
+     {frage:"Welche <b>Synchrondrehzahl</b> gehört zu diesem Motor?",
+      tipp:"Es gibt nur vier gängige: 3000, 1500, 1000 und 750.",
+      tipp2:`${z(n)} liegt knapp unter ${z(ns)} — das ist die passende.`,
+      optionen: zieheVerschiedene([
+        R(`${z(ns)} 1/min`, "Richtig."),
+        F(`${z(ns === 3000 ? 1500 : 3000)} 1/min`, "Zu weit weg — der Schlupf beträgt nur ein paar Prozent."),
+        F(`${z(n)} 1/min`, "Das ist die Nenndrehzahl selbst, die kann es nicht sein.")], 3)},
+     {frage:`Was ergibt <b>3000 : ${z(ns)}</b>?`,
+      tippAntwort: z(pz),
+      tipp:"n s = 3000 : p, also p = 3000 : n s.",
+      tipp2:`Rechne 3000 : ${z(ns)}.`,
+      optionen:[R(`${z(pz)}`, `Richtig — der Motor hat ${z(pz)} Polpaar${pz > 1 ? "e" : ""}, also ${z(2 * pz)} Pole.`),
+                F(`${z(2 * pz)}`, "Das ist die Polzahl. Gefragt waren Polpaare, also die Hälfte."),
+                F(`${z(Math.round(ns / 3000 * 1000) / 1000)}`, "Verkehrt herum geteilt.")]}]};
  },
 
- /* Drehmoment aus Leistung und Drehzahl */
+ /* Dieselbe Formel, andere Richtung: Am Prüfstand misst man Drehmoment und
+    Drehzahl — die Leistung fällt hinten heraus. Das ist die Rechnung, mit
+    der man ein Typenschild nachprüft. */
  () => {
    const pkw = pick([1.5, 2.2, 4, 5.5, 7.5, 11]);
    const n = pick([720, 960, 1450, 2880]);
-   const m = Math.round(9550 * pkw / n * 100) / 100;
+   /* Aus einer glatten Leistung ein gerundetes Drehmoment machen und daraus
+      die Leistung zurückrechnen — sonst stünde eine krumme Zahl auf dem
+      Prüfprotokoll, die es so nie gibt. */
+   const m = Math.round(9550 * pkw / n * 10) / 10;
+   const erg = Math.round(m * n / 9550 * 1000) / 1000;
    return {
     typ:"formel",
-    text:`Ein Motor leistet ${z(pkw)} kW bei ${z(n)} 1/min.<br>Wie groß ist das Drehmoment in Newtonmeter? (auf zwei Stellen runden)`,
-    loesung: z(m),
-    schluss:"M = 9550 · P : n, mit P in Kilowatt. Bei gleicher Leistung gilt: je langsamer, desto mehr Drehmoment.",
+    text:`Am Prüfstand misst ein Motor ${z(m)} Nm bei ${z(n)} 1/min.<br>Wie groß ist seine Leistung in Kilowatt? (auf drei Stellen runden)`,
+    loesung: z(erg),
+    schluss:"P = M · n : 9550. Drehmoment allein sagt nichts über die Leistung — erst mit der Drehzahl zusammen wird eine Leistung daraus.",
     schritte:[
-     {frage:"Was passiert mit dem Drehmoment, wenn ein Motor bei <b>gleicher Leistung langsamer</b> dreht?",
-      tipp:"Die Drehzahl steht in der Formel unten.",
-      tipp2:"Deshalb hat ein Getriebemotor am Abtrieb viel mehr Drehmoment als der Motor selbst.",
-      optionen:[R("Es wird größer", "Richtig — genau dafür baut man Getriebe ein."),
-                F("Es wird kleiner", "Umgekehrt."),
-                F("Es bleibt gleich", "Nein, Drehzahl und Drehmoment hängen zusammen.")]},
-     {frage:"Wofür steht die Zahl <b>9550</b> in der Formel?",
-      tipp:"Sie fasst Einheiten zusammen.",
-      tipp2:"Sie rechnet Kilowatt und Umdrehungen je Minute so um, dass am Ende Newtonmeter herauskommen.",
-      optionen:[R("Für die Umrechnung der Einheiten", "Richtig — sie steckt 60 Sekunden und 2 · π in sich."),
-                F("Für den Wirkungsgrad", "Der kommt darin nicht vor."),
-                F("Für die Netzfrequenz", "Auch nicht.")]},
-     {frage:`Was ergibt <b>9550 · ${z(pkw)} : ${z(n)}</b>?`,
-      tippAntwort: z(m),
-      tipp:"Erst oben malnehmen, dann durch die Drehzahl.",
-      tipp2:`9550 · ${z(pkw)} = ${z(Math.round(9550 * pkw * 100) / 100)}, geteilt durch ${z(n)}.`,
-      optionen:[R(`${z(m)} Nm`, "Richtig."),
-                F(`${z(Math.round(9550 * pkw * n / 1000) / 1000)} Nm`, "Malgenommen statt geteilt."),
-                F(`${z(Math.round(9550 * pkw / n / 1000 * 100) / 100)} Nm`, "Hier wurde noch einmal durch tausend geteilt — die Leistung steht schon in Kilowatt.")]}]};
+     {frage:"Was braucht man <b>neben dem Drehmoment</b>, um die Leistung zu kennen?",
+      tipp:"Ein Drehmoment kann auch im Stillstand anliegen.",
+      tipp2:"Leistung ist Arbeit je Zeit. Erst wenn sich die Welle dreht, wird aus dem Drehmoment eine Leistung.",
+      optionen:[R("Die Drehzahl", "Richtig — ohne Drehung keine Leistung."),
+                F("Die Spannung", "Die gehört zur elektrischen Seite, nicht zur mechanischen."),
+                F("Den Wirkungsgrad", "Der verbindet elektrische und mechanische Leistung, wird hier aber nicht gebraucht.")]},
+     {frage:"Wie stellst du <b>M = 9550 · P : n</b> nach P um?",
+      tipp:"P steht oben, geteilt wird durch n.",
+      tipp2:"Beide Seiten mit n malnehmen und durch 9550 teilen: P = M · n : 9550.",
+      optionen:[R("P = M · n : 9550", "Richtig."),
+                F("P = 9550 · M : n", "Dann hätte ein langsamer Motor mehr Leistung — das stimmt nicht."),
+                F("P = M : n · 9550", "Dasselbe wie oben, nur anders geschrieben — und ebenso falsch.")]},
+     {frage:`Was ergibt <b>${z(m)} · ${z(n)} : 9550</b>?`,
+      tippAntwort: z(erg),
+      tipp:"Erst malnehmen, dann durch 9550.",
+      tipp2:`${z(m)} · ${z(n)} = ${z(Math.round(m * n * 100) / 100)}. Das noch durch 9550.`,
+      optionen:[R(`${z(erg)} kW`, "Richtig."),
+                F(`${z(Math.round(9550 * m / n * 1000) / 1000)} kW`, "Hier stehen 9550 und die Drehzahl vertauscht."),
+                F(`${z(Math.round(m * n * 100) / 100)} kW`, "Die Division durch 9550 fehlt.")]}]};
  }
 ],
 
