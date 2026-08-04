@@ -1308,10 +1308,11 @@ const elektroProben3 = {
     }
     const w = groesse(t, "Ω");
     const tol = dz((t.match(/±([\d.,]+)\s*%/) || [])[1]);
-    if (w !== null && isFinite(tol)) {                               // obere Toleranzgrenze
-      if (!/höchstens/.test(f)) return "die Frage passt nicht zum Aufgabentyp: " + f;
+    if (w !== null && isFinite(tol)) {                               // Toleranzgrenzen
       const ab = Math.round(w * tol / 100 * 100) / 100;
-      return stimmt(Math.round((w + ab) * 100) / 100, l, 1e-6);
+      if (/höchstens/.test(f)) return stimmt(Math.round((w + ab) * 100) / 100, l, 1e-6);
+      if (/mindestens/.test(f)) return stimmt(Math.round((w - ab) * 100) / 100, l, 1e-6);
+      return "die Frage passt nicht zum Aufgabentyp: " + f;
     }
     const ziffern = dz((t.match(/Ziffern ([\d.,]+)/) || [])[1]);     // Zahl der Nullen
     if (w === null || !isFinite(ziffern)) return "konnte die Angaben nicht lesen: " + t;
