@@ -875,11 +875,39 @@ const elektroProben = {
   },
 
   "Spannungsteiler": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), f = hinten(a), l = loes(a);
     const r1 = dz((t.match(/R1 = ([\d.,]+)\s*Ω/) || [])[1]);
     const r2 = dz((t.match(/R2 = ([\d.,]+)\s*Ω/) || [])[1]);
     const u  = groesse(t, "V");
+
+    /* Rückwärts: Sollspannung an R1 gegeben, R2 gesucht */
+    const soll = t.match(/soll ein Teiler ([\d.,]+) V an R1 abgeben/);
+    if (soll) {
+      if (!isFinite(r1) || u === null) return "R1 oder Quellenspannung nicht lesbar: " + t;
+      const u1 = dz(soll[1]);
+      if (!(u1 > 0) || u1 >= u) return `an R1 sollen ${u1} V von ${u} V abfallen — das geht nicht`;
+      const noetig = Math.round(r1 * (u - u1) / u1 * 1000) / 1000;
+      const fehl = stimmt(noetig, l, 1e-3);
+      if (fehl) return fehl;
+      /* Gegenprobe: mit diesem R2 muss die Sollspannung wieder herauskommen */
+      if (Math.abs(u * r1 / (r1 + noetig) - u1) > 1e-6)
+        return "mit dem gefundenen R2 kommt nicht die Sollspannung heraus";
+      return null;
+    }
+
     if (!isFinite(r1) || !isFinite(r2) || u === null) return "konnte die Angaben nicht lesen: " + t;
+
+    /* Querstrom durch den unbelasteten Teiler, in Milliampere */
+    if (/Strom .*Milliampere|Milliampere/.test(f)) {
+      const soll2 = Math.round(u / (r1 + r2) * 1000 * 100) / 100;
+      const fehl = stimmt(soll2, l, 1e-2);
+      if (fehl) return fehl;
+      /* Gegenprobe: dieser Strom mal beiden Widerständen ergibt die Quellenspannung */
+      if (Math.abs(l / 1000 * (r1 + r2) - u) / u > 0.01)
+        return "aus dem Strom folgt nicht wieder die Quellenspannung";
+      return null;
+    }
+
     const m = hinten(a).match(/an R(\d)/);
     if (!m) return "konnte nicht lesen, welche Teilspannung gefragt ist: " + hinten(a);
     const gesucht = m[1] === "1" ? r1 : r2;

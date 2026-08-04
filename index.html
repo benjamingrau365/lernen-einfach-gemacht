@@ -5194,9 +5194,9 @@ const AUFGABEN = {
    const u2 = Math.round(u * r2 / (r1 + r2) * 1000) / 1000;
    return {
     typ:"formel",
-    text:`Zur Sollwertvorgabe liegen R1 = ${z(r1)} Ω und R2 = ${z(r2)} Ω in Reihe an ${z(u)} V.<br>Wie groß ist die Spannung an R2 in Volt?`,
-    loesung: z(u2),
-    schluss:"Der Teiler gibt die Spannung im Verhältnis der Widerstände weiter. Die Summe der Teilspannungen ist immer die Gesamtspannung.",
+    text:`Zur Sollwertvorgabe liegen R1 = ${z(r1)} Ω und R2 = ${z(r2)} Ω in Reihe an ${z(u)} V.<br>Welcher Strom fließt durch den Teiler, in Milliampere?`,
+    loesung: z(Math.round(u / (r1 + r2) * 1000 * 100) / 100),
+    schluss:"Durch einen unbelasteten Teiler fließt überall derselbe Strom — der Querstrom. Je kleiner die Widerstände, desto größer ist er und desto mehr Wärme entsteht umsonst.",
     schritte:[
      {frage:"Welchen Widerstand <b>sieht</b> die Quelle insgesamt?",
       tipp:"Die beiden liegen in Reihe.",
@@ -5204,51 +5204,57 @@ const AUFGABEN = {
       optionen:[R(`${z(r1 + r2)} Ω`, "Richtig — in Reihe wird addiert."),
                 F(`${z(Math.round(r1 * r2 / (r1 + r2) * 100) / 100)} Ω`, "So rechnet man parallel."),
                 F(`${z(Math.max(r1, r2))} Ω`, "Nur der größere — der andere zählt aber mit.")]},
-     {frage:`Welchen <b>Anteil</b> der Gesamtspannung bekommt R2?`,
-      tipp:"Sein Anteil am Gesamtwiderstand.",
-      tipp2:`R2 ist ${z(r2)} von insgesamt ${z(r1 + r2)} Ω.`,
-      optionen:[R(`${z(r2)} von ${z(r1 + r2)}`, "Richtig — das Verhältnis der Widerstände ist auch das der Spannungen."),
-                F(`${z(r2)} von ${z(r1)}`, "Verglichen wird mit der Summe, nicht mit dem anderen Widerstand."),
-                F("Immer die Hälfte", "Nur wenn beide gleich groß wären.")]},
-     {frage:`Was ergibt <b>${z(u)} V · ${z(r2)} : ${z(r1 + r2)}</b>?`,
-      tippAntwort: z(u2),
-      tipp:"Erst malnehmen, dann teilen.",
-      tipp2:`Rechne ${z(u)} · ${z(r2)} = ${z(u * r2)}, dann geteilt durch ${z(r1 + r2)}.`,
-      optionen:[R(`${z(u2)} V`, "Richtig."),
-                F(`${z(Math.round(u * r1 / (r1 + r2) * 1000) / 1000)} V`, "Das ist die Spannung an R1 — zusammen ergeben beide die Gesamtspannung."),
-                F(`${z(u)} V`, "Das ist die volle Spannung. Ein Teil davon fällt an R1 ab.")]}]};
+     {frage:"Fließt durch R1 und R2 <b>derselbe</b> Strom?",
+      tipp:"Solange nichts abgegriffen wird, gibt es nur einen Weg.",
+      tipp2:"Beim unbelasteten Teiler fließt der Strom durch beide hintereinander — es gibt keine Abzweigung.",
+      optionen:[R("Ja, es ist eine Reihenschaltung", "Richtig. Deshalb heißt er unbelasteter Teiler."),
+                F("Nein, durch R1 mehr", "Das gäbe es nur, wenn irgendwo Strom abfließt."),
+                F("Nein, durch den kleineren mehr", "Das gilt bei Parallelschaltung.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(r1 + r2)} Ω</b>, umgerechnet in Milliampere?`,
+      tippAntwort: z(Math.round(u / (r1 + r2) * 1000 * 100) / 100),
+      tipp:"Erst teilen, dann mal 1000.",
+      tipp2:`${z(u)} : ${z(r1 + r2)} ergibt Ampere — mal 1000 sind es Milliampere.`,
+      optionen:[R(`${z(Math.round(u / (r1 + r2) * 1000 * 100) / 100)} mA`, "Richtig."),
+                F(`${z(Math.round(u / (r1 + r2) * 10000) / 10000)} mA`, "Das ist der Wert in Ampere — gefragt sind Milliampere."),
+                F(`${z(Math.round(u / r1 * 1000 * 100) / 100)} mA`, "Hier wurde nur mit R1 gerechnet.")]}]};
  },
 
  /* Teilspannung an R1 — Vorwiderstand vor einem Messgerät */
  () => {
-   const [r1, r2] = zieheVerschiedene([100, 150, 220, 330, 470, 560], 2);
+   /* Rückwärts: Die Sollspannung steht fest, R1 ist eingebaut — welcher R2
+      gehört dazu? So steht die Aufgabe in der Praxis, nicht andersherum. */
+   const r1 = pick([100, 150, 220, 330, 470]);
+   /* Der Faktor 2 fällt raus: Dann wäre R2 genauso groß wie R1, und die
+      richtige Antwort stünde dreimal gleich da. */
+   const teiler = pick([3, 4, 5, 6]);          /* R2 = R1 · (teiler − 1) */
+   const r2 = r1 * (teiler - 1);
    const u = pick([9, 12, 24, 30]);
-   const u1 = Math.round(u * r1 / (r1 + r2) * 1000) / 1000;
+   const usoll = Math.round(u / teiler * 1000) / 1000;
    return {
     typ:"formel",
-    text:`R1 = ${z(r1)} Ω und R2 = ${z(r2)} Ω bilden einen Teiler an ${z(u)} V.<br>Wie groß ist die Spannung an R1 in Volt?`,
-    loesung: z(u1),
-    schluss:"Am größeren Widerstand fällt die größere Spannung ab — immer, weil beide vom gleichen Strom durchflossen werden.",
+    text:`An ${z(u)} V soll ein Teiler ${z(usoll)} V an R1 abgeben. Eingebaut ist R1 = ${z(r1)} Ω.<br>Wie groß muss R2 in Ohm sein?`,
+    loesung: z(r2),
+    schluss:"Die Spannungen verhalten sich wie die Widerstände. Wer diesen Satz einmal verstanden hat, kann den Teiler in beide Richtungen rechnen.",
     schritte:[
-     {frage:"Welcher <b>Strom</b> fließt durch R1 und R2?",
-      tipp:"Reihenschaltung.",
-      tipp2:"In der Reihe gibt es nur einen Weg, also überall denselben Strom.",
-      optionen:[R("Bei beiden derselbe", "Richtig — daraus folgt alles Weitere."),
-                F("Durch den kleineren mehr", "Das gilt nur bei Parallelschaltung."),
-                F("Durch den größeren mehr", "Auch nein — in der Reihe ist der Strom überall gleich.")]},
-     {frage:`An welchem Widerstand fällt <b>mehr</b> Spannung ab?`,
-      tipp:"Gleicher Strom, verschiedene Widerstände.",
-      tipp2:`${z(Math.max(r1, r2))} Ω ist größer als ${z(Math.min(r1, r2))} Ω.`,
-      optionen:[R(`Am ${z(Math.max(r1, r2))}-Ω-Widerstand`, "Richtig."),
-                F(`Am ${z(Math.min(r1, r2))}-Ω-Widerstand`, "Umgekehrt."),
-                F("An beiden gleich viel", "Nur bei gleich großen Widerständen.")]},
-     {frage:`Was ergibt <b>${z(u)} V · ${z(r1)} : ${z(r1 + r2)}</b>?`,
-      tippAntwort: z(u1),
-      tipp:"Erst malnehmen, dann durch die Summe teilen.",
-      tipp2:`${z(u)} · ${z(r1)} = ${z(u * r1)}, geteilt durch ${z(r1 + r2)}.`,
-      optionen:[R(`${z(u1)} V`, "Richtig."),
-                F(`${z(Math.round(u * r2 / (r1 + r2) * 1000) / 1000)} V`, "Das ist die Spannung an R2."),
-                F(`${z(Math.round(u / 2 * 1000) / 1000)} V`, "Die Hälfte käme nur bei gleich großen Widerständen heraus.")]}]};
+     {frage:`Wie viel Spannung fällt an <b>R2</b> ab?`,
+      tipp:"Zusammen müssen beide die Quellenspannung ergeben.",
+      tipp2:`Rechne ${z(u)} − ${z(usoll)}.`,
+      optionen:[R(`${z(Math.round((u - usoll) * 1000) / 1000)} V`, "Richtig — der Rest fällt an R2 ab."),
+                F(`${z(usoll)} V`, "Das ist der Anteil von R1."),
+                F(`${z(u)} V`, "Das ist die volle Spannung, die teilt sich ja gerade auf.")]},
+     {frage:"Wie verhalten sich die <b>Widerstände</b> zueinander?",
+      tipp:"Genauso wie die Spannungen an ihnen.",
+      tipp2:`An R2 fallen ${z(Math.round((u - usoll) / usoll * 100) / 100)}-mal so viel Spannung ab wie an R1 — also ist R2 auch ${z(Math.round((u - usoll) / usoll * 100) / 100)}-mal so groß.`,
+      optionen:[R("Wie die Spannungen an ihnen", "Richtig — das ist der ganze Spannungsteiler in einem Satz."),
+                F("Umgekehrt zu den Spannungen", "Nein, beim gleichen Strom gehört mehr Widerstand zu mehr Spannung."),
+                F("Das hat nichts miteinander zu tun", "Doch, über U = R · I hängen sie direkt zusammen.")]},
+     {frage:`Was ergibt <b>${z(r1)} Ω · ${z(Math.round((u - usoll) / usoll * 100) / 100)}</b>?`,
+      tippAntwort: z(r2),
+      tipp:"R1 mit dem Verhältnis malnehmen.",
+      tipp2:`Rechne ${z(r1)} · ${z(Math.round((u - usoll) / usoll * 100) / 100)}.`,
+      optionen:[R(`${z(r2)} Ω`, "Richtig."),
+                F(`${z(r1)} Ω`, "Das wäre nur richtig, wenn beide Spannungen gleich groß sein sollen."),
+                F(`${z(Math.round(r1 / ((u - usoll) / usoll) * 100) / 100)} Ω`, "Geteilt statt malgenommen — dann käme an R1 zu viel an.")]}]};
  }
 ],
 
