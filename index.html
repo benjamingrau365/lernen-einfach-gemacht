@@ -29203,8 +29203,10 @@ function ueberHtml(){
     </div>
     ${/* Wer wissen will, ob er einer Lernseite trauen kann, sucht nach einem
           Menschen dahinter. „Ein Lernprojekt aus Deutschland“ ist niemand.
-          Dieser Kasten ist ein Entwurf — er soll umgeschrieben werden, bis er
-          nach dem klingt, der ihn schreibt. */""}
+          Der Kasten sagt deshalb, warum die Seite gebaut wurde und wer die
+          Aufgaben für die Ausbildung pflegt — aber er erzählt keine
+          Lebensgeschichte. Das ist Absicht: Es geht um die Seite, nicht um
+          den, der sie schreibt. */""}
     <div class="card wermacht">
       <p class="ueberschrift">Warum die Seite gebaut wurde</p>
       <p class="einfachtext">In fast jedem Klassenraum und in fast jeder Berufsschulklasse sitzen Leute,
@@ -29241,7 +29243,12 @@ function ueberHtml(){
     </div>`;
 }
 
-/* ---------- Rechtliches ---------- */
+/* ---------- Rechtliches ----------
+   PLATZ markiert eine Angabe, die noch fehlt. Gerade steht keine mehr im Netz,
+   deshalb wird die Marke unten nirgends eingesetzt. Sie bleibt trotzdem hier:
+   Wer später etwas ergänzen muss, das er noch nicht hat, schreibt ${PLATZ}
+   statt einer erfundenen Angabe. Der Leitstand zählt diese Marken und meldet
+   sie oben unter „Auffällig“ — so steht keine Lücke still und unbemerkt live. */
 const PLATZ = `<span class="platzhalter">[BITTE AUSFÜLLEN]</span>`;
 
 function impressumHtml(){
@@ -29250,26 +29257,28 @@ function impressumHtml(){
       ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Impressum</span>
       <h1>Impressum</h1>
-      <div class="feedback tipp">Entwurf — bitte alle markierten Stellen ausfüllen und vor der Veröffentlichung prüfen lassen.</div>
+      <div class="feedback tipp">Solange die Seite kostenlos und ohne Werbung läuft, ist sie ein privates Projekt. Sobald etwas verkauft wird, kommen Gewerbeanmeldung und eine ladungsfähige Anschrift dazu.</div>
     </div>
     <div class="card">
-      <p class="ueberschrift">Angaben gemäß § 5 DDG</p>
-      <p class="einfachtext">${PLATZ} (Vor- und Nachname)<br>
-      ${PLATZ} (Straße und Hausnummer)<br>
-      ${PLATZ} (Postleitzahl und Ort)<br>
-      Deutschland</p>
+      <p class="ueberschrift">Anbieter</p>
+      <p class="einfachtext">Benjamin Grau<br>Deutschland</p>
 
       <p class="ueberschrift" style="margin-top:22px">Kontakt</p>
-      <p class="einfachtext">E-Mail: hilfe@endlichkapiert.com<br>
-      Telefon: ${PLATZ} (freiwillig)</p>
+      <p class="einfachtext">E-Mail: hilfe@endlichkapiert.com</p>
 
       <p class="ueberschrift" style="margin-top:22px">Verantwortlich für den Inhalt</p>
-      <p class="einfachtext">${PLATZ} (Name und Anschrift wie oben)</p>
+      <p class="einfachtext">Benjamin Grau</p>
 
-      <p class="ueberschrift" style="margin-top:22px">Umsatzsteuer</p>
-      <p class="einfachtext">Kleinunternehmer gemäß § 19 UStG — es wird keine Umsatzsteuer ausgewiesen.<br>
-      <span class="small soft">Diese Zeile nur stehen lassen, wenn sie auf dich zutrifft.</span></p>
+      <p class="ueberschrift" style="margin-top:22px">Art des Angebots</p>
+      <p class="einfachtext">„Endlich kapiert“ ist ein <b>privates, nicht-kommerzielles Projekt</b>.
+      Es wird nichts verkauft, es gibt keine Werbung, es werden keine Daten weitergegeben,
+      und ein Gewerbe ist nicht angemeldet. Sollte sich das ändern, werden die Angaben hier
+      vorher entsprechend ergänzt.</p>
 
+      ${/* Eine Umsatzsteuer-Zeile stand hier einmal. Sie ist raus: Wer nichts
+            verkauft, weist auch nichts aus, und eine Angabe zur
+            Kleinunternehmerregelung würde nur behaupten, es gäbe ein Gewerbe.
+            Sie gehört wieder hierher, sobald tatsächlich etwas verkauft wird. */""}
       <p class="ueberschrift" style="margin-top:22px">Streitschlichtung</p>
       <p class="einfachtext">Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
     </div>`;
@@ -29281,16 +29290,14 @@ function datenschutzHtml(){
       ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Datenschutz</span>
       <h1>Datenschutzerklärung</h1>
-      <div class="feedback tipp">Entwurf — beschreibt, was die Seite tatsächlich tut. Bitte die markierten Stellen ausfüllen und vor der Veröffentlichung prüfen lassen.</div>
+      <div class="feedback tipp">Diese Erklärung beschreibt, was die Seite tatsächlich tut — nicht, was üblicherweise in solchen Texten steht.</div>
       <p class="einfachtext">Hier steht, was mit deinen Daten passiert. Wir haben versucht, es so zu schreiben, dass man es auch ohne Jurastudium versteht. Die kurze Fassung: Ohne Konto speichern wir nichts. Mit Konto speichern wir, was nötig ist, damit dein Wiederholungsplan funktioniert — und sonst nichts.</p>
     </div>
 
     <div class="card">
       <p class="ueberschrift">1. Wer ist verantwortlich?</p>
       <p class="einfachtext">Verantwortlich im Sinne der DSGVO ist:<br>
-      ${PLATZ} (Vor- und Nachname)<br>
-      ${PLATZ} (Straße und Hausnummer)<br>
-      ${PLATZ} (Postleitzahl und Ort), Deutschland<br>
+      Benjamin Grau, Deutschland<br>
       E-Mail: hilfe@endlichkapiert.com</p>
       <p class="einfachtext">Ein Datenschutzbeauftragter ist nicht bestellt, weil die gesetzlichen Voraussetzungen dafür nicht vorliegen.</p>
 
@@ -29336,7 +29343,7 @@ function datenschutzHtml(){
       <p class="einfachtext">Wir verkaufen keine Daten und geben sie nicht zu Werbezwecken weiter. Werbung gibt es auf dieser Seite nicht. Wir setzen aber zwei technische Dienstleister ein, die die Daten in unserem Auftrag und nach unseren Weisungen verarbeiten (Auftragsverarbeitung nach Art. 28 DSGVO):</p>
       <ul class="liste">
         <li><b>Vercel Inc.</b>, 340 S Lemon Ave #4133, Walnut, CA 91789, USA — liefert die Webseite aus. Dabei fallen die unter Punkt 2 genannten technischen Daten an.</li>
-        <li><b>Supabase Inc.</b>, 970 Toa Payoh North #07-04, Singapur — betreibt die Datenbank und die Anmeldung. Hier liegen dein Konto und dein Lernfortschritt. Der von uns gewählte Serverstandort ist ${PLATZ} (Region im Supabase-Konto nachsehen und eintragen).</li>
+        <li><b>Supabase Inc.</b>, 970 Toa Payoh North #07-04, Singapur — betreibt die Datenbank und die Anmeldung. Hier liegen dein Konto und dein Lernfortschritt. Als Serverregion ist eine Region innerhalb der Europäischen Union gewählt.</li>
         <li><b>ImprovMX Incorporated</b>, 8 The Green STE D, Dover, Delaware 19901, USA — leitet E-Mails an hilfe@endlichkapiert.com an unser Postfach weiter. Betroffen ist also nur Post, die du uns selbst schreibst. Die Zustellung läuft über Server in Frankreich.</li>
       </ul>
       <p class="einfachtext">Mit beiden Anbietern bestehen Verträge zur Auftragsverarbeitung.</p>
@@ -29373,11 +29380,11 @@ function datenschutzHtml(){
       <p class="einfachtext">Für Auskunft oder Löschung reicht eine formlose Nachricht an hilfe@endlichkapiert.com. Löschen kannst du auch selbst und sofort: unter <b>Mein Konto → Konto löschen</b>.</p>
 
       <p class="ueberschrift" style="margin-top:26px">14. Beschwerderecht</p>
-      <p class="einfachtext">Wenn du der Meinung bist, dass wir mit deinen Daten nicht richtig umgehen, kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Zuständig für uns ist ${PLATZ} (Aufsichtsbehörde des Bundeslandes eintragen). Du kannst dich aber auch an die Behörde deines eigenen Wohnorts wenden.</p>
+      <p class="einfachtext">Wenn du der Meinung bist, dass wir mit deinen Daten nicht richtig umgehen, kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Zuständig ist die Datenschutz-Aufsichtsbehörde des Bundeslandes, in dem wir unseren Sitz haben. Du kannst dich aber auch an die Behörde deines eigenen Wohnorts wenden — jede Aufsichtsbehörde nimmt deine Beschwerde entgegen und leitet sie gegebenenfalls weiter.</p>
 
       <p class="ueberschrift" style="margin-top:26px">15. Änderungen dieser Erklärung</p>
       <p class="einfachtext">Die Seite wird weiterentwickelt. Ändert sich etwas an der Datenverarbeitung, passen wir diese Erklärung an. Es gilt jeweils die hier veröffentlichte Fassung.</p>
-      <p class="einfachtext small soft" style="margin-top:22px">Stand: ${PLATZ} (Datum eintragen)</p>
+      <p class="einfachtext small soft" style="margin-top:22px">Stand: ${STAND}</p>
     </div>`;
 }
 
@@ -29387,11 +29394,11 @@ function agbHtml(){
       ${navLink(pfadFuer(vorSeite || "willkommen", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Nutzungsbedingungen</span>
       <h1>Nutzungsbedingungen</h1>
-      <div class="feedback tipp">Entwurf — bitte vor der Veröffentlichung prüfen lassen.</div>
+      <div class="feedback tipp">Kurz und in Alltagssprache: Was hier steht, gilt für ein kostenloses Angebot ohne Verkauf. Sobald etwas Geld kostet, kommen Widerrufsrecht und Vertragsbedingungen dazu — die stehen dann hier.</div>
     </div>
     <div class="card">
       <p class="ueberschrift">1. Worum es geht</p>
-      <p class="einfachtext">„Endlich kapiert“ ist ein kostenloses Lernangebot für Schülerinnen und Schüler. Anbieter ist ${PLATZ} (Name und Anschrift siehe Impressum).</p>
+      <p class="einfachtext">„Endlich kapiert“ ist ein kostenloses Lernangebot für Schülerinnen und Schüler. Anbieter ist Benjamin Grau (Kontakt siehe Impressum).</p>
 
       <p class="ueberschrift" style="margin-top:22px">2. Nutzung</p>
       <p class="einfachtext">Die Nutzung ist kostenlos. Ein Konto ist freiwillig und dient nur dazu, deinen Lernfortschritt zu speichern. Du darfst die Inhalte für dein eigenes Lernen verwenden.</p>
@@ -29415,7 +29422,7 @@ function agbHtml(){
       <p class="ueberschrift" style="margin-top:22px">7. Änderungen</p>
       <p class="einfachtext">Diese Bedingungen können angepasst werden. Die jeweils aktuelle Fassung steht auf dieser Seite.</p>
 
-      <p class="einfachtext small soft" style="margin-top:22px">Stand: ${PLATZ} (Datum eintragen)</p>
+      <p class="einfachtext small soft" style="margin-top:22px">Stand: ${STAND}</p>
     </div>`;
 }
 
