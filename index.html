@@ -997,6 +997,48 @@
     padding:7px 14px;font:inherit;font-size:14.5px;color:var(--soft);cursor:pointer}
   .suchchip:hover{border-color:var(--ac);color:var(--ac-dark);background:var(--ac-soft)}
 
+  /* Suche in der Kopfleiste — auf jedem Bildschirm sichtbar, auch ohne Konto.
+     Auf schmalen Handys bleibt nur die Lupe, ab 560 Pixeln kommt das Wort
+     dazu. Der Knopf ist bewusst umrandet und nicht gefüllt: Er soll auffallen,
+     aber „Üben" nicht die Aufmerksamkeit wegnehmen. */
+  .kopfsuche{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 12px;
+    border:1.5px solid var(--line);border-radius:11px;background:var(--card);
+    color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;
+    transition:border-color .12s,background .12s,color .12s}
+  .kopfsuche:hover{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
+  .kopfsuchezeichen{width:19px;height:19px;flex:none;display:block}
+  .kopfsuchezeichen svg{width:100%;height:100%;display:block}
+  .kopfsuchetext{display:none}
+  @media (min-width:640px){ .kopfsuchetext{display:inline} }
+  /* Sobald die Navigationsleiste erscheint, steht die Suche dort vorn — dann
+     wäre der Knopf am rechten Rand dieselbe Sache ein zweites Mal. Unterhalb
+     davon ist die Navigationsleiste ausgeblendet, und der Knopf rechts ist die
+     einzige Lupe. So ist auf jeder Breite genau eine da, und immer an der
+     Stelle, auf die man schaut. */
+  @media (min-width:1000px){ .kopfsuche{display:none} }
+
+  /* Die Lupe in der Navigationsleiste */
+  .navsuche{display:inline-flex;align-items:center;gap:7px;color:var(--ac-dark);font-weight:700}
+  .navsuchezeichen{width:18px;height:18px;display:block}
+  .navsuchezeichen svg{width:100%;height:100%;display:block}
+  @media(hover:hover){ .navsuche:hover{color:var(--ac-dark);background:var(--ac-soft)} }
+  /* Beim Rechnen ist die Navigationsleiste ausgeblendet — dort übernimmt
+     wieder der Knopf rechts, damit die Suche auch dann erreichbar bleibt. */
+  .kopfleiste.schlank .kopfsuche{display:inline-flex}
+
+  /* Auf der Startseite unter den beiden Knöpfen — für alle, die mit einem
+     Problem kommen und nicht mit einem Fach. */
+  .herosuche{display:flex;align-items:center;gap:12px;margin-top:14px;padding:13px 15px;
+    border:1.5px solid rgba(255,255,255,.22);border-radius:14px;
+    background:rgba(255,255,255,.07);text-decoration:none;color:#fff;
+    transition:background .12s,border-color .12s}
+  .herosuche:hover{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.4)}
+  .herosuchezeichen{width:22px;height:22px;flex:none;color:var(--heroglanz2,#6fdcbb)}
+  .herosuchezeichen svg{width:100%;height:100%;display:block}
+  .herosuchetext{display:block;min-width:0}
+  .herosuchetext b{display:block;font-size:16px}
+  .herosuchetext small{display:block;font-size:13.5px;opacity:.75;margin-top:2px}
+
   /* Einstieg nach Lebenslage: aufklappbare Kacheln über dem Verzeichnis */
   .alltagliste{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
   .alltagkarte{border:1.5px solid var(--line);border-radius:14px;overflow:hidden;
@@ -1550,11 +1592,17 @@
   .abmittel,.abbreit,.absehrbreit{display:none}
   @media(min-width:820px){
     .marke .markewortmark{display:inline}
-    .kopfnav{display:flex}
     .startkopf{display:none}
   }
+  /* Die Fächer-Navigation kommt erst bei 1000 Pixeln dazu. Vorher teilt sie
+     sich den Platz mit dem Suchknopf, und dann schiebt sich „Ausbildung" unter
+     die Lupe. Die Suche hat Vorrang: Sie führt zu allem, die Navigation nur zu
+     zwei Bereichen, die im Menü ohnehin stehen. */
+  @media(min-width:1000px){ .kopfnav{display:flex} }
   @media(min-width:900px){ .abmittel{display:inline-block} .kopftrenner.abmittel{display:block} }
-  @media(min-width:1100px){ .abbreit{display:inline-block} .kopflink{font-size:16.5px;padding:9px 14px} }
+  /* Erst ab 1250 Pixeln ist neben Suche, Anmelden und Üben noch Platz für die
+     zusätzlichen Links — vorher schoben sie sich übereinander. */
+  @media(min-width:1360px){ .abbreit{display:inline-block} .kopflink{font-size:16.5px;padding:9px 14px} }
   @media(min-width:1380px){ .absehrbreit{display:inline-block} }
   /* rechte Gruppe: Serie + Aktions-Button + Menü */
   .kopfrechts{display:flex;align-items:center;gap:9px;flex:none}
@@ -1577,6 +1625,19 @@
     .kopfrechts{gap:7px}
     .kopfrechts .kopfcta{padding:9px 12px;font-size:13px}
     .kopfrechts .kopfzweit{padding:8px 11px;font-size:13px}
+  }
+  /* Auf sehr schmalen Geräten (320 Pixel, altes iPhone SE) wurde das
+     Menüzeichen an den Rand gedrückt. Dort rücken alle Knöpfe enger zusammen. */
+  @media(max-width:350px){
+    .kopfleiste{padding:12px 10px}
+    .kopfrechts{gap:5px}
+    .kopfsuche{padding:0 9px}
+    .kopfrechts .kopfcta{padding:8px 10px;font-size:12.5px}
+    /* Auf 320 Pixeln passen Marke, Lupe, zwei Knöpfe und das Menüzeichen nicht
+       nebeneinander — das Menüzeichen wurde über den Rand geschoben. Von den
+       fünf Sachen ist „Anmelden" die entbehrlichste: Sie steht im Menü, auf der
+       Startseite und in der Übersicht gleich mehrfach. Die Suche bleibt. */
+    .kopfrechts .kopfzweit{display:none}
   }
   @media(max-width:400px){
     .kopfrechts .serie--mini{padding:7px 10px}
@@ -11531,11 +11592,83 @@ function eingabePasst(eingabe, richtigText){
 }
 
 /* erzeugt eine frische Aufgabe (Zahlen und Wörter jedes Mal neu) */
+/* ---------- Schätzen, bevor man rechnet ----------
+
+   Sieben von zehn Aufgaben hatten drei Schritte: verstehen, Weg finden,
+   ausrechnen. Das ist wenig — und vor allem fehlt darin genau der Schritt, der
+   in der Schule am seltensten geübt wird und im Betrieb am meisten zählt: Wie
+   groß muss das Ergebnis überhaupt werden?
+
+   Wer das vorher abschätzt, merkt selbst, wenn er sich um den Faktor tausend
+   vertan hat. Genau diese Fehler — Komma verrutscht, Milli vergessen, mal statt
+   geteilt — sind die häufigsten überhaupt, und ein Taschenrechner schützt vor
+   keinem davon.
+
+   Der Schritt wird erzeugt, nicht von Hand geschrieben: Aus der bekannten
+   Antwort ergibt sich die richtige Zehnerspanne, die beiden falschen liegen
+   eine Stelle darüber und darunter. Er kommt nur dort dazu, wo er auch etwas
+   bringt — bei einer Zahlenantwort ab 10, und nur wenn die Aufgabe bisher
+   weniger als vier Schritte hat. Eine Aufgabe, die schon in die Tiefe geht,
+   braucht ihn nicht. */
+
+/* „zwischen 100 und 1.000" — in der Sprache, in der man es sagt */
+function spanneText(von, bis, einheit){
+  return `zwischen ${z(von)} und ${z(bis)}${einheit ? " " + einheit.trim() : ""}`;
+}
+
+function schaetzSchritt(letzter){
+  const erwartet = letzter.tippAntwort || (letzter.optionen.find(o => o.ok) || {}).t;
+  if (erwartet === undefined) return null;
+  const teile = zahlTeile(String(erwartet).replace(/<[^>]+>/g, "").trim());
+  if (!teile) return null;
+
+  const wert = Math.abs(teile.wert);
+  /* Unter 10 wären die Spannen albern: „zwischen 1 und 10" trifft fast alles,
+     und bei einer Antwort wie „3 Polpaare" gibt es nichts zu schätzen. */
+  if (!(wert >= 10) || wert >= 1e9) return null;
+
+  const stelle = Math.pow(10, Math.floor(Math.log10(wert)));
+  /* Genau auf einer Zehnerstufe — 100, 1000 — läge der Wert auf der Grenze
+     zwischen zwei Spannen. Dann gäbe es zwei vertretbare Antworten. */
+  if (Math.abs(wert - stelle) < 1e-9) return null;
+
+  const einheit = teile.suffix;
+  const richtig = spanneText(stelle, stelle * 10, einheit);
+  const zuKlein = spanneText(stelle / 10, stelle, einheit);
+  const zuGross = spanneText(stelle * 10, stelle * 100, einheit);
+
+  return {
+    frage: "Bevor du rechnest: <b>Wie groß</b> wird das Ergebnis ungefähr?",
+    tipp: "Runde die Zahlen grob und rechne im Kopf.",
+    tipp2: "Es geht nicht um den genauen Wert — nur darum, ob es Zehner, Hunderter oder Tausender werden.",
+    optionen: [
+      R(richtig, "Richtig. Wenn dein Ergebnis gleich woanders landet, hast du dich verrechnet."),
+      F(zuKlein, "Eine Stelle zu wenig — das passiert, wenn man einmal zu oft teilt."),
+      F(zuGross, "Eine Stelle zu viel — der klassische Fehler mit dem verrutschten Komma.")
+    ]
+  };
+}
+
+/* Vor den letzten Schritt gesetzt: Erst schätzen, dann ausrechnen. Der letzte
+   Schritt bleibt der, den man eintippt — daran hängt die ganze App. */
+function schaetzenEinbauen(aufgabe){
+  const schritte = aufgabe.schritte;
+  if (!Array.isArray(schritte) || schritte.length < 2 || schritte.length >= 4) return;
+  const neu = schaetzSchritt(schritte[schritte.length - 1]);
+  if (!neu) return;
+  /* Nicht zweimal dasselbe fragen: Steht im vorletzten Schritt schon etwas
+     über Größenordnung oder Überschlag, bleibt es dabei. */
+  const vorher = String(schritte[schritte.length - 2].frage || "").toLowerCase();
+  if (/ungefähr|überschlag|schätz|größenordnung/.test(vorher)) return;
+  schritte.splice(schritte.length - 1, 0, neu);
+}
+
 function baueAufgabe(name, welche){
   const liste = AUFGABEN[name];
   const bauer = liste[welche % liste.length];
   const aufgabe = typeof bauer === "function" ? bauer() : JSON.parse(JSON.stringify(bauer));
   entdoppeln(aufgabe);
+  schaetzenEinbauen(aufgabe);
   (aufgabe.schritte || []).forEach(s => fuelleAuf(s, ZIEL_ANTWORTEN));
   return aufgabe;
 }
@@ -29163,6 +29296,14 @@ function kopfleisteHtml(){
         <span class="markewortmark">Endlich <span class="kap">kapiert</span></span>
       </a>
       <nav class="kopfnav" aria-label="Hauptmenü">
+        ${/* Die Suche steht vorn in der Navigationsleiste — vor den Fächern.
+              Dort wird hingeschaut und hingeklickt; ein Knopf am Rand oder ein
+              Link im Fußbereich wird schlicht übersehen. */""}
+        <a class="kopflink navsuche" href="/suche"
+           onclick="return navKlick(event, () => zeigeSuche(''))">
+          <span class="navsuchezeichen">${SYM.lupe}</span>Suchen
+        </a>
+        <span class="kopftrenner" aria-hidden="true"></span>
         ${/* Nicht mehr jedes Fach einzeln: oben stehen die Bereiche, die Fächer
              klappen beim Darüberfahren auf. Wer nur tippt, landet auf der
              Fachwahl — dort steht dasselbe noch einmal zum Anklicken. */
@@ -29183,12 +29324,23 @@ function kopfleisteHtml(){
         }).join("")}
         <span class="kopftrenner abmittel" aria-hidden="true"></span>
         ${benutzer ? `<a class="kopflink absehrbreit" href="/plan" onclick="return navKlick(event, zeigePlan)">Wiederholungsplan</a>` : ""}
+        ${/* „Über" und „Hilfe" standen hier auch noch. Sie stehen beide im
+              Menü hinter den drei Strichen, und der Platz wird für die Suche
+              gebraucht — die ist wichtiger als eine Seite über das Projekt. */""}
         <a class="kopflink abbreit" href="/faq" onclick="return navKlick(event, () => zeigeSeite('faq'))">Häufige Fragen</a>
         <a class="kopflink abbreit" href="/warum" onclick="return navKlick(event, () => zeigeSeite('warum'))">Warum nicht KI?</a>
-        <a class="kopflink abmittel" href="/ueber" onclick="return navKlick(event, () => zeigeSeite('ueber'))">Über</a>
-        <a class="kopflink abmittel" href="/hilfe" onclick="return navKlick(event, zeigeMelden)">Hilfe</a>
       </nav>
       <div class="kopfrechts">
+        ${/* Die Suche steht ganz oben und in jeder Ansicht — auch ohne Konto.
+              Sie gehört nach rechts und nicht in die Navigationsleiste: Die ist
+              auf dem Handy ausgeblendet, und dort sitzt die Mehrheit. Beim
+              Rechnen verschwindet sie mit den anderen Knöpfen, damit über der
+              Aufgabe nichts ablenkt. */
+          `<a class="kopfsuche" href="/suche" onclick="return navKlick(event, () => zeigeSuche(''))"
+             aria-label="Thema suchen" title="Thema suchen">
+            <span class="kopfsuchezeichen">${SYM.lupe}</span>
+            <span class="kopfsuchetext">Suchen</span>
+          </a>`}
         ${benutzer && aktivitaet.geladen ? `<a class="serie serie--mini" href="/serie" onclick="return navKlick(event, zeigeSerie)" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></a>` : ""}
         ${/* Zwei Knöpfe statt einem, solange niemand angemeldet ist.
               „Üben“ allein wäre zu wenig: Wer nur übt, legt sich nie ein Konto an
@@ -29242,6 +29394,7 @@ function menueHtml(){
           <span class="mname">${KATALOG[f].name}</span>
           <span>${menueAuf === f ? "▾" : "▸"}</span></button>
         ${menueAuf === f ? klassen(f) : ""}`).join("")}
+      ${navLink("/suche", "zeigeSuche('');menueSchliessen()", "Thema suchen", "mpunkt")}
       ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "mpunkt")}
       ${navLink("/arbeitsblatt", "zeigeArbeitsblatt()", "Arbeitsblatt drucken", "mpunkt")}
       ${benutzer ? navLink("/plan", "zeigePlan();menueSchliessen()", "Mein Wiederholungsplan", "mpunkt") : ""}
@@ -34434,6 +34587,14 @@ function willkommenHtml(){
             <button class="btn" onclick="alsGast()">Weiter üben — kostenlos</button>
             ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost")}
           </div>
+          ${/* Wer neu auf die Seite kommt, landet hier — und hat oft gar kein
+                Fach im Kopf, sondern ein Problem. Deshalb steht die Suche schon
+                auf der Startseite, ohne Konto, ohne Umweg. */""}
+          ${navLink("/suche", "zeigeSuche('')", `
+            <span class="herosuchezeichen">${SYM.lupe}</span>
+            <span class="herosuchetext"><b>Was verstehst du nicht?</b>
+              <small>Thema suchen — ohne Anmeldung, ohne Klasse</small></span>`,
+            "herosuche")}
         </div>
       </div>
     </div>
