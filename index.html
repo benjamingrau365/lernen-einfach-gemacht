@@ -409,6 +409,61 @@
   .pruefkopf div{flex:1;background:var(--bg);border-radius:12px;padding:12px 10px;text-align:center}
   .pruefkopf b{display:block;font-size:23px;font-weight:800;line-height:1.1}
   .pruefkopf span{display:block;font-size:12.5px;color:var(--soft);margin-top:2px}
+  /* ---------- Kalender ----------
+     Der Kalender des Browsers ist auf jedem Gerät ein anderer, immer winzig
+     und nie in unseren Farben. Dieser hier ist so breit wie die Karte, seine
+     Felder sind mit dem Daumen zu treffen, und er trägt die Farbe des Fachs. */
+  /* Ein Monat braucht nicht die ganze Breite eines Bildschirms — sonst werden
+     die Tagesfelder handtellergroß. */
+  .kalender{margin-top:12px;max-width:430px;background:var(--card);
+    border:1.5px solid var(--line);border-radius:16px;padding:14px 14px 16px;
+    box-shadow:var(--schatten)}
+  .kalkopf{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    margin-bottom:12px}
+  .kalkopf b{font-size:17.5px;font-weight:700;letter-spacing:-.01em}
+  .kalpfeil{width:40px;height:40px;flex:none;border-radius:12px;background:var(--fach-soft);
+    border:none;color:var(--fach-dark);font-size:24px;line-height:1;cursor:pointer;
+    font-family:inherit;transition:background .14s,transform .1s}
+  .kalpfeil:hover:not(:disabled){background:var(--fach);color:var(--knopfschrift)}
+  .kalpfeil:active:not(:disabled){transform:scale(.94)}
+  .kalpfeil:disabled{opacity:.3;cursor:default}
+  .kalwoche,.kalgitter{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .kalwoche{margin-bottom:6px}
+  .kalwoche span{text-align:center;font-size:12px;font-weight:800;color:var(--soft);
+    letter-spacing:.04em;text-transform:uppercase}
+  /* Auf dem Handy bleiben sieben Spalten im Kartenpolster zu schmal für einen
+     Daumen. Der Kalender darf deshalb bis an die Kartenkante laufen. */
+  @media(max-width:520px){
+    .kalender{margin-left:-26px;margin-right:-26px;border-radius:0;
+      border-left:none;border-right:none;box-shadow:none}
+  }
+  .kaltag{aspect-ratio:1;min-height:38px;display:flex;align-items:center;justify-content:center;
+    border:1.5px solid transparent;border-radius:11px;background:var(--bg);
+    font:inherit;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;
+    transition:background .14s,border-color .14s,color .14s,transform .1s}
+  .kaltag.leer{background:none;border-color:transparent;cursor:default}
+  .kaltag.wochenende{color:var(--soft)}
+  button.kaltag:hover{background:var(--fach-soft);border-color:var(--fach);color:var(--fach-dark)}
+  button.kaltag:active{transform:scale(.93)}
+  /* Heute ist der Bezugspunkt für alles, was der Plan danach ausrechnet —
+     also bekommt der Tag einen Ring, auch wenn er nicht gewählt ist. */
+  .kaltag.heute{border-color:var(--fach);color:var(--fach-dark);font-weight:800}
+  .kaltag.an{background:var(--fach);border-color:var(--fach);color:var(--knopfschrift);
+    font-weight:800;box-shadow:0 8px 18px -10px color-mix(in srgb, var(--fach) 90%, transparent)}
+  button.kaltag.an:hover{background:var(--fach-dark);border-color:var(--fach-dark);
+    color:var(--knopfschrift)}
+  .kaltag.aus{background:none;color:var(--line);cursor:default}
+  .kalgewaehlt{margin:14px 0 0;font-size:15px;line-height:1.5}
+  .kalrest{display:inline-block;margin-left:8px;background:var(--fach-soft);color:var(--fach-dark);
+    font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+  .kalschnell{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;
+    padding-top:12px;border-top:1px solid var(--line)}
+  .kalschnellknopf{background:none;border:1.5px dashed var(--line);border-radius:999px;
+    padding:7px 13px;font:inherit;font-size:13.5px;font-weight:600;color:var(--soft);
+    cursor:pointer;transition:border-color .14s,color .14s,background .14s}
+  .kalschnellknopf:hover{border-style:solid;border-color:var(--fach);color:var(--fach-dark);
+    background:var(--fach-soft)}
+
   .pruefliste{display:grid;gap:8px;margin-top:12px}
   .pruefzeile{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;
     background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 16px;
@@ -28785,9 +28840,17 @@ function pruefTagText(iso){
   return pruefDatum(iso).toLocaleDateString("de-DE",
     {weekday:"short", day:"2-digit", month:"2-digit"});
 }
+/* toISOString() rechnet in Weltzeit um. Für ein Datum, das um Mitternacht
+   Ortszeit beginnt, kommt in Deutschland dabei der Vortag heraus — im Sommer
+   liegt Mitternacht hier zwei Stunden vor der Weltzeit. Das Datum wird deshalb
+   aus den örtlichen Bestandteilen zusammengesetzt. */
+function pruefIso(d){
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
 function pruefPlusTage(n){
   const d = pruefHeute(); d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
+  return pruefIso(d);
 }
 /* „noch 9 Tage“, „morgen“, „heute“ — in der Sprache, in der man es sagt */
 function pruefRestText(iso){
@@ -28881,8 +28944,99 @@ let pruefAuswahl = [];
 let pruefOffen = null;        /* welche Prüfung wird gerade angesehen */
 let pruefMeldung = "";
 
+/* ---------- Kalender ----------
+   Der eingebaute Kalender des Browsers lässt sich nicht gestalten: Er sieht auf
+   jedem Gerät anders aus, ist winzig und hat mit dem Rest der Seite nichts zu
+   tun. Deshalb steht hier ein eigener — ein Monat am Stück, in den Farben des
+   Fachs, mit Fingerkuppen-großen Feldern. Vergangene Tage sind aus; für eine
+   Arbeit, die schon war, braucht niemand einen Lernplan. */
+const MONATE = ["Januar","Februar","März","April","Mai","Juni",
+                "Juli","August","September","Oktober","November","Dezember"];
+const WOCHENTAGE = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+let pruefKalMonat = null;     /* erster Tag des angezeigten Monats, als Date */
+
+function pruefKalStart(){
+  if (pruefKalMonat) return pruefKalMonat;
+  const d = pruefWann ? pruefDatum(pruefWann) : pruefHeute();
+  pruefKalMonat = new Date(d.getFullYear(), d.getMonth(), 1);
+  return pruefKalMonat;
+}
+/* Montag ist der erste Tag der Woche — getDay() zählt ab Sonntag. */
+function pruefWochenTag(d){ return (d.getDay() + 6) % 7; }
+
+function pruefKalBlaettern(schritte){
+  const m = pruefKalStart();
+  const neu = new Date(m.getFullYear(), m.getMonth() + schritte, 1);
+  const heute = pruefHeute();
+  /* Nicht in die Vergangenheit blättern — dort ist ohnehin alles aus. */
+  if (neu < new Date(heute.getFullYear(), heute.getMonth(), 1)) return;
+  pruefKalMonat = neu; render();
+}
+function pruefKalWahl(iso){ pruefWann = iso; pruefMeldung = ""; render(); }
+
+function pruefKalenderHtml(){
+  const m = pruefKalStart();
+  const jahr = m.getFullYear(), monat = m.getMonth();
+  const heute = pruefHeute();
+  const heuteIso = pruefIso(heute);
+  const tageImMonat = new Date(jahr, monat + 1, 0).getDate();
+  const versatz = pruefWochenTag(m);
+  const zurueckAus = new Date(jahr, monat, 1) <= new Date(heute.getFullYear(), heute.getMonth(), 1);
+
+  const felder = [];
+  for (let i = 0; i < versatz; i++) felder.push(`<span class="kaltag leer"></span>`);
+  for (let tag = 1; tag <= tageImMonat; tag++){
+    const d = new Date(jahr, monat, tag);
+    const iso = pruefIso(d);
+    const vorbei = d < heute;
+    const klassen = [
+      "kaltag",
+      vorbei ? "aus" : "",
+      iso === heuteIso ? "heute" : "",
+      iso === pruefWann ? "an" : "",
+      pruefWochenTag(d) >= 5 ? "wochenende" : ""
+    ].filter(Boolean).join(" ");
+    felder.push(vorbei
+      ? `<span class="${klassen}">${tag}</span>`
+      : `<button class="${klassen}" onclick="pruefKalWahl('${iso}')"
+           aria-label="${tag}. ${MONATE[monat]} ${jahr}">${tag}</button>`);
+  }
+
+  const gewaehlt = pruefWann
+    ? `<p class="kalgewaehlt">Gewählt: <b>${pruefDatum(pruefWann).toLocaleDateString("de-DE",
+        {weekday:"long", day:"numeric", month:"long", year:"numeric"})}</b>
+        <span class="kalrest">${pruefRestText(pruefWann)}</span></p>`
+    : `<p class="kalgewaehlt soft">Tipp einen Tag an.</p>`;
+
+  return `
+    <div class="kalender">
+      <div class="kalkopf">
+        <button class="kalpfeil" onclick="pruefKalBlaettern(-1)" ${zurueckAus ? "disabled" : ""}
+                aria-label="Vorheriger Monat">‹</button>
+        <b>${MONATE[monat]} ${jahr}</b>
+        <button class="kalpfeil" onclick="pruefKalBlaettern(1)" aria-label="Nächster Monat">›</button>
+      </div>
+      <div class="kalwoche">${WOCHENTAGE.map(t => `<span>${t}</span>`).join("")}</div>
+      <div class="kalgitter">${felder.join("")}</div>
+      ${gewaehlt}
+      <div class="kalschnell">
+        ${[["in einer Woche", 7], ["in zwei Wochen", 14], ["in einem Monat", 30]].map(([text, n]) =>
+          `<button class="kalschnellknopf" onclick="pruefKalSprung(${n})">${text}</button>`).join("")}
+      </div>
+    </div>`;
+}
+
+/* Die drei Knöpfe darunter sind für den häufigsten Fall: „Die Arbeit ist in
+   zwei Wochen“ weiß man meistens, das genaue Datum muss man nachschlagen. */
+function pruefKalSprung(tage){
+  const iso = pruefPlusTage(tage);
+  const d = pruefDatum(iso);
+  pruefKalMonat = new Date(d.getFullYear(), d.getMonth(), 1);
+  pruefKalWahl(iso);
+}
+
 function zeigePruefungen(){
-  menueOffen = false; pruefMeldung = ""; pruefOffen = null;
+  menueOffen = false; pruefMeldung = ""; pruefOffen = null; pruefKalMonat = null;
   if (!pruefFach){ pruefFach = fach || "mathe"; pruefKlasse = klasse || stufenVon(pruefFach)[0]; }
   ansicht = "pruefungen"; render();
 }
@@ -28903,8 +29057,9 @@ function pruefThemaUm(thema){
 }
 function pruefAnlegen(){
   const name = (document.getElementById("pruefName").value || "").trim();
-  const wann = (document.getElementById("pruefWann").value || "").trim();
-  if (!wann){ pruefMeldung = "Es fehlt noch das Datum."; render(); return; }
+  /* Das Datum kommt aus dem eigenen Kalender, nicht mehr aus einem Feld. */
+  const wann = String(pruefWann || "").trim();
+  if (!wann){ pruefMeldung = "Tipp im Kalender den Tag der Arbeit an."; render(); return; }
   if (pruefTageBis(wann) < 0){ pruefMeldung = "Der Termin liegt in der Vergangenheit."; render(); return; }
   if (!pruefAuswahl.length){ pruefMeldung = "Wähl mindestens ein Thema aus."; render(); return; }
   const p = {
@@ -28913,7 +29068,7 @@ function pruefAnlegen(){
     datum: wann, fach: pruefFach, klasse: pruefKlasse, themen: pruefAuswahl.slice()
   };
   PRUEFUNGEN.push(p); pruefSichern();
-  pruefName = ""; pruefWann = ""; pruefAuswahl = [];
+  pruefName = ""; pruefWann = ""; pruefAuswahl = []; pruefKalMonat = null;
   pruefOeffnen(p.id);
 }
 function pruefLoeschen(id){
@@ -28991,9 +29146,8 @@ function pruefungenHtml(){
 
     <div class="card">
       <p class="ueberschrift">Neuen Termin eintragen</p>
-      <label class="eigfeld"><span>Wann ist die Arbeit?</span>
-        <input class="feld" id="pruefWann" type="date" value="${sicher(pruefWann)}"
-               min="${pruefPlusTage(0)}" oninput="pruefWann=this.value"></label>
+      <p class="ueberschrift" style="margin-bottom:0">Wann ist die Arbeit?</p>
+      ${pruefKalenderHtml()}
       <label class="eigfeld"><span>Wie soll sie heißen? <i>(freiwillig)</i></span>
         <input class="feld" id="pruefName" type="text" maxlength="50" value="${sicher(pruefName)}"
                placeholder="Mathearbeit Nr. 3" oninput="pruefName=this.value"></label>
