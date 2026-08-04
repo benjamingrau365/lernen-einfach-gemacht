@@ -4258,34 +4258,39 @@ const AUFGABEN = {
 
  /* Widerstand gesucht — Heizelement */
  () => {
-   const u = pick([24, 230, 400]);
-   const i = pick([1.6, 2.5, 4, 5, 8]);
-   const r = Math.round(u / i * 1000) / 1000;
+   /* Andere Frage als „wie groß ist R“: Der Widerstand bleibt derselbe, die
+      Spannung ändert sich — was macht der Strom? Das ist der Gedanke, den
+      man in der Prüfung braucht, nicht noch eine Division. */
+   const u1 = pick([6, 12, 24]);
+   const faktor = pick([2, 3, 4]);
+   const u2 = u1 * faktor;
+   const i1 = pick([0.2, 0.4, 0.5, 1.5, 2]);
+   const i2 = Math.round(i1 * faktor * 10000) / 10000;
    return {
     typ:"formel",
-    text:`Ein Heizelement zieht bei ${z(u)} V einen Strom von ${z(i)} A.<br>Wie groß ist sein Widerstand in Ohm?`,
-    loesung: z(r),
-    schluss:"Den Widerstand eines Verbrauchers kann man nicht ansehen — man misst Spannung und Strom und rechnet ihn aus.",
+    text:`Durch einen Widerstand fließen bei ${z(u1)} V genau ${z(i1)} A.<br>Wie groß ist der Strom bei ${z(u2)} V, in Ampere?`,
+    loesung: z(i2),
+    schluss:"Bei gleichem Widerstand gehen Spannung und Strom im gleichen Takt: doppelte Spannung, doppelter Strom. Man muss den Widerstand dafür gar nicht ausrechnen.",
     schritte:[
-     {frage:"Welche Formel führt hier zum Ziel?",
-      tipp:"Gesucht ist R, gegeben sind U und I.",
-      tipp2:"Geh von U = R · I aus und teile beide Seiten durch I.",
-      optionen:[R("R = U : I", "Richtig."),
-                F("R = U · I", "Das ergäbe die Leistung, nicht den Widerstand."),
-                F("R = I : U", "Vertauscht — die Spannung gehört nach oben.")]},
-     {frage:"Wenn das Element <b>mehr Strom</b> zieht, ist sein Widerstand dann größer oder kleiner?",
-      tipp:"Bei gleicher Spannung.",
-      tipp2:"In R = U : I steht I unten. Wird der Nenner größer, wird das Ergebnis kleiner.",
-      optionen:[R("Kleiner", "Genau. Viel Strom bei wenig Spannung heißt: wenig Widerstand."),
-                F("Größer", "Umgekehrt."),
-                F("Gleich", "Nein, beides hängt zusammen.")]},
-     {frage:`Was ergibt <b>${z(u)} V : ${z(i)} A</b>?`,
-      tippAntwort: z(r),
-      tipp:"Teile die Spannung durch den Strom.",
-      tipp2:`Rechne ${z(u)} : ${z(i)}. Volt durch Ampere ergibt Ohm.`,
-      optionen:[R(`${z(r)} Ω`, "Richtig."),
-                F(`${z(Math.round(u * i * 1000) / 1000)} Ω`, "Das wäre malgenommen — und ergäbe Watt, nicht Ohm."),
-                F(`${z(Math.round(i / u * 10000) / 10000)} Ω`, "Verkehrt herum geteilt.")]}]};
+     {frage:"Was <b>ändert sich</b> hier, und was bleibt gleich?",
+      tipp:"Es ist derselbe Widerstand.",
+      tipp2:"Der Widerstand ist ein Bauteil — er wird nicht anders, nur weil man mehr Spannung anlegt.",
+      optionen:[R("Die Spannung ändert sich, der Widerstand bleibt", "Richtig — und genau deshalb kann man einfach vergleichen."),
+                F("Der Widerstand ändert sich mit", "Nein, der bleibt derselbe."),
+                F("Beides bleibt gleich", "Die Spannung steigt ja gerade.")]},
+     {frage:`Die Spannung wird <b>${faktor}-mal so groß</b>. Was macht der Strom?`,
+      tipp:"In I = U : R steht U oben.",
+      tipp2:`Wird der Zähler ${faktor}-mal so groß und der Nenner bleibt, wird das Ergebnis ${faktor}-mal so groß.`,
+      optionen:[R(`Er wird ${faktor}-mal so groß`, "Richtig."),
+                F(`Er wird ${faktor}-mal so klein`, "Das gälte, wenn der Widerstand größer würde."),
+                F("Er bleibt gleich", "Nein, die Spannung treibt den Strom.")]},
+     {frage:`Was ergibt <b>${z(i1)} A · ${z(faktor)}</b>?`,
+      tippAntwort: z(i2),
+      tipp:"Den alten Strom mit dem Faktor malnehmen.",
+      tipp2:`Rechne ${z(i1)} · ${z(faktor)}.`,
+      optionen:[R(`${z(i2)} A`, "Richtig."),
+                F(`${z(i1)} A`, "Das ist der alte Strom — bei mehr Spannung fließt mehr."),
+                F(`${z(Math.round(i1 / faktor * 10000) / 10000)} A`, "Geteilt statt malgenommen.")]}]};
  },
 
  /* Spannung gesucht — Vorwiderstand */
@@ -4486,34 +4491,36 @@ const AUFGABEN = {
 
  /* Strom aus Leistung und Spannung — Absicherung */
  () => {
-   const p = pick([1100, 1800, 2200, 3000, 3500]);
+   /* Andere Frage: nicht noch einmal der Strom, sondern der Widerstand —
+      und zwar über den Umweg, den man sonst nie geht. */
+   const p = pick([1000, 1500, 2000, 2300, 3000]);
    const u = 230;
-   const i = Math.round(p / u * 1000) / 1000;
+   const r = Math.round(u * u / p * 100) / 100;
    return {
     typ:"formel",
-    text:`Ein Heizlüfter mit ${z(p)} W hängt an ${z(u)} V.<br>Wie groß ist der Strom in Ampere?`,
-    loesung: z(i),
-    schluss:"Erst wenn man den Strom kennt, weiß man, ob die Leitung und die Sicherung das aushalten.",
+    text:`Ein Heizlüfter mit ${z(p)} W hängt an ${z(u)} V.<br>Wie groß ist sein Widerstand in Ohm? (auf zwei Stellen runden)`,
+    loesung: z(r),
+    schluss:"R = U² : P. Die Formel steht in keinem Dreieck — sie entsteht, wenn man P = U · I und U = R · I zusammensetzt.",
     schritte:[
-     {frage:"Wozu braucht man diesen Strom in der Praxis?",
-      tipp:"Denk an den Sicherungskasten.",
-      tipp2:"Eine Leitung und ihre Sicherung sind für einen bestimmten Strom ausgelegt, nicht für eine Leistung.",
-      optionen:[R("Um zu wissen, ob Leitung und Sicherung reichen", "Genau darum geht es."),
-                F("Um den Preis auszurechnen", "Dafür bräuchte man die Zeit und den Arbeitspreis."),
-                F("Um den Widerstand zu bestimmen", "Das ginge auch, ist hier aber nicht gefragt.")]},
-     {frage:"Wie stellst du P = U · I nach I um?",
-      tipp:"I soll allein stehen.",
-      tipp2:"Beide Seiten durch U teilen: I = P : U.",
-      optionen:[R("I = P : U", "Richtig."),
-                F("I = P · U", "Dann käme ein unmöglich großer Strom heraus."),
-                F("I = U : P", "Vertauscht.")]},
-     {frage:`Was ergibt <b>${z(p)} W : ${z(u)} V</b>?`,
-      tippAntwort: z(i),
-      tipp:"Leistung durch Spannung.",
-      tipp2:`Rechne ${z(p)} : ${z(u)}. Grob geschätzt sind das etwa ${z(Math.round(p / u))} A.`,
-      optionen:[R(`${z(i)} A`, "Richtig."),
+     {frage:"Welche Größe fehlt dir, um mit dem Ohmschen Gesetz zu rechnen?",
+      tipp:"Für R = U : I brauchst du zwei Werte.",
+      tipp2:"Die Spannung steht da, der Strom nicht — der muss zuerst aus der Leistung kommen.",
+      optionen:[R("Der Strom", "Richtig — den holst du dir aus der Leistung."),
+                F("Die Spannung", "Die steht schon in der Aufgabe."),
+                F("Die Zeit", "Für den Widerstand spielt die Zeit keine Rolle.")]},
+     {frage:`Wie groß ist der <b>Strom</b>?`,
+      tipp:"I = P : U.",
+      tipp2:`Rechne ${z(p)} : ${z(u)}.`,
+      optionen:[R(`${z(Math.round(p / u * 1000) / 1000)} A`, "Richtig."),
                 F(`${z(Math.round(u / p * 10000) / 10000)} A`, "Verkehrt herum geteilt."),
-                F(`${z(Math.round(p * u / 1000) / 1)} A`, "Malgenommen — das ergäbe keinen sinnvollen Strom.")]}]};
+                F(`${z(Math.round(p * u / 1000))} A`, "Malgenommen — so viel Strom gibt keine Steckdose her.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(Math.round(p / u * 1000) / 1000)} A</b>?`,
+      tippAntwort: z(r),
+      tipp:"Jetzt das Ohmsche Gesetz.",
+      tipp2:`Rechne ${z(u)} : ${z(Math.round(p / u * 1000) / 1000)} und runde auf zwei Stellen.`,
+      optionen:[R(`${z(r)} Ω`, "Richtig — dasselbe wie U² : P."),
+                F(`${z(Math.round(p / (u * u) * 10000) / 10000)} Ω`, "Das ist der Kehrwert — P : U², nicht U² : P."),
+                F(`${z(Math.round(u * u * p / 100000))} Ω`, "Hier wurde malgenommen statt geteilt.")]}]};
  }
 ],
 
@@ -4617,34 +4624,36 @@ const AUFGABEN = {
 
  /* Teilspannung am zweiten Widerstand */
  () => {
-   const [r1, r2] = zieheVerschiedene([15, 22, 27, 33, 47, 56, 68, 100], 2);
-   const i = pick([0.05, 0.1, 0.2, 0.25, 0.5]);
-   const u2 = Math.round(i * r2 * 10000) / 10000;
+   /* Andere Frage: nicht wieder eine Teilspannung, sondern der Strom, der
+      überhaupt erst fließt. */
+   const [r1, r2] = zieheVerschiedene([15, 25, 35, 45, 55, 65], 2);
+   const u = pick([12, 24, 48, 60]);
+   const i = Math.round(u / (r1 + r2) * 10000) / 10000;
    return {
     typ:"formel",
-    text:`In einer Reihenschaltung aus ${z(r1)} Ω und ${z(r2)} Ω fließen ${z(i)} A.<br>Wie groß ist die Spannung am ${z(r2)}-Ω-Widerstand in Volt?`,
-    loesung: z(u2),
-    schluss:"In der Reihe ist der Strom überall gleich — deshalb reicht für jede Teilspannung ein einziges Malnehmen.",
+    text:`Eine Reihenschaltung aus ${z(r1)} Ω und ${z(r2)} Ω liegt an ${z(u)} V.<br>Wie groß ist der Strom in Ampere?`,
+    loesung: z(i),
+    schluss:"Für den Strom zählt nur der Gesamtwiderstand. Wie er sich auf die beiden verteilt, ist die nächste Frage — nicht diese.",
     schritte:[
-     {frage:"Welcher <b>Strom</b> fließt durch den zweiten Widerstand?",
-      tipp:"In der Reihe gibt es nur einen Weg.",
-      tipp2:"Was vorne hineinfließt, fließt hinten wieder heraus — überall dieselbe Stromstärke.",
-      optionen:[R(`${z(i)} A — derselbe wie überall`, "Richtig. Das ist der ganze Trick an der Reihenschaltung."),
-                F(`${z(Math.round(i / 2 * 10000) / 10000)} A — die Hälfte`, "Der Strom teilt sich nur bei Parallelschaltung auf."),
-                F("Das lässt sich nicht sagen", "Doch — in der Reihe ist er überall gleich.")]},
-     {frage:"An welchem der beiden Widerstände fällt <b>mehr</b> Spannung ab?",
-      tipp:"Gleicher Strom, verschiedener Widerstand.",
-      tipp2:`Bei U = R · I entscheidet allein das R. ${z(Math.max(r1, r2))} Ω ist mehr als ${z(Math.min(r1, r2))} Ω.`,
-      optionen:[R(`Am ${z(Math.max(r1, r2))}-Ω-Widerstand`, "Richtig — der größere Widerstand nimmt den größeren Anteil."),
-                F(`Am ${z(Math.min(r1, r2))}-Ω-Widerstand`, "Umgekehrt."),
-                F("An beiden gleich viel", "Nur wenn beide gleich groß wären.")]},
-     {frage:`Was ergibt <b>${z(i)} A · ${z(r2)} Ω</b>?`,
-      tippAntwort: z(u2),
-      tipp:"Strom mal Widerstand ergibt die Teilspannung.",
-      tipp2:`Rechne ${z(i)} · ${z(r2)}.`,
-      optionen:[R(`${z(u2)} V`, "Richtig."),
-                F(`${z(Math.round(i * (r1 + r2) * 10000) / 10000)} V`, "Das ist die Spannung über beide zusammen."),
-                F(`${z(Math.round(r2 / i * 100) / 100)} V`, "Geteilt statt malgenommen.")]}]};
+     {frage:"Was brauchst du zuerst?",
+      tipp:"Der Strom folgt aus Spannung und Widerstand.",
+      tipp2:"Die Spannung steht da. Was fehlt, ist der Widerstand, den die Quelle insgesamt sieht.",
+      optionen:[R("Den Gesamtwiderstand", "Richtig — erst zusammenfassen, dann rechnen."),
+                F("Die Teilspannungen", "Die ergeben sich später, hier braucht man sie nicht."),
+                F("Die Leistung", "Von Leistung steht nichts in der Aufgabe.")]},
+     {frage:`Was ergibt <b>${z(r1)} + ${z(r2)}</b>?`,
+      tipp:"In Reihe wird addiert.",
+      tipp2:`Rechne ${z(r1)} + ${z(r2)}.`,
+      optionen:[R(`${z(r1 + r2)} Ω`, "Richtig."),
+                F(`${z(Math.round(r1 * r2 / (r1 + r2) * 100) / 100)} Ω`, "So rechnet man parallel."),
+                F(`${z(Math.abs(r1 - r2))} Ω`, "Abgezogen statt addiert.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(r1 + r2)} Ω</b>?`,
+      tippAntwort: z(i),
+      tipp:"Spannung durch Gesamtwiderstand.",
+      tipp2:`Rechne ${z(u)} : ${z(r1 + r2)}.`,
+      optionen:[R(`${z(i)} A`, "Richtig."),
+                F(`${z(Math.round(u / r1 * 10000) / 10000)} A`, "Hier wurde nur mit dem ersten Widerstand gerechnet."),
+                F(`${z(Math.round(u * (r1 + r2) / 100) / 10)} A`, "Malgenommen statt geteilt.")]}]};
  },
 
  /* Gesamtwiderstand: einer fehlt in der Kette */
@@ -4653,29 +4662,29 @@ const AUFGABEN = {
    const rg = r1 + r2 + r3;
    return {
     typ:"formel",
-    text:`Drei Heizwendeln liegen in Reihe: ${z(r1)} Ω, ${z(r2)} Ω und ${z(r3)} Ω.<br>Welchen Widerstand misst du an den Außenklemmen, in Ohm?`,
-    loesung: z(rg),
-    schluss:"Was das Messgerät an den Außenklemmen anzeigt, ist die Summe aller Widerstände dazwischen.",
+    text:`Eine Reihenschaltung soll ${z(rg)} Ω haben. Eingebaut sind bereits ${z(r1)} Ω und ${z(r2)} Ω.<br>Welchen Widerstand in Ohm musst du noch dazusetzen?`,
+    loesung: z(r3),
+    schluss:"Rückwärts gerechnet: Weil in Reihe addiert wird, ist der fehlende Widerstand die Differenz zum Sollwert.",
     schritte:[
-     {frage:"Was misst du an den <b>Außenklemmen</b>?",
-      tipp:"Das Messgerät sieht die ganze Kette auf einmal.",
-      tipp2:"Es kann die einzelnen Wendeln nicht unterscheiden — für das Gerät ist das ein einziger Widerstand.",
-      optionen:[R("Alle drei zusammen", "Richtig — das nennt man den Ersatzwiderstand."),
-                F("Nur den ersten", "Das Gerät misst über die ganze Kette."),
-                F("Den kleinsten der drei", "Nein, alle liegen im Weg.")]},
-     {frage:"Wie rechnet man Widerstände in <b>Reihe</b> zusammen?",
-      tipp:"Es ist die einfachste der beiden Regeln.",
-      tipp2:"In Reihe: einfach addieren. Nur bei Parallelschaltung wird es komplizierter.",
-      optionen:[R("Addieren", "Richtig."),
-                F("Kehrwerte addieren", "Das gilt für die Parallelschaltung."),
-                F("Multiplizieren", "Kommt in keiner der beiden Regeln vor.")]},
-     {frage:`Was ergibt <b>${z(r1)} + ${z(r2)} + ${z(r3)}</b>?`,
-      tippAntwort: z(rg),
-      tipp:"Der Reihe nach zusammenzählen.",
-      tipp2:`${z(r1)} + ${z(r2)} sind ${z(r1 + r2)}, dazu noch ${z(r3)}.`,
-      optionen:[R(`${z(rg)} Ω`, "Richtig."),
-                F(`${z(r1 + r2)} Ω`, "Da fehlt die dritte Wendel."),
-                F(`${z(Math.round(1 / (1 / r1 + 1 / r2 + 1 / r3) * 100) / 100)} Ω`, "So rechnet man parallel, nicht in Reihe.")]}]};
+     {frage:"Was weißt du über die <b>Summe</b>?",
+      tipp:"Bei einer Reihenschaltung addieren sich die Widerstände.",
+      tipp2:`Alle drei zusammen müssen ${z(rg)} Ω ergeben.`,
+      optionen:[R(`Alle Widerstände zusammen ergeben ${z(rg)} Ω`, "Richtig — daraus folgt der fehlende."),
+                F(`Jeder einzelne muss ${z(rg)} Ω haben`, "Nein, das wäre die Summe für jeden."),
+                F("Die Summe hat mit den Einzelwerten nichts zu tun", "Doch, in Reihe genau das.")]},
+     {frage:`Wie viel Ohm sind schon <b>eingebaut</b>?`,
+      tipp:"Die beiden vorhandenen zusammenzählen.",
+      tipp2:`Rechne ${z(r1)} + ${z(r2)}.`,
+      optionen:[R(`${z(r1 + r2)} Ω`, "Richtig."),
+                F(`${z(Math.max(r1, r2))} Ω`, "Das ist nur der größere von beiden."),
+                F(`${z(rg)} Ω`, "Das ist der Sollwert, nicht das Eingebaute.")]},
+     {frage:`Was ergibt <b>${z(rg)} − ${z(r1 + r2)}</b>?`,
+      tippAntwort: z(r3),
+      tipp:"Sollwert minus das, was schon da ist.",
+      tipp2:`Rechne ${z(rg)} − ${z(r1 + r2)}.`,
+      optionen:[R(`${z(r3)} Ω`, "Richtig."),
+                F(`${z(rg + r1 + r2)} Ω`, "Addiert statt abgezogen."),
+                F(`${z(r1 + r2)} Ω`, "Das ist das schon Eingebaute.")]}]};
  }
 ],
 
@@ -4749,65 +4758,69 @@ const AUFGABEN = {
 
  /* Gesamtwiderstand zweier gleich großer Zweige */
  () => {
+   /* Andere Frage: nicht wieder der Gesamtwiderstand, sondern der Zweig, der
+      dafür fehlt. Zwei gleiche parallel ergeben die Hälfte — das nutzt man. */
    const r = pick([20, 30, 40, 50, 60, 80, 100]);
    const rg = r / 2;
    return {
     typ:"formel",
-    text:`Zwei gleiche Widerstände von je ${z(r)} Ω und ${z(r)} Ω liegen parallel.<br>Wie groß ist der Gesamtwiderstand in Ohm?`,
-    loesung: z(rg),
-    schluss:"Zwei gleiche Widerstände parallel ergeben immer genau die Hälfte. Das kann man sich merken und spart jedes Mal die Rechnung.",
+    text:`Ein Zweig mit ${z(r)} Ω ist schon da. Zusammen sollen es ${z(rg)} Ω werden.<br>Welchen Widerstand in Ohm musst du parallel dazuschalten?`,
+    loesung: z(r),
+    schluss:"Parallel wird der Gesamtwiderstand immer kleiner. Soll er genau halb so groß werden, schaltet man denselben Wert noch einmal dazu.",
     schritte:[
-     {frage:"Wie viele <b>Wege</b> hat der Strom hier?",
-      tipp:"Parallel heißt nebeneinander.",
-      tipp2:"An der Verzweigung teilt sich der Strom auf zwei Zweige auf.",
-      optionen:[R("Zwei", "Richtig — und deshalb kommt insgesamt mehr Strom durch."),
-                F("Einen", "Das wäre eine Reihenschaltung."),
-                F("Keinen bestimmten", "Doch, genau zwei.")]},
-     {frage:"Muss der Gesamtwiderstand <b>größer oder kleiner</b> als ein einzelner Zweig sein?",
-      tipp:"Zwei offene Türen statt einer.",
-      tipp2:"Wenn der Strom mehr Wege hat, kommt er leichter durch — also weniger Widerstand.",
-      optionen:[R("Kleiner", "Richtig — parallel ist immer kleiner als der kleinste Einzelwert."),
-                F("Größer", "Das gilt für die Reihenschaltung."),
-                F("Gleich", "Nein, der zweite Weg macht es leichter.")]},
-     {frage:`Was ergibt <b>${z(r)} Ω parallel zu ${z(r)} Ω</b>?`,
-      tippAntwort: z(rg),
-      tipp:"Bei zwei gleichen Werten die Hälfte.",
-      tipp2:`Rechne ${z(r)} : 2 — oder über die Formel ${z(r)} · ${z(r)} geteilt durch ${z(r + r)}.`,
-      optionen:[R(`${z(rg)} Ω`, "Richtig."),
-                F(`${z(r * 2)} Ω`, "Addiert — so rechnet man in Reihe."),
-                F(`${z(r)} Ω`, "Der zweite Zweig macht den Gesamtwiderstand kleiner.")]}]};
+     {frage:"Kann der Gesamtwiderstand durch einen <b>Parallelzweig</b> größer werden?",
+      tipp:"Denk an zwei Türen statt einer.",
+      tipp2:"Jeder zusätzliche Weg lässt mehr Strom durch — der Gesamtwiderstand kann dadurch nur sinken.",
+      optionen:[R("Nein, nur kleiner", "Richtig — parallel ist immer kleiner als der kleinste Zweig."),
+                F("Ja, wenn der Zweig groß genug ist", "Auch ein sehr großer Zweig macht es nicht schlechter, nur kaum besser."),
+                F("Er bleibt gleich", "Nein, es kommt ja ein Weg dazu.")]},
+     {frage:`Der Gesamtwiderstand soll <b>halb so groß</b> werden wie der vorhandene Zweig. Was sagt dir das?`,
+      tipp:"Es gibt einen Fall, in dem genau die Hälfte herauskommt.",
+      tipp2:"Zwei gleich große Widerstände parallel ergeben immer genau die Hälfte.",
+      optionen:[R("Der zweite Zweig muss genauso groß sein", "Richtig."),
+                F("Der zweite Zweig muss doppelt so groß sein", "Dann käme ein Drittel mehr heraus, nicht die Hälfte."),
+                F("Der zweite Zweig muss halb so groß sein", "Dann würde der Gesamtwiderstand noch kleiner.")]},
+     {frage:`Welchen Wert brauchst du also?`,
+      tippAntwort: z(r),
+      tipp:"Denselben wie den vorhandenen.",
+      tipp2:`Probe: ${z(r)} · ${z(r)} geteilt durch ${z(r + r)} ergibt ${z(rg)}.`,
+      optionen:[R(`${z(r)} Ω`, "Richtig."),
+                F(`${z(rg)} Ω`, "Das ist der Sollwert der ganzen Schaltung, nicht der zweite Zweig."),
+                F(`${z(r * 2)} Ω`, `Damit käme ${z(Math.round(r * 2 * r / (r * 2 + r) * 100) / 100)} Ω heraus, nicht ${z(rg)} Ω.`)]}]};
  },
 
  /* Gesamtstrom über die Einzelströme */
  () => {
+   /* Andere Frage: nicht die Summe, sondern wie sich der Strom aufteilt —
+      der Gedanke, den man beim Auslegen von Zuleitungen wirklich braucht. */
    const u = pick([12, 24, 48]);
    const [r1, r2] = zieheVerschiedene([12, 24, 48, 60, 120, 240], 2);
-   const ig = Math.round((u / r1 + u / r2) * 10000) / 10000;
+   const i1 = Math.round(u / r1 * 10000) / 10000;
    return {
     typ:"formel",
-    text:`An ${z(u)} V hängen zwei Verbraucher parallel: ${z(r1)} Ω und ${z(r2)} Ω.<br>Wie groß ist der Gesamtstrom in Ampere?`,
-    loesung: z(ig),
-    schluss:"Bei Parallelschaltung rechnet man jeden Zweig für sich und zählt die Ströme zusammen. Das ist meist einfacher als über den Ersatzwiderstand.",
+    text:`An ${z(u)} V hängen zwei Verbraucher parallel: ${z(r1)} Ω und ${z(r2)} Ω.<br>Welcher Strom fließt durch den ${z(r1)}-Ω-Zweig, in Ampere?`,
+    loesung: z(i1),
+    schluss:"Jeder Zweig zieht seinen eigenen Strom, unabhängig vom anderen. Der kleinere Widerstand bekommt den größeren Anteil.",
     schritte:[
-     {frage:"Welche <b>Spannung</b> liegt am zweiten Verbraucher?",
+     {frage:"Welche <b>Spannung</b> liegt am gesuchten Zweig?",
       tipp:"Beide hängen an denselben zwei Klemmen.",
       tipp2:"Parallel heißt: an beiden liegt dieselbe Spannung — hier die volle.",
       optionen:[R(`${z(u)} V — die volle Spannung`, "Richtig. Das ist das Kennzeichen der Parallelschaltung."),
                 F(`${z(u / 2)} V — die Hälfte`, "Aufteilen tut sich die Spannung nur in Reihe."),
                 F("Das hängt vom Widerstand ab", "Nein, die Spannung ist an beiden gleich.")]},
-     {frage:`Welcher Strom fließt durch den <b>${z(r1)}-Ω-Zweig</b>?`,
+     {frage:`Spielt der <b>${z(r2)}-Ω-Zweig</b> für diese Rechnung eine Rolle?`,
+      tipp:"Überleg, was sich am gesuchten Zweig ändert, wenn der andere abgeklemmt wird.",
+      tipp2:"Die Spannung bliebe dieselbe — also auch der Strom durch den ersten Zweig.",
+      optionen:[R("Nein, jeder Zweig zieht seinen Strom für sich", "Richtig — genau das ist das Praktische an der Parallelschaltung."),
+                F("Ja, beide Widerstände müssen addiert werden", "Das gilt in Reihe, nicht parallel."),
+                F("Ja, der Strom teilt sich zu gleichen Teilen", "Nur bei gleich großen Widerständen.")]},
+     {frage:`Was ergibt <b>${z(u)} V : ${z(r1)} Ω</b>?`,
+      tippAntwort: z(i1),
       tipp:"Ohmsches Gesetz für diesen einen Zweig.",
       tipp2:`Rechne ${z(u)} : ${z(r1)}.`,
-      optionen:[R(`${z(Math.round(u / r1 * 10000) / 10000)} A`, "Richtig."),
+      optionen:[R(`${z(i1)} A`, "Richtig."),
                 F(`${z(Math.round(u / (r1 + r2) * 10000) / 10000)} A`, "Da wurden beide Widerstände addiert — das gilt in Reihe."),
-                F(`${z(Math.round(r1 / u * 10000) / 10000)} A`, "Verkehrt herum geteilt.")]},
-     {frage:`Was ergibt <b>${z(Math.round(u / r1 * 10000) / 10000)} A + ${z(Math.round(u / r2 * 10000) / 10000)} A</b>?`,
-      tippAntwort: z(ig),
-      tipp:"Die beiden Zweigströme zusammenzählen.",
-      tipp2:"Was sich an der Verzweigung aufteilt, kommt hinter der Verzweigung wieder zusammen.",
-      optionen:[R(`${z(ig)} A`, "Richtig."),
-                F(`${z(Math.round(u / (r1 + r2) * 10000) / 10000)} A`, "So rechnet man in Reihe."),
-                F(`${z(Math.round(Math.abs(u / r1 - u / r2) * 10000) / 10000)} A`, "Abgezogen statt zusammengezählt.")]}]};
+                F(`${z(Math.round((u / r1 + u / r2) * 10000) / 10000)} A`, "Das ist der Gesamtstrom beider Zweige zusammen.")]}]};
  }
 ],
 
