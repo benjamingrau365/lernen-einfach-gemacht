@@ -5707,36 +5707,38 @@ const AUFGABEN = {
                 F(`${z(tau * 2)} ms`, "Das sind erst zwei Zeitkonstanten.")]}]};
  },
 
- /* Zeitkonstante */
+
+ /* Nicht noch einmal τ, sondern was τ eigentlich bedeutet: Nach genau einer
+    Zeitkonstante steht der Kondensator bei 63 % der angelegten Spannung.
+    Diese Zahl ist der Grund, warum τ überhaupt eine nützliche Größe ist. */
  () => {
-   const c = pick([10, 22, 47, 100, 220, 470]);
-   const r = pick([1, 2.2, 4.7, 10, 22]);
-   const tau = Math.round(r * c * 1000) / 1000;
+   const u = pick([12, 24, 48, 100, 230]);
+   const spannung = Math.round(u * 0.632 * 10) / 10;
    return {
     typ:"formel",
-    text:`Ein Glättungskondensator mit ${z(c)} µF wird über ${z(r)} kΩ geladen.<br>Wie groß ist die Zeitkonstante in Millisekunden?`,
-    loesung: z(tau),
-    schluss:"τ = R · C. In Kiloohm mal Mikrofarad kommt das Ergebnis direkt in Millisekunden heraus — das spart jedes Umrechnen.",
+    text:`Ein Kondensator wird an ${z(u)} V geladen.<br>Auf wie viel Volt ist er nach genau einer Zeitkonstante geladen? (auf eine Stelle runden)`,
+    loesung: z(spannung),
+    schluss:"Nach einer Zeitkonstante sind es 63 %, nach fünf gilt der Kondensator als voll. Diese beiden Zahlen muss man im Kopf haben — sie gelten für jeden Kondensator, egal wie groß.",
     schritte:[
-     {frage:"Was sagt die <b>Zeitkonstante</b>?",
-      tipp:"Sie beschreibt, wie schnell der Kondensator geladen wird.",
-      tipp2:"Nach einer Zeitkonstante ist er auf rund 63 % der Endspannung geladen.",
-      optionen:[R("Nach dieser Zeit ist er auf rund 63 % geladen", "Richtig."),
-                F("Nach dieser Zeit ist er voll", "Voll ist er erst nach etwa fünf Zeitkonstanten."),
-                F("So lange hält die Ladung", "Damit hat τ nichts zu tun.")]},
-     {frage:"Warum kommen bei <b>kΩ · µF</b> direkt Millisekunden heraus?",
-      tipp:"Rechne mit den Zehnerpotenzen.",
-      tipp2:"Kilo ist mal tausend, mikro ist durch eine Million — zusammen bleibt ein Tausendstel, also die Millisekunde.",
-      optionen:[R("Weil sich tausend und ein Millionstel zu einem Tausendstel verrechnen", "Richtig — ein praktischer Zufall, den man ausnutzt."),
-                F("Weil Millisekunden die übliche Einheit sind", "Üblich ja, aber das ist nicht der Grund."),
-                F("Das ist nur eine Faustregel", "Nein, das stimmt exakt.")]},
-     {frage:`Was ergibt <b>${z(r)} · ${z(c)}</b>?`,
-      tippAntwort: z(tau),
-      tipp:"Die beiden Zahlen malnehmen.",
-      tipp2:`Rechne ${z(r)} · ${z(c)}.`,
-      optionen:[R(`${z(tau)} ms`, "Richtig."),
-                F(`${z(Math.round(c / r * 1000) / 1000)} ms`, "Geteilt statt malgenommen."),
-                F(`${z(Math.round(5 * r * c * 1000) / 1000)} ms`, "Das ist die Zeit bis „praktisch voll“ — also fünf Zeitkonstanten.")]}]};
+     {frage:"Lädt sich ein Kondensator <b>gleichmäßig</b> auf?",
+      tipp:"Denk daran, was den Ladestrom antreibt.",
+      tipp2:"Je voller er wird, desto kleiner ist der Unterschied zur Quellspannung — und desto weniger Strom fließt. Das Laden wird also immer langsamer.",
+      optionen:[R("Nein, am Anfang schnell, dann immer langsamer", "Richtig — deshalb ist es eine Kurve und keine Gerade."),
+                F("Ja, in gleichen Schritten", "Dann wäre er nach einer bestimmten Zeit schlagartig voll."),
+                F("Nein, am Anfang langsam, dann schneller", "Umgekehrt — der Ladestrom ist am Anfang am größten.")]},
+     {frage:"Welchen <b>Anteil</b> der Spannung hat er nach einer Zeitkonstante erreicht?",
+      tipp:"Es ist nicht die Hälfte.",
+      tipp2:"Es sind rund 63 % — eine feste Zahl, die für jeden Kondensator gilt.",
+      optionen:[R("Rund 63 %", "Richtig."),
+                F("Genau 50 %", "Das wäre die Halbwertszeit, die liegt etwas früher."),
+                F("Rund 100 %", "So weit ist er erst nach etwa fünf Zeitkonstanten.")]},
+     {frage:`Was ergibt <b>${z(u)} V · 0,632</b>?`,
+      tippAntwort: z(spannung),
+      tipp:"Die Spannung mal 0,632.",
+      tipp2:`Rechne ${z(u)} · 0,632 und runde auf eine Stelle.`,
+      optionen:[R(`${z(spannung)} V`, "Richtig."),
+                F(`${z(Math.round(u * 0.5 * 10) / 10)} V`, "Das wären 50 % — der Kondensator ist etwas weiter."),
+                F(`${z(u)} V`, "Das ist die volle Spannung, die erreicht er erst nach etwa fünf Zeitkonstanten.")]}]};
  }
 ],
 
@@ -5810,37 +5812,42 @@ const AUFGABEN = {
                 F(`${z(p)}`, "Das ist die Wirkleistung, nicht der Faktor.")]}]};
  },
 
- /* Wirkleistung aus Spannung, Strom und cos φ */
+
+ /* Das Thema heißt „Blindleistung" — gefragt war sie bisher nie. Sie ist der
+    Teil, der zwischen Netz und Motor hin- und herpendelt, ohne Arbeit zu
+    leisten: bezahlt wird sie beim Gewerbekunden trotzdem. */
  () => {
+   /* cos φ und sin φ als saubere Paare, damit keine krummen Wurzeln entstehen */
+   const paar = pick([{cos:0.6, sin:0.8}, {cos:0.8, sin:0.6}, {cos:0.28, sin:0.96}]);
    const u = pick([230, 400]);
-   const i = pick([2.5, 4, 6.3, 8, 10, 16]);
-   const cos = pick([0.7, 0.75, 0.8, 0.85, 0.9]);
-   const p = Math.round(u * i * cos * 100) / 100;
+   const i = pick([4, 6, 10, 12.5, 16]);
+   const s = Math.round(u * i * 100) / 100;
+   const q = Math.round(s * paar.sin * 100) / 100;
    return {
     typ:"formel",
-    text:`Ein Motor zieht an ${z(u)} V einen Strom von ${z(i)} A bei cos φ = ${z(cos)}.<br>Wie groß ist die Wirkleistung in Watt?`,
-    loesung: z(p),
-    schluss:"Nur die Wirkleistung leistet Arbeit. Spannung mal Strom allein ergibt die Scheinleistung — die ist immer größer.",
+    text:`Ein Motor zieht an ${z(u)} V einen Strom von ${z(i)} A bei cos φ = ${z(paar.cos)} (sin φ = ${z(paar.sin)}).<br>Wie groß ist die Blindleistung in var?`,
+    loesung: z(q),
+    schluss:"Die Blindleistung pendelt zwischen Netz und Motor hin und her, ohne Arbeit zu leisten. Sie belastet trotzdem Leitungen und Trafos — deshalb wird sie beim Gewerbekunden abgerechnet und mit Kondensatoren kompensiert.",
     schritte:[
-     {frage:"Was ergibt <b>Spannung mal Strom</b> allein?",
-      tipp:"Ohne den cos φ ist es noch nicht die Wirkleistung.",
-      tipp2:"U · I ist die Scheinleistung S, angegeben in Voltampere.",
-      optionen:[R("Die Scheinleistung", "Richtig — sie wird in VA angegeben, nicht in W."),
-                F("Die Wirkleistung", "Dafür fehlt noch der cos φ."),
-                F("Die Blindleistung", "Die ist der Anteil, der hin und her pendelt.")]},
-     {frage:`Was bedeutet <b>cos φ = ${z(cos)}</b>?`,
-      tipp:"Es ist ein Anteil zwischen 0 und 1.",
-      tipp2:`Von der Scheinleistung sind ${z(Math.round(cos * 100))} % Wirkleistung.`,
-      optionen:[R(`${z(Math.round(cos * 100))} % der Scheinleistung sind Wirkleistung`, "Richtig."),
-                F(`${z(Math.round(cos * 100))} % gehen verloren`, "Blindleistung geht nicht verloren, sie pendelt nur hin und her."),
-                F("Der Motor hat einen Fehler", "Ein cos φ unter 1 ist bei Motoren normal.")]},
-     {frage:`Was ergibt <b>${z(u)} · ${z(i)} · ${z(cos)}</b>?`,
-      tippAntwort: z(p),
-      tipp:"Alle drei Zahlen malnehmen.",
-      tipp2:`${z(u)} · ${z(i)} = ${z(Math.round(u * i * 100) / 100)}, mal ${z(cos)}.`,
-      optionen:[R(`${z(p)} W`, "Richtig."),
-                F(`${z(Math.round(u * i * 100) / 100)} W`, "Das ist die Scheinleistung — der cos φ fehlt."),
-                F(`${z(Math.round(u * i / cos * 100) / 100)} W`, "Geteilt statt malgenommen — dann käme mehr als die Scheinleistung heraus.")]}]};
+     {frage:"Was ist die <b>Blindleistung</b>?",
+      tipp:"Sie leistet keine Arbeit — und ist trotzdem da.",
+      tipp2:"Sie baut in der Wicklung das Magnetfeld auf, gibt es wieder ab, baut es neu auf. Diese Energie pendelt, statt genutzt zu werden.",
+      optionen:[R("Der Anteil, der zwischen Netz und Motor hin- und herpendelt", "Richtig — er wird nicht verbraucht, belastet aber die Leitung."),
+                F("Der Anteil, der als Wärme verlorengeht", "Das ist die Verlustleistung, etwas anderes."),
+                F("Die Leistung, die der Motor an der Welle abgibt", "Das ist die mechanische Nutzleistung.")]},
+     {frage:`Wie groß ist die <b>Scheinleistung</b> S?`,
+      tipp:"Spannung mal Strom, ohne cos φ.",
+      tipp2:`Rechne ${z(u)} · ${z(i)}. Das Ergebnis heißt Voltampere, nicht Watt.`,
+      optionen:[R(`${z(s)} VA`, "Richtig — das ist, was die Leitung tatsächlich tragen muss."),
+                F(`${z(Math.round(u * i * paar.cos * 100) / 100)} VA`, "Mit cos φ malgenommen — das wäre die Wirkleistung."),
+                F(`${z(Math.round(u / i * 100) / 100)} VA`, "Geteilt statt malgenommen.")]},
+     {frage:`Was ergibt <b>${z(s)} VA · ${z(paar.sin)}</b>?`,
+      tippAntwort: z(q),
+      tipp:"Q = S · sin φ.",
+      tipp2:`Rechne ${z(s)} · ${z(paar.sin)}.`,
+      optionen:[R(`${z(q)} var`, "Richtig."),
+                F(`${z(Math.round(s * paar.cos * 100) / 100)} var`, "Mit cos φ gerechnet — das ergibt die Wirkleistung in Watt."),
+                F(`${z(s)} var`, "Das ist die Scheinleistung, nicht ihr blinder Anteil.")]}]};
  }
 ],
 
@@ -7101,39 +7108,38 @@ const AUFGABEN = {
                 F(`${z(kwh)} €`, "Das sind Kilowattstunden, noch keine Euro.")]}]};
  },
 
- /* Kosten über einen Zeitraum */
+
+ /* Die Frage, die nach der Ersparnis kommt: Ab wann hat sich der Tausch
+    bezahlt gemacht? Damit rechnet jeder Betrieb, bevor er etwas austauscht. */
  () => {
-   const p = pick([200, 400, 600, 1200, 2000]);
-   const h = pick([2, 3, 4, 6, 8]);
-   const tage = pick([20, 25, 30, 60, 90]);
-   const preis = pick([0.28, 0.32, 0.35, 0.4]);
-   const kwh = Math.round(p / 1000 * h * tage * 1000) / 1000;
-   const kosten = Math.round(kwh * preis * 100) / 100;
+   const mehrpreis = pick([120, 180, 240, 350, 480]);
+   const sparen = pick([40, 48, 60, 80, 96]);
+   const jahre = Math.round(mehrpreis / sparen * 100) / 100;
    return {
     typ:"formel",
-    text:`Eine Absauganlage mit ${z(p)} W läuft ${z(h)} Stunden am Tag, ${z(tage)} Tage lang. Der Strom kostet ${z(preis)} € je kWh.<br>Was kostet das in Euro?`,
-    loesung: z(kosten),
-    schluss:"Erst die Kilowattstunden ausrechnen, dann mit dem Preis malnehmen. Zwei Schritte, nie einer.",
+    text:`Eine sparsamere Beleuchtung kostet ${eur(mehrpreis)} mehr als die alte und spart ${eur(sparen)} Strom im Jahr.<br>Nach wie vielen Jahren hat sie sich bezahlt gemacht? (auf zwei Stellen runden)`,
+    loesung: z(jahre),
+    schluss:"Mehrpreis geteilt durch jährliche Ersparnis — das ist die Amortisationszeit. Liegt sie unter der Lebensdauer, lohnt sich der Tausch.",
     schritte:[
-     {frage:"Was brauchst du zuerst?",
-      tipp:"Der Preis gilt je Kilowattstunde.",
-      tipp2:"Also muss zuerst feststehen, wie viele Kilowattstunden zusammenkommen.",
-      optionen:[R("Die Zahl der Kilowattstunden", "Richtig — erst die Menge, dann der Preis."),
-                F("Den Preis pro Tag", "Der ist nicht gegeben und auch nicht nötig."),
-                F("Die Leistung in Kilowatt mal dem Preis", "Da fehlt die Zeit.")]},
-     {frage:`Wie viele <b>Stunden</b> läuft die Anlage insgesamt?`,
-      tipp:"Stunden am Tag mal Zahl der Tage.",
-      tipp2:`Rechne ${z(h)} · ${z(tage)}.`,
-      optionen:[R(`${z(h * tage)} Stunden`, "Richtig."),
-                F(`${z(h + tage)} Stunden`, "Addiert statt malgenommen."),
-                F(`${z(tage)} Stunden`, "Das ist nur die Zahl der Tage.")]},
-     {frage:`Was ergibt <b>${z(kwh)} kWh · ${z(preis)} €</b>?`,
-      tippAntwort: z(kosten),
-      tipp:"Menge mal Preis.",
-      tipp2:`Rechne ${z(kwh)} · ${z(preis)}.`,
-      optionen:[R(eur(kosten), "Richtig."),
-                F(eur(Math.round(kwh * 1000 * preis * 100) / 100), "Hier wurde mit Wattstunden statt Kilowattstunden gerechnet."),
-                F(eur(Math.round(kwh / preis * 100) / 100), "Geteilt statt malgenommen.")]}]};
+     {frage:"Was bedeutet „hat sich <b>bezahlt gemacht</b>“?",
+      tipp:"Es geht um den Zeitpunkt, an dem beides gleich groß ist.",
+      tipp2:"Der Mehrpreis ist einmal fällig, die Ersparnis kommt jedes Jahr. Bezahlt gemacht hat es sich, wenn die aufsummierte Ersparnis den Mehrpreis erreicht.",
+      optionen:[R("Die gesparte Summe hat den Mehrpreis eingeholt", "Genau — ab da spart man wirklich."),
+                F("Die neue Beleuchtung ist abbezahlt", "Nicht die Anschaffung ist gemeint, sondern nur der Mehrpreis gegenüber der alten."),
+                F("Der Stromverbrauch ist auf null gesunken", "Ganz ohne Strom kommt keine Beleuchtung aus.")]},
+     {frage:"Rechnest du <b>mal</b> oder <b>geteilt</b>?",
+      tipp:"Wie oft passt die jährliche Ersparnis in den Mehrpreis?",
+      tipp2:`Rechne ${eur(mehrpreis)} : ${eur(sparen)} — das Ergebnis sind Jahre.`,
+      optionen:[R("Mehrpreis geteilt durch Ersparnis", "Richtig."),
+                F("Mehrpreis mal Ersparnis", "Dann käme eine unsinnig große Zahl heraus."),
+                F("Ersparnis geteilt durch Mehrpreis", "Das ist der Kehrwert — der Anteil, der im ersten Jahr zurückkommt.")]},
+     {frage:`Was ergibt <b>${z(mehrpreis)} : ${z(sparen)}</b>?`,
+      tippAntwort: z(jahre),
+      tipp:"Teilen und auf zwei Stellen runden.",
+      tipp2:`Rechne ${z(mehrpreis)} : ${z(sparen)}.`,
+      optionen:[R(`${z(jahre)} Jahre`, "Richtig."),
+                F(`${z(Math.round(sparen / mehrpreis * 10000) / 10000)} Jahre`, "Verkehrt herum geteilt."),
+                F(`${z(mehrpreis - sparen)} Jahre`, "Abgezogen — dabei kommen Euro heraus, keine Jahre.")]}]};
  }
 ],
 
@@ -7257,37 +7263,39 @@ const AUFGABEN = {
                 F(`${z(n * n)}`, "Das wäre n hoch 2.")]}]};
  },
 
- /* Zahl der Eingangskombinationen */
+
+ /* Die Umkehrung: Nicht wie viele Zustände bei n Eingängen, sondern wie viele
+    Eingänge man für eine geforderte Zahl von Zuständen braucht. Genau so
+    fragt es die Praxis, wenn eine Steuerung ausgelegt wird. */
  () => {
-   /* 2 und 4 fallen raus: Dort wäre 2 hoch n dasselbe wie 2 · n oder n · n,
-      und zwei gleiche Antwortmöglichkeiten gehen nicht. */
-   const n = pick([3, 5, 6, 7]);
-   const anz = Math.pow(2, n);
+   const gefordert = pick([5, 10, 12, 20, 40, 50, 100]);
+   const n = Math.ceil(Math.log2(gefordert));
+   const zustaende = Math.pow(2, n);
    return {
     typ:"formel",
-    text:`Eine Steuerung hat ${z(n)} Eingänge, die jeweils 0 oder 1 sein können.<br>Wie viele verschiedene Eingangskombinationen gibt es?`,
-    loesung: z(anz),
-    schluss:"Jeder zusätzliche Eingang verdoppelt die Zahl der Fälle: 2 hoch der Zahl der Eingänge.",
+    text:`Eine Steuerung soll ${z(gefordert)} verschiedene Zustände unterscheiden können.<br>Wie viele Eingänge braucht sie dafür mindestens?`,
+    loesung: z(n),
+    schluss:"Jeder Eingang verdoppelt die Zahl der Zustände: 2, 4, 8, 16, 32, 64, 128. Man nimmt den ersten Wert, der groß genug ist — halbe Eingänge gibt es nicht.",
     schritte:[
-     {frage:"Wie viele Zustände kann <b>ein einzelner</b> Eingang haben?",
-      tipp:"Es geht um digitale Eingänge.",
-      tipp2:"Entweder 0 oder 1 — mehr gibt es nicht.",
-      optionen:[R("Zwei", "Richtig — 0 und 1."),
-                F("Einen", "Dann könnte man nichts unterscheiden."),
-                F("Zehn", "Das wären Ziffern, keine digitalen Zustände.")]},
-     {frage:"Was passiert mit der Zahl der Fälle, wenn ein Eingang <b>dazukommt</b>?",
-      tipp:"Zu jedem bisherigen Fall kommen zwei neue Möglichkeiten.",
-      tipp2:"Sie verdoppelt sich — deshalb 2 hoch n.",
-      optionen:[R("Sie verdoppelt sich", "Richtig."),
-                F("Sie wird um eins größer", "Nein, sie wächst viel schneller."),
-                F("Sie bleibt gleich", "Der neue Eingang muss ja berücksichtigt werden.")]},
-     {frage:`Was ergibt <b>2 hoch ${z(n)}</b>?`,
-      tippAntwort: z(anz),
-      tipp:"Die 2 so oft mit sich selbst malnehmen, wie Eingänge da sind.",
-      tipp2:`${new Array(n).fill(2).join(" · ")}`,
-      optionen:[R(`${z(anz)}`, "Richtig."),
-                F(`${z(2 * n)}`, "Das ist 2 mal die Zahl der Eingänge — gefragt ist 2 hoch der Zahl."),
-                F(`${z(n * n)}`, "Hier wurde die Zahl der Eingänge quadriert.")]}]};
+     {frage:"Was passiert mit der Zahl der Zustände, wenn ein <b>Eingang dazukommt</b>?",
+      tipp:"Der neue Eingang kann selbst 0 oder 1 sein.",
+      tipp2:"Zu jedem bisherigen Zustand gibt es ihn nun zweimal: einmal mit 0 und einmal mit 1 am neuen Eingang.",
+      optionen:[R("Sie verdoppelt sich", "Richtig — deshalb 2, 4, 8, 16 …"),
+                F("Sie steigt um eins", "Dann käme man mit 100 Eingängen auf 100 Zustände — es sind viel mehr."),
+                F("Sie verdreifacht sich", "Ein Eingang kennt nur zwei Zustände, nicht drei.")]},
+     {frage:`Welche Zweierpotenz ist die <b>erste</b>, die mindestens ${z(gefordert)} erreicht?`,
+      tipp:"Zähl die Reihe durch: 2, 4, 8, 16, 32, 64, 128.",
+      tipp2:`${z(zustaende / 2)} wäre noch zu wenig, ${z(zustaende)} reicht.`,
+      optionen:[R(`${z(zustaende)}`, "Richtig."),
+                F(`${z(zustaende / 2)}`, `Das sind weniger als ${z(gefordert)} — reicht nicht.`),
+                F(`${z(zustaende * 2)}`, "Das reicht auch, ist aber ein Eingang mehr als nötig.")]},
+     {frage:`Wie viele Eingänge gehören zu <b>${z(zustaende)}</b> Zuständen?`,
+      tippAntwort: z(n),
+      tipp:"Wie oft muss man 2 mit sich selbst malnehmen?",
+      tipp2:`2 hoch ${z(n)} ergibt ${z(zustaende)}.`,
+      optionen:[R(`${z(n)}`, "Richtig."),
+                F(`${z(zustaende)}`, "Das ist die Zahl der Zustände, nicht der Eingänge."),
+                F(`${z(n + 1)}`, `Damit käme man auf ${z(zustaende * 2)} — mehr als nötig.`)]}]};
  }
 ],
 
@@ -9269,36 +9277,41 @@ const AUFGABEN = {
                 F(`${z(Math.round((100 - v) * 100) / 100)} h`, "Das ist der Prozentsatz, noch keine Stundenzahl.")]}]};
  },
 
- /* Verfügbarkeit aus MTBF und MTTR */
+
+ /* Andersherum gefragt: Die Verfügbarkeit steht im Vertrag, die
+    Reparaturdauer kennt man aus Erfahrung — wie lange muss die Anlage dann
+    zwischen zwei Ausfällen durchhalten? Das ist die Rechnung, mit der man
+    eine Zusage prüft, bevor man sie unterschreibt. */
  () => {
-   const mtbf = pick([200, 400, 500, 800, 1200, 2000]);
-   const mttr = pick([2, 4, 5, 8, 12, 20]);
-   const v = Math.round(mtbf / (mtbf + mttr) * 10000) / 100;
+   const paare = [[98, 4], [95, 5], [90, 6], [96, 8], [99, 2]];
+   const wahl = pick(paare);
+   const v = wahl[0], mttr = wahl[1];
+   const mtbf = Math.round(mttr * v / (100 - v) * 100) / 100;
    return {
     typ:"formel",
-    text:`Eine Abfüllanlage läuft im Schnitt ${z(mtbf)} Stunden zwischen zwei Ausfällen und ist danach ${z(mttr)} Stunden in Reparatur.<br>Wie groß ist die Verfügbarkeit in Prozent?`,
-    loesung: z(v),
-    schluss:"Verfügbarkeit ist Laufzeit geteilt durch Gesamtzeit. Kürzere Reparaturzeiten wirken sich genauso aus wie seltenere Ausfälle.",
+    text:`Eine Anlage soll ${z(v)} % Verfügbarkeit erreichen. Eine Reparatur dauert im Schnitt ${z(mttr)} Stunden.<br>Wie viele Stunden muss sie zwischen zwei Ausfällen laufen? (auf zwei Stellen runden)`,
+    loesung: z(mtbf),
+    schluss:"V = MTBF : (MTBF + MTTR). Nach MTBF umgestellt: MTBF = MTTR · V : (100 − V). Je höher die zugesagte Verfügbarkeit, desto steiler steigt die geforderte Laufzeit.",
     schritte:[
-     {frage:"Was gehört in den <b>Nenner</b>?",
-      tipp:"Die gesamte betrachtete Zeit.",
-      tipp2:"Laufzeit plus Reparaturzeit — beides zusammen ist die Zeit, um die es geht.",
-      optionen:[R("Laufzeit und Reparaturzeit zusammen", "Richtig."),
-                F("Nur die Laufzeit", "Dann käme immer 100 % heraus."),
-                F("Nur die Reparaturzeit", "Dann käme ein unsinnig großer Wert heraus.")]},
-     {frage:`Was ergibt <b>${z(mtbf)} + ${z(mttr)}</b>?`,
-      tipp:"Die Gesamtzeit eines Zyklus.",
-      tipp2:`Rechne ${z(mtbf)} + ${z(mttr)}.`,
-      optionen:[R(`${z(mtbf + mttr)} Stunden`, "Richtig."),
-                F(`${z(mtbf - mttr)} Stunden`, "Abgezogen statt addiert."),
-                F(`${z(mtbf)} Stunden`, "Die Reparaturzeit fehlt.")]},
-     {frage:`Was ergibt <b>${z(mtbf)} : ${z(mtbf + mttr)} · 100</b>?`,
-      tippAntwort: z(v),
-      tipp:"Teilen und mal hundert.",
-      tipp2:`Das Ergebnis muss knapp unter 100 % liegen.`,
-      optionen:[R(`${z(v)} %`, "Richtig."),
-                F(`${z(Math.round(mttr / (mtbf + mttr) * 10000) / 100)} %`, "Das ist der Ausfallanteil, nicht die Verfügbarkeit."),
-                F("100 %", "Hundert Prozent gibt es nur ohne jeden Ausfall.")]}]};
+     {frage:`Welcher Anteil der Zeit ist die Anlage bei ${z(v)} % Verfügbarkeit <b>außer Betrieb</b>?`,
+      tipp:"Was zu 100 % fehlt.",
+      tipp2:`100 − ${z(v)} = ${z(100 - v)} Prozent der Zeit steht sie still.`,
+      optionen:[R(`${z(100 - v)} %`, "Richtig — und genau diese Zeit füllen die Reparaturen."),
+                F(`${z(v)} %`, "Das ist der Anteil, in dem sie läuft."),
+                F("Immer gleich viel, unabhängig von der Verfügbarkeit", "Nein, das ist gerade der Unterschied.")]},
+     {frage:"Wie <b>verhalten sich</b> Laufzeit und Reparaturzeit zueinander?",
+      tipp:"Wie die beiden Prozentanteile.",
+      tipp2:`Laufzeit zu Reparaturzeit verhält sich wie ${z(v)} zu ${z(100 - v)}.`,
+      optionen:[R(`Wie ${z(v)} zu ${z(100 - v)}`, "Richtig — dasselbe Verhältnis wie bei den Prozentwerten."),
+                F(`Wie ${z(100 - v)} zu ${z(v)}`, "Vertauscht — dann stünde die Anlage länger still, als sie liefe."),
+                F("Sie hängen nicht zusammen", "Doch, genau daraus ergibt sich die Verfügbarkeit.")]},
+     {frage:`Was ergibt <b>${z(mttr)} · ${z(v)} : ${z(100 - v)}</b>?`,
+      tippAntwort: z(mtbf),
+      tipp:"Reparaturdauer mal Verhältnis.",
+      tipp2:`Rechne ${z(mttr)} · ${z(v)} = ${z(mttr * v)}, das geteilt durch ${z(100 - v)}.`,
+      optionen:[R(`${z(mtbf)} Stunden`, "Richtig."),
+                F(`${z(Math.round(mttr * (100 - v) / v * 100) / 100)} Stunden`, "Die Prozentwerte sind vertauscht."),
+                F(`${z(mttr)} Stunden`, "Das ist die Reparaturdauer selbst.")]}]};
  }
 ],
 
@@ -9370,36 +9383,39 @@ const AUFGABEN = {
                 F(`${eur(mwst)}`, "Das ist nur die Steuer.")]}]};
  },
 
- /* Bruttobetrag aus dem Nettobetrag */
+
+ /* Andersherum, und dabei die häufigste Rechenfalle überhaupt: Aus einem
+    Bruttobetrag bekommt man den Nettobetrag nicht, indem man 19 % abzieht —
+    sondern indem man durch 1,19 teilt. */
  () => {
-   const netto = pick([480, 750, 1250, 1890, 2400, 3600]);
-   const mwst = Math.round(netto * 0.19 * 100) / 100;
-   const brutto = Math.round((netto + mwst) * 100) / 100;
+   const netto = pick([400, 800, 1200, 2400, 3200]);
+   const brutto = Math.round(netto * 1.19 * 100) / 100;
+   const falsch = Math.round(brutto * 0.81 * 100) / 100;
    return {
     typ:"formel",
-    text:`Ein Angebot für eine Schaltschrankerweiterung liegt netto bei ${eur(netto)}.<br>Wie hoch ist der Bruttobetrag mit 19 % Mehrwertsteuer, in Euro?`,
-    loesung: z(brutto),
-    schluss:"Netto ist ohne, brutto mit Mehrwertsteuer. Auf dem Angebot müssen beide Beträge stehen.",
+    text:`Auf einer Rechnung steht ein Bruttobetrag von ${eur(brutto)}.<br>Wie hoch ist der Nettobetrag ohne 19 % Mehrwertsteuer, in Euro?`,
+    loesung: z(netto),
+    schluss:"Brutto geteilt durch 1,19 — nicht minus 19 %. Die Mehrwertsteuer ist ein Aufschlag auf den Nettobetrag, nicht ein Anteil am Bruttobetrag.",
     schritte:[
-     {frage:"Was bedeutet <b>netto</b>?",
-      tipp:"Es geht um die Mehrwertsteuer.",
-      tipp2:"Netto ist der Betrag ohne Mehrwertsteuer.",
-      optionen:[R("Ohne Mehrwertsteuer", "Richtig."),
-                F("Mit Mehrwertsteuer", "Das ist brutto."),
-                F("Ohne Materialkosten", "Damit hat netto nichts zu tun.")]},
-     {frage:`Wie viel sind <b>19 % von ${eur(netto)}</b>?`,
-      tipp:"Prozent heißt „von hundert“.",
-      tipp2:`Rechne ${z(netto)} : 100 · 19.`,
-      optionen:[R(eur(mwst), "Richtig."),
-                F(eur(Math.round(netto / 1.19 * 100) / 100), "So rechnet man den Nettobetrag aus einem Bruttobetrag heraus."),
-                F(eur(19), "Das sind 19 Euro — gefragt sind 19 Prozent.")]},
-     {frage:`Was ergibt <b>${eur(netto)} + ${eur(mwst)}</b>?`,
-      tippAntwort: z(brutto),
-      tipp:"Netto plus Steuer.",
-      tipp2:`Rechne ${z(netto)} + ${z(mwst)}.`,
-      optionen:[R(eur(brutto), "Richtig."),
-                F(eur(Math.round((netto - mwst) * 100) / 100), "Abgezogen statt addiert."),
-                F(eur(netto), "Das ist der Nettobetrag ohne Steuer.")]}]};
+     {frage:"Worauf werden die <b>19 %</b> aufgeschlagen?",
+      tipp:"Überleg, in welcher Reihenfolge die Rechnung entsteht.",
+      tipp2:"Zuerst steht der Nettobetrag fest, dann kommt die Steuer obendrauf. Die 19 % beziehen sich also auf netto, nicht auf brutto.",
+      optionen:[R("Auf den Nettobetrag", "Richtig — und deshalb kann man sie nicht einfach vom Brutto abziehen."),
+                F("Auf den Bruttobetrag", "Dann wäre der Bruttobetrag die Grundlage seiner selbst."),
+                F("Auf den halben Betrag", "So rechnet die Mehrwertsteuer nicht.")]},
+     {frage:"Welchem <b>Anteil vom Netto</b> entspricht der Bruttobetrag?",
+      tipp:"Netto sind 100 %, dazu kommen 19 %.",
+      tipp2:"Brutto ist das 1,19-fache des Nettobetrags.",
+      optionen:[R("Dem 1,19-fachen", "Richtig."),
+                F("Dem 0,81-fachen", "Das wäre kleiner als netto — brutto ist aber größer."),
+                F("Dem 1,9-fachen", "Das wären 90 % Aufschlag, nicht 19 %.")]},
+     {frage:`Was ergibt <b>${z(brutto)} : 1,19</b>?`,
+      tippAntwort: z(netto),
+      tipp:"Teilen, nicht abziehen.",
+      tipp2:`Rechne ${z(brutto)} : 1,19.`,
+      optionen:[R(`${z(netto)} €`, "Richtig."),
+                F(`${z(falsch)} €`, "Das sind 19 % vom Bruttobetrag abgezogen — der beliebteste Fehler bei dieser Rechnung."),
+                F(`${z(Math.round(brutto * 1.19 * 100) / 100)} €`, "Noch einmal aufgeschlagen statt herausgerechnet.")]}]};
  }
 ],
 

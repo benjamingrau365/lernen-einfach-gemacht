@@ -1004,7 +1004,17 @@ const elektroProben = {
   },
 
   "Kondensator laden": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), f = hinten(a), l = loes(a);
+    /* Spannung nach einer Zeitkonstante: 63,2 % der angelegten Spannung.
+       Weder R noch C stehen dabei im Text — sie spielen keine Rolle. */
+    if (/nach genau einer Zeitkonstante/.test(f)) {
+      const u0 = groesse(t, "V");
+      if (u0 === null) return "Spannung nicht lesbar: " + t;
+      const soll = Math.round(u0 * 0.632 * 10) / 10;
+      if (soll >= u0) return "nach einer Zeitkonstante darf die Spannung nicht erreicht sein";
+      if (soll <= u0 / 2) return "nach einer Zeitkonstante muss mehr als die Hälfte erreicht sein";
+      return stimmt(soll, l, 1e-6);
+    }
     const r = groesse(t, "kΩ"), c = groesse(t, "[µμ]F"), u = groesse(t, "V");
     if (r === null || c === null) return "konnte R oder C nicht lesen: " + t;
     /* kΩ · µF ergibt ms — die Spannung darf am Ergebnis nichts ändern */
@@ -1012,9 +1022,25 @@ const elektroProben = {
   },
 
   "Blindleistung und cos φ": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), f = hinten(a), l = loes(a);
     const u = groesse(t, "V"), i = groesse(t, "A"), p = groesse(t, "W");
     const c = dz((t.match(/cos φ = ([\d.,]+)/) || [])[1]);
+
+    /* Blindleistung: Q = S · sin φ. Gegenprobe über das Dreieck —
+       P² + Q² muss wieder S² ergeben. */
+    if (/Blindleistung in var/.test(f)) {
+      const sinus = dz((t.match(/sin φ = ([\d.,]+)/) || [])[1]);
+      if (u === null || i === null || !isFinite(sinus) || !isFinite(c))
+        return "konnte U, I, cos φ oder sin φ nicht lesen: " + t;
+      if (Math.abs(c * c + sinus * sinus - 1) > 1e-6)
+        return `cos φ = ${c} und sin φ = ${sinus} passen nicht zusammen`;
+      const schein = Math.round(u * i * 100) / 100;
+      const q = Math.round(schein * sinus * 100) / 100;
+      const wirk = schein * c;
+      if (Math.abs(Math.sqrt(wirk * wirk + q * q) - schein) > 0.5)
+        return "Wirk-, Blind- und Scheinleistung ergeben kein stimmiges Dreieck";
+      return stimmt(q, l, 1e-6);
+    }
     if (u === null || i === null) return "konnte U oder I nicht lesen: " + t;
     if (isFinite(c)) {                                             // P gesucht
       if (c <= 0 || c > 1) return `cos φ = ${c} liegt nicht zwischen 0 und 1`;
@@ -1243,6 +1269,16 @@ const elektroProben2 = {
 
   "Energiekosten": (a) => {
     const t = vorne(a), l = loes(a);
+    /* Amortisation: Mehrpreis geteilt durch jährliche Ersparnis. Hier steht
+       keine Leistung im Text, nur zwei Geldbeträge. */
+    if (/bezahlt gemacht/.test(hinten(a))) {
+      const geld = alleGroessen(t, "€");
+      if (geld.length < 2) return "konnte Mehrpreis und Ersparnis nicht lesen: " + t;
+      const [mehr, spart] = geld;
+      if (spart >= mehr) return "die jährliche Ersparnis sollte kleiner sein als der Mehrpreis";
+      return stimmt(Math.round(mehr / spart * 100) / 100, l, 1e-6);
+    }
+
     const preis = dz((t.match(/([\d.,]+)\s*€/) || [])[1]);
     const watt = alleGroessen(t, "W");
     if (!isFinite(preis) || !watt.length) return "Preis oder Leistung nicht lesbar: " + t;
@@ -1263,6 +1299,19 @@ const elektroProben2 = {
 
   "Logikverknüpfungen": (a) => {
     const t = vorne(a), l = loes(a);
+
+    /* Umkehrung: Wie viele Eingänge braucht man für so viele Zustände?
+       Aufgerundet auf die nächste Zweierpotenz — hier ohne Math.log2
+       nachgezählt, damit es eine echte zweite Rechnung ist. */
+    if (/Zustände unterscheiden/.test(t)) {
+      const gefordert = dz((t.match(/soll ([\d.,]+) verschiedene/) || [])[1]);
+      if (!isFinite(gefordert) || gefordert < 2) return "Zahl der Zustände nicht lesbar: " + t;
+      let n = 0, zustaende = 1;
+      while (zustaende < gefordert) { zustaende *= 2; n++; }
+      if (Math.pow(2, n - 1) >= gefordert) return "es ginge auch mit einem Eingang weniger";
+      return stimmt(n, l);
+    }
+
     if (/Eingänge/.test(t) && /Eingangskombinationen/.test(hinten(a)) && !logikGatter(t)) {
       const n = dz((t.match(/hat ([\d.,]+) Eingänge/) || [])[1]);    // 2 hoch n
       if (!isFinite(n)) return "Zahl der Eingänge nicht lesbar: " + t;
@@ -1669,6 +1718,20 @@ const elektroProben3 = {
   "Instandhaltung und Verfügbarkeit": (a) => {
     const t = vorne(a), l = loes(a);
     const proz = dz((t.match(/([\d.,]+)\s*%/) || [])[1]);
+
+    /* Rückwärts: aus Verfügbarkeit und Reparaturdauer die geforderte Laufzeit.
+       Gegenprobe: Mit der gerechneten Laufzeit muss dieselbe Verfügbarkeit
+       wieder herauskommen. */
+    if (/zwischen zwei Ausfällen laufen/.test(hinten(a))) {
+      const mttr = groesse(t, "Stunden");
+      if (!isFinite(proz) || mttr === null) return "Verfügbarkeit oder Reparaturdauer nicht lesbar: " + t;
+      if (proz <= 0 || proz >= 100) return `eine Verfügbarkeit von ${proz} % gibt es nicht`;
+      const mtbf = Math.round(mttr * proz / (100 - proz) * 100) / 100;
+      const zurueck = mtbf / (mtbf + mttr) * 100;
+      if (Math.abs(zurueck - proz) > 0.01) return "die Rückrechnung ergibt eine andere Verfügbarkeit";
+      return stimmt(mtbf, l, 1e-6);
+    }
+
     if (isFinite(proz)) {                                            // Ausfallzeit im Jahr
       if (proz <= 0 || proz > 100) return `eine Verfügbarkeit von ${proz} % gibt es nicht`;
       return stimmt(Math.round(8760 * (100 - proz) / 100 * 100) / 100, l, 1e-6);
@@ -1684,6 +1747,18 @@ const elektroProben3 = {
   "Angebot kalkulieren": (a) => {
     const t = vorne(a), l = loes(a);
     const betraege = alleGroessen(t, "€");
+
+    /* Netto aus Brutto: geteilt durch 1,19, nicht minus 19 %. Die Gegenprobe
+       rechnet den Weg zurück und muss wieder auf den Bruttobetrag kommen. */
+    if (/Bruttobetrag von/.test(t)) {
+      if (!betraege.length) return "Bruttobetrag nicht lesbar: " + t;
+      const brutto = betraege[0];
+      const netto = Math.round(brutto / 1.19 * 100) / 100;
+      if (netto >= brutto) return "der Nettobetrag muss kleiner sein als der Bruttobetrag";
+      if (Math.abs(netto * 1.19 - brutto) > 0.01) return "die Rückrechnung ergibt einen anderen Bruttobetrag";
+      return stimmt(netto, l, 1e-6);
+    }
+
     if (/netto bei/.test(t)) {                                       // Brutto aus Netto
       if (!betraege.length) return "Nettobetrag nicht lesbar: " + t;
       const netto = betraege[0];
