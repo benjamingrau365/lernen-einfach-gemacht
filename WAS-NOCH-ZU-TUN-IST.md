@@ -161,7 +161,105 @@ aufgibt, wird dieselbe Seite wie sie — nur kleiner.
 
 ---
 
-## 3. Am Inhalt
+## 3. Was die App taugt — eine ehrliche Prüfung
+
+### Was trägt
+
+* **Der Kern stimmt.** Keine Lösung, nur Fragen — das hält die App an jeder
+  Stelle durch. 310 Aufgabenerzeuger, jeder mit Zwischenschritten, zwei
+  Hilfestufen und einer Erklärung dahinter. Das ist mehr, als die meisten
+  Abfrageseiten haben.
+* **Die Zahlen sind nachgerechnet.** Jede Aufgabe wird 3000-mal gezogen und
+  von einem zweiten Programm unabhängig nachgerechnet. Das kann keine
+  Konkurrenzseite von sich behaupten.
+* **Jedes Thema hat ein Ausprobier-Feld** — 125 von 125. Regler ziehen und
+  sehen, was passiert.
+* **Bedienbar.** Alle Ansichten, alle Knöpfe, alle 161 Adressen durchgeprüft;
+  nichts scrollt seitlich weg, nichts wirft Fehler.
+
+### Was im Weg steht
+
+**1. Zu wenige Aufgaben je Thema — das ist die größte Schwäche.**
+
+| Aufgaben je Thema | Themen |
+| --- | --- |
+| 1 | 19 |
+| 2 | 61 |
+| 3 | 23 |
+| 4 und mehr | 22 |
+
+**80 von 125 Themen haben eine oder zwei Aufgaben.** Die Zahlen werden zwar
+jedes Mal neu gewürfelt, aber die *Frage* wiederholt sich beim dritten Mal.
+Genau das war die Kritik an den Elektroniker-Themen — dort steht es
+inzwischen bei drei bis fünf. In Mathe, Deutsch und Englisch steht es noch
+so, wie es beim Elektroniker vorher war.
+
+Wer ein Thema wirklich üben will, braucht **vier bis fünf verschiedene
+Fragestellungen**. Das ist die wichtigste Inhaltsarbeit, wichtiger als neue
+Themen.
+
+**2. Kein Weg zurück in ein Thema.** Es gibt keine Merkliste, keine
+Lesezeichen. Was man gestern nicht verstanden hat, muss man sich merken.
+
+**3. Man sieht seinen Stand nicht.** Der Wiederholungsplan kennt sechs Stufen
+je Thema, zeigt sie aber nur als „jetzt fällig" oder „sitzt". Ein Balken oder
+ein Ring je Thema würde sichtbar machen, dass es vorangeht.
+
+---
+
+## 4. Funktionen, die fehlen — nach Nutzen sortiert
+
+### Erledigt
+
+* **Themensuche** (`/suche`) — ein Wort eintippen, direkt beim Thema landen.
+  Ohne Eingabe das vollständige Verzeichnis aller 140 Themen.
+* **Acht Alltagsbereiche** — Geld, Wohnung, Bewerbung, Strom, Kopfrechnen,
+  Rechtschreibung, Statistik, Englisch. Themen quer durch alle Fächer und
+  Klassen, sortiert danach, wofür man sie braucht.
+
+### Als Nächstes, in dieser Reihenfolge
+
+1. **Vier bis fünf Aufgaben je Thema.** Siehe oben. Ohne das nützt jede neue
+   Funktion wenig — man kommt einfach nicht weit genug.
+
+2. **„Wo stehe ich?" — eine Standortbestimmung.** Zehn kurze Fragen quer
+   durch die Grundlagen, danach: „Diese drei Sachen sitzen noch nicht, fang
+   damit an." Löst das Problem, das jeder Erwachsene hat: Man weiß nicht, was
+   man nicht weiß. Später ist genau das auch verkaufbar.
+
+3. **Merkliste.** Ein Stern an jedem Thema, eine Seite mit den gemerkten.
+   Kleiner Aufwand, macht aus dem Herumklicken einen Plan.
+
+4. **Fortschritt je Thema sichtbar machen.** Die sechs Stufen des
+   Wiederholungsplans als Ring oder Balken neben dem Thema. Die Daten sind
+   schon da, sie werden nur nicht gezeigt.
+
+5. **„Zwei Minuten"-Knopf.** Eine einzige Aufgabe, sonst nichts. Für alle,
+   die keine Übungseinheit anfangen wollen, aber zwei Minuten haben. Senkt
+   die Hemmschwelle mehr als jede Serie.
+
+6. **Erklärung eine Stufe einfacher.** Ein Knopf „Erklär mir das noch
+   einfacher" unter jeder Erklärung. Wer den Text nicht versteht, steht sonst
+   genauso da wie vorher — und das ist der Mensch, für den die Seite gebaut
+   ist.
+
+7. **Ohne Klasse denken lernen.** In den Einstellungen: „Ich bin nicht in der
+   Schule." Danach steht überall die Sache statt der Klassenstufe. Kostet
+   wenig, verändert das Gefühl der ganzen Seite.
+
+8. **Rechenweg zum Nachlesen.** Nach einer gelösten Aufgabe der ganze Weg am
+   Stück, nicht nur der letzte Schritt. Zum Abfotografieren fürs Heft.
+
+### Bewusst nicht
+
+* **Punkte, Abzeichen, Ranglisten.** Wer sich für Punkte anstrengt, hört auf,
+  sobald es keine mehr gibt. Die Serie reicht.
+* **Zeitdruck beim normalen Üben.** Die Uhr gehört in die Prüfungssimulation,
+  nirgendwo sonst. Wer unter Druck hängt, hört auf zu denken.
+
+---
+
+## 5. Am Inhalt
 
 * **Elektroniker von 32 auf 60 Themen.** Das ist das Feld, auf dem keine
   Konkurrenz steht: Schützschaltungen, Selbsthaltung, Wendeschützschaltung,
@@ -188,7 +286,7 @@ aufgibt, wird dieselbe Seite wie sie — nur kleiner.
 
 ---
 
-## 4. Regeln, die nicht gebrochen werden
+## 6. Regeln, die nicht gebrochen werden
 
 * Der **Service-Role-Key** von Supabase gehört ausschließlich in den Cron-Job.
   Nicht ins Repository, nicht in den Browser, nicht in eine Nachricht.
