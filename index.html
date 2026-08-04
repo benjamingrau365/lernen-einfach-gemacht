@@ -687,6 +687,59 @@
   .hero::after{width:320px;height:320px;right:-150px;bottom:-170px;background:var(--heroglanz1);opacity:.22}
   .heroinhalt{position:relative;max-width:760px;margin:0 auto}
 
+  /* ---------- Dunkler Kopf ----------
+     Dasselbe Bild wie die Vorschaukarte beim Weiterschicken: dunkelgrün,
+     Lichtschein von oben rechts, der Satz in zwei Farben. Wer den Link in
+     WhatsApp gesehen hat, erkennt die Seite wieder. Der Kopf bleibt in beiden
+     Modi dunkel — er ist die Marke, nicht der Lesetext. */
+  .hero.dunkel{background:#0e2a22;border-color:#12362c;text-align:left;
+    padding:clamp(24px,6vw,52px) clamp(20px,4vw,44px) clamp(28px,5vw,48px)}
+  .hero.dunkel::before{width:520px;height:420px;left:auto;right:-140px;top:-190px;
+    background:#2dc89b;opacity:.34;filter:blur(80px)}
+  .hero.dunkel::after{width:380px;height:340px;left:-150px;right:auto;bottom:-190px;
+    background:#10a37f;opacity:.2;filter:blur(80px)}
+  .hero.dunkel h1{color:#fff;max-width:19ch;margin:0;text-align:left;
+    font-size:clamp(30px,6.6vw,52px);line-height:1.09;letter-spacing:-.035em;
+    font-weight:800;text-shadow:none;text-wrap:balance}
+  .hero.dunkel .glanz{background:none;-webkit-background-clip:initial;background-clip:initial;
+    color:#6fdcbb;animation:none}
+  .hero.dunkel .glanz::after{display:none}
+  .heromarke{display:flex;align-items:center;gap:12px;margin-bottom:clamp(16px,3vw,26px)}
+  .heromarkezeichen{flex:none;width:42px;height:42px;border-radius:13px;background:#10a37f;
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    box-shadow:0 0 0 5px rgba(16,163,127,.16)}
+  .heromarkezeichen svg{width:23px;height:23px}
+  .heromarkename{font-size:19px;font-weight:700;letter-spacing:-.01em;color:#fff}
+  .heromarkename i{font-style:normal;color:#6fdcbb}
+  .hero.dunkel .heroklein{margin:14px 0 0;font-size:clamp(14px,3vw,17px);
+    color:rgba(255,255,255,.7);font-weight:500}
+  .herofaecher{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .herofaecher span{border:1.5px solid rgba(255,255,255,.26);border-radius:999px;
+    padding:5px 14px;font-size:14px;font-weight:600;color:rgba(255,255,255,.94)}
+  .hero.dunkel .lede{color:rgba(255,255,255,.78);text-align:left;
+    margin:clamp(22px,4vw,32px) 0 14px}
+  .hero.dunkel .lede b{color:#fff}
+  /* Die Probe bleibt hell — sie ist die Aufgabe, nicht die Marke. */
+  .hero.dunkel .probe{margin-left:0;margin-right:0;max-width:none;border-color:#2dc89b;
+    box-shadow:0 24px 60px -30px rgba(0,0,0,.7)}
+  .hero.dunkel .knopfreihe{justify-content:flex-start;margin-top:4px}
+  .hero.dunkel .btn.ghost{color:#fff;border-color:rgba(255,255,255,.32);background:none}
+  .hero.dunkel .btn.ghost:hover{background:rgba(255,255,255,.08);color:#fff;
+    border-color:rgba(255,255,255,.55)}
+  .hero.dunkel .heromerkmale{display:grid;justify-content:start;justify-items:start;
+    gap:9px;color:rgba(255,255,255,.74);text-align:left}
+  .hero.dunkel .heromerkmale span{align-items:flex-start}
+  .hero.dunkel .heromerkmale i{background:rgba(255,255,255,.14);color:#6fdcbb}
+  .hero.dunkel .heromerkmale{margin-top:clamp(18px,3vw,26px)}
+  @media(min-width:900px){
+    .hero.dunkel .heroinhalt{max-width:none;display:grid;
+      grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
+      gap:clamp(28px,4vw,56px);align-items:center}
+    .hero.dunkel h1{max-width:none}
+    .hero.dunkel .lede{margin:0 0 12px}
+    .hero.dunkel .herolinks,.hero.dunkel .herorechts{min-width:0}
+  }
+
   .hero .tag{background:var(--card);border:1px solid var(--line);
     box-shadow:0 6px 18px -14px rgba(0,0,0,.5);margin-bottom:18px}
 
@@ -33577,21 +33630,36 @@ function probeHtml(){
 function willkommenHtml(){
   const fertig = baustelleStand();
   return `
-    <div class="hero">
+    ${/* Der Kopf sieht aus wie die Karte, die beim Weiterschicken erscheint —
+          dunkelgrün, derselbe Satz, dieselben Pillen. Wer den Link in WhatsApp
+          gesehen hat und darauf tippt, landet auf demselben Bild. Gebaut ist er
+          aber aus echtem Text, nicht als Bild: Er passt sich jeder Bildbreite
+          an, lässt sich vorlesen, und Google kann ihn lesen. */""}
+    <div class="hero dunkel">
       <div class="heroinhalt">
-        <h1>Endlich <span class="glanz">kapiert</span></h1>
-        <p class="lede"><b>Nie die Lösung</b> — nur Fragen, die dich selbst daraufbringen.
-          Fang gleich hier an:</p>
-        ${probeHtml()}
-        <div class="knopfreihe">
-          <button class="btn" onclick="alsGast()">Weiter üben — kostenlos</button>
-          ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost")}
+        <div class="herolinks">
+          <div class="heromarke">
+            <span class="heromarkezeichen">${SYM.gluehbirne || ""}</span>
+            <span class="heromarkename">Endlich <i>kapiert</i></span>
+          </div>
+            <h1>Du bekommst nie die&nbsp;Lösung.<br><span class="glanz">Nur Fragen, die dich&nbsp;hinführen.</span></h1>
+          <p class="heroklein">Kostenlos · ohne Anmeldung · ohne Werbung</p>
+          <div class="herofaecher">
+            <span>Mathe</span><span>Deutsch</span><span>Englisch</span><span>Elektroniker</span>
+          </div>
+          <div class="heromerkmale">
+            <span><i>✓</i> ${fertig.fertig} Themen fertig, ${fertig.gesamt - fertig.fertig} kommen</span>
+            <span><i>✓</i> Jede Aufgabe neu gewürfelt</span>
+            <span><i>✓</i> Auch für die Abschlussprüfung Teil 1 und 2</span>
+          </div>
         </div>
-        <div class="heromerkmale">
-          <span><i>✓</i> Mathe, Deutsch, Englisch und Elektroniker für Betriebstechnik</span>
-          <span><i>✓</i> ${fertig.fertig} Themen fertig, ${fertig.gesamt - fertig.fertig} kommen</span>
-          <span><i>✓</i> Jede Aufgabe neu gewürfelt</span>
-          <span><i>✓</i> Ohne Anmeldung, ohne Kosten</span>
+        <div class="herorechts">
+          <p class="lede">Probier es sofort aus — eine echte Aufgabe, wie sie drinsteht:</p>
+          ${probeHtml()}
+          <div class="knopfreihe">
+            <button class="btn" onclick="alsGast()">Weiter üben — kostenlos</button>
+            ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost")}
+          </div>
         </div>
       </div>
     </div>
