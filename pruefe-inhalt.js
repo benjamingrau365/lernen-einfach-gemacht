@@ -940,8 +940,32 @@ const elektroProben = {
   },
 
   "Stern und Dreieck": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), f = hinten(a), l = loes(a);
     const w3 = Math.sqrt(3);
+
+    /* Rückwärts: Leiterspannung gegeben, Strangspannung gesucht — hier wird
+       geteilt statt malgenommen, und das Ergebnis muss kleiner sein. */
+    if (/Leiterspannung angeschlossen/.test(t)) {
+      const ul = groesse(t, "V");
+      if (ul === null) return "Leiterspannung nicht lesbar: " + t;
+      const soll = Math.round(ul / w3 * 10) / 10;
+      if (soll >= ul) return "die Strangspannung muss kleiner sein als die Leiterspannung";
+      return stimmt(soll, l, 1e-6);
+    }
+
+    /* Stern-Dreieck-Anlauf: Die Spannung am Strang sinkt um √3, die Leistung
+       geht mit dem Quadrat — bleibt genau ein Drittel. */
+    if (/im Stern betrieben/.test(t)) {
+      const pd = groesse(t, "kW");
+      if (pd === null) return "Leistung im Dreieck nicht lesbar: " + t;
+      const soll = Math.round(pd / 3 * 1000) / 1000;
+      if (soll >= pd) return "im Stern muss weniger Leistung herauskommen als im Dreieck";
+      /* Gegenprobe über den Umweg: (1/√3)² muss dasselbe ergeben wie : 3 */
+      const ueber = pd * (1 / w3) * (1 / w3);
+      if (Math.abs(ueber - pd / 3) > 1e-9) return "die beiden Rechenwege widersprechen sich";
+      return stimmt(soll, l, 1e-6);
+    }
+
     const u = groesse(t, "V"), i = groesse(t, "A");
     if (u !== null) return stimmt(Math.round(u * w3), l);           // Stern: U Leiter
     if (i !== null) return stimmt(Math.round(i * w3 * 10) / 10, l); // Dreieck: I Leiter
@@ -950,6 +974,20 @@ const elektroProben = {
 
   "Transformator": (a) => {
     const t = vorne(a), l = loes(a);
+
+    /* Sekundärstrom: Die Leistung bleibt gleich, also I2 = U1 · I1 : U2.
+       Kleinere Spannung heißt größerer Strom — das wird mitgeprüft. */
+    if (/Sekundär liefert er/.test(t)) {
+      const spannungen = alleGroessen(t, "V");
+      const i1 = groesse(t, "A");
+      if (spannungen.length < 2 || i1 === null) return "konnte die Angaben nicht lesen: " + t;
+      const [u1, u2] = spannungen;
+      if (!(u2 < u1)) return "die Sekundärspannung sollte kleiner sein als die Primärspannung";
+      const soll = Math.round(u1 * i1 / u2 * 100) / 100;
+      if (soll <= i1) return "bei kleinerer Spannung muss mehr Strom fließen";
+      return stimmt(soll, l, 1e-6);
+    }
+
     if (/Primärseite/.test(t)) {                                   // U2 gesucht
       const n1 = dz((t.match(/([\d.,]+)\s*Windungen/) || [])[1]);
       const n2 = dz((t.match(/und ([\d.,]+) auf der Sekundärseite/) || [])[1]);
@@ -1589,6 +1627,34 @@ const elektroProben3 = {
 
   "Frequenzumrichter": (a) => {
     const t = vorne(a), l = loes(a);
+
+    /* U/f-Kennlinie: Das Verhältnis von Spannung zu Frequenz bleibt konstant.
+       Gegenprobe: Der gerechnete Wert, wieder durch die Frequenz geteilt,
+       muss dasselbe Verhältnis ergeben wie im Nennpunkt. */
+    if (/ausgelegt/.test(t)) {
+      const un = groesse(t, "V");
+      const hz = alleGroessen(t, "Hz");
+      if (un === null || hz.length < 2) return "konnte Nennwerte oder Frequenz nicht lesen: " + t;
+      const [fnenn, f] = hz;
+      if (fnenn !== 50) return "als Nennfrequenz sollten 50 Hz dastehen";
+      const soll = Math.round(un * f / fnenn * 10) / 10;
+      if (soll >= un) return "bei kleinerer Frequenz muss auch die Spannung kleiner sein";
+      if (Math.abs(soll / f - un / fnenn) > 0.05) return "U : f ist nicht konstant geblieben";
+      return stimmt(soll, l, 1e-6);
+    }
+
+    /* Lüfterleistung: dritte Potenz des Drehzahlverhältnisses. */
+    if (/Lüfter läuft statt/.test(t)) {
+      const hz = alleGroessen(t, "Hz");
+      if (hz.length < 2) return "konnte die beiden Frequenzen nicht lesen: " + t;
+      const [fnenn, f] = hz;
+      if (!(f < fnenn)) return "die neue Frequenz sollte kleiner sein als die alte";
+      const anteil = f / fnenn;
+      const soll = Math.round(Math.pow(anteil, 3) * 10000) / 100;
+      if (soll >= anteil * 100) return "die Leistung muss stärker sinken als die Drehzahl";
+      return stimmt(soll, l, 1e-6);
+    }
+
     const p = dz((t.match(/([\d.,]+) Polpaar/) || [])[1]);
     if (!isFinite(p) || p <= 0) return "Polpaarzahl nicht lesbar: " + t;
     const f = groesse(t, "Hz");
