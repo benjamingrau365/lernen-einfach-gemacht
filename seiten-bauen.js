@@ -527,6 +527,104 @@ alle.forEach(({thema, ort}) => {
 });
 fs.writeFileSync(pfad.join(ORDNER, "erklaerungen.html"), uebersicht(alle));
 
+/* ---------- Abschlussprüfung Teil 1 und Teil 2 ----------
+   Das ist das Feld, auf dem diese Seite gegen niemanden antreten muss. Bei
+   „Brüche" stehen seit Jahren die großen Lernportale; dort ist nichts zu
+   holen. Bei „AP1 Elektroniker Betriebstechnik üben" ist fast nichts. */
+const PRUEFSEITEN = [
+  {datei: "elektroniker-teil-1",
+   kurz: "AP1",
+   name: "Abschlussprüfung Teil 1 — Elektroniker für Betriebstechnik",
+   wann: "Sie liegt am Ende des zweiten Lehrjahres und zählt mit 40 Prozent in die Endnote.",
+   stufen: [1, 2],
+   auch: ["AP1 Elektroniker üben", "Teil 1 Prüfung Elektroniker Betriebstechnik",
+          "Zwischenprüfung Elektroniker", "AP1 Aufgaben mit Lösungsweg"]},
+  {datei: "elektroniker-teil-2",
+   kurz: "AP2",
+   name: "Abschlussprüfung Teil 2 — Elektroniker für Betriebstechnik",
+   wann: "Sie steht am Ende der Ausbildung und zählt mit 60 Prozent. Der Stoff aus Teil 1 kommt dabei wieder vor.",
+   stufen: [3, 4, 1, 2],
+   auch: ["AP2 Elektroniker üben", "Teil 2 Prüfung Elektroniker Betriebstechnik",
+          "Abschlussprüfung Elektroniker Aufgaben", "AP2 Vorbereitung kostenlos"]}
+];
+
+function pruefseite(ps){
+  const themen = [];
+  for (const stufe of ps.stufen)
+    for (const t of (KATALOG.elektroniker.themen[stufe] || []))
+      if (AUFGABEN[t] && !themen.some(x => x.name === t))
+        themen.push({name: t, stufe});
+
+  const adresse = `/pruefung/${ps.datei}.html`;
+  const beschreibung = `${ps.name}: ${themen.length} Themen üben — mit Zwischenschritten `
+    + `statt fertiger Lösungen. Kostenlos, ohne Anmeldung.`;
+
+  const liste = themen.map(t => `
+    <a href="/erklaerung/${schnipsel(t.name)}.html">
+      <b>${esc(t.name)}</b><span>${t.stufe}. Lehrjahr · ${AUFGABEN[t.name].length} Aufgaben</span>
+    </a>`).join("");
+
+  const inhalt = `
+  <div class="karte">
+    <span class="marke">${esc(ps.kurz)}</span>
+    <h1>${esc(ps.name)}</h1>
+    <p class="lede">${esc(ps.wann)}</p>
+    <p>Hier übst du die ${themen.length} Themen, die dazugehören — und zwar so, dass du
+      am Prüfungstag selbst darauf kommst: Du bekommst nie die fertige Lösung, sondern
+      Fragen, die dich Schritt für Schritt hinführen. Jede Aufgabe wird bei jedem Aufruf
+      neu gewürfelt, auswendig lernen funktioniert also nicht.</p>
+    <p><a class="knopf" href="/elektroniker/teil-${ps.kurz === "AP1" ? "1" : "2"}">Mit dem Üben anfangen</a></p>
+    <p class="klein">Kostenlos · ohne Anmeldung · ohne Werbung</p>
+  </div>
+
+  <div class="karte">
+    <h2>Was drankommt</h2>
+    <div class="themenliste">${liste}</div>
+  </div>
+
+  <div class="karte">
+    <h2>Wie du dich vorbereitest</h2>
+    <p>Trag in der App deinen Prüfungstermin ein. Daraus entsteht ein Plan, der die
+      Themen über die verbleibenden Tage verteilt und das, was noch nicht sitzt, von
+      allein wiederholt — in wachsenden Abständen, bis es hält.</p>
+    <p>Ein Thema, das du fehlerfrei geschafft hast, kommt nach einem Tag wieder, dann
+      nach drei, nach einer Woche, nach zwei Wochen, nach einem Monat. Machst du einen
+      Fehler, rückt es wieder näher.</p>
+  </div>
+
+  <div class="karte">
+    <h2>Oft auch gesucht als</h2>
+    <p class="auch">${ps.auch.map(esc).join(" · ")}</p>
+  </div>`;
+
+  return huelle({
+    titel: `${ps.kurz} Elektroniker Betriebstechnik üben | Endlich kapiert`,
+    text: beschreibung,
+    adresse, inhalt, fach: "elektroniker",
+    jsonld: {
+      "@context": "https://schema.org",
+      "@type": "LearningResource",
+      "name": ps.name,
+      "description": beschreibung,
+      "url": WURZEL + adresse,
+      "inLanguage": "de",
+      "isAccessibleForFree": true,
+      "learningResourceType": "Prüfungsvorbereitung",
+      "educationalLevel": "Berufsausbildung",
+      "teaches": themen.map(t => t.name),
+      "provider": {"@type": "Organization", "name": "Endlich kapiert", "url": WURZEL}
+    }
+  });
+}
+
+const pruefOrdner = pfad.join(ORDNER, "pruefung");
+if (!fs.existsSync(pruefOrdner)) fs.mkdirSync(pruefOrdner, {recursive: true});
+PRUEFSEITEN.forEach(ps =>
+  fs.writeFileSync(pfad.join(pruefOrdner, ps.datei + ".html"), pruefseite(ps)));
+console.log(`${PRUEFSEITEN.length} Prüfungsseiten gebaut.`);
+
+
+
 /* ---------- sitemap.xml ---------- */
 const heute = new Date().toISOString().slice(0, 10);
 const adressen = [
@@ -537,9 +635,13 @@ const adressen = [
   {a: "/suche", p: "0.9"},
   {a: "/erklaerungen.html", p: "0.9"},
   {a: "/vokabeln", p: "0.7"},
-  /* Wer „Elektroniker Abschlussprüfung Teil 1“ sucht, sucht genau diese Seite */
-  {a: "/elektroniker/teil-1", p: "0.8"},
-  {a: "/elektroniker/teil-2", p: "0.8"},
+  /* Wer „Elektroniker Abschlussprüfung Teil 1“ sucht, sucht genau diese Seite.
+     Angemeldet werden die statischen Fassungen: Unter /elektroniker/teil-1
+     liefert der Server die App-Hülle aus, und die trägt den Titel der
+     Startseite — für eine Suchmaschine sind das zwei Adressen ohne eigenen
+     Inhalt. Die Seiten unter /pruefung/ haben beides. */
+  {a: "/pruefung/elektroniker-teil-1.html", p: "0.9"},
+  {a: "/pruefung/elektroniker-teil-2.html", p: "0.9"},
   {a: "/warum", p: "0.5"},
   {a: "/ueber", p: "0.4"},
   {a: "/faq", p: "0.4"}

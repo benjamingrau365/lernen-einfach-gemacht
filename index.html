@@ -30192,6 +30192,12 @@ function fussleisteHtml(){
           ${/* Echter Link, kein navLink: Die Erklärungsseiten sind feste HTML-Dateien
                 außerhalb der App — sie sollen wirklich geladen werden. */""}
           <a class="fusslink" href="/erklaerungen.html">Alle Erklärungen</a>
+          ${/* Echte Links, keine App-Aufrufe: Diese beiden Seiten liegen als
+                Datei und sind die Eingangstür für alle, die nach „AP1" oder
+                „AP2" suchen. Eine Suchmaschine folgt Verweisen — steht eine
+                Seite nur in der sitemap.xml, wird sie schlechter gefunden. */""}
+          <a class="fusslink" href="/pruefung/elektroniker-teil-1.html">Abschlussprüfung Teil 1</a>
+          <a class="fusslink" href="/pruefung/elektroniker-teil-2.html">Abschlussprüfung Teil 2</a>
           ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "fusslink")}
           ${navLink("/arbeitsblatt", "zeigeArbeitsblatt()", "Arbeitsblatt drucken", "fusslink")}
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
