@@ -786,6 +786,18 @@ const elektroProben = {
     const rs = alleGroessen(t, "Ω"), i = groesse(t, "A");
     if (!rs.length) return "keine Widerstände gefunden: " + t;
 
+    /* Leistung an einem der Widerstände: P = I² · R. Gegenprobe über den
+       Umweg P = U · I mit der Teilspannung U = R · I. */
+    const leistung = f.match(/Leistung am ([\d.,]+)-Ω/);
+    if (leistung) {
+      if (i === null) return "Strom nicht lesbar: " + t;
+      const r = dz(leistung[1]);
+      if (!rs.includes(r)) return `der Widerstand ${r} Ω kommt in der Schaltung gar nicht vor`;
+      const soll = Math.round(i * i * r * 1000) / 1000;
+      if (Math.abs((r * i) * i - i * i * r) > 1e-9) return "die beiden Rechenwege widersprechen sich";
+      return stimmt(soll, l, 1e-6);
+    }
+
     /* Rückwärts: Sollwert und zwei Widerstände gegeben, der dritte fehlt */
     const soll = t.match(/soll ([\d.,]+) Ω haben/);
     if (soll) {
@@ -906,6 +918,21 @@ const elektroProben = {
       if (Math.abs(l / 1000 * (r1 + r2) - u) / u > 0.01)
         return "aus dem Strom folgt nicht wieder die Quellenspannung";
       return null;
+    }
+
+    /* Belasteter Teiler: R2 und die Last liegen parallel, erst danach gilt
+       wieder die Teilerformel. Die Spannung muss unter der des unbelasteten
+       Teilers liegen — sonst wäre die ganze Aufgabe sinnlos. */
+    if (/Parallel zu R2 wird ein Verbraucher/.test(t)) {
+      const last = dz((t.match(/Verbraucher mit ([\d.,]+)\s*Ω/) || [])[1]);
+      if (!isFinite(r1) || !isFinite(r2) || u === null || !isFinite(last))
+        return "konnte R1, R2, Last oder Spannung nicht lesen: " + t;
+      const parallel = Math.round(r2 * last / (r2 + last) * 1000) / 1000;
+      if (parallel >= r2) return "parallel geschaltet muss der Widerstand kleiner werden";
+      const soll = Math.round(u * parallel / (r1 + parallel) * 1000) / 1000;
+      const ohne = u * r2 / (r1 + r2);
+      if (soll >= ohne) return "unter Last muss die Spannung kleiner sein als im Leerlauf";
+      return stimmt(soll, l, 1e-6);
     }
 
     const m = hinten(a).match(/an R(\d)/);
@@ -1165,7 +1192,38 @@ const elektroProben2 = {
     const rp = Math.round(r2 * r3 / (r2 + r3) * 1000) / 1000;
     const rg = Math.round((r1 + rp) * 1000) / 1000;
     if (rg <= r1) return "der Gesamtwiderstand muss größer sein als der Reihenanteil allein";
+    if (rp >= Math.min(r2, r3)) return "die Parallelgruppe muss kleiner sein als ihr kleinster Zweig";
     const u = groesse(t, "V");
+    const f = hinten(a);
+
+    /* Die beiden folgenden Zweige rechnen mit den ungerundeten Werten: Der
+       Erzeuger rundet die Zwischenschritte für die Anzeige, das darf die
+       Nachrechnung nicht übernehmen. Deshalb hier eigene, exakte Werte und
+       eine Toleranz, die genau diese Rundung abdeckt. */
+    const rpGenau = r2 * r3 / (r2 + r3);
+    const rgGenau = r1 + rpGenau;
+
+    /* Spannung an der Parallelgruppe: Teilerverhältnis zwischen R1 und der
+       Gruppe. Gegenprobe — beide Teilspannungen zusammen ergeben wieder U. */
+    if (/Spannung an der Parallelgruppe/.test(f)) {
+      if (u === null) return "Spannung nicht lesbar: " + t;
+      const ugruppe = u * rpGenau / rgGenau;
+      if (ugruppe >= u) return "an R1 muss auch etwas abfallen";
+      if (Math.abs(ugruppe + u * r1 / rgGenau - u) > 1e-9)
+        return "die beiden Teilspannungen ergeben nicht wieder die Quellenspannung";
+      return stimmt(ugruppe, l, 1e-2);
+    }
+
+    /* Teilstrom durch R2: erst die Spannung an der Gruppe, dann Ohm für R2.
+       Gegenprobe — die beiden Zweigströme zusammen ergeben den Gesamtstrom. */
+    if (/Strom fließt durch R2/.test(f)) {
+      if (u === null) return "Spannung nicht lesbar: " + t;
+      const ugruppe = u * rpGenau / rgGenau;
+      if (Math.abs(ugruppe / r2 + ugruppe / r3 - u / rgGenau) > 1e-9)
+        return "die beiden Zweigströme ergeben nicht den Gesamtstrom";
+      return stimmt(ugruppe / r2, l, 1e-3);
+    }
+
     if (u === null) return stimmt(rg, l, 1e-6);                      // Gesamtwiderstand
     return stimmt(Math.round(u / rg * 1000) / 1000, l, 1e-3);        // Gesamtstrom
   },
@@ -1605,6 +1663,25 @@ const elektroProben3 = {
 
   "Sicherheitsregeln": (a) => {
     const t = vorne(a), l = loes(a);
+
+    /* Verstoß gegen die Reihenfolge: Im Text stehen zwei Regeln beim Namen,
+       die zuerst genannte wurde vorgezogen. Gesucht ist die Nummer der
+       übersprungenen — also die kleinere. Die Namen werden hier unabhängig
+       zugeordnet, nicht aus der Aufgabe übernommen. */
+    if (/bevor/.test(t)) {
+      const NAMEN = [[1, /Freischalten/], [2, /Wiedereinschalten sichern/],
+                     [3, /Spannungsfreiheit feststellen/], [4, /Erden und kurzschließen/],
+                     [5, /abdecken oder abschranken/]];
+      const genannt = NAMEN.filter(([, muster]) => muster.test(t)).map(([nr]) => nr);
+      if (genannt.length !== 2) return "es sollten genau zwei Regeln beim Namen stehen: " + t;
+      const [klein, gross] = genannt.slice().sort((x, y) => x - y);
+      /* Die vorgezogene Regel muss im Satz vor der übersprungenen stehen. */
+      const stelle = (nr) => t.search(NAMEN.find(([n]) => n === nr)[1]);
+      if (stelle(gross) > stelle(klein))
+        return "die vorgezogene Regel müsste im Satz zuerst genannt sein";
+      return stimmt(klein, l);
+    }
+
     const m = t.match(/Regel ([\d]+) von fünf/);
     if (m) {                                                         // nächste Regel
       const nr = Number(m[1]);
@@ -1619,6 +1696,17 @@ const elektroProben3 = {
   "Ladung und Strom": (a) => {
     const t = vorne(a), l = loes(a);
     const min = groesse(t, "Minuten");
+
+    /* Rückwärts: Ladung und Zeit gegeben, Strom gesucht. Gegenprobe —
+       der gefundene Strom mal der Zeit muss wieder die Ladung ergeben. */
+    if (/Coulomb geflossen/.test(t)) {
+      const q = groesse(t, "Coulomb");
+      if (q === null || min === null) return "Ladung oder Zeit nicht lesbar: " + t;
+      const soll = q / (min * 60);
+      if (Math.abs(soll * min * 60 - q) > 1e-6) return "die Rückrechnung ergibt eine andere Ladung";
+      return stimmt(soll, l, 1e-6);
+    }
+
     if (min !== null) {                                              // Q = I · t
       const i = groesse(t, "A");
       if (i === null) return "Stromstärke nicht lesbar: " + t;
@@ -1636,7 +1724,31 @@ const elektroProben3 = {
   },
 
   "Spule und Induktivität": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), f = hinten(a), l = loes(a);
+
+    /* Rückwärts: L aus dem gemessenen Blindwiderstand. Gegenprobe — mit dem
+       gefundenen L muss wieder derselbe Blindwiderstand herauskommen. */
+    if (/unbekannten Drossel/.test(t)) {
+      const xl = groesse(t, "Ω"), hz = groesse(t, "Hz");
+      if (xl === null || hz === null) return "Blindwiderstand oder Frequenz nicht lesbar: " + t;
+      const henry = xl / (2 * Math.PI * hz);
+      const soll = Math.round(henry * 1000);
+      if (Math.abs(2 * Math.PI * hz * (soll / 1000) - xl) > 0.01)
+        return "aus dem gefundenen L folgt nicht wieder derselbe Blindwiderstand";
+      return stimmt(soll, l);
+    }
+
+    /* Strom an der Reihenschaltung aus R und X L: Es zählt Z, nicht R. */
+    if (/Strom in Ampere/.test(f)) {
+      const rs = alleGroessen(t, "Ω"), u = groesse(t, "V");
+      if (rs.length < 2 || u === null) return "konnte R, X L oder U nicht lesen: " + t;
+      const zwert = Math.sqrt(rs[0] * rs[0] + rs[1] * rs[1]);
+      if (zwert <= Math.max(rs[0], rs[1])) return "der Scheinwiderstand muss größer sein als jeder Einzelwert";
+      const soll = Math.round(u / zwert * 1000) / 1000;
+      if (soll >= u / rs[0]) return "mit dem Scheinwiderstand muss weniger Strom fließen als mit R allein";
+      return stimmt(soll, l, 1e-6);
+    }
+
     const mh = groesse(t, "mH");
     if (mh !== null) {                                               // X L
       const f = groesse(t, "Hz");
