@@ -8,27 +8,45 @@ Stand: 4. August 2026
 
 ---
 
-## 1. Dringend — die Seite ist öffentlich
+## 1. Rechtliches — erledigt, mit einer offenen Stelle für später
 
-### Ladungsfähige Anschrift besorgen
+### Was jetzt im Netz steht
 
-Ohne Anschrift lassen sich Impressum und Datenschutzerklärung nicht
-fertigstellen. **Dreizehn Stellen** stehen dort gerade mit
-`[BITTE AUSFÜLLEN]` im Netz. Der Leitstand meldet das oben unter „Auffällig“
-und zählt selbst mit — sobald etwas ausgefüllt ist, sinkt die Zahl.
+Impressum, Datenschutzerklärung und Nutzungsbedingungen sind **vollständig
+ausgefüllt**. Kein `[BITTE AUSFÜLLEN]` mehr, der Leitstand meldet null Lücken.
 
-Warum eine Anschrift nötig ist, gleich doppelt:
+Eingetragen ist:
 
-* **§ 5 DDG** verlangt für geschäftsmäßige Dienste eine *ladungsfähige*
-  Anschrift. Ein Postfach genügt ausdrücklich nicht.
-* **Art. 13 DSGVO** verlangt Identität und Kontaktdaten des Verantwortlichen.
-  Das greift schon deshalb, weil die App Konten und Lernfortschritt speichert.
+* **Anbieter:** Benjamin Grau, Deutschland
+* **Kontakt:** hilfe@endlichkapiert.com
+* **Verantwortlich für den Inhalt und im Sinne der DSGVO:** Benjamin Grau
+* **Art des Angebots:** privates, nicht-kommerzielles Projekt — nichts
+  verkauft, keine Werbung, keine Datenweitergabe, kein Gewerbe angemeldet
 
-Die Wohnadresse ist die einfachste, aber nicht rückholbare Lösung: Was einmal
-im Netz stand, steht in Archiven und Adressdatenbanken weiter. Deshalb besser
-eine gemietete Geschäftsadresse.
+Keine Straße, keine Hausnummer. Das ist kein Versehen, sondern die Folge
+daraus, dass hier nichts verkauft wird.
 
-**Worauf beim Anbieter zu achten ist**
+### Warum ohne Anschrift, und wann sich das ändert
+
+Die Impressumspflicht nach **§ 5 DDG** trifft *geschäftsmäßige* Dienste.
+Geschäftsmäßig heißt: auf Dauer angelegt und auf Einnahmen gerichtet — durch
+Verkauf, Abo, Werbung oder Affiliate-Links. Nichts davon trifft gerade zu.
+
+Bei **Art. 13 DSGVO** geht es um etwas anderes: Wer Daten verarbeitet, muss
+sagen, *wer* er ist und *wie* man ihn erreicht. Beides steht da — Name und
+E-Mail. Die Norm nennt keine Postanschrift als Pflichtangabe.
+
+**Der Tag, an dem die Anschrift gebraucht wird**, ist der Tag, an dem zum
+ersten Mal Geld fließt: erstes verkauftes Paket, erste Werbung, erster
+Affiliate-Link. Dann kommen zusammen: Gewerbeanmeldung, ladungsfähige
+Anschrift, Widerrufsbelehrung. Das gehört ohnehin in denselben Arbeitsgang —
+deshalb steht es hier unten unter „Wenn die Seite Geld bringen soll“.
+
+Bis dahin ist nichts zu tun. Die Wohnadresse jetzt schon einzutragen wäre der
+eine Schritt, der sich nicht rückgängig machen lässt: Was einmal im Netz
+stand, steht in Archiven und Adressdatenbanken weiter.
+
+### Für später: worauf bei einer Geschäftsadresse zu achten ist
 
 | muss dabeistehen | Warnzeichen |
 | --- | --- |
@@ -51,13 +69,13 @@ Die Bestätigung aufheben.
 billigsten), Coworking in der Nähe, IHK-Gründungsberatung (kostenlos, geht
 auch per E-Mail), sonst „ladungsfähige Geschäftsadresse mieten“.
 
-### Zwei Stellen gehen schon ohne Adresse
+### Eine Kleinigkeit, die noch genauer werden kann
 
-* **Supabase-Serverstandort** — steht im Supabase-Konto unter
-  *Project Settings → General → Region*. Vermutlich `eu-central-1 (Frankfurt)`.
-  Sobald die Angabe da ist, kann sie in die Datenschutzerklärung.
-* **Telefonnummer im Impressum** — freiwillig. Die Zeile kann ersatzlos raus,
-  dann ist ein Platzhalter weniger da.
+In der Datenschutzerklärung steht bei Supabase: „Als Serverregion ist eine
+Region innerhalb der Europäischen Union gewählt.“ Das stimmt und reicht.
+Genauer wäre der Name der Region — er steht im Supabase-Konto unter
+*Project Settings → General → Region*, vermutlich `eu-central-1 (Frankfurt)`.
+Wenn du ihn nachschaust und mir durchgibst, kommt er rein. Eilt nicht.
 
 ---
 
@@ -116,9 +134,12 @@ Fehler.
 ### Was rechtlich dazugehört
 
 * Gewerbe anmelden — erst wenn Geld fließt
-* Kleinunternehmerregelung § 19 UStG — bis 25.000 € im Jahr ohne Umsatzsteuer
+* Kleinunternehmerregelung § 19 UStG — bis 25.000 € im Jahr ohne Umsatzsteuer.
+  Die Zeile dazu gehört dann auch wieder ins Impressum; sie ist dort jetzt
+  bewusst nicht drin, weil es noch kein Gewerbe gibt.
 * Widerrufsbelehrung — 14 Tage, Pflicht bei digitalen Käufen
-* Impressum und Datenschutzerklärung vollständig (siehe oben)
+* **Ladungsfähige Anschrift ins Impressum** — ab dem ersten verkauften Paket
+  Pflicht (§ 5 DDG). Worauf zu achten ist, steht oben unter Punkt 1.
 
 ### Technisch ist es wenig
 
@@ -149,7 +170,7 @@ aufgibt, wird dieselbe Seite wie sie — nur kleiner.
   Drehstrom-Leistungsmessung, Schutzarten (IP).
 * **Englisch Klasse 8, 9, 10** — 15 Themen, dann sind es 140 von 140 und das
   Baustellenband kann weg.
-* **36 doppelte Fragestellungen** bei den Elektroniker-Themen ersetzen
+* **35 doppelte Fragestellungen** bei den Elektroniker-Themen ersetzen
   (Spannungsteiler 4×, Einheiten 5×, weitere je 2×). Der Weg dafür ist
   erprobt: andere Frage schreiben, passende Nachrechnung in
   `pruefe-inhalt.js`, gegenprüfen.
