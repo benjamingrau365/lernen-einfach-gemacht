@@ -920,8 +920,20 @@ const elektroProben = {
   },
 
   "Frequenz und Periodendauer": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), fr = hinten(a), l = loes(a);
     const f = groesse(t, "Hz"), tp = groesse(t, "ms");
+    /* Perioden zählen: Frequenz mal Zeit — die Periodendauer wird gar nicht
+       gebraucht. Die Zeit steht in Sekunden im Aufgabentext. */
+    if (/volle Perioden/.test(fr)) {
+      const sek = groesse(t, "Sekunden");
+      if (f === null || sek === null) return "konnte Frequenz oder Zeit nicht lesen: " + t;
+      return stimmt(f * sek, l, 1e-6);
+    }
+    /* Halbwelle: die halbe Periodendauer */
+    if (/Halbwelle/.test(fr)) {
+      if (f === null) return "Frequenz nicht gefunden: " + t;
+      return stimmt(1000 / f / 2, l, 1e-3);
+    }
     if (f !== null) return stimmt(1000 / f, l, 1e-3);               // T in ms
     if (tp !== null) return stimmt(1000 / tp, l, 1e-3);             // f in Hz
     return "weder Frequenz noch Periodendauer gefunden: " + t;
@@ -995,7 +1007,44 @@ const logikGatter = (txt) => ["NAND", "NOR", "XOR", "UND", "ODER"].find(n => txt
 const elektroProben2 = {
 
   "Einheiten und Vorsätze": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), f = hinten(a), l = loes(a);
+
+    /* Rechnen mit gemischten Vorsätzen: Ω und mA ergeben Volt — aber nur,
+       wenn der Strom vorher durch tausend geteilt wird. Genau das wird hier
+       noch einmal von Hand nachgerechnet. */
+    if (/fließen [\d.,]+ mA/.test(t)) {
+      const r = groesse(t, "Ω"), ima = groesse(t, "mA");
+      if (r === null || ima === null) return "konnte R oder I nicht lesen: " + t;
+      if (!/Spannung in Volt/.test(f)) return "die Frage passt nicht zum Aufgabentyp: " + f;
+      return stimmt(Math.round(r * (ima / 1000) * 1e6) / 1e6, l, 1e-6);
+    }
+
+    /* Abstand zwischen zwei Vorsätzen: Der Faktor ist das Verhältnis der
+       beiden Vorsatzfaktoren — und der eingetragene Wert muss der größere
+       sein, sonst wäre die Frage „zu groß" falsch gestellt. */
+    if (/Um welchen Faktor ist der Eintrag zu groß/.test(f)) {
+      const m = t.match(/Gemessen wurden ([\d.,]+) ([GMkmµμnp]?[^\s.]+)\./);
+      const g = f.match(/steht ([\d.,]+) ([GMkmµμnp]?[^\s.]+)\./);
+      if (!m || !g) return "konnte die beiden Angaben nicht lesen: " + t + " | " + f;
+      if (dz(m[1]) !== dz(g[1])) return "die beiden Zahlenwerte sollten gleich sein";
+      const klein = vorsatzFaktor(m[2]), gross = vorsatzFaktor(g[2]);
+      if (!(gross > klein)) return `der Eintrag ist nicht größer: ${m[2]} und ${g[2]}`;
+      return stimmt(gross / klein, l, 1e-6);
+    }
+
+    /* Vergleichen: alle drei Werte selbst in kΩ umrechnen und den größten
+       suchen — ohne die Sortierung aus der Aufgabe zu übernehmen. */
+    if (/^Drei Widerstände/.test(t)) {
+      const teile = [...t.matchAll(/([\d.,]+) ([GMk]?)Ω/g)]
+        .map(m => dz(m[1]) * vorsatzFaktor(m[2] + "Ω") / 1000);
+      if (teile.length !== 3) return "es sollten genau drei Widerstände dastehen: " + t;
+      const groesster = Math.max(...teile);
+      if (teile.filter(v => Math.abs(v - groesster) < 1e-9).length > 1)
+        return "zwei Widerstände sind gleich groß — dann gibt es zwei richtige Antworten";
+      if (!/größte von ihnen in kΩ/.test(f)) return "die Frage passt nicht zum Aufgabentyp: " + f;
+      return stimmt(Math.round(groesster * 1e6) / 1e6, l, 1e-6);
+    }
+
     const m = t.match(/Wandle ([\d.,]+) (\S+) in (\S+) um/);
     if (!m) return "konnte die Umrechnung nicht lesen: " + t;
     const wert = dz(m[1]), von = m[2], nach = m[3].replace(/[.,]$/, "");
@@ -1060,9 +1109,25 @@ const elektroProben2 = {
   "Wirkungsgrad": (a) => {
     const t = vorne(a), f = hinten(a), l = loes(a);
     const watt = alleGroessen(t, "W");
-    const proz = dz((t.match(/([\d.,]+)\s*%/) || [])[1]);
-    if (isFinite(proz)) {                                            // aufgenommene Leistung
-      if (watt.length < 1) return "abgegebene Leistung nicht lesbar: " + t;
+    const alleProz = alleGroessen(t, "%");
+    const proz = alleProz.length ? alleProz[0] : NaN;
+
+    /* Kette aus zwei Teilen: Die Wirkungsgrade werden malgenommen. Hier steht
+       keine einzige Leistung im Text — nur zwei Prozentwerte. */
+    if (alleProz.length === 2) {
+      if (!/Gesamtwirkungsgrad/.test(f)) return "die Frage passt nicht zur Kette: " + f;
+      const [e1, e2] = alleProz;
+      if (e1 > 100 || e2 > 100) return "ein Wirkungsgrad über 100 % ist unmöglich";
+      return stimmt(Math.round(e1 * e2 / 100 * 100) / 100, l, 1e-6);
+    }
+
+    if (isFinite(proz)) {
+      if (watt.length < 1) return "die Leistung ist nicht lesbar: " + t;
+      if (proz > 100) return "ein Wirkungsgrad über 100 % ist unmöglich";
+      /* Abgegebene Leistung gesucht: Aufnahme mal Wirkungsgrad. */
+      if (/gibt er an der Welle ab/.test(f))
+        return stimmt(Math.round(watt[0] * (proz / 100) * 100) / 100, l, 1e-6);
+      /* Sonst ist die aufgenommene Leistung gesucht. */
       return stimmt(Math.round(watt[0] / (proz / 100) * 100) / 100, l, 1e-6);
     }
     if (watt.length < 2) return "es fehlt eine der beiden Leistungen: " + t;
@@ -1073,19 +1138,39 @@ const elektroProben2 = {
   },
 
   "Motor und Drehzahl": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), f = hinten(a), l = loes(a);
     if (/Polpaar/.test(t)) {                                         // Synchrondrehzahl
       const p = dz((t.match(/hat ([\d.,]+) Polpaar/) || [])[1]);
       if (!isFinite(p)) return "Polpaarzahl nicht lesbar: " + t;
       return stimmt(60 * 50 / p, l);
     }
     const n = alleGroessen(t, "1/min");
+
+    /* Rückwärts: Polpaarzahl aus der Nenndrehzahl. Die Synchrondrehzahl ist
+       die kleinste der vier Stufen, die noch über der Nenndrehzahl liegt. */
+    if (/Wie viele Polpaare/.test(f)) {
+      if (!n.length) return "Nenndrehzahl nicht lesbar: " + t;
+      const stufe = [3000, 1500, 1000, 750].filter(v => v > n[0]).pop();
+      if (!stufe) return `zu ${n[0]} 1/min gibt es keine passende Synchrondrehzahl`;
+      const schlupf = (stufe - n[0]) / stufe;
+      if (schlupf > 0.12) return `der Schlupf wäre ${Math.round(schlupf * 100)} % — das passt zu keinem Motor`;
+      return stimmt(3000 / stufe, l);
+    }
+
     if (/Synchrondrehzahl/.test(t)) {                                // Schlupf
       if (n.length < 2) return "es fehlt eine der beiden Drehzahlen: " + t;
       const [ns, nl] = n;
       if (nl >= ns) return "der Läufer darf nicht schneller sein als das Drehfeld";
       return stimmt(Math.round((ns - nl) / ns * 10000) / 100, l, 1e-6);
     }
+
+    /* Leistung aus Drehmoment und Drehzahl — dieselbe Formel, andere Seite. */
+    const nm = groesse(t, "Nm");
+    if (nm !== null) {
+      if (!n.length) return "Drehzahl nicht lesbar: " + t;
+      return stimmt(Math.round(nm * n[0] / 9550 * 1000) / 1000, l, 1e-6);
+    }
+
     const pkw = groesse(t, "kW");                                    // Drehmoment
     if (pkw === null || !n.length) return "Leistung oder Drehzahl nicht lesbar: " + t;
     return stimmt(Math.round(9550 * pkw / n[0] * 100) / 100, l, 1e-6);
