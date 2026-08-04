@@ -28170,10 +28170,31 @@ function lsPfeil(prozent, hochIstGut = true){
   return `<span class="lstrend ${gut ? "gut" : "schlecht"}">${prozent > 0 ? "▲" : "▼"} ${Math.abs(prozent)} %</span>`;
 }
 
+/* Wie viele Stellen in Impressum, Datenschutzerklärung und Nutzungs-
+   bedingungen sind noch nicht ausgefüllt? Diese Seiten stehen öffentlich im
+   Netz; ein Platzhalter darin ist schlimmer als eine fehlende Seite, weil er
+   zeigt, dass es bekannt und unerledigt ist. */
+function rechtLuecken(){
+  let n = 0;
+  for (const bauen of [impressumHtml, datenschutzHtml, agbHtml]){
+    if (typeof bauen !== "function") continue;
+    try { n += (String(bauen()).match(/class="platzhalter"/g) || []).length; }
+    catch(e){ /* eine Seite, die sich nicht bauen lässt, zählt hier nicht */ }
+  }
+  return n;
+}
+
 /* Was ist auffällig? Alles hier kommt aus Zahlen, die schon da sind —
    nichts wird zusätzlich erhoben. */
 function lsWarnungen(s){
   const w = [];
+  /* Ganz nach oben: Das ist das Einzige hier, was rechtlich weh tun kann. */
+  const luecken = rechtLuecken();
+  if (luecken)
+    w.push({art:"achtung",
+            text:`${z(luecken)} ${luecken === 1 ? "Stelle" : "Stellen"} in den Rechtsseiten sind noch nicht ausgefüllt`,
+            wohin:"werkzeug",
+            was:"Impressum, Datenschutzerklärung und Nutzungsbedingungen stehen öffentlich — mit Platzhaltern darin"});
   const schwer = (s.themen || []).filter(t => t.fehlerquote >= 50);
   if (schwer.length)
     w.push({art:"achtung", text:`${z(schwer.length)} ${schwer.length === 1 ? "Thema liegt" : "Themen liegen"} über 50 % Fehlerquote`,
@@ -28393,6 +28414,18 @@ function dashboardHtml(){
           ${navLink("/baustelle", "zeigeSeite('baustelle')", "<b>Bauplan</b><span>was fertig ist, was fehlt</span>", "lstat")}
         </div>
       </div>
+
+      ${(() => { const l = rechtLuecken(); return `
+      <div class="lskarte">
+        <p class="lskopf">Rechtsseiten ${l ? `<span class="lsleise">${z(l)} offen</span>` : `<span class="lsleise">vollständig</span>`}</p>
+        ${l ? `<p class="lsfussnote" style="margin:0 0 12px">Diese Seiten stehen öffentlich im Netz.
+          Solange dort <b>[BITTE AUSFÜLLEN]</b> steht, ist das sichtbar — und angreifbar.</p>` : ""}
+        <div class="lsgitter">
+          ${navLink("/impressum", "zeigeSeite('impressum')", "<b>Impressum</b><span>Name und Anschrift</span>", "lstat")}
+          ${navLink("/datenschutz", "zeigeSeite('datenschutz')", "<b>Datenschutzerklärung</b><span>Verantwortlicher, Serverstandort</span>", "lstat")}
+          ${navLink("/agb", "zeigeSeite('agb')", "<b>Nutzungsbedingungen</b><span>Anbieter</span>", "lstat")}
+        </div>
+      </div>`; })()}
 
       <div class="lskarte">
         <p class="lskopf">Nachsehen gehen</p>
