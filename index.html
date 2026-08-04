@@ -1000,6 +1000,10 @@
   /* ---------- Antwort eintippen ---------- */
   .eingabezeile{display:flex;gap:10px;align-items:stretch}
   .antwortfeld{margin-bottom:0;font-size:19px;font-weight:600}
+  /* Wer aufgibt, sieht seinen letzten Versuch noch im Feld stehen. Ohne
+     Kennzeichnung sieht das aus, als sei er angenommen worden. */
+  .antwortfeld.daneben{border-color:var(--red);color:var(--red);
+    text-decoration:line-through;text-decoration-thickness:1.5px}
   .eingabezeile .btn{flex:none;padding:13px 22px}
   @media(max-width:480px){
     .eingabezeile{flex-direction:column}
@@ -33009,7 +33013,8 @@ function render(gewaehlt){
   if (reihenfolge.length !== s.optionen.length) neueReihenfolge();
   const optionenHtml = tippen ? `
     <div class="eingabezeile">
-      <input class="feld antwortfeld" id="antwortFeld" type="text"
+      <input class="feld antwortfeld ${beantwortet && aufgeloest && letzteEingabe ? "daneben" : ""}"
+             id="antwortFeld" type="text"
              inputmode="${tastaturArt(s.tippAntwort || richtigeOption.t)}"
              autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false"
              enterkeyhint="done"
@@ -33019,7 +33024,11 @@ function render(gewaehlt){
       ${beantwortet ? "" : `<button class="btn" onclick="eingabePruefen()">Prüfen</button>`}
     </div>
     ${beantwortet ? `<div class="pick richtig" style="cursor:default"><span class="pickbuchstabe">✓</span><span class="picktext">${bruecheSetzen(s.tippAntwort || richtigeOption.t)}</span></div>` : ""}
-    <p class="small soft" style="margin-top:10px">Hier gibt es nichts zum Anklicken — schreib das Ergebnis selbst hin.</p>`
+    ${/* Der Hinweis gilt nur, solange noch etwas zu schreiben ist. Nach der
+          Antwort stand er trotzdem da — direkt unter der aufgelösten Lösung,
+          und forderte zum Hinschreiben von etwas auf, das schon dasteht. */""}
+    ${beantwortet ? "" :
+      `<p class="small soft" style="margin-top:10px">Hier gibt es nichts zum Anklicken — schreib das Ergebnis selbst hin.</p>`}`
    : reihenfolge.map((i, platz) => {
     const o = s.optionen[i];
     let cls = "";
