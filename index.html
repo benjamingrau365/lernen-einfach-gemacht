@@ -5458,66 +5458,70 @@ const AUFGABEN = {
                 F(`${z(istr)} A`, "Das ist der Strangstrom, der war gegeben.")]}]};
  },
 
- /* Sternschaltung: von der Strang- auf die Leiterspannung */
+ /* Andersherum: Im Netz steht die Leiterspannung fest — 400 V. Gesucht ist,
+    was am einzelnen Strang ankommt. Das ist der Weg, den man in der Anlage
+    wirklich geht, und der Faktor steht dabei unten statt oben. */
  () => {
-   const ustr = pick([127, 133, 150, 220, 230]);
-   const ul = Math.round(ustr * Math.sqrt(3));
+   const ul = pick([230, 400, 500, 690]);
+   const ustr = Math.round(ul / Math.sqrt(3) * 10) / 10;
    return {
     typ:"formel",
-    text:`Eine Heizung ist im Stern geschaltet, an jedem Strang liegen ${z(ustr)} V.<br>Wie groß ist die Leiterspannung in Volt? (auf ganze Volt runden)`,
-    loesung: z(ul),
-    schluss:"Im Stern ist die Leiterspannung um den Faktor Wurzel 3 größer als die Strangspannung — rund das 1,73-fache.",
+    text:`Ein Verbraucher ist im Stern an ein Netz mit ${z(ul)} V Leiterspannung angeschlossen.<br>Wie groß ist die Strangspannung in Volt? (auf eine Nachkommastelle runden)`,
+    loesung: z(ustr),
+    schluss:"Deshalb steht auf unserem Netz 400 V/230 V: 400 geteilt durch √3 ergibt 231 — die Spannung, die an jeder Steckdose liegt.",
     schritte:[
-     {frage:"Was ist die <b>Strangspannung</b>?",
-      tipp:"Strang heißt: ein einzelner Verbraucherzweig.",
-      tipp2:"Die Strangspannung liegt an einem Zweig, die Leiterspannung zwischen zwei Außenleitern.",
-      optionen:[R("Die Spannung an einem einzelnen Zweig", "Richtig."),
-                F("Die Spannung zwischen zwei Außenleitern", "Das ist die Leiterspannung."),
-                F("Die Spannung gegen Erde", "Damit hat die Bezeichnung nichts zu tun.")]},
-     {frage:"Mit welchem <b>Faktor</b> rechnest du im Stern von Strang auf Leiter?",
-      tipp:"Es ist eine Wurzel.",
-      tipp2:"Wurzel 3 ist rund 1,732.",
-      optionen:[R("Mal Wurzel 3", "Richtig — im Stern ist die Leiterspannung größer."),
-                F("Geteilt durch Wurzel 3", "Dann käme weniger heraus, das ist verkehrt."),
-                F("Mal 3", "Zu viel — es ist die Wurzel aus 3.")]},
-     {frage:`Was ergibt <b>${z(ustr)} · 1,732</b>, auf ganze Volt gerundet?`,
-      tippAntwort: z(ul),
-      tipp:"Malnehmen und runden.",
-      tipp2:`Rechne ${z(ustr)} · 1,732 und runde.`,
-      optionen:[R(`${z(ul)} V`, "Richtig."),
-                F(`${z(Math.round(ustr / Math.sqrt(3)))} V`, "Geteilt statt malgenommen."),
-                F(`${z(ustr * 3)} V`, "Mal drei statt mal Wurzel drei.")]}]};
+     {frage:"Welche der beiden Spannungen ist im Stern die <b>größere</b>?",
+      tipp:"Die Leiterspannung liegt zwischen zwei Außenleitern, die Strangspannung zwischen Außenleiter und Sternpunkt.",
+      tipp2:"Zwischen zwei Außenleitern liegt mehr an als zwischen einem Außenleiter und dem Sternpunkt.",
+      optionen:[R("Die Leiterspannung", "Richtig — sie ist um √3 größer."),
+                F("Die Strangspannung", "Umgekehrt — im Stern ist der Strang der kleinere Teil."),
+                F("Beide sind gleich groß", "Das gilt im Dreieck, nicht im Stern.")]},
+     {frage:"Musst du also <b>mal</b> oder <b>geteilt durch</b> √3 rechnen?",
+      tipp:"Du gehst von der größeren zur kleineren Spannung.",
+      tipp2:"Gesucht ist der kleinere Wert — also wird geteilt.",
+      optionen:[R("Geteilt durch √3", "Richtig."),
+                F("Mal √3", `Dann käme ${z(Math.round(ul * Math.sqrt(3)))} V heraus — mehr als die Leiterspannung.`),
+                F("Geteilt durch 3", "Zu viel — es ist die Wurzel aus 3, also rund 1,73.")]},
+     {frage:`Was ergibt <b>${z(ul)} : 1,732</b>?`,
+      tippAntwort: z(ustr),
+      tipp:"Teilen und auf eine Stelle runden.",
+      tipp2:`Rechne ${z(ul)} : 1,732.`,
+      optionen:[R(`${z(ustr)} V`, "Richtig."),
+                F(`${z(Math.round(ul * Math.sqrt(3) * 10) / 10)} V`, "Malgenommen statt geteilt."),
+                F(`${z(Math.round(ul / 3 * 10) / 10)} V`, "Durch 3 statt durch √3 geteilt.")]}]};
  },
 
- /* Dreieckschaltung: vom Strang- auf den Leiterstrom */
+ /* Der Grund, warum es die Stern-Dreieck-Schaltung überhaupt gibt: Im Stern
+    zieht derselbe Motor am selben Netz nur ein Drittel. Das ist keine neue
+    Formel, sondern die Folge aus allem, was vorher kam. */
  () => {
-   const istr = pick([3, 5.5, 7.2, 9, 12.5, 16]);
-   const il = Math.round(istr * Math.sqrt(3) * 10) / 10;
+   const pd = pick([3, 5.5, 7.5, 9, 11, 15]);
+   const ps = Math.round(pd / 3 * 1000) / 1000;
    return {
     typ:"formel",
-    text:`Ein Drehstrommotor ist im Dreieck geschaltet, durch jeden Strang fließen ${z(istr)} A.<br>Wie groß ist der Leiterstrom in Ampere? (auf eine Nachkommastelle runden)`,
-    loesung: z(il),
-    schluss:"Im Dreieck ist der Leiterstrom um Wurzel 3 größer als der Strangstrom — spiegelbildlich zur Spannung im Stern.",
+    text:`Ein Motor nimmt im Dreieck ${z(pd)} kW auf. Beim Anlauf wird er zuerst im Stern betrieben.<br>Wie viel Kilowatt nimmt er dabei auf? (auf drei Stellen runden)`,
+    loesung: z(ps),
+    schluss:"Im Stern liegt an jedem Strang nur die um √3 kleinere Spannung — und weil die Leistung mit dem Quadrat der Spannung geht, bleibt genau ein Drittel übrig. Deshalb läuft der Motor im Stern an und schaltet erst danach ins Dreieck.",
     schritte:[
-     {frage:"Warum ist der <b>Leiterstrom</b> im Dreieck größer als der Strangstrom?",
-      tipp:"Schau auf die Knotenpunkte der Dreieckschaltung.",
-      tipp2:"An jeder Ecke des Dreiecks treffen zwei Strangströme zusammen und fließen gemeinsam in den Außenleiter.",
-      optionen:[R("An jeder Ecke laufen zwei Strangströme zusammen", "Richtig."),
-                F("Weil die Spannung höher ist", "Die Spannung ist im Dreieck bei Strang und Leiter gleich."),
-                F("Weil der Motor mehr Leistung hat", "Mit der Leistung hat der Faktor nichts zu tun.")]},
-     {frage:"Welcher <b>Faktor</b> gehört dazu?",
-      tipp:"Derselbe wie beim Stern, nur bei der anderen Größe.",
-      tipp2:"Wurzel 3, also rund 1,732.",
-      optionen:[R("Mal Wurzel 3", "Richtig."),
-                F("Mal 2", "Es sind nicht einfach zwei — die Ströme sind zeitlich versetzt."),
-                F("Geteilt durch Wurzel 3", "Dann käme weniger heraus.")]},
-     {frage:`Was ergibt <b>${z(istr)} · 1,732</b>, auf eine Stelle gerundet?`,
-      tippAntwort: z(il),
-      tipp:"Malnehmen und runden.",
-      tipp2:`Rechne ${z(istr)} · 1,732.`,
-      optionen:[R(`${z(il)} A`, "Richtig."),
-                F(`${z(Math.round(istr / Math.sqrt(3) * 10) / 10)} A`, "Geteilt statt malgenommen."),
-                F(`${z(istr * 3)} A`, "Mal drei ist zu viel.")]}]};
+     {frage:"Was ändert sich für den <b>einzelnen Strang</b>, wenn man von Dreieck auf Stern umschaltet?",
+      tipp:"Im Dreieck liegt jeder Strang zwischen zwei Außenleitern, im Stern zwischen Außenleiter und Sternpunkt.",
+      tipp2:"Die Strangspannung sinkt um den Faktor √3 — bei uns von 400 V auf 230 V.",
+      optionen:[R("Die Spannung am Strang wird um √3 kleiner", "Richtig — und daran hängt alles Weitere."),
+                F("Die Spannung am Strang bleibt gleich", "Dann brächte das Umschalten gar nichts."),
+                F("Die Spannung am Strang wird um √3 größer", "Umgekehrt — im Stern liegt weniger an.")]},
+     {frage:"Wie wirkt sich <b>weniger Spannung</b> auf die Leistung aus?",
+      tipp:"In P = U² : R steht die Spannung im Quadrat.",
+      tipp2:"Wird die Spannung durch √3 geteilt, wird die Leistung durch √3 · √3 geteilt — also durch 3.",
+      optionen:[R("Sie sinkt auf ein Drittel", "Richtig — das Quadrat von √3 ist 3."),
+                F("Sie sinkt auf ein Drittel der Wurzel, also auf 58 %", "Das wäre der Fall, wenn die Leistung nur einfach mit der Spannung ginge."),
+                F("Sie sinkt auf ein Neuntel", "Das wäre das Quadrat von 3, nicht von √3.")]},
+     {frage:`Was ergibt <b>${z(pd)} kW : 3</b>?`,
+      tippAntwort: z(ps),
+      tipp:"Einfach durch drei teilen.",
+      tipp2:`Rechne ${z(pd)} : 3 und runde auf drei Stellen.`,
+      optionen:[R(`${z(ps)} kW`, "Richtig — deshalb ist auch der Anlaufstrom nur ein Drittel so groß."),
+                F(`${z(Math.round(pd / Math.sqrt(3) * 1000) / 1000)} kW`, "Nur durch √3 geteilt — die Leistung geht aber mit dem Quadrat."),
+                F(`${z(Math.round(pd / 9 * 1000) / 1000)} kW`, "Durch 9 ist zu viel.")]}]};
  }
 ],
 
@@ -5590,37 +5594,39 @@ const AUFGABEN = {
                 F(`${z(Math.round(n1 * u1 / u2))} Windungen`, "Da hast du verkehrt herum geteilt — die Sekundärseite hat weniger Windungen.")]}]};
  },
 
- /* Sekundärspannung aus dem Windungsverhältnis */
+ /* Die andere Seite des Trafos: Die Ströme verhalten sich umgekehrt zu den
+    Spannungen. Wer das nicht mitdenkt, legt die Sicherung auf der
+    Sekundärseite viel zu klein aus. */
  () => {
-   const n1 = pick([500, 800, 1000, 1200, 1500]);
-   const n2 = pick([25, 40, 50, 60, 100]);
    const u1 = pick([230, 400]);
-   const u2 = Math.round(u1 * n2 / n1 * 1000) / 1000;
+   const u2 = pick([12, 24, 42, 48]);
+   const i1 = pick([0.5, 1.2, 2, 3.5, 5]);
+   const i2 = Math.round(i1 * u1 / u2 * 100) / 100;
    return {
     typ:"formel",
-    text:`Ein Klingeltrafo hat ${z(n1)} Windungen auf der Primärseite und ${z(n2)} auf der Sekundärseite. Primär liegen ${z(u1)} V an.<br>Wie groß ist die Sekundärspannung in Volt?`,
-    loesung: z(u2),
-    schluss:"Die Spannungen verhalten sich wie die Windungszahlen. Weniger Windungen heißt weniger Spannung.",
+    text:`Ein Trafo liegt primär an ${z(u1)} V und zieht dort ${z(i1)} A. Sekundär liefert er ${z(u2)} V.<br>Wie groß ist der Sekundärstrom in Ampere? (verlustfrei gerechnet, auf zwei Stellen runden)`,
+    loesung: z(i2),
+    schluss:"Ein Trafo verändert die Spannung, nicht die Leistung. Was er an Spannung wegnimmt, gibt er an Strom dazu.",
     schritte:[
-     {frage:"Welche Seite hat <b>mehr</b> Windungen?",
-      tipp:"Vergleich die beiden Zahlen.",
-      tipp2:`${z(n1)} gegen ${z(n2)}.`,
-      optionen:[R("Die Primärseite", "Richtig — deshalb wird die Spannung heruntergesetzt."),
-                F("Die Sekundärseite", "Dort sind es weniger."),
-                F("Beide gleich viel", "Nein, die Zahlen sind verschieden.")]},
-     {frage:"Was folgt daraus für die <b>Sekundärspannung</b>?",
-      tipp:"Spannungen verhalten sich wie Windungszahlen.",
-      tipp2:"Weniger Windungen auf der Sekundärseite heißt weniger Spannung.",
-      optionen:[R("Sie ist kleiner als die Primärspannung", "Richtig."),
-                F("Sie ist größer", "Das wäre bei mehr Sekundärwindungen so."),
-                F("Sie ist gleich groß", "Nur bei gleicher Windungszahl.")]},
-     {frage:`Was ergibt <b>${z(u1)} V · ${z(n2)} : ${z(n1)}</b>?`,
-      tippAntwort: z(u2),
-      tipp:"Erst malnehmen, dann teilen.",
-      tipp2:`${z(u1)} · ${z(n2)} = ${z(u1 * n2)}, geteilt durch ${z(n1)}.`,
-      optionen:[R(`${z(u2)} V`, "Richtig."),
-                F(`${z(Math.round(u1 * n1 / n2 * 100) / 100)} V`, "Die Windungszahlen sind vertauscht — so käme eine viel zu hohe Spannung heraus."),
-                F(`${z(u1)} V`, "Ein Trafo, der nichts ändert, wäre sinnlos.")]}]};
+     {frage:"Was bleibt beim Trafo (verlustfrei gerechnet) <b>gleich</b>?",
+      tipp:"Er ist kein Kraftwerk — er kann nichts dazugeben.",
+      tipp2:"Was primär hineingeht, kommt sekundär wieder heraus: die Leistung. Nur Spannung und Strom verteilen sich anders.",
+      optionen:[R("Die Leistung", "Richtig — U1 · I1 = U2 · I2."),
+                F("Die Spannung", "Die zu ändern ist gerade seine Aufgabe."),
+                F("Der Strom", "Der ändert sich mit, nur andersherum als die Spannung.")]},
+     {frage:`Wie groß ist die <b>Leistung</b> auf der Primärseite?`,
+      tipp:"Spannung mal Strom.",
+      tipp2:`Rechne ${z(u1)} · ${z(i1)}.`,
+      optionen:[R(`${z(Math.round(u1 * i1 * 100) / 100)} VA`, "Richtig."),
+                F(`${z(Math.round(u1 / i1 * 100) / 100)} VA`, "Geteilt statt malgenommen."),
+                F(`${z(Math.round((u1 + i1) * 100) / 100)} VA`, "Addiert — Volt und Ampere kann man nicht zusammenzählen.")]},
+     {frage:`Was ergibt <b>${z(Math.round(u1 * i1 * 100) / 100)} VA : ${z(u2)} V</b>?`,
+      tippAntwort: z(i2),
+      tipp:"Dieselbe Leistung, geteilt durch die kleinere Spannung.",
+      tipp2:`Rechne ${z(Math.round(u1 * i1 * 100) / 100)} : ${z(u2)}.`,
+      optionen:[R(`${z(i2)} A`, "Richtig — deutlich mehr als primär."),
+                F(`${z(Math.round(i1 * u2 / u1 * 100) / 100)} A`, "Hier sind die Spannungen vertauscht — sekundär fließt mehr, nicht weniger."),
+                F(`${z(i1)} A`, "Das ist der Primärstrom.")]}]};
  }
 ],
 
@@ -9127,56 +9133,73 @@ const AUFGABEN = {
                 F(`${z(n * p)} Hz`, "Die Division durch 60 fehlt.")]}]};
  },
 
- /* Drehzahl aus der eingestellten Frequenz */
+ /* Die U/f-Kennlinie: Der Umrichter senkt mit der Frequenz auch die
+    Spannung — sonst würde der Magnetfluss zu groß und der Motor zieht
+    Blindstrom, bis er heiß wird. Das ist die zweite Hälfte dessen, was ein
+    Umrichter tut, und sie steht in keiner Drehzahlformel. */
  () => {
-   const p = pick([1, 2, 3]);
-   const f = pick([20, 25, 30, 35, 40, 60, 70]);
-   const n = Math.round(60 * f / p);
+   const un = pick([230, 400]);
+   const f = pick([10, 20, 25, 30, 40]);
+   const u = Math.round(un * f / 50 * 10) / 10;
    return {
     typ:"formel",
-    text:`Ein Motor mit ${z(p)} Polpaar${p > 1 ? "en" : ""} wird über einen Frequenzumrichter mit ${z(f)} Hz betrieben.<br>Wie groß ist die Synchrondrehzahl in 1/min?`,
-    loesung: z(n),
-    schluss:"Der Umrichter macht die Frequenz einstellbar — und damit die Drehzahl. Das ist der ganze Sinn der Sache.",
+    text:`Ein Motor ist für ${z(un)} V bei 50 Hz ausgelegt. Der Umrichter fährt ihn mit ${z(f)} Hz.<br>Auf welche Spannung stellt er dabei, in Volt? (U/f bleibt gleich, auf eine Stelle runden)`,
+    loesung: z(u),
+    schluss:"U geteilt durch f bleibt konstant. Nur so bleibt der Magnetfluss im Motor gleich — und das Drehmoment über den ganzen Drehzahlbereich verfügbar.",
     schritte:[
-     {frage:"Wozu setzt man einen <b>Frequenzumrichter</b> ein?",
-      tipp:"Er verändert etwas am Netz, bevor es zum Motor geht.",
-      tipp2:"Er erzeugt eine einstellbare Frequenz — und die Drehzahl folgt der Frequenz.",
-      optionen:[R("Um die Drehzahl stufenlos einstellen zu können", "Richtig."),
-                F("Um den Motor abzusichern", "Dafür gibt es Schutzschalter."),
-                F("Um die Spannung zu messen", "Das ist nicht seine Aufgabe.")]},
-     {frage:`Was ergibt <b>60 · ${z(f)} : ${z(p)}</b>?`,
-      tippAntwort: z(n),
-      tipp:"Erst 60 mal die Frequenz, dann durch die Polpaarzahl.",
-      tipp2:`60 · ${z(f)} = ${z(60 * f)}, geteilt durch ${z(p)}.`,
-      optionen:[R(`${z(n)} 1/min`, "Richtig."),
-                F(`${z(60 * f * p)} 1/min`, "Malgenommen statt geteilt."),
-                F(`${z(Math.round(f / p * 100) / 100)} 1/min`, "Der Faktor 60 für die Minute fehlt.")]}]};
+     {frage:"Warum senkt der Umrichter mit der Frequenz auch die <b>Spannung</b>?",
+      tipp:"Denk daran, was die Spule im Ständer bei niedriger Frequenz macht.",
+      tipp2:"Der Blindwiderstand der Wicklung sinkt mit der Frequenz. Bliebe die Spannung oben, würde der Strom stark ansteigen und der Motor überhitzen.",
+      optionen:[R("Damit der Magnetfluss gleich bleibt", "Richtig — sonst geht der Motor in die Sättigung und wird heiß."),
+                F("Damit der Motor leiser läuft", "Die Geräusche kommen von der Taktfrequenz, nicht davon."),
+                F("Damit er langsamer anläuft", "Die Drehzahl macht die Frequenz, nicht die Spannung.")]},
+     {frage:`Wie groß ist das Verhältnis <b>U : f</b> im Nennpunkt?`,
+      tipp:"Nennspannung geteilt durch 50 Hz.",
+      tipp2:`Rechne ${z(un)} : 50.`,
+      optionen:[R(`${z(Math.round(un / 50 * 100) / 100)} V je Hz`, "Richtig — dieser Wert bleibt jetzt konstant."),
+                F(`${z(Math.round(50 / un * 10000) / 10000)} V je Hz`, "Verkehrt herum geteilt."),
+                F(`${z(un)} V je Hz`, "Die Division durch 50 fehlt.")]},
+     {frage:`Was ergibt <b>${z(Math.round(un / 50 * 100) / 100)} · ${z(f)}</b>?`,
+      tippAntwort: z(u),
+      tipp:"Das Verhältnis mal der neuen Frequenz.",
+      tipp2:`Rechne ${z(un)} · ${z(f)} : 50.`,
+      optionen:[R(`${z(u)} V`, "Richtig."),
+                F(`${z(un)} V`, "Das ist die Nennspannung — bei kleinerer Frequenz wäre sie zu hoch."),
+                F(`${z(Math.round(un * 50 / f * 10) / 10)} V`, "Hier stehen die Frequenzen vertauscht.")]}]};
  },
 
- /* Frequenz aus der gewünschten Drehzahl */
+ /* Warum ein Umrichter Geld spart: Bei Pumpen und Lüftern geht die Leistung
+    mit der dritten Potenz der Drehzahl. Zehn Prozent langsamer heißt fast
+    dreißig Prozent weniger Strom — das rechnet sich in wenigen Monaten. */
  () => {
-   const p = pick([1, 2]);
-   const f0 = pick([15, 20, 30, 40, 45, 60]);
-   const n = 60 * f0 / p;
+   const f = pick([30, 35, 40, 45]);
+   const anteil = f / 50;
+   const proz = Math.round(anteil * anteil * anteil * 10000) / 100;
    return {
     typ:"formel",
-    text:`Ein Motor mit ${z(p)} Polpaar${p > 1 ? "en" : ""} soll mit ${z(n)} 1/min laufen.<br>Auf welche Frequenz stellst du den Umrichter, in Hertz?`,
-    loesung: z(f0),
-    schluss:"Die Formel für die Drehzahl nach f umgestellt: f = n · p : 60.",
+    text:`Ein Lüfter läuft statt mit 50 Hz nur noch mit ${z(f)} Hz.<br>Auf wie viel Prozent der ursprünglichen Leistung sinkt er dabei? (auf zwei Stellen runden)`,
+    loesung: z(proz),
+    schluss:"Bei Pumpen und Lüftern geht die Leistung mit der dritten Potenz der Drehzahl. Deshalb spart ein Umrichter dort am meisten — und deshalb wird er dort auch am häufigsten eingebaut.",
     schritte:[
-     {frage:"Welche Formel steht am Anfang?",
-      tipp:"Die für die Synchrondrehzahl.",
-      tipp2:"n = 60 · f : p — daraus muss f herausgeholt werden.",
-      optionen:[R("n = 60 · f : p", "Richtig."),
-                F("n = 60 · p : f", "Frequenz und Polpaarzahl sind vertauscht."),
-                F("n = f : (60 · p)", "So käme eine viel zu kleine Drehzahl heraus.")]},
-     {frage:`Was ergibt <b>${z(n)} · ${z(p)} : 60</b>?`,
-      tippAntwort: z(f0),
-      tipp:"Drehzahl mal Polpaarzahl, dann durch 60.",
-      tipp2:`${z(n)} · ${z(p)} = ${z(n * p)}, geteilt durch 60.`,
-      optionen:[R(`${z(f0)} Hz`, "Richtig."),
-                F(`${z(Math.round(n / p / 60 * 100) / 100)} Hz`, "Hier wurde durch die Polpaarzahl geteilt statt malgenommen."),
-                F(`${z(Math.round(n * p * 60 / 1000) * 1)} Hz`, "Mal 60 statt geteilt — das ergäbe eine unmögliche Frequenz.")]}]};
+     {frage:`Auf welchen <b>Anteil</b> sinkt die Drehzahl bei ${z(f)} statt 50 Hz?`,
+      tipp:"Die Drehzahl folgt der Frequenz eins zu eins.",
+      tipp2:`Rechne ${z(f)} : 50.`,
+      optionen:[R(`${z(anteil)}`, `Richtig — also ${z(Math.round(anteil * 100))} % der bisherigen Drehzahl.`),
+                F(`${z(Math.round(50 / f * 10000) / 10000)}`, "Verkehrt herum geteilt — das wäre mehr als vorher."),
+                F(`${z(Math.round((50 - f) / 50 * 10000) / 10000)}`, "Das ist der Anteil, um den sie sinkt, nicht der verbleibende.")]},
+     {frage:"Wie hängt bei einem Lüfter die <b>Leistung</b> an der Drehzahl?",
+      tipp:"Nicht einfach eins zu eins.",
+      tipp2:"Der Volumenstrom geht mit n, der Druck mit n², die Leistung ist beides zusammen — also n³.",
+      optionen:[R("Mit der dritten Potenz", "Richtig — halbe Drehzahl heißt ein Achtel Leistung."),
+                F("Eins zu eins", "Dann lohnte sich ein Umrichter kaum."),
+                F("Mit dem Quadrat", "Das gilt für den Druck, nicht für die Leistung.")]},
+     {frage:`Was ergibt <b>${z(anteil)} · ${z(anteil)} · ${z(anteil)} · 100</b>?`,
+      tippAntwort: z(proz),
+      tipp:"Den Anteil dreimal mit sich selbst malnehmen, dann mal 100.",
+      tipp2:`Rechne ${z(anteil)} hoch 3 und nimm das Ergebnis mal 100.`,
+      optionen:[R(`${z(proz)} %`, "Richtig."),
+                F(`${z(Math.round(anteil * 100 * 100) / 100)} %`, "Das ist der Drehzahlanteil — die Leistung sinkt stärker."),
+                F(`${z(Math.round(anteil * anteil * 10000) / 100)} %`, "Nur quadriert — das wäre der Druck.")]}]};
  }
 ],
 
