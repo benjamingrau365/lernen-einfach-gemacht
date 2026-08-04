@@ -997,6 +997,24 @@
     padding:7px 14px;font:inherit;font-size:14.5px;color:var(--soft);cursor:pointer}
   .suchchip:hover{border-color:var(--ac);color:var(--ac-dark);background:var(--ac-soft)}
 
+  /* Einstieg nach Lebenslage: aufklappbare Kacheln über dem Verzeichnis */
+  .alltagliste{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+  .alltagkarte{border:1.5px solid var(--line);border-radius:14px;overflow:hidden;
+    transition:border-color .12s}
+  .alltagkarte.auf{border-color:var(--ac)}
+  .alltagkopf{display:flex;align-items:center;gap:12px;width:100%;padding:13px 16px;
+    border:none;background:var(--card);font:inherit;text-align:left;cursor:pointer;min-width:0}
+  .alltagkopf:hover{background:var(--ac-soft)}
+  .alltagzeichen{flex:none;width:36px;height:36px;border-radius:11px;background:var(--ac-soft);
+    color:var(--ac-dark);display:flex;align-items:center;justify-content:center;
+    font-size:18px;font-weight:800}
+  .alltagtext{display:block;min-width:0;flex:1}
+  .alltagtext b{display:block;font-size:16px}
+  .alltagtext small{display:block;font-size:13.5px;color:var(--soft);margin-top:2px}
+  .alltagzahl{flex:none;font-size:13px;font-weight:800;color:var(--soft);
+    background:var(--line);border-radius:999px;padding:3px 10px}
+  .alltagkarte.auf .alltagzahl{background:var(--ac-soft);color:var(--ac-dark)}
+
   .suchzahl{margin:0 0 10px;font-size:14.5px;color:var(--soft)}
   .suchtreffer{background:var(--card);border:1.5px solid var(--line);border-left:4px solid var(--akz,var(--ac));
     border-radius:14px;padding:14px 16px;margin-bottom:10px}
@@ -30097,11 +30115,20 @@ function suchZeileHtml(e){
 function suchErgebnisHtml(){
   const treffer = suchTreffer();
 
-  /* Ohne Eingabe: das ganze Verzeichnis, nach Fach und Alphabet. */
+  /* Ohne Eingabe: erst die Bereiche für den Alltag, dann das ganze
+     Verzeichnis nach Fach und Alphabet. Wer ein Wort im Kopf hat, tippt es;
+     wer nur weiß, woran es scheitert, klickt sich durch die Bereiche. */
   if (treffer === null){
+    const bereiche = `
+      <div class="card">
+        <p class="ueberschrift">Wobei hakt es gerade?</p>
+        <p class="small soft" style="margin:0 0 12px">Themen quer durch alle Fächer und
+          Klassen — sortiert danach, wofür man sie braucht.</p>
+        <div id="alltagliste" class="alltagliste">${alltagHtml()}</div>
+      </div>`;
     const nachFach = {};
     for (const e of suchIndex()) (nachFach[e.fach] = nachFach[e.fach] || []).push(e);
-    return Object.entries(nachFach).map(([fk, liste]) => {
+    return bereiche + Object.entries(nachFach).map(([fk, liste]) => {
       liste.sort((a, b) => a.thema.localeCompare(b.thema, "de"));
       return `
       <div class="card">
@@ -30139,6 +30166,107 @@ function suchErgebnisHtml(){
    Es ist bewusst kein echtes Eingabefeld, sondern ein Knopf, der aussieht wie
    eines: So braucht die Übersicht keine eigene Suchlogik, und ein Fehltipp
    verliert nichts. */
+
+/* ---------- Einstieg nach Lebenslage ----------
+
+   Die Suche setzt voraus, dass man das Wort kennt. Wer die Schule hinter sich
+   hat, kennt es meistens nicht mehr — er weiß nur, woran es scheitert: an der
+   Rechnung im Baumarkt, am Anschreiben, an der Stromrechnung.
+
+   Diese Bereiche sammeln Themen quer über Fächer und Klassen. Ein Thema darf
+   in mehreren stehen: Prozentrechnung gehört zu Geld und zum Kopfrechnen.
+   Absichtlich stehen hier nicht alle 140 Themen — nur die, bei denen jemand
+   ohne Prüfung im Nacken sagen würde: das brauche ich wirklich. */
+const ALLTAG = [
+  {name:"Geld und Verträge", zeichen:"€",
+   worum:"Rabatte, Zinsen, Raten, Rechnungen — überall Prozente.",
+   themen:["Prozent und Zinsen","Prozentuale Veränderung","Zinseszins","Kredite und Raten",
+           "Dreisatz","Dezimalzahlen","Überschlagen und Schätzen","Angebot kalkulieren",
+           "Energiekosten","Diagramme lesen"]},
+
+  {name:"Wohnung und Werkstatt", zeichen:"⌂",
+   worum:"Wie viel Farbe, wie viel Laminat, passt das durch die Tür?",
+   themen:["Flächen und Umfang","Körper berechnen","Größen und Einheiten","Maßstab",
+           "Kreis","Satz des Pythagoras","Vierecke und Vielecke","Rechnen mit Zeit",
+           "Kugel und Kegel"]},
+
+  {name:"Bewerbung und Beruf", zeichen:"✉",
+   worum:"Anschreiben, Bericht, Vortrag — und Texte, die man ernst nimmt.",
+   themen:["Bewerbung schreiben","Berichten","Argumentieren","Rede und Rhetorik",
+           "Sachtexte auswerten","Inhaltsangabe","Groß- und Kleinschreibung","das oder dass",
+           "Kommas bei Nebensätzen","Fremdwörter"]},
+
+  {name:"Strom und Technik", zeichen:"⚡",
+   worum:"Was aus der Steckdose kommt und warum die Sicherung fliegt.",
+   themen:["Ohmsches Gesetz","Elektrische Leistung und Arbeit","Reihenschaltung",
+           "Parallelschaltung","Sicherheitsregeln","Schutzmaßnahmen","Leiterquerschnitt",
+           "Beleuchtung berechnen","Einheiten und Vorsätze","Energiekosten"]},
+
+  {name:"Zahlen im Kopf", zeichen:"×",
+   worum:"Das, was man beim Einkaufen und im Gespräch wirklich braucht.",
+   themen:["Grundrechenarten","Überschlagen und Schätzen","Brüche","Dezimalzahlen",
+           "Negative Zahlen","Teilbarkeit","Rechnen mit Klammern","Größen und Einheiten",
+           "Prozent und Zinsen"]},
+
+  {name:"Richtig schreiben", zeichen:"„",
+   worum:"Die Stellen, an denen fast alle stolpern.",
+   themen:["das oder dass","Groß- und Kleinschreibung","Kommas bei Aufzählungen",
+           "Kommas bei Nebensätzen","Kommas bei Infinitivgruppen","Wörtliche Rede",
+           "Zeitformen","Nominalisierung","Wortarten erkennen"]},
+
+  {name:"Zahlen verstehen, die man liest", zeichen:"%",
+   worum:"Statistiken, Umfragen, Wahrscheinlichkeiten — und wo sie täuschen.",
+   themen:["Diagramme lesen","Statistik","Wahrscheinlichkeit","Zufall und Häufigkeit",
+           "Prozentuale Veränderung","Zuordnungen","Exponentielles Wachstum"]},
+
+  {name:"Englisch für den Alltag", zeichen:"EN",
+   worum:"Die Sätze, die man im Urlaub und im Netz wirklich braucht.",
+   themen:["Simple Present","Fragen bilden","Verneinung","to be und to have got",
+           "Simple Past","Present Perfect","will future und going to","Modalverben",
+           "Mengenangaben"]}
+];
+
+let alltagOffen = null;   // welcher Bereich gerade aufgeklappt ist
+
+function alltagUm(name){
+  alltagOffen = alltagOffen === name ? null : name;
+  const ziel = document.getElementById("alltagliste");
+  if (ziel) ziel.innerHTML = alltagHtml();
+}
+
+function alltagHtml(){
+  return ALLTAG.map(b => {
+    /* Nur zeigen, was es auch wirklich gibt — ein Bereich, der ins Leere
+       führt, ist schlimmer als keiner. */
+    const da = b.themen.filter(t => AUFGABEN[t]);
+    if (!da.length) return "";
+    const offen = alltagOffen === b.name;
+    return `
+      <div class="alltagkarte${offen ? " auf" : ""}">
+        <button class="alltagkopf" onclick="alltagUm(${JSON.stringify(b.name).replace(/"/g, "&quot;")})"
+                aria-expanded="${offen}">
+          <span class="alltagzeichen">${b.zeichen}</span>
+          <span class="alltagtext">
+            <b>${b.name}</b>
+            <small>${b.worum}</small>
+          </span>
+          <span class="alltagzahl">${da.length}</span>
+        </button>
+        ${offen ? `
+        <div class="verzeichnis" style="padding:0 16px 12px">
+          ${da.map(t => {
+            const info = themaInfo(t);
+            return `
+            <button class="verzeile" onclick="suchStarte(${JSON.stringify(t).replace(/"/g, "&quot;")})">
+              <span class="vername">${t}</span>
+              <span class="verstufe">${KATALOG[info.fach].name}</span>
+            </button>`;
+          }).join("")}
+        </div>` : ""}
+      </div>`;
+  }).join("");
+}
+
 function suchEinstiegHtml(text){
   return `
     <button class="suchknopf" onclick="zeigeSuche('')">
