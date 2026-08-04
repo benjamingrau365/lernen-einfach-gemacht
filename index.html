@@ -704,6 +704,45 @@
   .hero.dunkel .glanz{background:none;-webkit-background-clip:initial;background-clip:initial;
     color:#6fdcbb;animation:none}
   .hero.dunkel .glanz::after{display:none}
+  /* ---------- Vergleich: woanders / hier ----------
+     Zwei Spalten, links blass und abgehakt, rechts wach und fragend. Der
+     Unterschied soll man sehen, bevor man liest. */
+  .vergleich{display:grid;gap:12px}
+  @media(min-width:700px){ .vergleich{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+  .vspalte{border:1.5px solid var(--line);border-radius:14px;padding:16px 16px 18px;
+    background:var(--card);display:flex;flex-direction:column}
+  .vspalte.alt{opacity:.92}
+  .vspalte.neu{border-color:var(--ac);background:var(--ac-soft);
+    box-shadow:0 14px 34px -26px var(--ac)}
+  .vkopf{margin:0 0 12px;font-size:11.5px;font-weight:800;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--soft)}
+  .vspalte.neu .vkopf{color:var(--ac-dark)}
+  .vaufgabe{font-size:24px;font-weight:800;letter-spacing:-.01em;text-align:center;
+    padding:10px 0 14px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+  .vspalte.neu .vaufgabe{border-color:color-mix(in srgb, var(--ac) 26%, transparent)}
+  .vschritt{display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.45;
+    padding:7px 0}
+  .vschritt.letzte{margin-top:auto;padding-top:10px}
+  .vspalte.alt .vschritt.letzte{color:var(--soft);font-style:italic}
+  .vzeichen{flex:none;width:22px;height:22px;border-radius:50%;display:flex;
+    align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}
+  .vzeichen.falsch{background:var(--red-soft);color:var(--red)}
+  .vzeichen.loesung{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
+  .vzeichen.frage{background:var(--card);color:var(--ac-dark);border:1.5px solid var(--ac)}
+  .vzeichen.gut{background:var(--gut);color:#fff}
+  .vfazit{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line);
+    font-size:14px;line-height:1.55;color:var(--soft)}
+  .vspalte.neu .vfazit{border-color:color-mix(in srgb, var(--ac) 26%, transparent);color:var(--ac-dark)}
+  .vfazit b{color:var(--ink)}
+  .vspalte.neu .vfazit b{color:var(--ac-dark)}
+  .vmerkmale{display:grid;gap:10px;margin-top:16px}
+  @media(min-width:700px){ .vmerkmale{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  .vmerkmale span{display:block;font-size:13.5px;line-height:1.5;color:var(--soft)}
+  .vmerkmale b{display:block;font-size:15px;color:var(--ink);margin-bottom:2px}
+  /* Der Kasten mit dem Menschen dahinter — abgesetzt, aber nicht laut. */
+  .wermacht{border-left:4px solid var(--ac);background:linear-gradient(160deg,var(--ac-soft) 0%,var(--card) 58%)}
+  .wermacht .einfachtext:last-child{margin-bottom:0}
+
   .heromarke{display:flex;align-items:center;gap:12px;margin-bottom:clamp(16px,3vw,26px)}
   .heromarkezeichen{flex:none;width:42px;height:42px;border-radius:13px;background:#10a37f;
     display:flex;align-items:center;justify-content:center;color:#fff;
@@ -29123,6 +29162,25 @@ function ueberHtml(){
       <span class="tag">Über das Projekt</span>
       <h1>Warum es das hier gibt</h1>
     </div>
+    ${/* Wer wissen will, ob er einer Lernseite trauen kann, sucht nach einem
+          Menschen dahinter. „Ein Lernprojekt aus Deutschland“ ist niemand.
+          Dieser Kasten ist ein Entwurf — er soll umgeschrieben werden, bis er
+          nach dem klingt, der ihn schreibt. */""}
+    <div class="card wermacht">
+      <p class="ueberschrift">Wer das hier macht</p>
+      <p class="einfachtext">Ich mache eine Ausbildung zum Elektroniker für Betriebstechnik. In der
+        Berufsschule saß ich in Stunden, aus denen ich mit dem Gefühl rausgegangen bin,
+        der Einzige zu sein, der es nicht kapiert hat. Man fragt dann irgendwann nicht mehr nach.</p>
+      <p class="einfachtext">Ich habe angefangen, mir die Sachen selbst so aufzuschreiben, dass ich sie
+        verstehe — in kleinen Fragen, die mich Schritt für Schritt hinführen, statt mir die Lösung
+        hinzulegen. Daraus ist diese Seite geworden. Erst für mich. Dann habe ich gemerkt, dass es
+        anderen genauso geht.</p>
+      <p class="einfachtext">Deshalb gibt es hier keine Lösung zum Abschreiben. Wer abschreibt, steht
+        beim nächsten Mal wieder da, wo er vorher war — das weiß ich aus eigener Erfahrung.</p>
+      <p class="einfachtext"><b>Die Seite ist kostenlos und bleibt es beim Ausprobieren.</b> Keine Werbung,
+        keine weiterverkauften Daten. Wenn du einen Fehler findest, schreib mir — ich baue das um.</p>
+    </div>
+
     <div class="card">
       <p class="einfachtext">Es gibt Fächer, bei denen man irgendwann aufhört, sich zu melden. Nicht, weil es einem egal wäre — sondern weil man den Anschluss verloren hat und niemand merkt, an welcher Stelle genau.</p>
       <p class="einfachtext">Wer das kennt, weiß auch, warum die üblichen Hilfsmittel oft nicht reichen. Lösungs-Apps spucken das Ergebnis aus, und man schreibt es ab. Erklärvideos erklären irgendein Beispiel, aber nicht das, an dem man gerade sitzt. Und selbst was man einmal verstanden hat, ist zwei Wochen später wieder weg.</p>
@@ -33673,6 +33731,43 @@ function willkommenHtml(){
         <li>Bei Textaufgaben weißt du nicht mal, was du überhaupt rechnen sollst.</li>
         <li>Du hast es verstanden. Eine Woche später ist es wieder weg.</li>
       </ul>
+    </div>
+
+    ${/* Der Unterschied zu den Abfrageseiten ist das ganze Produkt — aber
+          niemand glaubt eine Behauptung. Also nebeneinander zeigen: dieselbe
+          Aufgabe, einmal so wie überall, einmal so wie hier. Kein Name fällt;
+          wer die anderen Seiten kennt, erkennt sie sowieso. */""}
+    <div class="card abschnitt himmel">
+      <p class="ueberschrift">Was hier anders läuft</p>
+      <p class="small soft" style="margin:0 0 16px">Dieselbe Aufgabe, zwei Wege. Links, wie es auf
+        Abfrageseiten läuft. Rechts, wie es hier läuft.</p>
+      <div class="vergleich">
+        <div class="vspalte alt">
+          <p class="vkopf">Woanders</p>
+          <div class="vaufgabe">${bruecheSetzen("1/4 + 1/6")}</div>
+          <div class="vschritt"><span class="vzeichen falsch">✗</span> Du tippst <b>${bruecheSetzen("2/10")}</b></div>
+          <div class="vschritt"><span class="vzeichen falsch">✗</span> „Leider falsch."</div>
+          <div class="vschritt"><span class="vzeichen loesung">→</span> <b>Richtig wäre ${bruecheSetzen("5/12")} gewesen.</b></div>
+          <div class="vschritt letzte">Nächste Aufgabe.</div>
+          <p class="vfazit">Du weißt jetzt, dass du es nicht kannst.
+            <b>Warum, weißt du immer noch nicht.</b></p>
+        </div>
+        <div class="vspalte neu">
+          <p class="vkopf">Hier</p>
+          <div class="vaufgabe">${bruecheSetzen("1/4 + 1/6")}</div>
+          <div class="vschritt"><span class="vzeichen frage">?</span> „Warum kannst du hier nicht einfach 1 + 1 rechnen?“</div>
+          <div class="vschritt"><span class="vzeichen frage">?</span> „Welche Zahl passt zu 4 und zu 6 gleichzeitig?“</div>
+          <div class="vschritt"><span class="vzeichen frage">?</span> „Wie viele Zwölftel sind ${bruecheSetzen("1/4")}?“</div>
+          <div class="vschritt letzte"><span class="vzeichen gut">✓</span> <b>Du kommst selbst auf ${bruecheSetzen("5/12")}.</b></div>
+          <p class="vfazit">Beim nächsten Mal brauchst du die Fragen nicht mehr.
+            <b>Das ist der Unterschied.</b></p>
+        </div>
+      </div>
+      <div class="vmerkmale">
+        <span><b>Keine Werbung</b>Keine Anzeigen zwischen den Aufgaben. Keine Daten für Dritte.</span>
+        <span><b>Es kommt wieder</b>Was du nicht konntest, legt die App dir von allein erneut vor.</span>
+        <span><b>Jedes Mal neu</b>Jede Aufgabe wird frisch gewürfelt — auswendig lernen geht nicht.</span>
+      </div>
     </div>
 
     <div class="card abschnitt gruen">
