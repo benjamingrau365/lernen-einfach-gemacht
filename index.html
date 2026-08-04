@@ -29243,8 +29243,13 @@ function uebersichtHtml(){
    ================================================================ */
 
 /* Datum der zuletzt veröffentlichten Fassung. Steht unten in der Fußleiste,
-   damit man sofort sieht, ob der Browser die aktuelle Seite geladen hat. */
-const STAND = "3. August 2026";
+   damit man sofort sieht, ob der Browser die aktuelle Seite geladen hat.
+
+   Diese Zeile wird von seiten-bauen.js bei jedem Bauen auf das Tagesdatum
+   gesetzt — von Hand vergisst man sie. Genau das ist passiert: Fünf
+   Änderungen gingen an einem Tag raus, unten stand weiter das Datum von
+   gestern, und dann sieht die Seite aus, als wäre nichts angekommen. */
+const STAND = "4. August 2026";
 const WARTUNG      = true;
 const WARTUNG_HART = false;
 
