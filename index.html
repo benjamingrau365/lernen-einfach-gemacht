@@ -934,7 +934,7 @@
   .option span{font-size:14px;color:var(--soft)}
   .option.an b{color:var(--ac-dark)}
 
-  /* ---------- Dashboard ---------- */
+  /* ---------- Leitstand ---------- */
   .planbtn.admin{border-color:var(--ac);background:var(--ac-soft)}
   .planbtn.admin small{color:var(--ac-dark)}
   .balken{display:flex;gap:5px;align-items:flex-end;height:130px}
@@ -949,9 +949,79 @@
   .meldung{border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin-bottom:10px}
   .meldung.erledigt{opacity:.55}
   /* Admin: Werkzeugleiste, Filter-Reiter, Bauplan */
-  .dashwerkzeug{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
-  .dashwerkzeug .btn{padding:9px 16px}
-  .dashwerkzeug .stand{font-size:13px;color:var(--soft)}
+  /* ---------- Leitstand ----------
+     Der Lernbereich soll freundlich sein und Mut machen. Der Leitstand nicht:
+     Hier wird gearbeitet. Er ist deshalb enger gesetzt, nüchtern gefärbt und
+     zeigt Zahlen in gleicher Breite, damit Spalten untereinander stehen.
+     Umgeschaltet wird über data-leitstand am Wurzelelement — der Lernbereich
+     bleibt davon vollständig unberührt. */
+  html[data-leitstand="an"]{
+    --ls-grund:#eef1f4; --ls-flaeche:#ffffff; --ls-linie:#d3dae1;
+    --ls-schrift:#101820; --ls-leise:#5a6672; --ls-akzent:#1f3a5f; --ls-akzent-hell:#e6edf5;
+    --ac:#1f3a5f; --ac-soft:#e6edf5; --ac-dark:#152a46; --fach:#1f3a5f;
+    --fach-soft:#e6edf5; --fach-dark:#152a46;
+  }
+  @media (prefers-color-scheme: dark){
+    html[data-leitstand="an"]{
+      --ls-grund:#0e1319; --ls-flaeche:#161d25; --ls-linie:#2a343f;
+      --ls-schrift:#e7edf3; --ls-leise:#93a1b0; --ls-akzent:#7fb0e8; --ls-akzent-hell:#18242f;
+      --ac:#7fb0e8; --ac-soft:#18242f; --ac-dark:#a8cbf5; --fach:#7fb0e8;
+      --fach-soft:#18242f; --fach-dark:#a8cbf5;
+    }
+  }
+  html[data-leitstand="an"] body{background:var(--ls-grund);color:var(--ls-schrift)}
+  html[data-leitstand="an"] body::before{display:none}   /* kein Farbschleier */
+  html[data-leitstand="an"] .kopfleiste{background:var(--ls-grund);border-bottom:1px solid var(--ls-linie)}
+  html[data-leitstand="an"] .shell{max-width:1180px;padding-top:0}
+  html[data-leitstand="an"] .card{
+    background:var(--ls-flaeche);border:1px solid var(--ls-linie);border-radius:8px;
+    padding:16px 18px;margin-bottom:10px;box-shadow:none}
+  html[data-leitstand="an"] .card:has(> h1){background:var(--ls-flaeche)}
+  html[data-leitstand="an"] h1{font-size:21px;letter-spacing:-.01em}
+  html[data-leitstand="an"] .ueberschrift{font-size:11.5px;letter-spacing:.09em;color:var(--ls-leise)}
+  html[data-leitstand="an"] .soft,
+  html[data-leitstand="an"] .small{color:var(--ls-leise)}
+  /* Zahlen in gleicher Breite: Spalten stehen dann wirklich untereinander */
+  html[data-leitstand="an"] .zahlen b,
+  html[data-leitstand="an"] .rangzahl,
+  html[data-leitstand="an"] .wann,
+  html[data-leitstand="an"] .lsstand{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+  html[data-leitstand="an"] .zahlen div{background:var(--ls-grund);border:1px solid var(--ls-linie);
+    border-radius:6px;padding:10px 8px}
+  html[data-leitstand="an"] .zahlen b{font-size:25px}
+  html[data-leitstand="an"] .zeile,
+  html[data-leitstand="an"] .rangzeile{border-color:var(--ls-linie)}
+  html[data-leitstand="an"] .btn{border-radius:7px;box-shadow:none;background:var(--ls-akzent);
+    color:#fff;font-weight:600}
+  html[data-leitstand="an"] .btn:hover{background:var(--ls-akzent);transform:none;box-shadow:none;filter:brightness(1.12)}
+  html[data-leitstand="an"] .btn.ghost{background:var(--ls-flaeche);color:var(--ls-schrift);
+    border:1px solid var(--ls-linie)}
+  html[data-leitstand="an"] .feld{border-radius:7px}
+  html[data-leitstand="an"] .baustelle{display:none}      /* nicht der Ort dafür */
+
+  /* Die Leiste ganz oben — links der Stand, rechts die Werkzeuge */
+  .lsleiste{position:sticky;top:0;z-index:30;display:flex;align-items:center;
+    justify-content:space-between;gap:14px;flex-wrap:wrap;
+    background:var(--ls-flaeche);border:1px solid var(--ls-linie);border-radius:8px;
+    padding:12px 16px;margin:0 0 10px}
+  .lstitel{display:flex;align-items:center;gap:12px;min-width:0}
+  .lstitel b{display:block;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+  .lstitel > div > span{display:block;font-size:13px;color:var(--ls-leise);
+    font-variant-numeric:tabular-nums}
+  /* Eine kleine Lampe wie am echten Leitstand: sie zeigt, dass es läuft. */
+  .lslampe{flex:none;width:10px;height:10px;border-radius:50%;background:#1f9d55;
+    box-shadow:0 0 0 3px rgba(31,157,85,.18)}
+  .lsaktionen{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .lsstand{font-size:12.5px;color:var(--ls-leise);white-space:nowrap}
+  .lsknopf{background:var(--ls-grund);border:1px solid var(--ls-linie);border-radius:7px;
+    padding:8px 13px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ls-schrift);
+    cursor:pointer;text-decoration:none;white-space:nowrap;display:inline-block}
+  .lsknopf:hover{border-color:var(--ls-akzent);color:var(--ls-akzent)}
+  @media(max-width:560px){
+    .lsleiste{position:static}
+    .lsaktionen{width:100%}
+    .lsknopf{flex:1;text-align:center}
+  }
   .tickettabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
   .tickettab{background:var(--bg);border:1px solid var(--line);border-radius:999px;
     padding:7px 13px;font-size:13.5px;font-weight:600;color:var(--soft);cursor:pointer;
@@ -1309,7 +1379,7 @@
   .platzhalter{background:var(--amber-soft);color:var(--amber);border-radius:5px;
     padding:1px 7px;font-weight:700;font-size:14px}
 
-  /* ---------- Dashboard, zweiter Teil ---------- */
+  /* ---------- Leitstand, zweiter Teil ---------- */
   .wochentage{display:grid;gap:4px}
   .wtag{display:flex;align-items:center;gap:10px}
   .wname{flex:0 0 30px;font-size:14px;color:var(--soft)}
@@ -27494,7 +27564,7 @@ function starteThemaAusKlasse(name){
   fach = info.fach; klasse = info.klasse;
   starte(name);
 }
-/* ---------- Dashboard und Hilfe-Formular ---------- */
+/* ---------- Leitstand und Hilfe-Formular ---------- */
 
 let istAdmin = false;
 let statistik = null;
@@ -27834,7 +27904,7 @@ function dashboardHtml(){
   if (ladeFehler && !statistik){
     return `<div class="card">
       ${navLink("/start", "zurUebersicht()", "← Zurück", "zurueck")}
-      <h1>Dashboard</h1>
+      <h1>Leitstand</h1>
       <div class="feedback nope">${ladeFehler}</div>
     </div>`;
   }
@@ -27849,28 +27919,38 @@ function dashboardHtml(){
   const maxTag = Math.max(1, ...tage.map(t => t.anzahl));
 
   return `
-    <div class="card">
-      ${navLink("/start", "zurUebersicht()", "← Zurück zum Üben", "zurueck")}
-      <span class="tag">Nur für dich sichtbar</span>
-      <h1>Dashboard</h1>
-      <p class="soft">Zahlen, Inhalt und offene Punkte. Die Liste der Konten liegt weiter unten und ist bewusst zugeklappt.</p>
-      <div class="dashwerkzeug">
-        <button class="btn ghost" onclick="dashboardAktualisieren()">↻ Aktualisieren</button>
-        <span class="stand">Stand: ${dashboardStand ? dashboardStand.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"}) : "—"}</span>
+    ${/* Kein Begrüßungskopf wie im Lernbereich, sondern eine Leiste: links wo
+          man ist, rechts womit man arbeitet. Sie bleibt beim Scrollen oben. */""}
+    <div class="lsleiste">
+      <div class="lstitel">
+        <span class="lslampe" aria-hidden="true"></span>
+        <div>
+          <b>Leitstand</b>
+          <span>${(() => {
+            const offen = meldungen.filter(m => ticketStatus(m) === "offen").length;
+            return `${z(s.nutzer_gesamt)} Konten · ${z(s.uebungen_gesamt)} Übungen · ${
+              offen === 0 ? "keine offenen Tickets" : offen === 1 ? "1 offenes Ticket" : z(offen) + " offene Tickets"}`;
+          })()}</span>
+        </div>
+      </div>
+      <div class="lsaktionen">
+        <span class="lsstand">Stand ${dashboardStand ? dashboardStand.toLocaleTimeString("de-DE", {hour:"2-digit", minute:"2-digit"}) : "—"} Uhr</span>
+        <button class="lsknopf" onclick="dashboardAktualisieren()">↻ Aktualisieren</button>
+        ${navLink("/start", "zurUebersicht()", "Zum Lernbereich", "lsknopf")}
       </div>
     </div>
 
     <div class="card">
       <div class="zahlen">
-        <div><b>${s.nutzer_gesamt}</b><span>Nutzer gesamt</span></div>
-        <div><b>${s.nutzer_neu_7t}</b><span>neu (7 Tage)</span></div>
-        <div><b>${s.nutzer_aktiv_7t}</b><span>aktiv (7 Tage)</span></div>
-        <div><b>${s.uebungen_gesamt}</b><span>Übungen gesamt</span></div>
+        <div><b>${z(s.nutzer_gesamt)}</b><span>Nutzer gesamt</span></div>
+        <div><b>${z(s.nutzer_neu_7t)}</b><span>neu (7 Tage)</span></div>
+        <div><b>${z(s.nutzer_aktiv_7t)}</b><span>aktiv (7 Tage)</span></div>
+        <div><b>${z(s.uebungen_gesamt)}</b><span>Übungen gesamt</span></div>
       </div>
       <div class="zahlen" style="margin-top:10px">
-        <div><b>${s.rueckkehrer ?? "—"}</b><span>kamen wieder</span></div>
+        <div><b>${s.rueckkehrer == null ? "—" : z(s.rueckkehrer)}</b><span>kamen wieder</span></div>
         <div><b>${s.schnitt_fehler ?? "—"}</b><span>Ø Fehler je Aufgabe</span></div>
-        <div><b>${s.faellig_gesamt ?? "—"}</b><span>Wiederholungen fällig</span></div>
+        <div><b>${s.faellig_gesamt == null ? "—" : z(s.faellig_gesamt)}</b><span>Wiederholungen fällig</span></div>
         <div><b>${s.nutzer_gesamt ? Math.round((s.rueckkehrer || 0) / s.nutzer_gesamt * 100) : 0} %</b><span>Rückkehrquote</span></div>
       </div>
       <p class="small soft" style="margin-top:12px"><b>Die Rückkehrquote ist deine wichtigste Zahl.</b> Sie sagt, wie viele Menschen an mehr als einem Tag geübt haben. Wer einmal kommt und nie wieder, hat nichts gelernt — egal wie viele Aufgaben er gelöst hat.</p>
@@ -28114,7 +28194,7 @@ function aufgabenlisteHtml(s){
   const punkte = [
     {erledigt: true,  text: "Eigene Domain verbunden"},
     {erledigt: true,  text: "Anmeldung und Wiederholungsplan laufen"},
-    {erledigt: true,  text: "Dashboard eingerichtet"},
+    {erledigt: true,  text: "Leitstand eingerichtet"},
     {erledigt: false, text: "Impressum und Datenschutzerklärung ausfüllen und prüfen lassen"},
     {erledigt: offen.length === 0, text: offen.length
         ? `${offen.length} Klassenstufen ohne jeden Inhalt: ${offen.map(z => z.fach + " " + z.klasse).join(", ")}`
@@ -28489,7 +28569,7 @@ function menueHtml(){
         : `${navLink("/anmelden", "zeigeAnmeldung();menueSchliessen()", "Anmelden", "mpunkt")}
            ${navLink("/registrieren", "zeigeRegistrierung();menueSchliessen()", "Konto anlegen", "mpunkt")}`}
       ${navLink("/einstellungen", "zeigeEinstellungen();menueSchliessen()", "Einstellungen", "mpunkt")}
-      ${istAdmin ? navLink("/dashboard", "zeigeDashboard();menueSchliessen()", "Dashboard", "mpunkt admin") : ""}
+      ${istAdmin ? navLink("/leitstand", "zeigeDashboard();menueSchliessen()", "Leitstand", "mpunkt admin") : ""}
       ${benutzer ? `<button class="mpunkt" onclick="abmelden();menueSchliessen()">Abmelden</button>` : ""}
 
       <p class="mtitel">Rechtliches</p>
@@ -28914,7 +28994,7 @@ function fussleisteHtml(){
             : `${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "fusslink")}
                ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "fusslink")}`}
           ${navLink("/einstellungen", "zeigeEinstellungen()", "Einstellungen", "fusslink")}
-          ${istAdmin ? navLink("/dashboard", "zeigeDashboard()", "Dashboard", "fusslink") : ""}
+          ${istAdmin ? navLink("/leitstand", "zeigeDashboard()", "Leitstand", "fusslink") : ""}
         </div>
         <div class="fussspalte">
           <p class="fusstitel">Rechtliches</p>
@@ -29263,7 +29343,7 @@ function uebersichtHtml(){
       ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "btn full", "margin-top:12px")}
     </div>`}
 
-    ${istAdmin ? `<div class="card">${navLink("/dashboard", "zeigeDashboard()", "Dashboard öffnen", "btn full admin")}</div>` : ""}`;
+    ${istAdmin ? `<div class="card">${navLink("/leitstand", "zeigeDashboard()", "Leitstand öffnen", "btn full admin")}</div>` : ""}`;
 }
 /* ================================================================
    BAUSTELLEN-/WARTUNGSMODUS
@@ -29364,7 +29444,10 @@ const SEITENTITEL = {
   ueber:       ["Über das Projekt | Endlich kapiert",
     "Ein Lernprojekt aus Deutschland, gebaut für Leute, die es wirklich nicht verstehen."],
   faq:         ["Häufige Fragen | Endlich kapiert",
-    "Was kostet es, was wird gespeichert, wie funktioniert das Wiederholen?"]
+    "Was kostet es, was wird gespeichert, wie funktioniert das Wiederholen?"],
+  /* Der Leitstand ist nichts für Suchmaschinen, aber der Reiter im Browser
+     soll sagen, wo man ist — mit mehreren offenen Reitern zählt das. */
+  dashboard:   ["Leitstand · Endlich kapiert", "Zahlen, Inhalt und offene Punkte."]
 };
 function seitenkopfSetzen(){
   let titel, text;
@@ -31720,7 +31803,7 @@ function pfadFuer(a, f, k){
     case "pruefteil":    return pruefTeil === "teil2" ? "/elektroniker/teil-2" : "/elektroniker/teil-1";
     case "arbeitsblatt":
     case "arbeitsblattDruck": return "/arbeitsblatt";
-    case "dashboard":    return "/dashboard";
+    case "dashboard":    return "/leitstand";
     case "baustelle":    return "/baustelle";
     case "passwortNeu":  return "/passwort-neu";
     default:             return "/";
@@ -31744,7 +31827,9 @@ function ansichtAusPfad(){
   const direkt = {anmelden:"anmelden", registrieren:"registrieren", start:"uebersicht",
     faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden", feedback:"feedback",
     faq:"faq", ueber:"ueber", warum:"warum", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
-    konto:"konto", anfragen:"anfragen", serie:"serie", dashboard:"dashboard", baustelle:"baustelle",
+    konto:"konto", anfragen:"anfragen", serie:"serie", leitstand:"dashboard", baustelle:"baustelle",
+    /* „/dashboard“ war die frühere Adresse — alte Lesezeichen sollen nicht ins Leere laufen. */
+    dashboard:"dashboard",
     vokabeln:"vokabeln", pruefung:"pruefungen", arbeitsblatt:"arbeitsblatt"};
   /* /vokabeln/eigene ist die einzige Adresse mit zweiter Stufe außerhalb der Fächer */
   if (p === "vokabeln" && teile[1] === "eigene"){ ansicht = "vokabelnEigene"; return; }
@@ -31871,7 +31956,7 @@ function zeigeAnmeldung(){ ansicht = "anmelden"; hinweis = ""; render(); }
 function zeigeRegistrierung(){ ansicht = "registrieren"; hinweis = ""; render(); }
 function zeigeWillkommen(){ ansicht = "willkommen"; render(); }
 /* Klick aufs Logo: dieselbe Startseite wie beim Aufruf der URL
-   (eingeloggt -> Dashboard, sonst -> Willkommensseite) */
+   (eingeloggt -> Leitstand, sonst -> Willkommensseite) */
 function zurStartseite(){ ansicht = benutzer ? "uebersicht" : "willkommen"; menueOffen = false; menueAuf = null; render(); }
 
 function uebersetze(m){
@@ -32253,7 +32338,7 @@ function renderSeite(){
     <button class="planbtn" style="margin-top:10px" onclick="zeigeEinstellungen()">Einstellungen<small>Aussehen, Schrift, Hilfe</small></button>
     <button class="planbtn" style="margin-top:10px" onclick="zeigeMelden()">Hilfe<small>So funktioniert es · Support</small></button>
     <button class="planbtn" style="margin-top:10px" onclick="zeigeFeedback()">Feedback<small>Bewerten · Wünsche</small></button>
-    ${istAdmin ? `<button class="planbtn admin" style="margin-top:10px" onclick="zeigeDashboard()">Dashboard<small>Zahlen und Meldungen</small></button>` : ""}`;
+    ${istAdmin ? `<button class="planbtn admin" style="margin-top:10px" onclick="zeigeDashboard()">Leitstand<small>Zahlen, Inhalt, Meldungen</small></button>` : ""}`;
 }
 
 /* ---------- Hauptbereich ---------- */
@@ -32339,6 +32424,10 @@ function render(gewaehlt){
      (und ✓ bei der richtigen). Die Farbe ist dann nur noch der zweite Hinweis. */
   const mitFach = ["start","klassenwahl","loesen","fertig","erklaerung","pruefteil"].includes(ansicht);
   document.documentElement.dataset.fach = (mitFach && fach) ? fach : "";
+  /* Der Leitstand ist kein Lernbereich, sondern ein Arbeitsplatz. Er bekommt
+     deshalb eine eigene Oberfläche: enger gesetzt, nüchterne Farben, Zahlen in
+     gleicher Breite. Ein Kennzeichen am Wurzelelement schaltet sie um. */
+  document.documentElement.dataset.leitstand = ansicht === "dashboard" ? "an" : "";
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -32402,7 +32491,7 @@ function render(gewaehlt){
         ${navLink("/einstellungen", "zeigeEinstellungen()", "Einstellungen", "btn ghost full")}
         ${navLink("/hilfe", "zeigeMelden()", "Hilfe", "btn ghost full", "margin-top:10px")}
         ${navLink("/feedback", "zeigeFeedback()", "Feedback", "btn ghost full", "margin-top:10px")}
-        ${istAdmin ? navLink("/dashboard", "zeigeDashboard()", "Dashboard öffnen", "btn full admin planbtn", "margin-top:10px;text-align:center") : ""}
+        ${istAdmin ? navLink("/leitstand", "zeigeDashboard()", "Leitstand öffnen", "btn full admin planbtn", "margin-top:10px;text-align:center") : ""}
       </div>`;
     return;
   }
