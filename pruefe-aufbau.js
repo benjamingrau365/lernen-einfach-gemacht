@@ -59,8 +59,16 @@ for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
          selbst etwas hin, und genau darauf läuft die ganze App hinaus.
          Alle Aufgaben erfüllen das inzwischen — deshalb ist es jetzt eine
          harte Regel und keine Empfehlung mehr. */
-      if (!istEintippbar(a.schritte[a.schritte.length - 1]))
-        melde(thema, nr, "der letzte Schritt lässt sich nicht eintippen — dann bleibt es reines Anklicken");
+      /* Seit hinter dem Rechenschritt ein Abschluss stehen darf, muss nicht mehr
+         der letzte Schritt eintippbar sein — aber einer muss es, sonst schreibt
+         der Lernende nie selbst etwas hin, und darauf laeuft die ganze App
+         hinaus. Der Abschluss darf ausserdem nur EIN Schritt sein. */
+      const tippbar = a.schritte.map(istEintippbar);
+      const letzterTipp = tippbar.lastIndexOf(true);
+      if (letzterTipp < 0)
+        melde(thema, nr, "kein einziger Schritt laesst sich eintippen — dann bleibt es reines Anklicken");
+      else if (a.schritte.length - 1 - letzterTipp > 1)
+        melde(thema, nr, `nach dem Eintippschritt stehen noch ${a.schritte.length - 1 - letzterTipp} Schritte — hoechstens einer ist erlaubt`);
 
       a.schritte.forEach((s, si) => {
         if (!s.frage || !nackt(s.frage)) melde(thema, nr, `Schritt ${si + 1}: keine Frage`);
@@ -111,6 +119,35 @@ for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
       });
     }
   });
+}
+
+/* ---------- Wie tief gehen die Aufgaben? ----------
+   Drei Schritte sind zu wenig: verstehen, Weg finden, ausrechnen — und weg.
+   Sechs sind das Ziel. Erreicht wird das über EINSTIEG und ABSCHLUSS je Thema;
+   dieser Zähler zeigt, wie weit die Arbeit gediehen ist. Er ist ausdrücklich
+   keine Fehlermeldung: Ein Thema ohne Einträge ist nicht kaputt, nur noch
+   nicht vertieft. */
+const tiefe = [];
+for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
+  let wenigste = Infinity;
+  erzeuger.forEach((fn, nr) => {
+    for (let i = 0; i < 30; i++) {
+      try { wenigste = Math.min(wenigste, baueAufgabe(thema, nr).schritte.length); }
+      catch (e) { wenigste = 0; }
+    }
+  });
+  tiefe.push([thema, wenigste]);
+}
+const tief = tiefe.filter(([, n]) => n >= 6);
+const flach = tiefe.filter(([, n]) => n < 6).sort((a, b) => a[1] - b[1]);
+console.log(`\n=== SCHRITTTIEFE ===`);
+console.log(`  ${tief.length} von ${tiefe.length} Themen erreichen sechs Schritte oder mehr`);
+if (flach.length) {
+  const nachZahl = {};
+  flach.forEach(([, n]) => nachZahl[n] = (nachZahl[n] || 0) + 1);
+  console.log("  noch darunter: " + Object.keys(nachZahl).sort()
+    .map(n => `${nachZahl[n]} Themen mit ${n}`).join(", "));
+  console.log("  als Nächstes dran: " + flach.slice(0, 8).map(([t, n]) => `${t} (${n})`).join(", "));
 }
 
 /* Jedes Thema mit Aufgaben braucht auch eine Erklärung — das ist der Kern der App */

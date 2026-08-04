@@ -17,7 +17,14 @@ const fehler = [];
 const hinweise = [];
 const melde = (bereich, txt) => fehler.push(`${bereich}: ${txt}`);
 
-const skript = (h.match(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/i) || [])[1] || "";
+/* Das erste <script> ohne src ist nicht mehr automatisch der Programmcode:
+   Im Kopf steht inzwischen ein Block mit strukturierten Daten für die
+   Suchmaschinen, und der ist JSON. Genommen wird deshalb das erste Skript,
+   das wirklich JavaScript ist — sonst hält die Prüfung jede Funktion der App
+   für undefiniert. */
+const skript = ((h.match(/<script(?![^>]*\bsrc=)[^>]*>[\s\S]*?<\/script>/gi) || [])
+  .filter(bl => !/type\s*=\s*["'][^"']*json[^"']*["']/i.test(bl.slice(0, bl.indexOf(">") + 1)))
+  [0] || "").replace(/^<script[^>]*>/i, "").replace(/<\/script>$/i, "");
 const st = (v, b) => { const a = h.indexOf(v); if (a < 0) return "";
                        const c = h.indexOf(b, a + v.length); return c < 0 ? "" : h.slice(a, c); };
 

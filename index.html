@@ -16,6 +16,47 @@
 <meta name="apple-mobile-web-app-title" content="Endlich kapiert">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://endlichkapiert.com/" id="kanonisch">
+<!-- Strukturierte Daten für die Startseite.
+
+     Auf den Themenseiten stehen sie längst, auf der Startseite fehlten sie.
+     Gerade hier zählen sie am meisten: Sie sagen einer Suchmaschine, dass
+     „Endlich kapiert" ein Name ist und nicht drei zufällige Wörter, und wofür
+     die Seite überhaupt da ist. Ohne das wird eine junge Seite selbst bei der
+     Suche nach ihrem eigenen Namen nicht gefunden. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://endlichkapiert.com/#seite",
+      "url": "https://endlichkapiert.com/",
+      "name": "Endlich kapiert",
+      "alternateName": ["Endlich kapiert Lernseite", "endlichkapiert.com"],
+      "description": "Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe, Deutsch und Englisch von Klasse 5 bis 10, Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr.",
+      "inLanguage": "de",
+      "publisher": { "@id": "https://endlichkapiert.com/#anbieter" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": { "@type": "EntryPoint", "urlTemplate": "https://endlichkapiert.com/suche?q={search_term_string}" },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "EducationalOrganization",
+      "@id": "https://endlichkapiert.com/#anbieter",
+      "name": "Endlich kapiert",
+      "url": "https://endlichkapiert.com/",
+      "logo": "https://endlichkapiert.com/icon.svg",
+      "image": "https://endlichkapiert.com/vorschau.png",
+      "email": "hilfe@endlichkapiert.com",
+      "description": "Kostenlose Lernseite mit geführten Fragen statt fertiger Lösungen.",
+      "areaServed": "DE",
+      "isAccessibleForFree": true
+    }
+  ]
+}
+</script>
 <meta property="og:site_name" content="Endlich kapiert">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_DE">
@@ -11623,9 +11664,10 @@ function schaetzSchritt(letzter){
   if (!teile) return null;
 
   const wert = Math.abs(teile.wert);
-  /* Unter 10 wären die Spannen albern: „zwischen 1 und 10" trifft fast alles,
-     und bei einer Antwort wie „3 Polpaare" gibt es nichts zu schätzen. */
-  if (!(wert >= 10) || wert >= 1e9) return null;
+  /* Ab 1 lohnt sich die Frage: „zwischen 1 und 10" gegen „zwischen 10 und 100"
+     ist genau der Unterschied, den ein verrutschtes Komma macht. Unter 1 wird
+     es unanschaulich, über einer Milliarde unrealistisch. */
+  if (!(wert >= 1) || wert >= 1e9) return null;
 
   const stelle = Math.pow(10, Math.floor(Math.log10(wert)));
   /* Genau auf einer Zehnerstufe — 100, 1000 — läge der Wert auf der Grenze
@@ -11663,12 +11705,316 @@ function schaetzenEinbauen(aufgabe){
   schritte.splice(schritte.length - 1, 0, neu);
 }
 
+/* ---------- Einstieg und Abschluss je Thema ----------
+
+   Drei Schritte sind zu wenig: verstehen, Weg finden, ausrechnen — und weg.
+   Was fehlt, steht vorn und hinten.
+
+   Vorn der Einstieg: Bevor man rechnet, muss klar sein, worum es überhaupt
+   geht und welche der Angaben man braucht. Wer das überspringt, rechnet
+   irgendetwas aus, das zufällig dasteht.
+
+   Hinten der Abschluss: Was bedeutet die Zahl, die da jetzt steht? Das ist
+   der Schritt, den die Schule fast nie verlangt und den das Leben immer
+   verlangt. Er steht bewusst NACH dem Eintippen — erst rechnen, dann deuten.
+
+   Beides hängt am Thema, nicht an der einzelnen Aufgabe. Ein Eintrag hier
+   vertieft alle Aufgaben dieses Themas auf einmal. Themen ohne Eintrag
+   bleiben unverändert — lieber ein kurzer ehrlicher Weg als ein langer mit
+   Füllwerk. */
+
+const EINSTIEG = {};
+const ABSCHLUSS = {};
+
+/* Hängt Einstieg und Abschluss an, wenn es welche gibt. */
+function themenSchritteEinbauen(aufgabe, thema){
+  const holen = (bauer) => {
+    if (typeof bauer !== "function") return [];
+    try {
+      const sch = bauer(aufgabe);
+      /* Ein Thema darf auch zwei Einstiegsfragen liefern — dort, wo eine
+         allein die Aufgabe noch nicht tief genug macht. */
+      return !sch ? [] : (Array.isArray(sch) ? sch.filter(Boolean) : [sch]);
+    } catch(e){ return []; }
+  };
+  const vorn = holen(EINSTIEG[thema]);
+  if (vorn.length) aufgabe.schritte.unshift(...vorn);
+  /* Hinter dem Eintippschritt darf höchstens einer stehen — sonst wird aus dem
+     Abschluss ein zweiter Aufgabenteil. */
+  const hinten = holen(ABSCHLUSS[thema]).slice(0, 1);
+  if (hinten.length) aufgabe.schritte.push(...hinten);
+}
+
+
+/* ---------- 1. Lehrjahr ---------- */
+
+/* Ohmsches Gesetz: Vorn die Frage, warum die drei Größen überhaupt
+   zusammenhängen. Hinten das, was man im Betrieb daraus liest. */
+EINSTIEG["Ohmsches Gesetz"] = () => [{
+  frage: "Wie viele der drei Größen <b>U, I und R</b> musst du kennen, um die dritte auszurechnen?",
+  tipp: "Schreib das Gesetz hin: U = R · I.",
+  tipp2: "In der Formel stehen drei Größen. Zwei davon musst du haben, dann fällt die dritte heraus.",
+  optionen: [
+    R("Zwei", "Richtig — zwei bekannte, eine gesuchte. Immer."),
+    F("Eine", "Mit einer allein lässt sich nichts ausrechnen."),
+    F("Alle drei", "Dann gäbe es nichts mehr zu rechnen.")
+  ]
+}, {
+  frage: "Was beschreibt der <b>Widerstand</b> eines Bauteils?",
+  tipp: "Denk an den Namen: Er leistet Widerstand — wogegen?",
+  tipp2: "Er sagt, wie schwer es der Strom hat. Großer Widerstand heißt: Bei gleicher Spannung fließt wenig Strom.",
+  optionen: [
+    R("Wie sehr er den Strom bremst", "Richtig — und genau deshalb hängen Spannung, Strom und Widerstand zusammen."),
+    F("Wie viel Spannung er erzeugt", "Ein Widerstand erzeugt keine Spannung, er verbraucht sie."),
+    F("Wie viel Strom er speichert", "Strom wird nicht gespeichert — er fließt.")
+  ]
+}];
+ABSCHLUSS["Ohmsches Gesetz"] = () => ({
+  frage: "Du hast das Ergebnis. Was passiert damit, wenn der <b>Widerstand doppelt so groß</b> wäre?",
+  tipp: "Schau, wo der Widerstand in der Formel steht.",
+  tipp2: "In I = U : R steht R unten. Doppelter Nenner heißt halbes Ergebnis. Bei U = R · I steht er oben — dann verdoppelt sich die Spannung.",
+  optionen: [
+    R("Der Strom wäre halb so groß", "Richtig — mehr Widerstand, weniger Strom. Das ist der ganze Kern des Gesetzes."),
+    F("Der Strom wäre doppelt so groß", "Umgekehrt: Widerstand bremst."),
+    F("Am Strom würde sich nichts ändern", "Dann wäre der Widerstand ohne Wirkung.")
+  ]
+});
+
+/* Leistung und Arbeit: Der Unterschied zwischen beiden ist die Sache, die in
+   der Prüfung am häufigsten verwechselt wird. */
+EINSTIEG["Elektrische Leistung und Arbeit"] = () => [{
+  frage: "Woran erkennst du, ob nach <b>Leistung</b> oder nach <b>Arbeit</b> gefragt ist?",
+  tipp: "Schau auf die Einheit, die in der Frage steht.",
+  tipp2: "Watt heißt Leistung. Wattstunden oder Kilowattstunden heißen Arbeit — dort steckt die Zeit schon in der Einheit.",
+  optionen: [
+    R("An der Einheit in der Frage", "Richtig — Watt gegen Wattstunden, daran hängt alles."),
+    F("An der Größe der Zahl", "Die Zahl sagt darüber nichts."),
+    F("Am Gerät, um das es geht", "Bei jedem Gerät kann man beides fragen.")
+  ]
+}, {
+  frage: "Was ist der Unterschied zwischen <b>Leistung</b> und <b>Arbeit</b>?",
+  tipp: "Eine der beiden Größen hat mit Zeit zu tun.",
+  tipp2: "Leistung ist, wie schnell Energie umgesetzt wird — Watt. Arbeit ist, wie viel insgesamt zusammenkommt — Wattstunden. Auf der Stromrechnung stehen Wattstunden.",
+  optionen: [
+    R("Leistung gilt für den Moment, Arbeit für einen Zeitraum", "Richtig — deshalb steht auf der Stromrechnung kWh und nicht kW."),
+    F("Das ist dasselbe, nur andere Einheiten", "Nein — ein starker Motor kann kurz laufen und wenig Arbeit leisten."),
+    F("Arbeit gilt für den Moment, Leistung für einen Zeitraum", "Genau andersherum.")
+  ]
+}];
+ABSCHLUSS["Elektrische Leistung und Arbeit"] = () => ({
+  frage: "Wo taucht so ein Wert im <b>Alltag</b> auf?",
+  tipp: "Denk an Rechnungen und an Typenschilder.",
+  tipp2: "Auf dem Typenschild steht die Leistung in Watt. Auf der Stromrechnung steht die Arbeit in Kilowattstunden — Leistung mal Zeit.",
+  optionen: [
+    R("Auf dem Typenschild und auf der Stromrechnung", "Genau. Beides sind dieselben Größen, nur einmal je Moment und einmal über die Zeit."),
+    F("Nur im Rechenbuch", "Kaum eine Größe steht so oft auf echten Geräten."),
+    F("Auf dem Prüfprotokoll der Anlage", "Dort stehen Widerstände und Spannungen, keine Arbeit.")
+  ]
+});
+
+/* Reihenschaltung: Was in der Reihe gleich bleibt und was sich aufteilt —
+   ohne das rechnet man blind. */
+EINSTIEG["Reihenschaltung"] = () => [{
+  frage: "Woran erkennst du im Schaltplan eine <b>Reihenschaltung</b>?",
+  tipp: "Verfolg den Weg des Stroms mit dem Finger.",
+  tipp2: "Alle Bauteile liegen hintereinander auf einem einzigen Strang — es gibt keine Abzweigung.",
+  optionen: [
+    R("Alle Bauteile liegen hintereinander auf einem Strang", "Richtig — ein Weg, keine Abzweigung."),
+    F("Die Bauteile hängen nebeneinander", "Das ist die Parallelschaltung."),
+    F("Es sind mindestens drei Bauteile", "Die Anzahl spielt keine Rolle.")
+  ]
+}, {
+  frage: "Was ist in einer <b>Reihenschaltung</b> überall gleich?",
+  tipp: "Es gibt nur einen einzigen Weg für den Strom.",
+  tipp2: "Weil der Strom nirgends abzweigen kann, fließt durch jedes Bauteil derselbe. Die Spannung dagegen teilt sich auf.",
+  optionen: [
+    R("Der Strom", "Richtig — ein Weg, ein Strom. Die Spannung teilt sich auf."),
+    F("Die Spannung", "Die teilt sich auf die Widerstände auf."),
+    F("Der Widerstand", "Die Widerstände dürfen verschieden groß sein.")
+  ]
+}];
+ABSCHLUSS["Reihenschaltung"] = () => ({
+  frage: "Was passiert in einer Reihenschaltung, wenn <b>ein Bauteil ausfällt</b>?",
+  tipp: "Es gibt nur einen Weg.",
+  tipp2: "Ist der Weg an einer Stelle unterbrochen, fließt nirgends mehr Strom — wie bei einer alten Lichterkette.",
+  optionen: [
+    R("Nichts funktioniert mehr", "Richtig — deshalb baut man wichtige Verbraucher nicht in Reihe."),
+    F("Die anderen laufen weiter", "Das gilt für die Parallelschaltung."),
+    F("Die anderen werden heller", "Sie bekommen gar keinen Strom mehr.")
+  ]
+});
+
+/* Parallelschaltung: das Gegenstück, und die Stelle, an der die Zahl kleiner
+   wird, obwohl man etwas dazubaut. */
+EINSTIEG["Parallelschaltung"] = () => [{
+  frage: "Woran erkennst du im Schaltplan eine <b>Parallelschaltung</b>?",
+  tipp: "Schau, wo die Bauteile angeschlossen sind.",
+  tipp2: "Alle Zweige hängen an denselben zwei Punkten nebeneinander — der Strom hat mehrere Wege zur Auswahl.",
+  optionen: [
+    R("Die Zweige hängen an denselben zwei Punkten", "Richtig — mehrere Wege zwischen denselben Klemmen."),
+    F("Die Bauteile liegen hintereinander", "Das ist die Reihenschaltung."),
+    F("Alle Bauteile sind gleich groß", "Sie dürfen ganz verschieden sein.")
+  ]
+}, {
+  frage: "Was ist in einer <b>Parallelschaltung</b> überall gleich?",
+  tipp: "Alle Zweige hängen an denselben zwei Punkten.",
+  tipp2: "Jeder Zweig liegt zwischen denselben beiden Klemmen — also liegt an jedem dieselbe Spannung. Der Strom teilt sich auf.",
+  optionen: [
+    R("Die Spannung", "Richtig — deshalb liegt an jeder Steckdose im Haus dieselbe Spannung."),
+    F("Der Strom", "Der teilt sich auf die Zweige auf."),
+    F("Der Widerstand", "Die Zweige dürfen ganz verschieden sein.")
+  ]
+}];
+ABSCHLUSS["Parallelschaltung"] = () => ({
+  frage: "Warum wird der Gesamtwiderstand <b>kleiner</b>, obwohl man etwas dazubaut?",
+  tipp: "Denk an eine Tür und an zwei Türen nebeneinander.",
+  tipp2: "Jeder neue Zweig ist ein zusätzlicher Weg für den Strom. Mehr Wege heißt: Es kommt insgesamt mehr durch — also weniger Widerstand.",
+  optionen: [
+    R("Weil jeder Zweig ein zusätzlicher Weg ist", "Richtig — deshalb ist der Gesamtwiderstand immer kleiner als der kleinste Zweig."),
+    F("Weil sich die Spannung aufteilt", "Die Spannung ist in jedem Zweig gleich, sie teilt sich nicht."),
+    F("Das stimmt nicht, er wird größer", "Doch — mehr Wege, weniger Widerstand.")
+  ]
+});
+
+/* Einheiten und Vorsätze: Warum es die Vorsätze überhaupt gibt, und was ein
+   falscher Buchstabe anrichtet. */
+EINSTIEG["Einheiten und Vorsätze"] = () => [{
+  frage: "Wenn du einen Vorsatz wegrechnest — ändert sich der <b>Wert</b> oder nur die <b>Schreibweise</b>?",
+  tipp: "Sind 4,7 kΩ und 4.700 Ω verschieden groß?",
+  tipp2: "Es ist dieselbe Größe, nur anders aufgeschrieben — wie 1 Meter und 100 Zentimeter.",
+  optionen: [
+    R("Nur die Schreibweise", "Richtig. Deshalb darf beim Umrechnen nie etwas verlorengehen."),
+    F("Der Wert", "Dann wäre Umrechnen sinnlos."),
+    F("Beides", "Der Wert bleibt, sonst wäre es kein Umrechnen.")
+  ]
+}, {
+  frage: "Wozu gibt es <b>Vorsätze</b> wie Kilo, Milli und Mega überhaupt?",
+  tipp: "Schreib einmal 0,000047 Farad hin.",
+  tipp2: "Sie ersparen Nullen. 4.700 Ω sind 4,7 kΩ — dieselbe Größe, nur lesbar. Verrechnen kann man sich bei der langen Schreibweise viel leichter.",
+  optionen: [
+    R("Damit man nicht mit langen Nullenketten hantieren muss", "Genau — sie sind Abkürzungen, keine neuen Größen."),
+    F("Damit die Werte kleiner werden", "Der Wert bleibt derselbe, nur die Schreibweise ändert sich."),
+    F("Weil jede Einheit ihren eigenen Vorsatz braucht", "Dieselben Vorsätze gelten für alle Einheiten.")
+  ]
+}];
+ABSCHLUSS["Einheiten und Vorsätze"] = () => ({
+  frage: "Was richtet ein <b>falscher Vorsatz</b> im Protokoll an?",
+  tipp: "Zwischen zwei Vorsätzen liegt meist der Faktor 1000.",
+  tipp2: "Aus 4,7 kΩ wird bei einem falschen Buchstaben 4,7 MΩ — das Tausendfache. Wer danach die Sicherung auslegt, liegt völlig daneben.",
+  optionen: [
+    R("Der Wert stimmt um das Tausendfache nicht", "Richtig — ein Buchstabe, drei Nullen."),
+    F("Nichts, man sieht es an der Zahl", "Die Zahl bleibt ja gleich — genau das ist die Falle."),
+    F("Nur die Einheit ist falsch, der Wert stimmt", "Der Vorsatz gehört zum Wert dazu.")
+  ]
+});
+
+/* Farbcode: Vorn wozu die Ringe da sind, hinten die Toleranz — die vergisst
+   fast jeder. */
+EINSTIEG["Widerstände und Farbcode"] = () => [{
+  frage: "An welchem <b>Ende</b> fängst du beim Ablesen der Ringe an?",
+  tipp: "Ein Ring steht meist etwas abseits.",
+  tipp2: "Der Toleranzring steht mit größerem Abstand am Rand. Man beginnt am anderen Ende — dort, wo die Ringe eng beieinanderstehen.",
+  optionen: [
+    R("An dem Ende, an dem die Ringe eng beieinanderstehen", "Richtig — der abgesetzte Ring am anderen Ende ist die Toleranz."),
+    F("Immer links", "Ein Widerstand hat kein Links — er lässt sich drehen."),
+    F("An dem Ende mit dem goldenen Ring", "Der Goldring ist die Toleranz, dort hört man auf.")
+  ]
+}, {
+  frage: "Warum steht der Wert bei kleinen Widerständen als <b>Farbringe</b> darauf?",
+  tipp: "Schau dir die Größe so eines Bauteils an.",
+  tipp2: "Auf ein paar Millimeter Bauteil passt keine lesbare Zahl — und aufgedruckte Ziffern wären je nach Einbaulage nicht zu sehen. Ringe laufen rundherum.",
+  optionen: [
+    R("Weil eine Zahl dort nicht lesbar draufpasst", "Richtig — und Ringe kann man aus jeder Richtung lesen."),
+    F("Weil Farben genauer sind als Zahlen", "Genauer sind sie nicht, nur besser aufzubringen."),
+    F("Damit man den Wert nicht sofort sieht", "Das Gegenteil ist der Zweck.")
+  ]
+}];
+ABSCHLUSS["Widerstände und Farbcode"] = () => ({
+  frage: "Der letzte Ring nennt die <b>Toleranz</b>. Warum ist die wichtig?",
+  tipp: "Kein Bauteil trifft seinen Wert genau.",
+  tipp2: "Ein 100-Ω-Widerstand mit 5 % darf zwischen 95 und 105 Ω liegen. Wer eng rechnet, muss diesen Bereich mitdenken.",
+  optionen: [
+    R("Sie sagt, wie weit der echte Wert abweichen darf", "Richtig — gemessen wird selten genau der aufgedruckte Wert."),
+    F("Sie sagt, wie viel Strom er verträgt", "Das ist die Belastbarkeit in Watt."),
+    F("Sie sagt, wie alt das Bauteil ist", "Mit dem Alter hat sie nichts zu tun.")
+  ]
+});
+
+/* Sicherheitsregeln: Vorn wofür sie da sind, hinten die Frage, die über
+   Leben entscheidet. */
+EINSTIEG["Sicherheitsregeln"] = () => [{
+  frage: "Wer muss die fünf Regeln <b>anwenden</b>?",
+  tipp: "Es geht nicht um eine Berufsbezeichnung, sondern um eine Tätigkeit.",
+  tipp2: "Jeder, der an einer elektrischen Anlage arbeitet — auch der Meister, auch bei der kleinsten Änderung. Es gibt keine Ausnahme für Erfahrung.",
+  optionen: [
+    R("Jeder, der an der Anlage arbeitet", "Richtig — ohne Ausnahme, unabhängig von der Erfahrung."),
+    F("Nur Auszubildende", "Erfahrung schützt nicht vor Spannung."),
+    F("Nur die Elektrofachkraft", "Auch sie, aber nicht nur sie.")
+  ]
+}, {
+  frage: "Wovor schützen die <b>fünf Sicherheitsregeln</b>?",
+  tipp: "Es geht nicht um das Gerät.",
+  tipp2: "Sie schützen den Menschen, der an der Anlage arbeitet — davor, dass unerwartet Spannung anliegt oder jemand anders wieder einschaltet.",
+  optionen: [
+    R("Den Menschen, der an der Anlage arbeitet", "Richtig — deshalb sind sie verbindlich und keine Empfehlung."),
+    F("Die Anlage vor Schäden", "Die Anlage ist zweitrangig."),
+    F("Den Betrieb vor Stromkosten", "Damit haben sie nichts zu tun.")
+  ]
+}];
+ABSCHLUSS["Sicherheitsregeln"] = () => ({
+  frage: "Darf man eine Regel <b>weglassen</b>, wenn man sicher ist, dass nichts anliegt?",
+  tipp: "Überleg, worauf sich „sicher sein“ stützt.",
+  tipp2: "Sicher ist man erst nach der Messung — und die ist selbst eine der fünf Regeln. Ein Gefühl ersetzt sie nicht.",
+  optionen: [
+    R("Nein — sicher ist man erst nach der Messung", "Richtig. Genau diese Annahme steht hinter den meisten Unfällen."),
+    F("Ja, wenn man die Anlage kennt", "Auch wer sie kennt, weiß nicht, was jemand anders gerade tut."),
+    F("Ja, bei Kleinspannung", "Die Reihenfolge gilt unabhängig von der Spannungshöhe.")
+  ]
+});
+
+/* Ladung und Strom: der Begriff, der hinter allem steckt — und die Frage,
+   warum die Amperestunde auf dem Akku steht. */
+EINSTIEG["Ladung und Strom"] = () => [{
+  frage: "Welche Größe brauchst du <b>neben dem Strom</b>, um eine Ladung auszurechnen?",
+  tipp: "Ladung ist Strom, der eine Weile geflossen ist.",
+  tipp2: "Q = I · t. Ohne die Zeit ist die Frage nach der Ladung nicht zu beantworten.",
+  optionen: [
+    R("Die Zeit", "Richtig — Ladung ist Strom mal Zeit."),
+    F("Die Spannung", "Die spielt für die Ladungsmenge keine Rolle."),
+    F("Den Widerstand", "Auch der nicht.")
+  ]
+}, {
+  frage: "Was ist <b>Strom</b> eigentlich?",
+  tipp: "Es bewegt sich etwas.",
+  tipp2: "Strom ist bewegte Ladung. Die Stromstärke sagt, wie viel Ladung in jeder Sekunde vorbeikommt.",
+  optionen: [
+    R("Ladung, die sich bewegt", "Richtig — und die Stromstärke ist Ladung je Sekunde."),
+    F("Eine Kraft, die drückt", "Das ist eher die Spannung."),
+    F("Gespeicherte Energie", "Die steckt im Akku, nicht im Strom.")
+  ]
+}];
+ABSCHLUSS["Ladung und Strom"] = () => ({
+  frage: "Warum steht auf einem Akku <b>Amperestunden</b> und nicht Coulomb?",
+  tipp: "Beides ist eine Ladung — eines davon ist praktischer.",
+  tipp2: "1 Ah sind 3600 Coulomb. Mit Amperestunden rechnet man direkt: 2 Ah bei 0,5 A halten vier Stunden. In Coulomb wären das 7200 — richtig, aber unbrauchbar.",
+  optionen: [
+    R("Weil man damit die Laufzeit direkt ausrechnen kann", "Genau — Amperestunden geteilt durch Ampere ergibt Stunden."),
+    F("Weil Coulomb veraltet ist", "Coulomb ist die gültige Einheit, nur unhandlich."),
+    F("Weil das etwas ganz anderes misst", "Beides ist eine Ladung, nur anders groß.")
+  ]
+});
+
 function baueAufgabe(name, welche){
   const liste = AUFGABEN[name];
   const bauer = liste[welche % liste.length];
   const aufgabe = typeof bauer === "function" ? bauer() : JSON.parse(JSON.stringify(bauer));
   entdoppeln(aufgabe);
+  /* Erst der Schätzschritt, dann Einstieg und Abschluss: Der Schätzschritt
+     schaut darauf, wie tief die Aufgabe von sich aus ist. Kämen die
+     Themenschritte zuerst, hielte er jede Aufgabe für schon tief genug und
+     bliebe weg. */
   schaetzenEinbauen(aufgabe);
+  themenSchritteEinbauen(aufgabe, name);
   (aufgabe.schritte || []).forEach(s => fuelleAuf(s, ZIEL_ANTWORTEN));
   return aufgabe;
 }
@@ -30306,7 +30652,10 @@ function suchErgebnisHtml(){
         <p class="einfachtext">Versuch ein anderes Wort — oft hilft ein einfacheres.
           Statt „Flächeninhalt eines Trapezes" reicht „Fläche".</p>
         <p class="einfachtext">Wenn dir ein Thema fehlt, sag uns Bescheid — das hilft am meisten.</p>
-        ${navLink("/hilfe", "zeigeMelden()", "Thema vorschlagen", "btn ghost full")}
+        ${/* Nicht zur Hilfe, sondern zum Feedback: Dort steht ausdrücklich
+              „Was fehlt noch oder ist fehlerhaft?" — und genau darum geht es
+              hier. Die Hilfe ist für jemanden gedacht, der nicht weiterkommt. */""}
+        ${navLink("/feedback", "zeigeFeedback()", "Thema vorschlagen", "btn ghost full")}
       </div>`;
   }
 
@@ -33523,13 +33872,24 @@ function zumTippSpringen(){
   void el.offsetWidth;             // Neustart der Animation erzwingen
   el.classList.add("blinkt");
 }
+/* Welcher Schritt ist der, den man selbst hinschreibt? Früher war das immer
+   der letzte. Seit hinter dem Rechenschritt noch ein Abschluss stehen kann —
+   „kann das stimmen?", „was heißt das jetzt?" —, ist es der letzte Schritt,
+   der sich überhaupt eintippen lässt. Sonst müsste man die Antwort anklicken
+   und dürfte dafür den Nachgedanken eintippen; genau verkehrt herum. */
+function tippSchrittNr(){
+  if (!aktuell) return -1;
+  for (let i = aktuell.schritte.length - 1; i >= 0; i--)
+    if (istEintippbar(aktuell.schritte[i])) return i;
+  return -1;
+}
 function tippModus(){
   if (!aktuell) return false;
   const s = aktuell.schritte[schrittNr];
   if (!istEintippbar(s)) return false;
   if (einstellungen.eingabe === "auswahl") return false;
   if (einstellungen.eingabe === "tippen") return true;
-  return schrittNr === aktuell.schritte.length - 1;   // gemischt: nur der letzte Schritt
+  return schrittNr === tippSchrittNr();   // gemischt: der letzte, der geht
 }
 
 function eingabePruefen(){
