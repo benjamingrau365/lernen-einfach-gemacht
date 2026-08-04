@@ -170,10 +170,21 @@ aufgibt, wird dieselbe Seite wie sie — nur kleiner.
   Drehstrom-Leistungsmessung, Schutzarten (IP).
 * **Englisch Klasse 8, 9, 10** — 15 Themen, dann sind es 140 von 140 und das
   Baustellenband kann weg.
-* **35 doppelte Fragestellungen** bei den Elektroniker-Themen ersetzen
-  (Spannungsteiler 4×, Einheiten 5×, weitere je 2×). Der Weg dafür ist
-  erprobt: andere Frage schreiben, passende Nachrechnung in
-  `pruefe-inhalt.js`, gegenprüfen.
+* **11 doppelte Fragestellungen** sind noch übrig — angefangen waren es 39.
+  Übrig sind: Einheiten und Vorsätze, Leiterquerschnitt (2×), Schutzmaßnahmen
+  (2×), Kondensator im Wechselstrom, Diode und Gleichrichter, Messen im
+  Betrieb, Netzformen, Beleuchtung berechnen, Fehler suchen.
+
+  Der Weg dafür ist erprobt und steht in den bisherigen Änderungen: andere
+  Frage schreiben, die innerhalb des Themas bleibt — am besten eine, die
+  bisher fehlte oder die Rechnung umdreht —, passende Nachrechnung samt
+  Gegenprobe in `pruefe-inhalt.js` ergänzen, `npm run pruefen` laufen lassen.
+
+  **Eine Falle dabei:** Beim Ersetzen ganzer Erzeuger-Blöcke muss die
+  Endmarke wirklich der nächste Block sein. Die Themen stehen in `index.html`
+  nicht in derselben Reihenfolge wie im Katalog — einmal wurde deshalb ein
+  Schnitt zu lang und 18 Themen fielen weg. `pruefe-aufbau.js` hat es sofort
+  gemeldet (107 statt 125 Themen); dieser Zähler ist die Kontrolle.
 
 ---
 
