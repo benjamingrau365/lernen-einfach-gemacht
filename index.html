@@ -7,7 +7,7 @@
      Seite dort als nicht mehr bestätigt und die Auswertungen brechen ab. -->
 <meta name="google-site-verification" content="be7sph98lxK0rCzp5GLAaMCmjbAQ2WKdChRivMymTas" />
 <title>Endlich kapiert</title>
-<meta name="description" content="Endlich kapiert: Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe und Deutsch von Klasse 5 bis 10, Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr.">
+<meta name="description" content="Endlich kapiert: Du bekommst nie die Lösung, nur Fragen, die dich hinführen. Mathe, Deutsch und Englisch von Klasse 5 bis 10, Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr.">
 <meta name="theme-color" content="#10a37f">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -600,7 +600,11 @@
   }
   @media (prefers-reduced-motion:reduce){ .feedback.blinkt{animation:none} }
 
-  .themen{display:grid;gap:9px}
+  /* minmax(0,1fr) statt einfach 1fr: Eine Gitterspalte wird sonst mindestens
+     so breit wie ihr Inhalt. Ein langer Themenname samt Anzahl und
+     Fragezeichen-Knopf machte die Spalte dadurch breiter als den Kasten, und
+     die ganze Seite ließ sich auf schmalen Handys seitlich schieben. */
+  .themen{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
   .thema{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
     min-height:56px;text-align:left;background:var(--card);border:1.5px solid var(--line);
     border-radius:14px;padding:12px 14px 12px 16px;font:inherit;font-size:16.5px;
@@ -1009,10 +1013,18 @@
     border:3px solid var(--card);box-shadow:0 2px 8px rgba(0,0,0,.28)}
   input.regler:focus-visible{outline:3px solid var(--ac);outline-offset:4px;border-radius:8px}
   .spielwerte{display:grid;gap:0;margin-top:6px;border-top:1px solid var(--line)}
-  .spielwerte div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
-    padding:11px 0;border-bottom:1px solid var(--line)}
-  .spielwerte span{font-size:15.5px;color:var(--soft)}
-  .spielwerte b{font-size:19px;color:var(--ac-dark);font-variant-numeric:tabular-nums;white-space:nowrap}
+  /* Der Wert stand früher auf white-space:nowrap, damit „1.234 Ω“ nicht mitten
+     im Zahlenwert umbricht. Bei längeren Werten — etwa der ganzen Liste der
+     fünf Sicherheitsregeln — wuchs die Zeile dadurch über den Bildschirm
+     hinaus und schob die ganze Seite seitlich weg. Stattdessen darf die Zeile
+     jetzt umbrechen: Passt der Wert nicht neben die Beschriftung, rutscht er
+     in die nächste Zeile. Dort ist Platz genug, sodass eine Zahl trotzdem
+     zusammenbleibt. */
+  .spielwerte div{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;
+    gap:4px 12px;padding:11px 0;border-bottom:1px solid var(--line);min-width:0}
+  .spielwerte span{font-size:15.5px;color:var(--soft);min-width:0}
+  .spielwerte b{font-size:19px;color:var(--ac-dark);font-variant-numeric:tabular-nums;
+    min-width:0;text-align:right;overflow-wrap:anywhere}
   .spielsatz{margin:14px 0 0;font-size:15px;line-height:1.6;color:var(--ink);
     background:var(--ac-soft);border-radius:12px;padding:12px 14px}
 
@@ -1834,7 +1846,7 @@
     .aufg.mittel .zeile1{font-size:30px}
     .aufg.lang .zeile1{font-size:23px}
     .aufg.text .zeile1{font-size:24px;text-align:center}
-    .themen{grid-template-columns:1fr 1fr}
+    .themen{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
     .themen{align-items:start}
     .shell.voll{grid-template-columns:1fr;max-width:880px}
     .gegen{grid-template-columns:1fr 1fr}
@@ -2582,10 +2594,18 @@ const AUFGABEN = {
      {frage:`Welche Zahl bilden die <b>letzten beiden Ziffern</b> von ${z(n)}?`,
       tipp2:"Die beiden Ziffern bleiben in ihrer Reihenfolge stehen und ergeben zusammen eine zweistellige Zahl.",
       tipp:"Die beiden ganz rechts.",
-      optionen: zieheVerschiedene([
-        R(letzteText, "Richtig."),
-        F(String(Math.floor(n/100)), "Das sind die ersten beiden."),
-        F(String(n % 10), "Es sind zwei Ziffern, nicht eine.")], 3)},
+      /* Endet die Zahl auf 08, ist die richtige Antwort „08" — und die
+         einzelne letzte Ziffer wäre „8", also dieselbe Zahl, nur als falsch
+         markiert. Deshalb werden hier alle Ablenker gegen den Zahlenwert
+         geprüft und nur die genommen, die wirklich etwas anderes sind. */
+      optionen: [R(letzteText, "Richtig."),
+        ...[[String(Math.floor(n / 100)), "Das sind die ersten beiden."],
+            [String(Math.floor(n / 10) % 100).padStart(2, "0"), "Das sind die mittleren beiden Ziffern."],
+            [String(n % 10), "Es sind zwei Ziffern, nicht eine."],
+            [String((letzte + 10) % 100).padStart(2, "0"), "Die Zehnerziffer stimmt nicht."]]
+           .filter(([t]) => Number(t) !== letzte)
+           .slice(0, 2)
+           .map(([t, fb]) => F(t, fb))]},
      {frage:`Ist <b>${letzteText}</b> durch 4 teilbar?`,
       tipp2:"Halbiere zweimal. Geht beides ohne Rest auf, ist die Zahl durch 4 teilbar.",
       tipp:"4, 8, 12, 16, 20, 24 …",
@@ -11373,7 +11393,16 @@ function fuelleAuf(schritt, ziel){
     if (genutzteWerte.some(v => Math.abs(v - gerundet) < 1e-9)) continue;   // Wert schon vorhanden
     const text = formatiereWie(gerundet, teile);
     if (genutzteTexte.has(text)) continue;
-    genutzteTexte.add(text); genutzteWerte.push(gerundet);
+    /* Erst nach dem Formatieren steht fest, welche Zahl der Lernende
+       tatsächlich sieht. Bei ganzzahliger Anzeige werden aus 0,1 und -0,1
+       beide zu null — angezeigt als „0“ und „-0“. Zwei verschiedene Texte,
+       derselbe Wert: Damit stünde neben der richtigen Antwort dieselbe Zahl
+       noch einmal, markiert als falsch. Deshalb wird hier der angezeigte
+       Wert geprüft, nicht der gerechnete. */
+    const angezeigt = zahlTeile(text);
+    if (!angezeigt) continue;
+    if (genutzteWerte.some(v => Math.abs(v - angezeigt.wert) < 1e-9)) continue;
+    genutzteTexte.add(text); genutzteWerte.push(angezeigt.wert);
     schritt.optionen.push({t: text, ok: 0, fb: "Knapp daneben — rechne den letzten Schritt noch einmal nach."});
   }
 }
@@ -29247,7 +29276,7 @@ function kontoHtml(){
 /* ---------- Häufige Fragen ---------- */
 const FAQ = [
   ["Was ist „Endlich kapiert“?",
-   "Eine Lernseite für Mathe und Deutsch von Klasse 5 bis 10 und für die Ausbildung zum Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr. Der Unterschied zu anderen: Du bekommst nie die fertige Lösung. Stattdessen wirst du mit kleinen Fragen dorthin geführt, bis du selbst draufkommst."],
+   "Eine Lernseite für Mathe, Deutsch und Englisch von Klasse 5 bis 10 und für die Ausbildung zum Elektroniker für Betriebstechnik vom 1. bis 4. Lehrjahr. Der Unterschied zu anderen: Du bekommst nie die fertige Lösung. Stattdessen wirst du mit kleinen Fragen dorthin geführt, bis du selbst draufkommst."],
   ["Warum soll ich das nutzen und nicht einfach eine KI fragen?",
    "Weil eine KI dir die Lösung gibt und diese Seite nicht. Beides hat seinen Zweck: Wenn du etwas wissen willst, frag die KI. Wenn du etwas können willst, übe hier — du bekommst nur Hinweise, bis du selbst darauf kommst. Dazu kommt: Was du nicht konntest, legt dir diese Seite von allein wieder vor, und jede Aufgabe wird vor der Veröffentlichung von einem Programm unabhängig nachgerechnet. Die ausführliche Antwort steht unter „Warum nicht einfach KI?“ im Menü — dort steht auch, was die KI besser kann."],
   ["Kostet das etwas?",
@@ -29261,7 +29290,7 @@ const FAQ = [
   ["Kommen immer dieselben Aufgaben?",
    "Nein. Die Zahlen werden bei jedem Aufruf neu erzeugt. Dieselbe Aufgabe siehst du praktisch nie zweimal — auswendig lernen funktioniert also nicht."],
   ["Für welche Klassen ist das gedacht?",
-   "Klasse 5 bis 10, in Mathe und Deutsch. Dazu kommt die Ausbildung: Elektroniker für Betriebstechnik, 1. bis 4. Lehrjahr. Weitere Fächer und Berufe kommen nach und nach dazu."],
+   "Klasse 5 bis 10, in Mathe, Deutsch und Englisch — in Englisch mit Vokabeltrainer. Dazu kommt die Ausbildung: Elektroniker für Betriebstechnik, 1. bis 4. Lehrjahr. Weitere Fächer und Berufe kommen nach und nach dazu."],
   ["Ich weiß bei einem Thema gar nichts. Was tun?",
    "Drück in der Aufgabe auf „Ich verstehe das Thema gar nicht“ oder tipp in der Themenliste auf das Fragezeichen. Dann bekommst du das Thema von vorn erklärt, bevor du weitermachst."],
   ["Ich habe einen Fehler gefunden.",
@@ -30244,7 +30273,7 @@ function baustelleSeiteHtml(){
             <span class="bauname">${n}</span>
           </div>`).join("")}
       </div>
-      <p class="small soft" style="margin-top:12px">Erst kommen Mathe und Deutsch bis Klasse 10
+      <p class="small soft" style="margin-top:12px">Erst kommen Mathe, Deutsch und Englisch bis Klasse 10
         und die vier Lehrjahre Elektroniker vollständig dran. Neue Fächer und Berufe erst danach —
         lieber wenig, das richtig funktioniert.</p>
     </div>
@@ -32503,6 +32532,20 @@ function neueReihenfolge(){
   reihenfolge = mischeReihenfolge(aktuell.schritte[schrittNr].optionen.length);
 }
 function tageBis(z){ return Math.ceil((new Date(z).getTime() - Date.now()) / TAG); }
+/* Wann ein Thema wieder drankommt.
+
+   Naheliegend wäre „jetzt plus n mal 24 Stunden“ — aber das misst ab der
+   Uhrzeit, und die App verspricht Tage. Wer abends um acht übt, bekäme das
+   Thema am nächsten Tag erst nach acht wieder vorgelegt; nachmittags nach der
+   Schule stünde dort weiterhin „morgen“, obwohl der Tag längst da ist.
+   Deshalb zählt der Tagesbeginn: Ab dem Morgen des Zieltages ist fällig, was
+   für diesen Tag vorgesehen war. */
+function wiederholungAm(tage){
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + tage);
+  return d.toISOString();
+}
 function wannText(z){
   const t = tageBis(z.naechste_wiederholung);
   if (z.stufe >= 4 && t > 20) return {text:"sitzt", stil:"sitzt"};
@@ -32614,7 +32657,7 @@ async function speichereErgebnis(){
     versuche: (alt ? alt.versuche : 0) + 1,
     fehler: (alt ? alt.fehler : 0) + (fehlversuche > 0 ? 1 : 0),
     zuletzt_geuebt: new Date().toISOString(),
-    naechste_wiederholung: new Date(Date.now() + INTERVALLE[stufe] * TAG).toISOString()
+    naechste_wiederholung: wiederholungAm(INTERVALLE[stufe])
   }, {onConflict:"user_id,fach,thema"});
 
   await ladeFortschritt();
@@ -33558,7 +33601,7 @@ function render(gewaehlt){
           ${[5,6,7,8,9,10].map(k => `
             <button class="stufe ${einstellungen.stufe === k ? "an" : ""}" onclick="setzeEinstellung('stufe', ${k})">Klasse ${k}</button>`).join("")}
         </div>
-        <p class="small soft" style="margin:12px 0 0">Gilt für Mathe und Deutsch. In der Ausbildung wird weiter nach dem Lehrjahr gefragt.</p>
+        <p class="small soft" style="margin:12px 0 0">Gilt für Mathe, Deutsch und Englisch. In der Ausbildung wird weiter nach dem Lehrjahr gefragt.</p>
       </div>
 
       <div class="card">

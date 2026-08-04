@@ -23,14 +23,14 @@ ${werkzeuge}
 ${aufgaben}
 };
 ${entdopp}
-return {KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar};
+return {KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar, zahlTeile};
 `;
 
 let umgebung;
 try { umgebung = new Function(code)(); }
 catch (e) { console.error("SYNTAXFEHLER beim Laden:", e.message); process.exit(1); }
 
-const { KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar } = umgebung;
+const { KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar, zahlTeile } = umgebung;
 const RUNDEN = 3000;
 const probleme = [];
 const melde = (thema, nr, text) => probleme.push(`${thema} [Variante ${nr}] ${text}`);
@@ -68,12 +68,27 @@ for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
           melde(thema, nr, `Schritt ${si + 1}: ${richtige.length} richtige Antworten (muss genau 1 sein)`);
 
         const gesehen = new Set();
+        /* Zwei Antworten können verschieden geschrieben sein und trotzdem
+           dieselbe Zahl meinen: „0“ und „-0“, „08“ und „8“. Dann steht neben
+           der richtigen Antwort dieselbe Zahl noch einmal, markiert als
+           falsch — wer sie anklickt, bekommt zu Unrecht ein Falsch. Deshalb
+           wird hier nicht nur der Text verglichen, sondern auch der Wert. */
+        const werte = new Map();
         s.optionen.forEach((o) => {
           if (o.t === undefined || !nackt(o.t))
             return melde(thema, nr, `Schritt ${si + 1}: leere Antwortmöglichkeit`);
           const k = nackt(o.t);
           if (gesehen.has(k)) melde(thema, nr, `Schritt ${si + 1}: doppelte Antwort „${k}“`);
           gesehen.add(k);
+
+          const teile = zahlTeile(k);
+          if (teile) {
+            const wertschluessel = `${teile.wert}|${teile.suffix}`;
+            if (werte.has(wertschluessel) && werte.get(wertschluessel) !== k)
+              melde(thema, nr, `Schritt ${si + 1}: „${werte.get(wertschluessel)}“ und „${k}“ sind dieselbe Zahl`);
+            werte.set(wertschluessel, k);
+          }
+
           if (!o.fb || !nackt(o.fb))
             melde(thema, nr, `Schritt ${si + 1}: Antwort „${k}“ ohne Rückmeldung`);
         });
