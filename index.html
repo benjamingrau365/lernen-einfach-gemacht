@@ -426,6 +426,26 @@
   .teilzahl{font-weight:700}
   .vokknopf.pruefteilknopf{border-color:var(--elektroniker);color:var(--elektroniker-dark)}
   .vokknopf.pruefteilknopf.an{background:var(--elektroniker-soft)}
+  /* Der Haken links am Thema nimmt es aus dem Plan heraus. Er ist bewusst
+     kein Muss: Von Haus aus ist alles ausgewählt, wer will, klickt weg. */
+  .themahaken{flex:none;width:34px;height:34px;align-self:center;border-radius:10px;
+    border:1.5px solid var(--line);background:var(--card);color:var(--fach-dark);
+    font:inherit;font-size:16px;font-weight:800;cursor:pointer;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .14s,border-color .14s,transform .1s}
+  .themahaken.an{background:var(--fach-soft);border-color:var(--fach)}
+  .themahaken:hover{border-color:var(--fach)}
+  .themahaken:active{transform:scale(.92)}
+  .thema.abgewaehlt{opacity:.5}
+  .thema.abgewaehlt:not(.aus){border-left-color:var(--line)}
+  .jahrkopf{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .jahrmerk{display:inline-block;margin-left:6px;background:var(--bg);color:var(--soft);
+    border:1px solid var(--line);border-radius:999px;padding:2px 9px;font-size:11px;
+    font-weight:700;letter-spacing:.03em;text-transform:none}
+  .jahrschalter{background:none;border:none;padding:4px 2px;font:inherit;font-size:13.5px;
+    font-weight:600;color:var(--fach-dark);cursor:pointer;text-decoration:underline;
+    text-underline-offset:3px}
+  .jahrschalter:hover{color:var(--fach)}
 
   /* ---------- Kalender ----------
      Der Kalender des Browsers ist auf jedem Gerät ein anderer, immer winzig
@@ -30608,27 +30628,56 @@ const PRUEFTEILE = {
   teil2: {
     name: "Teil 2",
     lang: "Abschlussprüfung Teil 2",
-    stufen: [3, 4],
+    /* Teil 2 ist keine Fortsetzung, die bei null anfängt: Was in Teil 1 dran
+       war, gilt weiter und kann jederzeit wieder vorkommen. Deshalb stehen
+       hier alle vier Lehrjahre — die beiden letzten als Schwerpunkt, die
+       ersten beiden als Grundlage. */
+    stufen: [3, 4, 1, 2],
+    schwerpunkt: [3, 4],
     wann: "am Ende der Ausbildung",
-    worum: "Die Themen aus dem dritten und vierten Lehrjahr. Was in Teil 1 dran war, gilt weiter — es kann jederzeit wieder vorkommen."
+    worum: "Der Schwerpunkt liegt auf dem dritten und vierten Lehrjahr. Was in Teil 1 dran war, gilt weiter — deshalb stehen die Grundlagen aus dem ersten und zweiten Lehrjahr hier ebenfalls."
   }
 };
 let pruefTeil = null;              /* "teil1" | "teil2", solange man dort ist */
+/* Themen, die man auf der Teilseite ausdrücklich weggeklickt hat. Von Haus
+   aus ist alles dabei — abwählen ist die Ausnahme, nicht die Regel. */
+let pruefTeilAbwahl = new Set();
 
 /* Alle Themen eines Prüfungsteils, nach Lehrjahr geordnet */
 function pruefTeilThemen(schluessel){
   const t = PRUEFTEILE[schluessel];
   if (!t) return [];
+  const schwer = t.schwerpunkt || t.stufen;
   return t.stufen
-    .map(j => ({jahr: j, themen: (KATALOG.elektroniker.themen[j] || [])}))
+    .map(j => ({jahr: j, grundlage: !schwer.includes(j),
+                themen: (KATALOG.elektroniker.themen[j] || [])}))
     .filter(g => g.themen.length);
 }
 function pruefTeilAlleThemen(schluessel){
   return pruefTeilThemen(schluessel).flatMap(g => g.themen);
 }
+/* Was am Ende in den Plan wandert: alles, wofür es Aufgaben gibt, außer dem
+   Abgewählten. */
+function pruefTeilGewaehlt(schluessel){
+  return pruefTeilAlleThemen(schluessel)
+    .filter(t => anzahlAufgaben(t) > 0 && !pruefTeilAbwahl.has(t));
+}
+function pruefTeilUm(thema){
+  if (pruefTeilAbwahl.has(thema)) pruefTeilAbwahl.delete(thema);
+  else pruefTeilAbwahl.add(thema);
+  render();
+}
+function pruefTeilAlleAn(){ pruefTeilAbwahl = new Set(); render(); }
+function pruefTeilJahrUm(jahr){
+  const themen = (KATALOG.elektroniker.themen[jahr] || []).filter(t => anzahlAufgaben(t) > 0);
+  const allesDrin = themen.every(t => !pruefTeilAbwahl.has(t));
+  themen.forEach(t => allesDrin ? pruefTeilAbwahl.add(t) : pruefTeilAbwahl.delete(t));
+  render();
+}
 function zeigePruefTeil(schluessel){
   if (!PRUEFTEILE[schluessel]) return;
   menueOffen = false;
+  if (pruefTeil !== schluessel) pruefTeilAbwahl = new Set();   /* neuer Teil, frische Auswahl */
   pruefTeil = schluessel; fach = "elektroniker"; klasse = null;
   ansicht = "pruefteil"; render();
 }
@@ -30639,7 +30688,8 @@ function pruefPlanAus(schluessel){
   if (!t) return;
   pruefFach = "elektroniker";
   pruefKlasse = schluessel;
-  pruefAuswahl = pruefTeilAlleThemen(schluessel).filter(x => anzahlAufgaben(x) > 0);
+  pruefAuswahl = pruefTeilGewaehlt(schluessel);
+  if (!pruefAuswahl.length) pruefAuswahl = pruefTeilAlleThemen(schluessel).filter(x => anzahlAufgaben(x) > 0);
   pruefName = t.lang;
   pruefMeldung = ""; pruefOffen = null; pruefKalMonat = null; menueOffen = false;
   ansicht = "pruefungen"; render();
@@ -32373,9 +32423,11 @@ function render(gewaehlt){
         <div class="teilwahl">
           ${Object.entries(PRUEFTEILE).map(([k, t]) => {
             const n = pruefTeilAlleThemen(k).filter(x => anzahlAufgaben(x) > 0).length;
+            const schwer = t.schwerpunkt || t.stufen;
             return `<button class="teilknopf" onclick="zeigePruefTeil('${k}')">
               <b>${t.name}</b>
-              <span>${t.stufen[0]}. und ${t.stufen[1]}. Lehrjahr</span>
+              <span>${schwer[0]}. und ${schwer[1]}. Lehrjahr${
+                t.schwerpunkt ? " · dazu die Grundlagen" : ""}</span>
               <span class="teilzahl">${z(n)} Themen</span>
             </button>`;
           }).join("")}
@@ -32417,6 +32469,8 @@ function render(gewaehlt){
     const alle = pruefTeilAlleThemen(pruefTeil);
     const fertig = alle.filter(x => anzahlAufgaben(x) > 0);
     const geuebt = fertig.filter(x => zeileZu(x)).length;
+    const gewaehlt = pruefTeilGewaehlt(pruefTeil);
+    const abgewaehlt = fertig.length - gewaehlt.length;
 
     el.innerHTML = `
       <div class="card">
@@ -32435,16 +32489,31 @@ function render(gewaehlt){
 
       <div class="card">
         <p class="ueberschrift">Einen Lernplan daraus machen</p>
-        <p class="small soft" style="margin:0 0 14px">Sag, wann geprüft wird — die App teilt die
-          ${z(fertig.length)} Themen auf die Tage bis dahin auf, das Wackeligste zuerst,
-          und sagt dir jeden Tag, was dran ist.</p>
-        <button class="btn full" onclick="pruefPlanAus('${pruefTeil}')">Plan bis zur Prüfung erstellen</button>
+        <p class="small soft" style="margin:0 0 14px">${gewaehlt.length === fertig.length
+          ? `Alle ${z(fertig.length)} Themen sind dabei. Ein Klick, dann nur noch den Termin antippen —
+             die App teilt sie auf die Tage bis dahin auf, das Wackeligste zuerst.`
+          : `<b>${z(gewaehlt.length)}</b> von ${z(fertig.length)} Themen ausgewählt.
+             Ein Klick, dann nur noch den Termin antippen.`}</p>
+        <button class="btn full" onclick="pruefPlanAus('${pruefTeil}')">
+          Plan mit ${z(gewaehlt.length)} ${gewaehlt.length === 1 ? "Thema" : "Themen"} erstellen</button>
+        ${abgewaehlt ? `<button class="btn ghost full" style="margin-top:10px"
+          onclick="pruefTeilAlleAn()">Doch wieder alle ${z(fertig.length)} nehmen</button>` : ""}
       </div>
 
-      ${gruppen.map(g => `
+      ${gruppen.map(g => {
+        const machbar = g.themen.filter(x => anzahlAufgaben(x) > 0);
+        const drin = machbar.filter(x => !pruefTeilAbwahl.has(x)).length;
+        return `
         <div class="card">
-          <p class="ueberschrift">${g.jahr}. Lehrjahr</p>
-          <div class="themen">
+          <div class="jahrkopf">
+            <p class="ueberschrift" style="margin:0">${g.jahr}. Lehrjahr${
+              g.grundlage ? ` <span class="jahrmerk">Grundlage</span>` : ""}</p>
+            ${machbar.length ? `<button class="jahrschalter" onclick="pruefTeilJahrUm(${g.jahr})">${
+              drin === machbar.length ? "alle abwählen" : "alle dazunehmen"}</button>` : ""}
+          </div>
+          ${g.grundlage ? `<p class="small soft" style="margin:6px 0 0">Kam schon in Teil 1 dran und
+            gilt weiter — hier ist es zum Auffrischen dabei.</p>` : ""}
+          <div class="themen" style="margin-top:12px">
             ${g.themen.map(th => {
               const n = anzahlAufgaben(th);
               if (!n) return `<div class="thema aus"><span>${th}</span><span class="pill bald">kommt</span></div>`;
@@ -32454,13 +32523,19 @@ function render(gewaehlt){
                 ? `<span class="pill ${w.stil === "sitzt" ? "" : "neutral"}">${w.text}</span>`
                 : `<span class="pill">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
               const sicher = th.replace(/'/g, "\\'");
+              const dabei = !pruefTeilAbwahl.has(th);
               return `<div class="themazeile">
-                <button class="thema" onclick="starte('${sicher}')"><span>${th}</span>${pille}</button>
+                ${/* Der Haken ist zum Abwählen da — von Haus aus ist alles dabei.
+                      Deshalb steht er links und nicht als erste Entscheidung im Weg. */""}
+                <button class="themahaken ${dabei ? "an" : ""}" onclick="pruefTeilUm('${sicher}')"
+                        title="${dabei ? "Aus dem Plan nehmen" : "In den Plan aufnehmen"}"
+                        aria-label="${th} ${dabei ? "aus dem Plan nehmen" : "in den Plan aufnehmen"}">${dabei ? "✓" : ""}</button>
+                <button class="thema ${dabei ? "" : "abgewaehlt"}" onclick="starte('${sicher}')"><span>${th}</span>${pille}</button>
                 ${hatErklaerung(th) ? `<button class="erklknopf" title="Erklärung" onclick="zeigeErklaerung('${sicher}')">?</button>` : ""}
               </div>`;
             }).join("")}
           </div>
-        </div>`).join("")}
+        </div>`; }).join("")}
 
       <div class="card">
         <p class="ueberschrift">Der andere Teil</p>
