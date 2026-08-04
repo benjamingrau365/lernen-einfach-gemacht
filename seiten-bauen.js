@@ -526,6 +526,9 @@ const heute = new Date().toISOString().slice(0, 10);
 const adressen = [
   {a: "/", p: "1.0"},
   {a: "/faecher", p: "0.9"},
+  /* Die Themensuche ist der Einstieg für alle, die keine Klasse haben —
+     genau die Leute, die bei einer Suchmaschine landen. */
+  {a: "/suche", p: "0.9"},
   {a: "/erklaerungen.html", p: "0.9"},
   {a: "/vokabeln", p: "0.7"},
   /* Wer „Elektroniker Abschlussprüfung Teil 1“ sucht, sucht genau diese Seite */

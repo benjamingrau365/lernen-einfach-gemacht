@@ -963,6 +963,64 @@
   .ergebnis{background:var(--ac-soft);color:var(--ac-dark);border-radius:11px;
     padding:13px 16px;font-weight:700;font-size:17px;text-align:center}
 
+  /* ---------- Themensuche ----------
+     Der Einstieg sieht aus wie ein Suchfeld, ist aber ein Knopf: Wer darauf
+     tippt, landet auf der Suchseite, wo das echte Feld schon den Fokus hat.
+     Ein Feld auf jeder Seite hätte bedeutet, die Trefferlogik überall
+     mitzuschleppen — und ein Fehltipp hätte die Eingabe verloren. */
+  .suchknopf{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 14px;
+    background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    padding:14px 16px;font:inherit;text-align:left;cursor:pointer;
+    transition:border-color .12s,background .12s,box-shadow .12s}
+  .suchknopf:hover{border-color:var(--ac);background:var(--ac-soft);
+    box-shadow:0 2px 10px rgba(0,0,0,.05)}
+  .suchlupe{flex:none;width:22px;height:22px;color:var(--ac-dark)}
+  .suchlupe svg{width:100%;height:100%;display:block}
+  .suchknopftext{display:block;min-width:0}
+  .suchknopftext b{display:block;font-size:16.5px}
+  .suchknopftext small{display:block;font-size:13.5px;color:var(--soft);margin-top:2px}
+
+  .suchfeldzeile{position:relative;display:flex;align-items:center}
+  .suchfeld{width:100%;font:inherit;font-size:17px;padding:14px 44px 14px 16px;
+    border:1.5px solid var(--line);border-radius:14px;background:var(--bg);
+    color:var(--ink);-webkit-appearance:none}
+  .suchfeld:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
+  /* Der Browser setzt bei type="search" ein eigenes Kreuz ins Feld. Daneben
+     stünde unseres ein zweites Mal — zwei Kreuze nebeneinander sehen nach
+     Fehler aus. Also nur unseres, das ist groß genug zum Antippen. */
+  .suchfeld::-webkit-search-cancel-button,
+  .suchfeld::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+  .suchweg{position:absolute;right:8px;width:32px;height:32px;border:none;border-radius:50%;
+    background:var(--line);color:var(--ink);font-size:19px;line-height:1;cursor:pointer}
+  .suchvorschlaege{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .suchchip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;
+    padding:7px 14px;font:inherit;font-size:14.5px;color:var(--soft);cursor:pointer}
+  .suchchip:hover{border-color:var(--ac);color:var(--ac-dark);background:var(--ac-soft)}
+
+  .suchzahl{margin:0 0 10px;font-size:14.5px;color:var(--soft)}
+  .suchtreffer{background:var(--card);border:1.5px solid var(--line);border-left:4px solid var(--akz,var(--ac));
+    border-radius:14px;padding:14px 16px;margin-bottom:10px}
+  .suchkopf{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px}
+  .suchkopf b{font-size:17px;min-width:0}
+  .suchort{font-size:13px;color:var(--akz-dark,var(--soft));font-weight:700;white-space:nowrap}
+  .suchworum{margin:6px 0 0;font-size:15px;line-height:1.55;color:var(--soft)}
+  .suchknoepfe{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .btn.klein{padding:9px 16px;font-size:15px;width:auto}
+  .suchbald{font-size:14px;color:var(--soft);align-self:center}
+
+  /* Das Verzeichnis: alle Themen auf einmal, nach Fach und Alphabet. Für alle,
+     die gar nicht wissen, wonach sie suchen sollen. */
+  .verzeichnis{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+  .verzeile{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+    width:100%;padding:11px 0;border:none;border-bottom:1px solid var(--line);
+    background:none;font:inherit;text-align:left;cursor:pointer;min-width:0}
+  .verzeile:last-child{border-bottom:none}
+  .verzeile:hover .vername{color:var(--ac-dark);text-decoration:underline}
+  .vername{font-size:16px;min-width:0}
+  .verstufe{font-size:13px;color:var(--soft);white-space:nowrap}
+  .verzeile.leer .vername{color:var(--soft)}
+  .verzeile.leer .verstufe::after{content:" · bald";}
+
   /* ---------- Erklärung und Einstellungen ---------- */
   .einfachtext{font-size:17px;line-height:1.7;margin:0 0 14px;max-width:62ch}
   .einfachtext:last-child{margin-bottom:0}
@@ -29825,6 +29883,295 @@ function pruefHinweisHtml(){
 }
 
 /* ---------- Die Ansicht ---------- */
+
+/* ---------- Themensuche ----------
+
+   Die App war von Anfang an nach Klassen sortiert. Für Schülerinnen und
+   Schüler passt das: Sie wissen, in welcher Klasse sie sitzen. Für alle
+   anderen ist es eine Sackgasse. Wer als Erwachsener wissen will, wie
+   Prozentrechnung geht, weiß nicht, dass sie in Klasse 7 steht — und sucht
+   sie deshalb vergeblich.
+
+   Die Suche kehrt das um: Man tippt, was man nicht versteht, und landet
+   direkt beim Thema. Ohne Eingabe zeigt dieselbe Seite alle Themen als
+   Verzeichnis — nach Fach geordnet, innerhalb des Fachs alphabetisch. Die
+   Klasse steht dann nur noch als Hinweis daneben, nicht mehr als Hürde
+   davor. */
+
+let suchText = "";
+let vorSuche = "willkommen";
+
+/* Alltagswörter, die in den Themennamen nicht vorkommen. Wer „Rabatt" sucht,
+   denkt nicht an „Prozentrechnung", und wer „Steckdose" eingibt, sucht das
+   Ohmsche Gesetz. Diese Brücke muss von Hand gebaut werden — der Rest
+   ergibt sich aus den Erklärtexten von selbst. */
+const SUCHWORTE = {
+  "Prozentrechnung": "rabatt skonto mehrwertsteuer mwst aufschlag prozente ausverkauf preisnachlass",
+  "Zinsen": "kredit sparbuch darlehen zinssatz bank ratenzahlung",
+  "Dreisatz": "verhaeltnis umrechnen preis pro stueck mehr weniger proportional",
+  "Brüche": "bruchrechnen zaehler nenner halb drittel viertel kuerzen erweitern",
+  "Dezimalzahlen": "komma kommazahlen nachkommastellen geld euro cent",
+  "Runden": "aufrunden abrunden ungefaehr gerundet",
+  "Flächen und Umfang": "quadratmeter tapezieren streichen laminat boden garten zaun",
+  "Körper berechnen": "volumen liter kubikmeter fassungsvermoegen wassertank",
+  "Maßstab": "landkarte bauplan modell verkleinert vergroessert",
+  "Diagramme lesen": "schaubild statistik grafik saeulendiagramm kurve",
+  "Statistik": "mittelwert durchschnitt median haeufigkeit auswerten",
+  "Wahrscheinlichkeit": "chance risiko lotto wuerfel gluecksspiel",
+  "Einheiten umrechnen": "meter kilometer gramm kilo liter milliliter stunden minuten",
+  "Negative Zahlen": "minus schulden temperatur kaelte kontostand",
+  "Gleichungen umstellen": "formel umstellen nach x aufloesen unbekannte",
+  "Überschlagen und Schätzen": "kopfrechnen ungefaehr abschaetzen einkauf kontrolle",
+  "Zuordnungen": "tabelle zusammenhang je mehr desto",
+  "Das oder dass": "rechtschreibung fehler haeufiger fehler",
+  "Kommaregeln": "komma zeichensetzung satzzeichen",
+  "Kommas bei Nebensätzen": "komma zeichensetzung nebensatz",
+  "Groß und klein": "grossschreibung kleinschreibung rechtschreibung",
+  "Bewerbung schreiben": "lebenslauf anschreiben bewerben ausbildungsplatz job",
+  "Berichten": "protokoll bericht schreiben arbeit dokumentieren",
+  "Argumentieren": "diskussion meinung begruenden ueberzeugen streitgespraech",
+  "Erörterung": "aufsatz pro contra abwaegen",
+  "Sachtexte auswerten": "text verstehen zusammenfassen lesen information",
+  "Rede und Rhetorik": "vortrag praesentation reden vor leuten",
+  "Fremdwörter": "fachwoerter schwierige woerter bedeutung",
+  "Ohmsches Gesetz": "strom spannung widerstand steckdose volt ampere elektrik",
+  "Elektrische Leistung und Arbeit": "watt kilowattstunde stromverbrauch stromrechnung",
+  "Energiekosten": "stromkosten stromrechnung sparen verbrauch kilowattstunde",
+  "Einheiten und Vorsätze": "kilo milli mikro mega vorsatz umrechnen",
+  "Sicherheitsregeln": "unfall arbeitsschutz freischalten spannungsfrei fuenf regeln",
+  "Widerstände und Farbcode": "farbringe bauteil widerstand ablesen",
+  "Schutzmaßnahmen": "fi schalter rcd sicherung schutzleiter beruehrungsspannung",
+  "Leiterquerschnitt": "kabel kabelquerschnitt leitung dimensionieren spannungsfall",
+  "Motor und Drehzahl": "motor drehzahl typenschild polpaare schlupf",
+  "Transformator": "trafo netzteil spannung umwandeln windungen",
+  "Beleuchtung berechnen": "lampe licht lumen lux beleuchtung led",
+  "Angebot kalkulieren": "rechnung angebot preis netto brutto stundenlohn",
+  "Instandhaltung und Verfügbarkeit": "wartung ausfall stillstand reparatur"
+};
+
+/* Groß-Klein und Umlaute wegräumen. Umlaute schreibt man beim Suchen auf zwei
+   Arten aus — „Brüche" wird zu „brueche" oder zu „bruche" —, und niemand denkt
+   beim Tippen darüber nach. Deshalb wird beides erzeugt und beides verglichen. */
+function suchRoh(t){
+  return String(t == null ? "" : t).toLowerCase().replace(/<[^>]+>/g, " ");
+}
+function suchSaeubern(t){
+  return t.replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+}
+function suchNormal(t){          // ü wird zu ue
+  return suchSaeubern(suchRoh(t)
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss"));
+}
+function suchNormalKurz(t){      // ü wird zu u
+  return suchSaeubern(suchRoh(t)
+    .replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss"));
+}
+
+/* Das Verzeichnis wird einmal gebaut und dann behalten — 140 Themen mit
+   ihren Erklärtexten durchzugehen lohnt sich nicht bei jedem Tastendruck. */
+let suchVerzeichnis = null;
+function suchIndex(){
+  if (suchVerzeichnis) return suchVerzeichnis;
+  const raus = [];
+  for (const [fk, f] of Object.entries(KATALOG)){
+    for (const [stufe, liste] of Object.entries(f.themen)){
+      for (const thema of liste){
+        const e = ERKLAERUNGEN[thema] || {};
+        const wozu = Array.isArray(e.wozu) ? e.wozu.join(" ") : (e.wozu || "");
+        const einfach = Array.isArray(e.einfach) ? e.einfach.join(" ") : "";
+        const regeln = Array.isArray(e.regeln)
+          ? e.regeln.map(r => typeof r === "string" ? r : (r.regel || "") + " " + (r.erklaerung || "")).join(" ")
+          : "";
+        raus.push({
+          thema, fach: fk, klasse: Number(stufe),
+          fachname: f.name,
+          worum: e.worum || "",
+          aufgaben: anzahlAufgaben(thema),
+          /* Getrennt gespeichert, weil ein Treffer im Namen mehr wert ist als
+             einer im Fließtext — und weil die Alltagswörter dazwischenliegen. */
+          nameNorm: suchNormal(thema),
+          nameKurz: suchNormalKurz(thema),
+          worumNorm: suchNormal(e.worum),
+          wortNorm: suchNormal(SUCHWORTE[thema] || ""),
+          textNorm: suchNormal([e.worum, wozu, einfach, regeln].join(" ")),
+          textKurz: suchNormalKurz([thema, e.worum, wozu, einfach, regeln, SUCHWORTE[thema] || ""].join(" "))
+        });
+      }
+    }
+  }
+  suchVerzeichnis = raus;
+  return raus;
+}
+
+/* Ein Treffer zählt umso mehr, je weiter vorn er steht: im Namen mehr als in
+   der Kurzbeschreibung, dort mehr als irgendwo im Text. Wer mehrere Wörter
+   eingibt, bekommt nur, was zu allen passt. */
+function suchTreffer(){
+  const worte = suchNormal(suchText).split(" ").filter(Boolean);
+  const kurz  = suchNormalKurz(suchText).split(" ").filter(Boolean);
+  const alle = suchIndex();
+  if (!worte.length) return null;                 // ohne Eingabe: Verzeichnis
+  const bewertet = [];
+  for (const e of alle){
+    let punkte = 0, alleDrin = true;
+    for (let i = 0; i < worte.length; i++){
+      const w = worte[i], k = kurz[i] || worte[i];
+      let p = 0;
+      if (e.nameNorm === w || e.nameKurz === k) p = 100;
+      else if (e.nameNorm.startsWith(w) || e.nameKurz.startsWith(k)) p = 60;
+      else if (e.nameNorm.includes(w) || e.nameKurz.includes(k)) p = 40;
+      /* Die von Hand gepflegten Alltagswörter zählen mehr als ein zufälliges
+         Vorkommen irgendwo im Erklärtext: Wer „Rabatt" sucht, will die
+         Prozentrechnung und nicht jedes Thema, in dem das Wort einmal fällt. */
+      else if (e.wortNorm.includes(w)) p = 25;
+      else if (e.worumNorm.includes(w)) p = 12;
+      else if (e.textNorm.includes(w) || e.textKurz.includes(k)) p = 5;
+      if (!p){ alleDrin = false; break; }
+      punkte += p;
+    }
+    if (!alleDrin) continue;
+    if (!e.aufgaben) punkte -= 3;                 // ohne Aufgaben weiter nach hinten
+    bewertet.push({...e, punkte});
+  }
+  bewertet.sort((a, b) => b.punkte - a.punkte || a.thema.localeCompare(b.thema, "de"));
+  return bewertet;
+}
+
+function zeigeSuche(begriff){
+  if (ansicht !== "suche") vorSuche = ansicht;
+  if (begriff !== undefined) suchText = begriff;
+  ansicht = "suche"; render();
+  /* Direkt tippen können, ohne erst ins Feld zu tippen. */
+  setTimeout(() => { const f = document.getElementById("suchFeld"); if (f) f.focus(); }, 30);
+}
+function zurueckVonSuche(){ ansicht = vorSuche === "suche" ? "uebersicht" : vorSuche; render(); }
+
+/* Beim Tippen wird nur die Trefferliste neu geschrieben. Ein volles render()
+   würde das Eingabefeld neu bauen — und die Schreibmarke wäre weg. */
+function suchTippen(wert){
+  suchText = wert;
+  const ziel = document.getElementById("suchtreffer");
+  if (ziel) ziel.innerHTML = suchErgebnisHtml();
+}
+function suchLeeren(){
+  suchText = "";
+  const f = document.getElementById("suchFeld");
+  if (f){ f.value = ""; f.focus(); }
+  const ziel = document.getElementById("suchtreffer");
+  if (ziel) ziel.innerHTML = suchErgebnisHtml();
+}
+/* Aus der Suche heraus loslegen: Fach und Stufe ergeben sich aus dem Thema,
+   man muss sie nicht vorher gewählt haben. */
+function suchStarte(thema){
+  const info = themaInfo(thema);
+  fach = info.fach; klasse = info.klasse;
+  vorSuche = "uebersicht";
+  starte(thema);
+}
+function suchErklaere(thema){
+  const info = themaInfo(thema);
+  fach = info.fach; klasse = info.klasse;
+  vorErklaerung = "uebersicht";
+  zeigeErklaerung(thema);
+}
+
+function suchZeileHtml(e){
+  return `
+    <div class="suchtreffer" style="--akz:var(--${e.fach});--akz-soft:var(--${e.fach}-soft);--akz-dark:var(--${e.fach}-dark)">
+      <div class="suchkopf">
+        <b>${e.thema}</b>
+        <span class="suchort">${e.fachname} · ${stufenText(e.fach, e.klasse)}</span>
+      </div>
+      ${e.worum ? `<p class="suchworum">${e.worum}</p>` : ""}
+      <div class="suchknoepfe">
+        ${e.aufgaben
+          ? `<button class="btn klein" onclick="suchStarte(${JSON.stringify(e.thema).replace(/"/g, "&quot;")})">Üben</button>`
+          : `<span class="suchbald">Aufgaben kommen noch</span>`}
+        ${ERKLAERUNGEN[e.thema]
+          ? `<button class="btn ghost klein" onclick="suchErklaere(${JSON.stringify(e.thema).replace(/"/g, "&quot;")})">Erklären</button>`
+          : ""}
+      </div>
+    </div>`;
+}
+
+function suchErgebnisHtml(){
+  const treffer = suchTreffer();
+
+  /* Ohne Eingabe: das ganze Verzeichnis, nach Fach und Alphabet. */
+  if (treffer === null){
+    const nachFach = {};
+    for (const e of suchIndex()) (nachFach[e.fach] = nachFach[e.fach] || []).push(e);
+    return Object.entries(nachFach).map(([fk, liste]) => {
+      liste.sort((a, b) => a.thema.localeCompare(b.thema, "de"));
+      return `
+      <div class="card">
+        <p class="ueberschrift" style="color:var(--${fk}-dark)">${KATALOG[fk].name} · ${liste.length} Themen</p>
+        <div class="verzeichnis">
+          ${liste.map(e => `
+            <button class="verzeile${e.aufgaben ? "" : " leer"}"
+                    onclick="${e.aufgaben ? `suchStarte(${JSON.stringify(e.thema).replace(/"/g, "&quot;")})`
+                                          : `suchErklaere(${JSON.stringify(e.thema).replace(/"/g, "&quot;")})`}">
+              <span class="vername">${e.thema}</span>
+              <span class="verstufe">${stufenText(e.fach, e.klasse)}</span>
+            </button>`).join("")}
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  if (!treffer.length){
+    return `
+      <div class="card">
+        <p class="einfachtext"><b>Dazu haben wir noch nichts.</b></p>
+        <p class="einfachtext">Versuch ein anderes Wort — oft hilft ein einfacheres.
+          Statt „Flächeninhalt eines Trapezes" reicht „Fläche".</p>
+        <p class="einfachtext">Wenn dir ein Thema fehlt, sag uns Bescheid — das hilft am meisten.</p>
+        ${navLink("/hilfe", "zeigeMelden()", "Thema vorschlagen", "btn ghost full")}
+      </div>`;
+  }
+
+  return `
+    <p class="suchzahl">${treffer.length === 1 ? "Ein Thema passt" : `${treffer.length} Themen passen`} zu „${suchText.trim()}“</p>
+    ${treffer.map(suchZeileHtml).join("")}`;
+}
+
+/* Der Einstieg in die Suche — überall gleich, damit man ihn wiedererkennt.
+   Es ist bewusst kein echtes Eingabefeld, sondern ein Knopf, der aussieht wie
+   eines: So braucht die Übersicht keine eigene Suchlogik, und ein Fehltipp
+   verliert nichts. */
+function suchEinstiegHtml(text){
+  return `
+    <button class="suchknopf" onclick="zeigeSuche('')">
+      <span class="suchlupe">${SYM.lupe || "🔍"}</span>
+      <span class="suchknopftext">
+        <b>Was verstehst du nicht?</b>
+        <small>${text || "Thema suchen — ohne Klasse, ohne Umweg"}</small>
+      </span>
+    </button>`;
+}
+
+function sucheHtml(){
+  const vorschlaege = ["Prozent", "Brüche", "Komma", "Dreisatz", "Strom", "Bewerbung"];
+  return `
+    <div class="card">
+      ${navLink(pfadFuer(vorSuche === "suche" ? "uebersicht" : vorSuche, fach, klasse), "zurueckVonSuche()", "← Zurück", "zurueck")}
+      <span class="tag">Themen finden</span>
+      <h1>Was verstehst du nicht?</h1>
+      <p class="soft" style="margin:0 0 14px">Tipp ein Wort ein — du musst nicht wissen,
+        in welcher Klasse es drankommt. Ohne Eingabe stehen unten alle Themen.</p>
+      <div class="suchfeldzeile">
+        <input id="suchFeld" class="suchfeld" type="search" inputmode="search"
+               placeholder="zum Beispiel Prozent" value="${String(suchText).replace(/"/g, "&quot;")}"
+               oninput="suchTippen(this.value)" autocomplete="off" aria-label="Thema suchen">
+        ${suchText ? `<button class="suchweg" onclick="suchLeeren()" aria-label="Eingabe löschen">×</button>` : ""}
+      </div>
+      <div class="suchvorschlaege">
+        ${vorschlaege.map(v => `<button class="suchchip" onclick="zeigeSuche('${v}')">${v}</button>`).join("")}
+      </div>
+    </div>
+    <div id="suchtreffer">${suchErgebnisHtml()}</div>`;
+}
+
 function uebersichtHtml(){
   const offen = benutzer ? fortschritt.filter(z => tageBis(z.naechste_wiederholung) <= 0) : [];
   const zuletzt = benutzer && fortschritt.length
@@ -29868,6 +30215,7 @@ function uebersichtHtml(){
     </div>` : ""}
     ${benutzer ? "" : `
       <p class="grussszeile"><b>${begruessung()}</b> · Such dir ein Fach aus.</p>
+      ${suchEinstiegHtml()}
       ${einstieg}`}
     ${/* Für Gäste sagt die Begrüßungszeile über den Fächern schon alles; die
           große Karte wiederholte nur den Gruß. Angemeldete brauchen sie —
@@ -29893,7 +30241,7 @@ function uebersichtHtml(){
         : ""}
     </div>` : ""}
 
-    ${benutzer ? einstieg : ""}
+    ${benutzer ? suchEinstiegHtml() + einstieg : ""}
     ${pruefHinweisHtml()}
     ${installHinweisHtml()}
 
@@ -32424,6 +32772,7 @@ function pfadFuer(a, f, k){
     case "loesen":
     case "erklaerung":
     case "fertig":       return (f && k) ? "/" + f + "/" + k : "/start";
+    case "suche":        return "/suche";
     case "plan":         return "/plan";
     case "einstellungen":return "/einstellungen";
     case "melden":       return "/hilfe";
@@ -32470,7 +32819,7 @@ function ansichtAusPfad(){
     return;
   }
   const direkt = {anmelden:"anmelden", registrieren:"registrieren", start:"uebersicht",
-    faecher:"fachwahl", plan:"plan", einstellungen:"einstellungen", hilfe:"melden", feedback:"feedback",
+    faecher:"fachwahl", suche:"suche", plan:"plan", einstellungen:"einstellungen", hilfe:"melden", feedback:"feedback",
     faq:"faq", ueber:"ueber", warum:"warum", impressum:"impressum", datenschutz:"datenschutz", agb:"agb",
     konto:"konto", anfragen:"anfragen", serie:"serie", leitstand:"dashboard", baustelle:"baustelle",
     /* „/dashboard“ war die frühere Adresse — alte Lesezeichen sollen nicht ins Leere laufen. */
@@ -32967,7 +33316,7 @@ async function passwortVergessen(){
 
 /* ---------- Seitenleiste ---------- */
 function renderSeite(){
-  const ohne = ["laden","willkommen","anmelden","registrieren","passwortNeu","serie","uebersicht","fachwahl","klassenwahl","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"];
+  const ohne = ["laden","willkommen","anmelden","registrieren","passwortNeu","serie","uebersicht","fachwahl","klassenwahl","suche","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle"];
   if (ohne.includes(ansicht)){ seiteEl.innerHTML = ""; return; }
 
   const kopfBox = benutzer
@@ -33082,7 +33431,7 @@ function render(gewaehlt){
   if (ansicht !== "laden") seitenkopfSetzen();
   renderSeite();
   const shell = document.getElementById("shell");
-  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
+  shell.classList.toggle("voll", ["laden","willkommen","anmelden","uebersicht","fachwahl","klassenwahl","suche","melden","feedback","faq","ueber","impressum","datenschutz","agb","konto","anfragen","baustelle","serie","passwortNeu","registrieren"].includes(ansicht));
   /* Das Fach färbt die ganze Oberfläche: Mathe blau, Deutsch rot — auch beim
      Rechnen. Damit „falsch“ auf einer roten Seite trotzdem eindeutig bleibt,
      zeigt das Kästchen der Antwort nach dem Tippen ✗ statt des Buchstabens
@@ -33100,6 +33449,7 @@ function render(gewaehlt){
   }
 
   if (ansicht === "willkommen"){ el.innerHTML = willkommenHtml(); return; }
+  if (ansicht === "suche"){ el.innerHTML = sucheHtml(); return; }
   if (ansicht === "anmelden"){ el.innerHTML = anmeldenHtml(); return; }
   if (ansicht === "registrieren"){ el.innerHTML = registrierenHtml(); return; }
 
@@ -33118,6 +33468,7 @@ function render(gewaehlt){
         <span class="tag">Schritt 1 von 3</span>
         <h1>Welches Fach?</h1>
         <p class="soft">Such dir aus, worin du gerade Hilfe brauchst.</p>
+        ${suchEinstiegHtml("Oder tipp direkt ein, was du nicht verstehst")}
       </div>
       ${[...new Set(Object.keys(KATALOG).map(bereichVon))].map(bereich => {
         const faecher = Object.entries(KATALOG).filter(([k]) => bereichVon(k) === bereich);
