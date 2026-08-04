@@ -23,14 +23,14 @@ ${werkzeuge}
 ${aufgaben}
 };
 ${entdopp}
-return {KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar, zahlTeile};
+return {KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar, zahlTeile, baueAufgabe};
 `;
 
 let umgebung;
 try { umgebung = new Function(code)(); }
 catch (e) { console.error("SYNTAXFEHLER beim Laden:", e.message); process.exit(1); }
 
-const { KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar, zahlTeile } = umgebung;
+const { KATALOG, AUFGABEN, ERKLAERUNGEN, entdoppeln, istEintippbar, zahlTeile, baueAufgabe } = umgebung;
 const RUNDEN = 3000;
 const probleme = [];
 const melde = (thema, nr, text) => probleme.push(`${thema} [Variante ${nr}] ${text}`);
@@ -41,8 +41,12 @@ for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
   erzeuger.forEach((fn, nr) => {
     for (let i = 0; i < RUNDEN; i++) {
       let a;
-      try { a = fn(); } catch (e) { melde(thema, nr, "wirft Fehler: " + e.message); break; }
-      try { entdoppeln(a); } catch (e) { melde(thema, nr, "entdoppeln wirft: " + e.message); break; }
+      /* Geprüft wird die fertige Aufgabe, nicht das, was der Erzeuger abliefert.
+         Dazwischen liegen entdoppeln, der Schätzschritt und das Auffüllen der
+         Antwortmöglichkeiten — genau dort sind schon Fehler entstanden, die
+         hier vorher niemand sah, weil die Prüfung den Erzeuger direkt aufrief. */
+      try { a = baueAufgabe(thema, nr); }
+      catch (e) { melde(thema, nr, "wirft Fehler: " + e.message); break; }
 
       if (!a || typeof a !== "object") { melde(thema, nr, "liefert kein Objekt"); break; }
       if (!a.text || !nackt(a.text)) { melde(thema, nr, "hat keinen Aufgabentext"); break; }
