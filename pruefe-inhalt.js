@@ -741,6 +741,20 @@ const elektroProben = {
   "Ohmsches Gesetz": (a) => {
     const t = vorne(a), l = loes(a);
     const r = groesse(t, "Ω"), i = groesse(t, "A"), u = groesse(t, "V");
+    /* Verhältnisaufgabe: gleicher Widerstand, andere Spannung. Der Widerstand
+       wird gar nicht gebraucht — Strom und Spannung wachsen im gleichen Takt. */
+    const neu = hinten(a).match(/Strom bei ([\d.,]+) V/);
+    if (neu) {
+      if (u === null || i === null) return "Ausgangswerte nicht lesbar: " + t;
+      const u2 = dz(neu[1]);
+      if (u2 === u) return "die neue Spannung ist dieselbe wie die alte — dann gibt es nichts zu rechnen";
+      const soll = Math.round(i * u2 / u * 10000) / 10000;
+      const fehl = stimmt(soll, l, 1e-6);
+      if (fehl) return fehl;
+      /* Gegenprobe über den Widerstand: er muss in beiden Fällen derselbe sein */
+      if (Math.abs(u / i - u2 / soll) > 1e-6) return "der Widerstand käme in beiden Fällen verschieden heraus";
+      return null;
+    }
     if (r !== null && i !== null) return stimmt(r * i, l);          // U = R · I
     if (r !== null && u !== null) return stimmt(u / r, l, 1e-3);    // I = U : R
     if (u !== null && i !== null) return stimmt(u / i, l, 1e-3);    // R = U : I
@@ -750,6 +764,17 @@ const elektroProben = {
   "Elektrische Leistung und Arbeit": (a) => {
     const t = vorne(a), l = loes(a);
     const u = groesse(t, "V"), i = groesse(t, "A"), p = groesse(t, "W"), h = groesse(t, "Stunden");
+    /* Widerstand aus Leistung und Spannung — R = U² : P */
+    if (/Widerstand/.test(hinten(a))) {
+      if (u === null || p === null) return "Spannung oder Leistung nicht lesbar: " + t;
+      if (p <= 0) return "die Leistung muss größer als null sein";
+      const soll = Math.round(u * u / p * 100) / 100;
+      const fehl = stimmt(soll, l, 1e-2);
+      if (fehl) return fehl;
+      /* Gegenprobe: mit diesem Widerstand muss dieselbe Leistung herauskommen */
+      if (Math.abs(u * u / soll - p) / p > 0.01) return "aus dem Widerstand folgt nicht wieder dieselbe Leistung";
+      return null;
+    }
     if (u !== null && i !== null) return stimmt(u * i, l);          // P = U · I
     if (p !== null && h !== null) return stimmt(p / 1000 * h, l);   // W = P · t in kWh
     if (p !== null && u !== null) return stimmt(p / u, l, 1e-3);    // I = P : U
@@ -757,9 +782,33 @@ const elektroProben = {
   },
 
   "Reihenschaltung": (a) => {
-    const t = vorne(a), l = loes(a);
+    const t = vorne(a), f = hinten(a), l = loes(a);
     const rs = alleGroessen(t, "Ω"), i = groesse(t, "A");
     if (!rs.length) return "keine Widerstände gefunden: " + t;
+
+    /* Rückwärts: Sollwert und zwei Widerstände gegeben, der dritte fehlt */
+    const soll = t.match(/soll ([\d.,]+) Ω haben/);
+    if (soll) {
+      if (rs.length !== 3) return "es sollten Sollwert und zwei Einzelwerte sein: " + t;
+      const ziel = dz(soll[1]);
+      const da = rs[1] + rs[2];
+      if (da >= ziel) return `${da} Ω sind schon so viel wie das Ziel — dann fehlt nichts mehr`;
+      return stimmt(Math.round((ziel - da) * 1000) / 1000, l, 1e-6);
+    }
+
+    /* Strom durch die ganze Reihe */
+    const u = groesse(t, "V");
+    if (u !== null && i === null) {
+      if (rs.length < 2) return "es sollten zwei Widerstände sein: " + t;
+      const summe = rs.reduce((s2, r) => s2 + r, 0);
+      const fehl = stimmt(Math.round(u / summe * 10000) / 10000, l, 1e-6);
+      if (fehl) return fehl;
+      /* Gegenprobe: die Teilspannungen müssen wieder die Quellenspannung ergeben */
+      const zurueck = rs.reduce((s2, r) => s2 + l * r, 0);
+      if (Math.abs(zurueck - u) / u > 0.001) return "die Teilspannungen ergeben nicht wieder die Quellenspannung";
+      return null;
+    }
+
     if (i === null) {                                              // Gesamtwiderstand
       if (rs.length < 3) return "es sollten drei Widerstände sein: " + t;
       return stimmt(rs.reduce((s, r) => s + r, 0), l);
@@ -779,6 +828,37 @@ const elektroProben = {
   "Parallelschaltung": (a) => {
     const t = vorne(a), l = loes(a);
     const rs = alleGroessen(t, "Ω"), u = groesse(t, "V");
+
+    /* Rückwärts: ein Zweig ist da, der Gesamtwiderstand steht fest, der zweite
+       Zweig wird gesucht. */
+    const soll = t.match(/sollen es ([\d.,]+) Ω werden/);
+    if (soll) {
+      if (rs.length !== 2) return "es sollten vorhandener Zweig und Sollwert sein: " + t;
+      const da = rs[0], ziel = dz(soll[1]);
+      if (ziel >= da) return `parallel wird es kleiner — ${ziel} Ω sind nicht kleiner als ${da} Ω`;
+      const noetig = Math.round(1 / (1 / ziel - 1 / da) * 1000) / 1000;
+      const fehl = stimmt(noetig, l, 1e-3);
+      if (fehl) return fehl;
+      /* Gegenprobe: beide zusammen müssen den Sollwert ergeben */
+      if (Math.abs(da * noetig / (da + noetig) - ziel) > 1e-6)
+        return "der gefundene Zweig ergibt zusammen nicht den Sollwert";
+      return null;
+    }
+
+    /* Strom durch einen einzelnen Zweig */
+    const zweig = hinten(a).match(/durch den ([\d.,]+)-Ω-Zweig/);
+    if (zweig) {
+      if (u === null) return "Spannung nicht lesbar: " + t;
+      const r = dz(zweig[1]);
+      if (!rs.includes(r)) return `der Zweig ${r} Ω kommt in der Schaltung gar nicht vor`;
+      const fehl = stimmt(Math.round(u / r * 10000) / 10000, l, 1e-6);
+      if (fehl) return fehl;
+      /* Gegenprobe: der Zweigstrom darf nie größer sein als der Gesamtstrom */
+      const gesamt = rs.reduce((s2, x) => s2 + u / x, 0);
+      if (l > gesamt + 1e-9) return "ein Zweigstrom kann nicht größer sein als der Gesamtstrom";
+      return null;
+    }
+
     if (rs.length !== 2) return "es sollten zwei Widerstände sein: " + t;
     if (u === null) {                                              // Gesamtwiderstand
       const rg = rs[0] * rs[1] / (rs[0] + rs[1]);
