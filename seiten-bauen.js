@@ -252,6 +252,12 @@ function huelle({titel, text, adresse, inhalt, jsonld, fach}){
 <meta property="og:title" content="${esc(titel)}">
 <meta property="og:description" content="${esc(text)}">
 <meta property="og:url" content="${WURZEL}${adresse}">
+<meta property="og:image" content="${WURZEL}/vorschau.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Endlich kapiert — du bekommst nie die Lösung, nur Fragen, die dich hinführen.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${WURZEL}/vorschau.png">
 <meta name="theme-color" content="#10a37f">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
 <style>${STIL}</style>
