@@ -549,4 +549,25 @@ Allow: /
 Sitemap: ${WURZEL}/sitemap.xml
 `);
 
+/* ---------- Fassungsdatum ----------
+   Unten in der Fußzeile steht, von wann die geladene Seite ist. Daran — und
+   nur daran — sieht man von außen, ob eine Änderung wirklich angekommen ist
+   oder ob der Browser noch die alte Seite zeigt. Von Hand vergisst man diese
+   Zeile zuverlässig; deshalb setzt sie das Bauen selbst. */
+const MONATSNAMEN = ["Januar","Februar","März","April","Mai","Juni",
+                     "Juli","August","September","Oktober","November","Dezember"];
+const jetzt = new Date();
+const heuteText = `${jetzt.getDate()}. ${MONATSNAMEN[jetzt.getMonth()]} ${jetzt.getFullYear()}`;
+
+const seite = fs.readFileSync(pfad.join(ORDNER, "index.html"), "utf8");
+const alt = (seite.match(/^const STAND = "([^"]*)";$/m) || [])[1];
+if (alt === undefined) {
+  console.error("STAND nicht gefunden — die Fußzeile bleibt stehen, wo sie war.");
+  process.exitCode = 1;
+} else if (alt !== heuteText) {
+  fs.writeFileSync(pfad.join(ORDNER, "index.html"),
+    seite.replace(/^const STAND = "[^"]*";$/m, `const STAND = "${heuteText}";`));
+  console.log(`Fassungsdatum: ${alt} → ${heuteText}`);
+}
+
 console.log(`${alle.length} Themenseiten gebaut, ${adressen.length} Adressen in der sitemap.xml.`);
