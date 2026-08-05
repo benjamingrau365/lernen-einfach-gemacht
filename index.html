@@ -1143,6 +1143,23 @@
   .verzeile.leer .vername{color:var(--soft)}
   .verzeile.leer .verstufe::after{content:" · bald";}
 
+  /* Sprungleiste der Erklärseite: klebt oben, scrollt selbst zur Seite, wenn
+     die Punkte nicht in eine Zeile passen. Bewusst keine Umbrüche — eine
+     zweizeilige Leiste, die oben klebt, frisst den halben Bildschirm. */
+  .erklsprung{position:sticky;top:0;z-index:30;display:flex;gap:7px;
+    margin:0 -18px 14px;padding:9px 18px;overflow-x:auto;scrollbar-width:none;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line)}
+  .erklsprung::-webkit-scrollbar{display:none}
+  .sprungpunkt{flex:none;background:var(--card);border:1.5px solid var(--line);
+    border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;font-weight:700;
+    color:var(--soft);cursor:pointer;white-space:nowrap;
+    transition:border-color .12s,color .12s,background .12s}
+  @media(hover:hover){ .sprungpunkt:hover{border-color:var(--fach);color:var(--fach-dark);
+    background:var(--fach-soft)} }
+  .sprungpunkt:active{transform:scale(.97)}
+
   /* ---------- Erklärung und Einstellungen ---------- */
   .einfachtext{font-size:17px;line-height:1.7;margin:0 0 14px;max-width:62ch}
   .einfachtext:last-child{margin-bottom:0}
@@ -2030,6 +2047,12 @@
   @media(min-width:560px){ .einstiegkachel{padding:20px 20px 18px} }
   @media(hover:hover){ .einstiegkachel:hover{border-color:var(--akz)} }
   .einstiegkachel:active{transform:scale(.99)}
+  /* Die Zeichnung sitzt mittig im farbigen Kästchen und ist etwa halb so groß
+     wie dieses — dann wirkt sie wie ein Zeichen und nicht wie ein Bild, das
+     man hineingezwängt hat. */
+  .einstiegzeichen svg,.wahlzeichen svg,.klappzeichen svg{width:58%;height:58%;display:block}
+  .fachbuchstabe{font-weight:900}
+
   .einstiegzeichen{display:flex;align-items:center;justify-content:center;
     width:40px;height:40px;border-radius:13px;background:var(--akz);color:#fff;
     font-size:20px;font-weight:900;margin-bottom:9px;
@@ -28469,9 +28492,42 @@ function spielAusgabeHtml(e){
       `<div><span>${w.name}</span><b>${w.text}</b></div>`).join("")}</div>
     ${a.satz ? `<p class="spielsatz">${a.satz}</p>` : ""}`;
 }
+/* ---------- Sprungleiste der Erklärseite ----------
+   Eine Erklärseite ist lang, und das soll sie auch sein: Wer bei null anfängt,
+   braucht jeden Abschnitt. Auf dem Handy sind das aber sechstausend Pixel —
+   fünfzehn Bildschirme. Wer nur den Rechenweg nachschlagen will, muss deshalb
+   nicht zehnmal wischen. Die Leiste zeigt nur Abschnitte, die es bei diesem
+   Thema wirklich gibt: eine Leiste mit toten Punkten wäre schlimmer als keine. */
+function erklSprungHtml(e){
+  const punkte = [
+    ["ekVorn",     "Erklärung",    true],
+    ["ekBild",     "Bild",         !!e.bild],
+    ["ekSpiel",    "Ausprobieren", !!e.spiel],
+    ["ekRezept",   "Vorgehen",     !!e.rezept],
+    ["ekBeispiel", "Beispiel",     true],
+    ["ekFehler",   "Fehler",       !!e.fehler]
+  ].filter(x => x[2]);
+  /* Unter drei Punkten lohnt sie sich nicht — dann ist die Seite kurz genug. */
+  if (punkte.length < 3) return "";
+  return `
+    <nav class="erklsprung" aria-label="Abschnitte dieser Erklärung">
+      ${punkte.map(([id, wort]) =>
+        `<button class="sprungpunkt" onclick="erklSpringen('${id}')">${wort}</button>`).join("")}
+    </nav>`;
+}
+function erklSpringen(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  /* Die Leiste klebt oben — ohne Abstand landet die Überschrift darunter. */
+  const leiste = document.querySelector(".erklsprung");
+  const abstand = (leiste ? leiste.getBoundingClientRect().height : 0) + 14;
+  const y = el.getBoundingClientRect().top + window.scrollY - abstand;
+  window.scrollTo({top: Math.max(0, y), behavior: "smooth"});
+}
+
 function spielHtml(e){
   const s = e.spiel;
-  return `<div class="card spielkarte">
+  return `<div class="card spielkarte" id="ekSpiel">
     <p class="ueberschrift"><span aria-hidden="true">${SYM.pfeil}</span> ${s.titel || "Zum Ausprobieren"}</p>
     <p class="small soft" style="margin:0 0 16px">${s.hinweis || "Zieh an den Reglern und schau, was sich mitverändert."}</p>
     <div class="reglerfeld">
@@ -29698,7 +29754,7 @@ function kopfleisteHtml(){
               ${faecher.map(([k, v]) => `<a class="klapplink" href="/${k}"
                    style="--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)"
                    onclick="return navKlick(event, () => waehleFach('${k}'))">
-                   <span class="klappzeichen">${v.name[0]}</span>
+                   <span class="klappzeichen">${fachZeichen(k)}</span>
                    <span class="klapptext"><b>${v.langname || v.name}</b><small>${stufenSpanne(k)}</small></span>
                  </a>`).join("")}
             </div>
@@ -30275,6 +30331,42 @@ function fussleisteHtml(){
 /* ---------- Startseite der App (Übersicht) ---------- */
 
 /* Kleine gezeichnete Symbole, nehmen die Textfarbe an */
+/* ---------- Ein Zeichen je Fach ----------
+   Alle vier in demselben Raster gezeichnet: 24 mal 24, gleiche Strichstärke,
+   runde Enden. Nur so sehen sie nebeneinander wie eine Familie aus und nicht
+   wie vier zusammengesuchte Symbole. Sie erben die Farbe von außen
+   (currentColor), damit jedes Fach seine eigene behält. */
+const FACHZEICHEN = {
+  /* Mathe: das Geodreieck — das eine Werkzeug, das jeder aus dem Unterricht kennt */
+  mathe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 18.5h18L12 4z"/><path d="M7.5 18.5v-2.2"/><path d="M10.5 18.5v-3.4"/>
+    <path d="M13.5 18.5v-2.2"/><path d="M16.5 18.5v-3.4"/></svg>`,
+
+  /* Deutsch: ein aufgeschlagenes Buch */
+  deutsch: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 6.5C10.4 5.2 8.4 4.5 6 4.5H3.5v13H6c2.4 0 4.4.7 6 2"/>
+    <path d="M12 6.5c1.6-1.3 3.6-2 6-2h2.5v13H18c-2.4 0-4.4.7-6 2"/>
+    <path d="M12 6.5v15"/></svg>`,
+
+  /* Englisch: zwei Sprechblasen — eine Sprache ist etwas zwischen Menschen */
+  englisch: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h7A2.5 2.5 0 0 1 15 8.5v3A2.5 2.5 0 0 1 12.5 14H9l-3.5 3v-3H5.5A2.5 2.5 0 0 1 3 11.5z"/>
+    <path d="M18 10h.5A2.5 2.5 0 0 1 21 12.5v3A2.5 2.5 0 0 1 18.5 18H18l-2 2v-2"/></svg>`,
+
+  /* Elektroniker: der Blitz im Stromkreis */
+  elektroniker: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M13 2.5 5.5 13.5H11l-1 8 8-11h-5.5z"/></svg>`
+};
+/* Fällt ein Fach dazu, für das es noch keine Zeichnung gibt, bleibt der
+   Anfangsbuchstabe — besser ein Buchstabe als ein leeres Kästchen. */
+function fachZeichen(k){
+  return FACHZEICHEN[k] || `<span class="fachbuchstabe">${(KATALOG[k] || {name:"?"}).name[0]}</span>`;
+}
+
 const SYM = {
   flamme:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s4 4.5 4 8a4 4 0 0 1-8 0c0-1.2.4-2.2 1-3 .2 1 .8 1.7 1.5 1.7.9 0 1.5-.8 1.5-2 0-1.6-.7-3.2-2-4.7z"/><path d="M6.5 13.5C6.5 17.6 9 20.5 12 20.5s5.5-2.9 5.5-7"/></svg>`,
   ziel:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>`,
@@ -30874,7 +30966,7 @@ function uebersichtHtml(){
           ? `${z(vokabelAnzahl())} Vokabeln`
           : "";
         return navLink(`/${k}`, `waehleFach('${k}')`, `
-          <span class="einstiegzeichen">${v.name[0]}</span>
+          <span class="einstiegzeichen">${fachZeichen(k)}</span>
           <b>${v.name}</b>
           <span class="einstiegzahl">${fertig} ${fertig === 1 ? "Thema" : "Themen"}${zusatz ? ` · ${zusatz}` : ""}</span>
         `, "einstiegkachel", `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
@@ -34179,7 +34271,7 @@ function render(gewaehlt){
             }
             const farbe = `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`;
             const kachel = navLink(`/${k}`, `waehleFach('${k}')`, `
-              <span class="wahlzeichen">${v.name[0]}</span>
+              <span class="wahlzeichen">${fachZeichen(k)}</span>
               <span class="wahltext"><b>${v.langname || v.name}</b>
                 <span>${fertig} von ${gesamt} Themen fertig</span></span>
             `, "grosswahl mitfarbe", farbe);
@@ -34732,7 +34824,8 @@ function render(gewaehlt){
         <h1>${aktuellName}</h1>
         <p class="soft">${e.worum}</p>
       </div>
-      <div class="card">
+      ${erklSprungHtml(e)}
+      <div class="card" id="ekVorn">
         <p class="ueberschrift">Von vorn erklärt</p>
         ${e.einfach.map(t => `<p class="einfachtext">${t}</p>`).join("")}
       </div>
@@ -34744,22 +34837,22 @@ function render(gewaehlt){
         <p class="ueberschrift"><span aria-hidden="true">${SYM.ziel}</span> Wozu brauchst du das?</p>
         ${(Array.isArray(e.wozu) ? e.wozu : [e.wozu]).map(t => `<p class="einfachtext">${t}</p>`).join("")}
       </div>` : ""}
-      ${e.bild ? `<div class="card"><p class="ueberschrift">Zum Anschauen</p>${e.bild}</div>` : ""}
+      ${e.bild ? `<div class="card" id="ekBild"><p class="ueberschrift">Zum Anschauen</p>${e.bild}</div>` : ""}
       ${e.spiel ? spielHtml(e) : ""}
       ${e.tabelle ? `<div class="card">
         <p class="ueberschrift">${e.tabelle.titel || "Zum Nachschlagen"}</p>
         ${tabelleHtml(e.tabelle)}
         ${e.tabelle.fuss ? `<p class="small soft" style="margin:12px 0 0">${e.tabelle.fuss}</p>` : ""}
       </div>` : ""}
-      <div class="card">
+      <div class="card" id="ekRegeln">
         <p class="ueberschrift">Das Wichtigste</p>
         <ul class="liste">${e.regeln.map(r => `<li>${r}</li>`).join("")}</ul>
       </div>
-      ${e.rezept ? `<div class="card">
+      ${e.rezept ? `<div class="card" id="ekRezept">
         <p class="ueberschrift">So gehst du jede Aufgabe an</p>
         <ol class="rezept">${e.rezept.map(r => `<li>${r}</li>`).join("")}</ol>
       </div>` : ""}
-      <div class="card">
+      <div class="card" id="ekBeispiel">
         <p class="ueberschrift">Ein Beispiel</p>
         <div class="probe">
           <div class="auf" style="font-size:20px">${e.beispiel.aufgabe}</div>
@@ -34767,7 +34860,7 @@ function render(gewaehlt){
           <div class="ergebnis">${e.beispiel.ergebnis}</div>
         </div>
       </div>
-      ${e.fehler ? `<div class="card fehlerkarte">
+      ${e.fehler ? `<div class="card fehlerkarte" id="ekFehler">
         <p class="ueberschrift">Daran scheitern die meisten</p>
         <div class="fallen">${e.fehler.map(([falle, warum]) =>
           `<div class="falle"><b>${falle}</b><span>${warum}</span></div>`).join("")}</div>
