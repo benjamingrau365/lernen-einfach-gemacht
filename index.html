@@ -250,7 +250,12 @@
     font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 11px;
     border-radius:999px;margin-bottom:12px}
 
-  .kopf{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+  /* Themenpille und Schrittzählung teilen sich eine Zeile. Passte beides nicht
+     nebeneinander, wurde die Pille zusammengequetscht, bis der Name mitten im
+     Wort umbrach — „OHMSCHE S GESETZ". Jetzt darf die Zeile umbrechen: Ist es
+     zu eng, rutscht die Zählung in die nächste Zeile und der Name bleibt heil. */
+  .kopf{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+    gap:6px 10px;margin-bottom:14px}
   .kopf .tag{min-width:0;overflow-wrap:break-word;hyphens:auto}
   .aufgabenzaehler{flex:none;white-space:nowrap;font-size:13px}
 
@@ -460,9 +465,13 @@
   .vokgut .vokergebnis{color:var(--gut-dark)}
   .vokschlecht{border-color:var(--red)}
   .vokschlecht .vokergebnis{color:var(--red)}
-  .fortschritt{display:flex;gap:5px;margin-bottom:18px}
-  .fortschritt i{flex:1;height:6px;border-radius:999px;background:var(--fach-soft);
-    transition:background .25s}
+  .fortschritt{display:flex;gap:5px;margin:0 0 12px}
+  .fortschritt i{flex:1;height:8px;border-radius:999px;background:var(--fach-soft);
+    transition:background .25s,transform .25s}
+  /* Der Schritt, der gerade dran ist, wächst ein wenig — dann sieht man auf
+     einen Blick, wo man steht, ohne die Zahl daneben lesen zu müssen. */
+  .fortschritt i.an:last-of-type,
+  .fortschritt i.an:not(:has(+ i.an)){transform:scaleY(1.35)}
   .fortschritt i.an{background:var(--fach)}
   /* Der gerade laufende Schritt ist der erste, der noch nicht „an“ ist —
      er bekommt einen leichten Puls, damit man sieht, wo man steht. */
@@ -1167,6 +1176,22 @@
   @media(hover:hover){ .sprungpunkt:hover{border-color:var(--fach);color:var(--fach-dark);
     background:var(--fach-soft)} }
   .sprungpunkt:active{transform:scale(.97)}
+
+  /* Aufklappknopf für die Vokabel-Einstellungen. Er sieht aus wie eine Karte,
+     damit klar ist, dass darunter etwas steckt, und trägt die aktuelle
+     Auswahl im Untertitel — dann muss man zum Nachsehen nicht aufmachen. */
+  .vokeinstellknopf{display:flex;align-items:center;gap:12px;width:100%;
+    background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    padding:14px 16px;margin:0 0 14px;font:inherit;text-align:left;cursor:pointer;
+    transition:border-color .12s,background .12s}
+  @media(hover:hover){ .vokeinstellknopf:hover{border-color:var(--fach)} }
+  .vokeinstellknopf.auf{border-color:var(--fach);background:var(--fach-soft);margin-bottom:10px}
+  .vokeinstelltext{display:block;min-width:0;flex:1}
+  .vokeinstelltext b{display:block;font-size:16px}
+  .vokeinstelltext small{display:block;font-size:13.5px;color:var(--soft);margin-top:2px;
+    overflow-wrap:break-word}
+  .vokeinstellpfeil{flex:none;font-size:15px;color:var(--soft);transition:transform .15s}
+  .vokeinstellknopf.auf .vokeinstellpfeil{transform:rotate(180deg);color:var(--fach-dark)}
 
   /* ---------- Erklärung und Einstellungen ---------- */
   .einfachtext{font-size:17px;line-height:1.7;margin:0 0 14px;max-width:62ch}
@@ -33292,7 +33317,25 @@ function vokListePdf(){
    Bild passen; der Rest kommt auf Wunsch. */
 const VOK_THEMEN_KURZ = 14;
 let vokThemenOffen = false;
+/* Die Einstellungen sind zugeklappt, bis jemand etwas ändern will. */
+let vokEinstellungenOffen = false;
 function vokThemenAufklappen(){ vokThemenOffen = true; render(); }
+
+/* Was gerade eingestellt ist, in einem Satz — damit man beim Zuklappen sieht,
+   worauf man sich einlässt, ohne die Karten wieder aufzumachen. */
+function vokEinstellungText(anzahl){
+  const klasse = vokKlasse === "alle" ? "alle Klassen"
+               : vokKlasse === "eigene" ? "deine eigenen Wörter"
+               : "Klasse " + vokKlasse;
+  const thema = vokThema === "alle" ? "alle Themen" : vokThema;
+  const richtung = vokRichtung === "de2en" ? "Deutsch → Englisch" : "Englisch → Deutsch";
+  return `${klasse} · ${thema} · ${richtung}`;
+}
+
+function vokEinstellungenUm(){
+  vokEinstellungenOffen = !vokEinstellungenOffen;
+  render();
+}
 
 function vokabelnHtml(){
   const themen = vokThemenFuer(vokKlasse);
@@ -33302,25 +33345,8 @@ function vokabelnHtml(){
   const gekuerzt = !vokThemenOffen && themen.length > VOK_THEMEN_KURZ
     && !themen.slice(VOK_THEMEN_KURZ).includes(vokThema);
   const sichtbar = gekuerzt ? themen.slice(0, VOK_THEMEN_KURZ) : themen;
-  return `
-    <div class="card">
-      ${navLink("/englisch", "waehleFach('englisch')", "← Zurück zu Englisch", "zurueck")}
-      <span class="tag">Englisch</span>
-      <h1>Vokabeln üben</h1>
-      <p class="soft" style="margin:10px 0 0">Insgesamt ${z(vokabelAnzahl())} Wörter, nach Klasse und Thema geordnet.
-        Auch hier bekommst du die Lösung nie einfach hingelegt — die Hilfe kommt in Stufen.</p>
-    </div>
 
-    <div class="card vokeigen">
-      <span class="tag">Deine Wörter</span>
-      <h2 style="margin:8px 0 6px">Selbst hinschreiben</h2>
-      <p class="soft" style="margin:0 0 14px">Die Wörter, die bei dir am Freitag drankommen, stehen hier natürlich nicht.
-        Schreib sie selbst hin — einzeln oder die ganze Liste aus dem Heft auf einmal.
-        ${EIGENE.length ? `Du hast schon <b>${z(EIGENE.length)}</b> eigene ${EIGENE.length === 1 ? "Wort" : "Wörter"} in
-          ${z(eigeneListen().length)} ${eigeneListen().length === 1 ? "Liste" : "Listen"}.` : ""}</p>
-      ${navLink("/vokabeln/eigene", "zeigeEigene()", EIGENE.length ? "Eigene Wörter verwalten" : "Eigene Wörter anlegen", "btn full")}
-    </div>
-
+  const einstellungen = `
     <div class="card">
       <p class="ueberschrift">Klasse</p>
       <div class="vokwahl">
@@ -33354,6 +33380,27 @@ function vokabelnHtml(){
         hervorbringen musst. Genau das wird in der Arbeit verlangt.</p>
     </div>
 
+    <div class="card vokeigen">
+      <span class="tag">Deine Wörter</span>
+      <h2 style="margin:8px 0 6px">Selbst hinschreiben</h2>
+      <p class="soft" style="margin:0 0 14px">Die Wörter, die bei dir am Freitag drankommen, stehen hier natürlich nicht.
+        Schreib sie selbst hin — einzeln oder die ganze Liste aus dem Heft auf einmal.
+        ${EIGENE.length ? `Du hast schon <b>${z(EIGENE.length)}</b> eigene ${EIGENE.length === 1 ? "Wort" : "Wörter"} in
+          ${z(eigeneListen().length)} ${eigeneListen().length === 1 ? "Liste" : "Listen"}.` : ""}</p>
+      ${navLink("/vokabeln/eigene", "zeigeEigene()", EIGENE.length ? "Eigene Wörter verwalten" : "Eigene Wörter anlegen", "btn full")}
+    </div>`;
+
+  return `
+    <div class="card">
+      ${navLink("/englisch", "waehleFach('englisch')", "← Zurück zu Englisch", "zurueck")}
+      <span class="tag">Englisch</span>
+      <h1>Vokabeln üben</h1>
+      <p class="soft" style="margin:10px 0 0">Insgesamt ${z(vokabelAnzahl())} Wörter, nach Klasse und Thema geordnet.
+        Auch hier bekommst du die Lösung nie einfach hingelegt — die Hilfe kommt in Stufen.</p>
+    </div>
+
+    ${/* Zuerst das Losgehen. Alles ist schon sinnvoll eingestellt; wer nichts
+          ändern will, ist nach einem Tipp drin. */""}
     <div class="card" style="text-align:center">
       <p class="soft" style="margin:0 0 14px">${anzahl === 0
         ? "Für diese Auswahl gibt es noch keine Wörter."
@@ -33363,7 +33410,19 @@ function vokabelnHtml(){
         <button class="btn ghost full" style="margin-top:10px" onclick="vokStarten()">Gleich abfragen</button>
         <p class="small soft" style="margin:12px 0 0">Wer die Wörter noch nie gesehen hat, fängt oben an.
           Wer sie schon kann, geht gleich in die Abfrage.</p>`}
-    </div>`;
+    </div>
+
+    ${/* Und darunter, zugeklappt, die Einstellungen. Der Satz sagt, was gerade
+          gilt — dann muss man zum Nachsehen nicht aufmachen. */""}
+    <button class="vokeinstellknopf ${vokEinstellungenOffen ? "auf" : ""}" onclick="vokEinstellungenUm()"
+            aria-expanded="${vokEinstellungenOffen}">
+      <span class="vokeinstelltext">
+        <b>Auswahl ändern</b>
+        <small>${vokEinstellungText(anzahl)}</small>
+      </span>
+      <span class="vokeinstellpfeil" aria-hidden="true">▾</span>
+    </button>
+    ${vokEinstellungenOffen ? einstellungen : ""}`;
 }
 
 /* ---------- Eigene Wörter: anlegen und verwalten ---------- */
@@ -34994,7 +35053,6 @@ function render(gewaehlt){
   el.innerHTML = `
     <div class="card">
       ${navLink(pfadFuer("start", fach, klasse), "ansicht='start';render()", "← Zurück zur Übersicht", "zurueck")}
-      <div class="fortschritt">${balken}</div>
       ${/* Vorher stand das ganze Thema samt Aufgabennummer in einer Pille —
             auf dem Handy brach sie in zwei Zeilen um und drängte die
             Schrittangabe daneben ebenfalls in zwei. Jetzt trägt die Pille nur
@@ -35003,6 +35061,13 @@ function render(gewaehlt){
         <span class="tag" style="margin-bottom:0">${aktuellName}</span>
         <span class="small soft aufgabenzaehler">${anz > 1 ? `Aufgabe ${variante + 1} von ${anz} · ` : ""}Schritt ${schrittNr + 1} von ${aktuell.schritte.length}</span>
       </div>
+      ${/* Der Balken steht jetzt unmittelbar über der Aufgabe und nicht mehr
+            zwischen Zurück-Verweis und Überschrift. Dort gehört er hin: Er
+            zeigt den Weg durch diese eine Aufgabe, also fängt er dort an, wo
+            die Aufgabe anfängt. Seit eine Aufgabe sechs bis sieben Schritte
+            hat, ist er außerdem die einzige Stelle, an der man sieht, dass es
+            vorangeht — deshalb darf er kräftiger sein als vorher. */""}
+      <div class="fortschritt">${balken}</div>
       <div class="aufg klebt ${aufgabenGroesse(aktuell)}"><div class="zeile1">${bruecheSetzen(aktuell.text)}</div></div>
       <p class="frage">${s.frage}</p>
       <div class="optionen ${tippen ? "" : "breit"}">${optionenHtml}</div>
