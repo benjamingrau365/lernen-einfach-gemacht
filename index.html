@@ -323,7 +323,13 @@
   button.pick:disabled{cursor:default;opacity:.5}
   .pick.richtig{border-color:var(--gut);background:var(--gut-soft);opacity:1}
   .pick.falsch{border-color:var(--red);background:var(--red-soft);opacity:1}
-  .pick.richtig .pickbuchstabe{background:var(--gut);border-color:var(--gut);color:#fff}
+  /* Bei jeder richtigen Antwort springt der Haken kurz auf. Das passiert seit
+     der Vertiefung sechs- bis siebenmal in einer Aufgabe — deshalb ist es
+     bewusst kurz und leise: ein Aufblitzen, keine Vorstellung. */
+  .pick.richtig .pickbuchstabe{background:var(--gut);border-color:var(--gut);color:#fff;
+    animation:hakenauf .34s cubic-bezier(.2,1.6,.4,1) 1}
+  @keyframes hakenauf{0%{transform:scale(.55)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+  @media(prefers-reduced-motion:reduce){ .pick.richtig .pickbuchstabe{animation:none} }
   .pick.falsch .pickbuchstabe{background:var(--red);border-color:var(--red);color:#fff}
 
   /* Begründung hängt direkt unter der angetippten Antwort */
@@ -1924,12 +1930,21 @@
   /* ---------- der Moment am Ende einer Aufgabe ---------- */
   .geschafftkarte{text-align:center}
   .geschafftkarte h1{margin-top:6px}
-  .geschafftkreis{width:64px;height:64px;border-radius:50%;background:var(--gut);color:#fff;
+  .geschafftkreis{position:relative;width:64px;height:64px;border-radius:50%;background:var(--gut);color:#fff;
     display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;
     margin:0 auto 14px;box-shadow:0 12px 28px -12px var(--gut);
     animation:hakenrein .5s cubic-bezier(.2,1.5,.4,1) 1}
   @keyframes hakenrein{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
-  @media(prefers-reduced-motion:reduce){.geschafftkreis{animation:none}}
+  /* Ein Ring, der einmal nach außen läuft und verschwindet. Er dauert eine
+     halbe Sekunde und ist danach weg — gerade genug, dass man merkt: geschafft.
+     Nichts blinkt weiter, nichts muss weggeklickt werden. */
+  .geschafftkreis::after{content:"";position:absolute;inset:0;border-radius:50%;
+    border:2.5px solid var(--gut);animation:ringraus .75s ease-out .12s 1 both}
+  @keyframes ringraus{from{transform:scale(1);opacity:.65}to{transform:scale(2.1);opacity:0}}
+  @media(prefers-reduced-motion:reduce){
+    .geschafftkreis{animation:none}
+    .geschafftkreis::after{animation:none;opacity:0}
+  }
   .geschafftzahlen{display:flex;justify-content:center;gap:10px;margin:20px 0 0;flex-wrap:wrap}
   .geschafftzahlen div{background:var(--bg);border-radius:13px;padding:12px 18px;min-width:88px}
   .geschafftzahlen b{display:block;font-size:24px;line-height:1.15;color:var(--gut-dark)}
@@ -31318,8 +31333,16 @@ function baustelleStand(){
     prozent: gesamt ? Math.round(fertig / gesamt * 100) : 0};
 }
 
-/* Fächer, die noch gar nicht angefangen sind */
-const BAU_SPAETER = ["Englisch", "Französisch", "Geschichte", "Erdkunde"];
+/* Fächer, die noch gar nicht angefangen sind.
+
+   Hier stand „Englisch" — obwohl es Englisch längst gibt, mit fünfzehn Themen
+   und über tausend Vokabeln. Eine von Hand gepflegte Liste veraltet still:
+   Niemand denkt beim Anlegen eines Fachs daran, es hier zu streichen.
+
+   Deshalb prüft die Liste sich jetzt selbst. Was im Katalog steht, kann nicht
+   gleichzeitig geplant sein und fällt automatisch heraus. */
+const BAU_SPAETER = ["Englisch", "Französisch", "Geschichte", "Erdkunde", "Physik"]
+  .filter(n => !Object.values(KATALOG).some(f => f.name === n || f.langname === n));
 
 const BAU_SYM = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
      stroke-linecap="round" stroke-linejoin="round">
