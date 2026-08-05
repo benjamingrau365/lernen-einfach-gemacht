@@ -1199,6 +1199,15 @@
   .vokeinstellpfeil{flex:none;font-size:15px;color:var(--soft);transition:transform .15s}
   .vokeinstellknopf.auf .vokeinstellpfeil{transform:rotate(180deg);color:var(--fach-dark)}
 
+  /* „schon geübt" — die einzige Auskunft in der Themenliste, die ohne Konto
+     funktioniert. Der Haken steht in der Farbe für Richtiges, die Zeile
+     bekommt einen Hauch davon: sichtbar beim Überfliegen, ohne dass die noch
+     offenen Themen dadurch untergehen. */
+  .themastand.geuebt{display:inline-flex;align-items:center;gap:5px;color:var(--gut-dark)}
+  .themastand.geuebt svg{width:13px;height:13px;flex:none}
+  .thema.schongemacht{background:linear-gradient(90deg,
+    color-mix(in srgb, var(--gut-soft) 60%, var(--card)) 0%, var(--card) 40%)}
+
   /* ---------- Erklärung und Einstellungen ---------- */
   .einfachtext{font-size:17px;line-height:1.7;margin:0 0 14px;max-width:62ch}
   .einfachtext:last-child{margin-bottom:0}
@@ -30242,7 +30251,7 @@ function datenschutzHtml(){
 
       <p class="ueberschrift" style="margin-top:26px">10. Cookies und Speicherung im Browser</p>
       <p class="einfachtext">Wir verwenden <b>keine</b> Werbe-, Marketing- oder Analyse-Cookies und binden keine Zählpixel oder Social-Media-Buttons ein. Deshalb gibt es hier auch kein Cookie-Banner.</p>
-      <p class="einfachtext">Gespeichert wird in deinem Browser nur, was für den Betrieb nötig ist: deine Einstellungen (Hell- oder Dunkelmodus, Schriftgröße, Art der Antwortabfrage), der Hinweis, dass du den Baustellen-Hinweis gesehen hast, und — wenn du angemeldet bist — die Information, die dich angemeldet hält. Das fällt unter § 25 Abs. 2 TDDDG (unbedingt erforderliche Speicherung). Du kannst das jederzeit über die Einstellungen deines Browsers löschen.</p>
+      <p class="einfachtext">Gespeichert wird in deinem Browser nur, was für den Betrieb nötig ist: deine Einstellungen (Hell- oder Dunkelmodus, Schriftgröße, Art der Antwortabfrage), der Hinweis, dass du den Baustellen-Hinweis gesehen hast, die Namen der Themen, die du fertig geübt hast — damit die Themenliste dir zeigen kann, wo du schon warst —, deine selbst angelegten Vokabeln und eingetragenen Prüfungstermine, und — wenn du angemeldet bist — die Information, die dich angemeldet hält. Das alles bleibt auf deinem Gerät: Es wird nicht an uns übertragen, auch nicht ohne Konto. Das fällt unter § 25 Abs. 2 TDDDG (unbedingt erforderliche Speicherung). Du kannst es jederzeit über die Einstellungen deines Browsers löschen.</p>
 
       <p class="ueberschrift" style="margin-top:26px">11. Wie lange wir speichern</p>
       <ul class="liste">
@@ -30416,6 +30425,9 @@ function fachZeichen(k){
 }
 
 const SYM = {
+  /* Kleiner Haken für „schon geübt" in der Themenliste */
+  haken:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"/></svg>`,
   flamme:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s4 4.5 4 8a4 4 0 0 1-8 0c0-1.2.4-2.2 1-3 .2 1 .8 1.7 1.5 1.7.9 0 1.5-.8 1.5-2 0-1.6-.7-3.2-2-4.7z"/><path d="M6.5 13.5C6.5 17.6 9 20.5 12 20.5s5.5-2.9 5.5-7"/></svg>`,
   ziel:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>`,
   uhr:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>`,
@@ -31194,11 +31206,28 @@ try { wartungGesehen = localStorage.getItem("ek_baustelle") === WARTUNG_STAND; }
    auf jeden Fall vorher zu sehen. */
 let schonGeuebt = false;
 try { schonGeuebt = localStorage.getItem("ek_geuebt") === "1"; } catch(e){}
-function merkeGeuebt(){
+
+/* Welche Themen schon fertig geübt wurden, und wie oft. Das ist die Auskunft,
+   die man beim Draufschauen auf die Themenliste haben will: Wo war ich schon?
+
+   Mit Konto steht dort ohnehin der Wiederholungsstand. Ohne Konto stand
+   bisher nichts — und nach dem Schließen des Browsers war auch die letzte
+   Sitzung vergessen. Es liegt bewusst nur im Browser: kein Konto nötig, keine
+   Übertragung, und beim Löschen der Browserdaten ist es mitverschwunden. */
+let geuebteThemen = {};
+try { geuebteThemen = JSON.parse(localStorage.getItem("ek_themen") || "{}") || {}; } catch(e){ geuebteThemen = {}; }
+
+function merkeGeuebt(name){
+  if (name){
+    geuebteThemen[name] = (geuebteThemen[name] || 0) + 1;
+    try { localStorage.setItem("ek_themen", JSON.stringify(geuebteThemen)); } catch(e){}
+  }
   if (schonGeuebt) return;
   schonGeuebt = true;
   try { localStorage.setItem("ek_geuebt", "1"); } catch(e){}
 }
+/* Wie oft ein Thema fertig geübt wurde — angefangene Aufgaben zählen nicht. */
+function malGeuebt(name){ return geuebteThemen[name] || 0; }
 /* Zeitpunkte, an denen der Hinweis fällig ist: nach der ersten fertigen
    Aufgabe und vor allem, was den Besucher etwas kostet (Konto, Anmeldung). */
 function wartungFaellig(){
@@ -34152,7 +34181,7 @@ async function weiter(){
   schrittZuruecksetzen();
   if (schrittNr < aktuell.schritte.length) neueReihenfolge();
   if (schrittNr >= aktuell.schritte.length){
-    merkeGeuebt();
+    merkeGeuebt(aktuellName);
     /* In der Generalprobe geht es ohne Zwischenstopp zum naechsten Thema —
        sonst reisst der Lauf nach jeder Aufgabe ab. */
     if (pruefLaufAktiv()){
@@ -34621,16 +34650,21 @@ function render(gewaehlt){
             const n = anzahlAufgaben(t);
             if (!n) return `<div class="thema aus"><span class="themaname">${t}</span><span class="themastand">kommt noch</span></div>`;
             const z = zeileZu(t);
+            const mal = malGeuebt(t);
             let stand;
             if (z){
               const w = wannText(z);
               stand = `<span class="themastand ${w.stil === "sitzt" ? "sitzt" : "faellig"}">${w.text}</span>`;
+            } else if (mal){
+              /* Ohne Konto gibt es keinen Wiederholungsplan — aber sagen kann
+                 man trotzdem, wo man schon war. */
+              stand = `<span class="themastand geuebt">${SYM.haken} ${mal === 1 ? "schon geübt" : z(mal) + "× geübt"}</span>`;
             } else {
               stand = `<span class="themastand">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
             }
             const sicher = t.replace(/'/g,"\\'");
             return `<div class="themazeile">
-              <button class="thema" onclick="starte('${sicher}')">
+              <button class="thema ${z || mal ? "schongemacht" : ""}" onclick="starte('${sicher}')">
                 <span class="themaname">${t}</span>
                 ${stand}
               </button>
