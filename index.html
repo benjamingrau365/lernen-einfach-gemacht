@@ -179,7 +179,15 @@
     background:linear-gradient(180deg,
       color-mix(in srgb, var(--fach) 7%, var(--bg)) 0%,
       var(--bg) 100%)}
-  .shell, .kopfleiste, .baustelle{position:relative;z-index:1}
+  /* Der Verlauf oben steht fest im Fenster (position:fixed) und ist damit ein
+     „positioniertes" Element. Alles, was nicht ebenfalls positioniert ist,
+     wird darunter gemalt — auch wenn es später im Text steht. Deshalb bekommen
+     alle Bereiche, die Inhalt tragen, hier ausdrücklich eine Ebene.
+
+     Der Fußbereich fehlte in dieser Liste. Beim Herunterscrollen lief er unter
+     den Verlauf und wurde auf den obersten 340 Pixeln abgedunkelt und
+     abgeschnitten — es sah aus, als wandere eine Leiste mit nach unten. */
+  .shell, .kopfleiste, .baustelle, .fussleiste{position:relative;z-index:1}
 
   .shell{max-width:1140px;margin:0 auto;padding:14px 20px 64px;display:grid;grid-template-columns:1fr;gap:0}
 
