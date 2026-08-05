@@ -153,6 +153,10 @@
   .reglerreihe{display:flex;align-items:center;gap:14px}
   .reglerreihe .reglerklein{font-size:15px;color:var(--soft);font-weight:800;flex:none}
   .reglerreihe .reglergross{font-size:27px;color:var(--soft);font-weight:800;flex:none;line-height:1}
+  /* Zahlenmarken am Tagesziel-Regler: gleich groß, nicht klein/groß wie beim
+     Schriftregler, wo die Größe selbst die Aussage ist. */
+  .reglerreihe .reglermarke{font-size:calc(14px * var(--fs,1));color:var(--soft);
+    font-weight:700;flex:none;font-variant-numeric:tabular-nums}
   .schriftregler{flex:1;-webkit-appearance:none;appearance:none;height:8px;border-radius:999px;
     background:var(--line);outline:none;margin:0}
   .schriftregler::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;
@@ -2116,6 +2120,27 @@
   html[data-zeilen="kurz"] .card > p, html[data-zeilen="kurz"] .card > ul,
   html[data-zeilen="kurz"] .card > ol, html[data-zeilen="kurz"] .frage,
   html[data-zeilen="kurz"] .feedback{max-width:34em}
+
+  /* ---------- Große Knöpfe ----------
+     Nicht nur größer, sondern auch weiter auseinander: Wer danebentippt,
+     trifft sonst die Nachbarantwort und bekommt einen Fehler angerechnet,
+     den er nicht gemacht hat. */
+  html[data-tasten="gross"] .pick{padding:24px 18px;min-height:76px}
+  html[data-tasten="gross"] .optionen{gap:14px}
+  html[data-tasten="gross"] .btn{padding:17px 22px}
+  html[data-tasten="gross"] .option{padding:19px 18px}
+  html[data-tasten="gross"] .stufe, html[data-tasten="gross"] .hilfeknopf{padding:14px 18px}
+  html[data-tasten="gross"] .segstueck{padding:16px 8px}
+  html[data-tasten="gross"] .thema{padding:18px 16px}
+  html[data-tasten="gross"] .feld{padding:16px 14px}
+
+  /* Zeile über der Themenliste, wenn Geübtes ausgeblendet ist */
+  .filterzeile{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    flex-wrap:wrap;margin:0 2px 12px;color:var(--soft);
+    font-size:calc(14px * var(--fs,1));line-height:1.45}
+  .filterzeile button{background:none;border:none;padding:4px 2px;font:inherit;
+    font-size:calc(14px * var(--fs,1));font-weight:600;color:var(--ac-dark);
+    cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 
   .stufenreihe{display:flex;flex-wrap:wrap;gap:8px}
   .stufe{background:var(--card);border:1.5px solid var(--line);border-radius:11px;
@@ -11741,6 +11766,20 @@ function formatiereWie(wert, teile){
   return zahl + teile.suffix;
 }
 
+/* ---------- Weniger zur Auswahl ----------
+   Sechs Möglichkeiten sind für manche ein Wald, durch den sie nicht
+   durchsehen. Gekürzt wird von hinten: Die vorderen Ablenker bringt das Thema
+   selbst mit, samt eigener Begründung; die hinteren sind nachgerechnet und
+   damit die, auf die man am ehesten verzichten kann. Die richtige Antwort
+   bleibt immer drin. */
+function kuerzeOptionen(schritt, grenze){
+  const opt = schritt.optionen;
+  if (!Array.isArray(opt) || grenze < 2 || opt.length <= grenze) return;
+  const richtig = opt.filter(o => o.ok);
+  const falsch  = opt.filter(o => !o.ok);
+  if (!richtig.length || !falsch.length) return;
+  schritt.optionen = richtig.concat(falsch.slice(0, Math.max(1, grenze - richtig.length)));
+}
 function fuelleAuf(schritt, ziel){
   if (schritt.optionen.length >= ziel) return;
   const richtig = schritt.optionen.find(o => o.ok);
@@ -11800,6 +11839,9 @@ function istEintippbar(schritt){
    Antwort — „Kreuzreim“, „8x + 14“, „42 cm“ —, braucht man die normale
    Tastatur. Nur bei reinen Zahlen ist der Zahlenblock richtig. */
 function tastaturArt(erwartet){
+  /* Auf Wunsch immer die volle Tastatur: Der Zifferblock verdeckt Bruchstrich,
+     Komma und Einheiten je nach Handy ganz unterschiedlich. */
+  if (einstellungen.tastatur === "voll") return "text";
   const roh = String(erwartet).replace(/<[^>]+>/g, "").trim();
   if (/[A-Za-zÄÖÜäöüßµ]/.test(roh)) return "text";
   /* Der Zifferblock hat auf vielen Handys kein Minuszeichen. Ist eine negative
@@ -12224,7 +12266,8 @@ function baueAufgabe(name, welche){
     schaetzenEinbauen(aufgabe, tiefe === "ausfuehrlich");
     themenSchritteEinbauen(aufgabe, name);
   }
-  (aufgabe.schritte || []).forEach(s => fuelleAuf(s, ZIEL_ANTWORTEN));
+  const ziel = (typeof einstellungen !== "undefined" && einstellungen.antworten) || ZIEL_ANTWORTEN;
+  (aufgabe.schritte || []).forEach(s => { fuelleAuf(s, ziel); kuerzeOptionen(s, ziel); });
   return aufgabe;
 }
 /* ---------- Weitere Deutsch-Themen ---------- */
@@ -29929,7 +29972,7 @@ function kopfleisteHtml(){
             <span class="kopfsuchezeichen">${SYM.lupe}</span>
             <span class="kopfsuchetext">Suchen</span>
           </a>`}
-        ${benutzer && aktivitaet.geladen ? `<a class="serie serie--mini" href="/serie" onclick="return navKlick(event, zeigeSerie)" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></a>` : ""}
+        ${benutzer && aktivitaet.geladen && serieZeigen() ? `<a class="serie serie--mini" href="/serie" onclick="return navKlick(event, zeigeSerie)" title="Deine Serie ansehen">${SYM.flamme}<b>${aktivitaet.serie}</b></a>` : ""}
         ${/* Zwei Knöpfe statt einem, solange niemand angemeldet ist.
               „Üben“ allein wäre zu wenig: Wer nur übt, legt sich nie ein Konto an
               und verliert seinen Fortschritt. „Anmelden“ allein war aber auch
@@ -30551,9 +30594,13 @@ let aktivitaet = {serie: 0, heute: 0, geladen: false};
 const TAGESZIEL = 5;
 /* Wie viele Aufgaben am Tag zählen als geschafft — in den Einstellungen änderbar */
 function tagesziel(){ return einstellungen.tagesziel > 0 ? einstellungen.tagesziel : TAGESZIEL; }
+/* Für manche ist die Serie ein Antrieb, für andere ein täglicher Vorwurf: Wer
+   einmal aussetzt, sieht die Null und hört ganz auf. Deshalb abschaltbar. */
+function serieZeigen(){ return einstellungen.serieZeigen !== false; }
 const MEILENSTEINE = [3, 7, 14, 30, 50, 100, 200, 365];
 let neuerMeilenstein = 0;   // frisch erreichter Meilenstein für die Feier-Anzeige
 function meilensteinPruefen(){
+  if (!serieZeigen()) return;
   const erreicht = MEILENSTEINE.filter(m => (aktivitaet.serie || 0) >= m);
   const hoechste = erreicht.length ? erreicht[erreicht.length - 1] : 0;
   let gefeiert = 0;
@@ -31157,7 +31204,7 @@ function uebersichtHtml(){
           <span class="tag">${benutzer ? "Schön, dass du da bist" : "Du übst ohne Konto"}</span>
           <h1>${begruessung()}</h1>
         </div>
-        ${benutzer ? `<div class="serie">${SYM.flamme}<b>${aktivitaet.serie}</b><span>Tage</span></div>` : ""}
+        ${benutzer && serieZeigen() ? `<div class="serie">${SYM.flamme}<b>${aktivitaet.serie}</b><span>Tage</span></div>` : ""}
       </div>
       ${benutzer ? `
         <p class="soft" style="margin-bottom:14px">${serieText}</p>
@@ -31330,6 +31377,33 @@ function merkeGeuebt(name){
 }
 /* Wie oft ein Thema fertig geübt wurde — angefangene Aufgaben zählen nicht. */
 function malGeuebt(name){ return geuebteThemen[name] || 0; }
+/* ---------- Themenliste: nur das Offene ----------
+   In einer Klasse mit zwanzig Themen sucht man nach dem dritten Besuch nicht
+   mehr das Thema, sondern die Lücke. Auf Wunsch bleibt nur stehen, was noch
+   aussteht — abgeschaltet wird das mit einem Klick direkt über der Liste,
+   nicht erst in den Einstellungen. */
+function themenGefiltert(alle){
+  const nurOffen = einstellungen.themenFilter === "offen";
+  if (!nurOffen) return { liste: alle, zeile: "" };
+  const offen = alle.filter(t => !malGeuebt(t) && !zeileZu(t));
+  const weg = alle.length - offen.length;
+  const zeile = `
+    <div class="filterzeile">
+      <span>${weg
+        ? `${weg} ${weg === 1 ? "geübtes Thema ist" : "geübte Themen sind"} ausgeblendet`
+        : "Du hast hier noch keins geübt — es steht alles da"}</span>
+      <button onclick="setzeEinstellung('themenFilter','alle')">Alle zeigen</button>
+    </div>`;
+  /* Sind alle geübt, wäre die Liste leer — dann lieber alles zeigen und sagen,
+     dass hier nichts mehr offen ist. */
+  if (!offen.length) return {
+    liste: alle,
+    zeile: `<div class="filterzeile">
+      <span>Hier ist alles schon einmal geübt.</span>
+      <button onclick="setzeEinstellung('themenFilter','alle')">Alle zeigen</button>
+    </div>` };
+  return { liste: offen, zeile };
+}
 /* Zeitpunkte, an denen der Hinweis fällig ist: nach der ersten fertigen
    Aufgabe und vor allem, was den Besucher etwas kostet (Konto, Anmeldung). */
 function wartungFaellig(){
@@ -31652,7 +31726,19 @@ const SUPABASE_URL = "https://ygiouoxwuupkbjepqhxm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3EHXsWVndJyI5h3gxYGCqQ_a1SCx4il";
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const INTERVALLE = [1, 3, 7, 14, 30, 90];
+/* ---------- Abstände des Wiederholungsplans ----------
+   Nach jedem sicheren Durchgang rückt ein Thema eine Stufe weiter und kommt
+   entsprechend später wieder. Wer schnell vergisst, braucht kürzere Abstände;
+   wer sich Sachen gut merkt, will nicht alle drei Tage dasselbe sehen. */
+const PLAN_TEMPO = {
+  sanft:  [1, 2,  4,  8, 16,  40],
+  normal: [1, 3,  7, 14, 30,  90],
+  straff: [2, 5, 12, 25, 60, 150]
+};
+const INTERVALLE = PLAN_TEMPO.normal;
+function intervalle(){
+  return PLAN_TEMPO[einstellungen && einstellungen.planTempo] || PLAN_TEMPO.normal;
+}
 const TAG = 86400000;
 
 /* ---------- Zustand ---------- */
@@ -31856,7 +31942,13 @@ const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:
   vorlesen:"aus",       /* aus | knopf | auto */
   lesetempo:1,          /* 0,7 bis 1,3 */
   lesestimme:"",        /* Name der gewählten Stimme */
-  start:"standard"};    /* standard | Schlüssel eines Fachs */
+  start:"standard",     /* standard | Schlüssel eines Fachs */
+  planTempo:"normal",   /* sanft | normal | straff — Abstände der Wiederholungen */
+  antworten:6,          /* wie viele Möglichkeiten höchstens zur Wahl stehen */
+  serieZeigen:true,     /* die Tagesserie überhaupt anzeigen */
+  tasten:"normal",      /* normal | gross — Größe der Bedienelemente */
+  tastatur:"auto",      /* auto | voll — welche Tastatur beim Eintippen kommt */
+  themenFilter:"alle"}; /* alle | offen — geübte Themen ausblenden */
 const BUNDESLAENDER = ["Baden-Württemberg","Bayern","Berlin","Brandenburg","Bremen","Hamburg",
   "Hessen","Mecklenburg-Vorpommern","Niedersachsen","Nordrhein-Westfalen","Rheinland-Pfalz",
   "Saarland","Sachsen","Sachsen-Anhalt","Schleswig-Holstein","Thüringen"];
@@ -31898,6 +31990,7 @@ function wendeEinstellungenAn(){
   document.documentElement.classList.toggle("kontrast", !!einstellungen.kontrast);
   document.documentElement.dataset.schriftart = einstellungen.schriftart || "standard";
   document.documentElement.dataset.zeilen = einstellungen.zeilen || "normal";
+  document.documentElement.dataset.tasten = einstellungen.tasten || "normal";
   farbenAnwenden();
 }
 
@@ -32027,7 +32120,7 @@ const EINST_BEREICHE = [
   ["ansicht","Ansicht","Hell oder dunkel, Farben und wie groß die Schrift ist."],
   ["lesen","Lesen","Schriftart, Zeilen, Abstände — und Vorlesen für alles, was hier steht."],
   ["ueben","Üben","Wie du antwortest, wie ausführlich es ist und wie viel Hilfe kommt."],
-  ["erinnerungen","Erinnerungen","Wann dich die App ans Üben erinnert."],
+  ["dranbleiben","Dranbleiben","Tagesziel, Serie, Wiederholungsplan und Erinnerungen."],
   ["dich","Über dich","Klassenstufe, Bundesland, Startseite und dein Zugang."],
   ["daten","Daten & Gerät","Fortschritt sichern, App ablegen, alles zurücksetzen."]
 ];
@@ -32040,16 +32133,22 @@ const EINST_PUNKTE = [
   ["e-schriftart","lesen","Schriftart","schriftart font legasthenie buchstaben verwechseln serifen"],
   ["e-zeilen","lesen","Zeilenbreite","zeile breit lang kurz textbreite lesen"],
   ["e-lesehilfe","lesen","Leichter lesen","abstand kontrast bewegung animation ruhig legasthenie"],
+  ["e-tasten","lesen","Größe der Knöpfe","knopf groß tasten treffen finger tippen zittern motorik"],
   ["e-vorlesen","lesen","Vorlesen","vorlesen sprache stimme hören laut audio blind lesen schwer"],
   ["e-eingabe","ueben","Antworten","antwort tippen auswählen anklicken raten tastatur"],
   ["e-tiefe","ueben","Wie ausführlich","schritte kurz lang ausführlich schnell zwischenschritte tempo"],
   ["e-hilfe","ueben","Hilfe beim Üben","tipp hilfe hinweis lösung erklärung"],
   ["e-erstklaeren","ueben","Erklärung zuerst","erklärung zuerst vorher lesen einführung"],
   ["e-klang","ueben","Ton und Rütteln","ton klang sound piep vibration rütteln stumm leise"],
-  ["e-tagesziel","ueben","Tagesziel","ziel tag aufgaben pensum serie"],
-  ["e-erinnerung","erinnerungen","Erinnerungen","erinnerung benachrichtigung push wecker uhrzeit"],
+  ["e-antworten","ueben","Wie viel steht zur Auswahl","antworten möglichkeiten auswahl weniger drei sechs raten überfordert"],
+  ["e-tastatur","ueben","Tastatur beim Eintippen","tastatur ziffernblock zahlen komma bruchstrich eingabe handy"],
+  ["e-tagesziel","dranbleiben","Tagesziel","ziel tag aufgaben pensum menge"],
+  ["e-serie","dranbleiben","Serie","serie flamme tage in folge streak druck ausblenden"],
+  ["e-plan","dranbleiben","Wiederholungsplan","wiederholung plan abstand vergessen spaced repetition tempo"],
+  ["e-erinnerung","dranbleiben","Erinnerungen","erinnerung benachrichtigung push wecker uhrzeit"],
   ["e-stufe","dich","Deine Klassenstufe","klasse stufe jahrgang lehrjahr 5 6 7 8 9 10"],
   ["e-land","dich","Bundesland","bundesland land lehrplan bayern nrw"],
+  ["e-themenfilter","dich","Die Themenliste","themenliste filter offen ungeübt lücke ausblenden erledigt"],
   ["e-start","dich","Womit die App startet","startseite start fach direkt lieblingsfach"],
   ["e-zugang","dich","Dein Zugang","konto anmelden abmelden passwort e-mail registrieren"],
   ["e-sichern","daten","Fortschritt sichern","sichern backup datei speichern umziehen handy wechseln export"],
@@ -32170,12 +32269,19 @@ async function appNeuLaden(){
   location.reload();
 }
 /* Alles auf dieser Seite auf den Anfangszustand — Fortschritt bleibt unberührt */
+/* Ein einziger Fehlgriff hat vorher alle Einstellungen weggeräumt — ohne
+   Rückfrage und ohne Weg zurück. Jetzt fragt der Knopf erst nach. */
+let zuruecksetzenGefragt = false;
+function zuruecksetzenFragen(){ zuruecksetzenGefragt = true; render(); }
+function zuruecksetzenAbbrechen(){ zuruecksetzenGefragt = false; render(); }
 function einstellungenZuruecksetzen(){
+  zuruecksetzenGefragt = false;
   Object.assign(einstellungen, {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true,
     eingabe:"gemischt", bundesland:"", fachfarben:{}, lesehilfe:false, bewegung:true,
     kontrast:false, tagesziel:0, stufe:0, autoWeiter:false, erklaerungZuerst:false,
     schriftart:"standard", zeilen:"normal", tiefe:"normal", klang:false, vibrieren:false,
-    vorlesen:"aus", lesetempo:1, lesestimme:"", start:"standard"});
+    vorlesen:"aus", lesetempo:1, lesestimme:"", start:"standard", planTempo:"normal",
+    antworten:6, serieZeigen:true, tasten:"normal", tastatur:"auto", themenFilter:"alle"});
   sprechenAus();
   speichereEinstellungen(); wendeEinstellungenAn(); render();
 }
@@ -32186,6 +32292,22 @@ function farbenZuruecksetzen(){
 function setzeEinstellung(feld, wert){
   einstellungen[feld] = wert;
   speichereEinstellungen(); wendeEinstellungenAn(); render();
+}
+/* Tagesziel-Regler: dieselbe Zahl wie die drei Kacheln, nur frei wählbar.
+   Ohne render() beim Ziehen, sonst springt der Regler unter dem Finger weg —
+   die Zahl darunter wird von Hand nachgeführt. */
+function setzeTagesziel(v){
+  const n = Math.min(20, Math.max(1, parseInt(v, 10) || 5));
+  einstellungen.tagesziel = n;
+  speichereEinstellungen();
+  const karte = document.getElementById("e-tagesziel");
+  if (!karte) return render();
+  const zeile = karte.querySelector(".reglerreihe + p b");
+  if (zeile) zeile.textContent = `${n} ${n === 1 ? "Aufgabe" : "Aufgaben"} am Tag`;
+  karte.querySelectorAll(".optionen3 .option").forEach(k => {
+    const zahl = parseInt(k.textContent, 10);
+    k.classList.toggle("an", zahl === n);
+  });
 }
 /* Schriftgröße-Regler: live anwenden ohne render(), damit das Wischen flüssig bleibt.
    Die ganze Seite skaliert mit; wir gleichen das Scrollen aus, damit der Regler
@@ -34199,10 +34321,11 @@ async function speichereErgebnis(){
     geschafft: true, fehlversuche: fehlversuche
   });
 
+  const plan = intervalle();
   const alt = zeileZu(aktuellName);
   let stufe;
   if (!alt) stufe = fehlversuche === 0 ? 1 : 0;
-  else if (fehlversuche === 0) stufe = Math.min(alt.stufe + 1, INTERVALLE.length - 1);
+  else if (fehlversuche === 0) stufe = Math.min(alt.stufe + 1, plan.length - 1);
   else stufe = Math.max(alt.stufe - 1, 0);
 
   await db.from("fortschritt").upsert({
@@ -34211,7 +34334,7 @@ async function speichereErgebnis(){
     versuche: (alt ? alt.versuche : 0) + 1,
     fehler: (alt ? alt.fehler : 0) + (fehlversuche > 0 ? 1 : 0),
     zuletzt_geuebt: new Date().toISOString(),
-    naechste_wiederholung: wiederholungAm(INTERVALLE[stufe])
+    naechste_wiederholung: wiederholungAm(plan[stufe])
   }, {onConflict:"user_id,fach,thema"});
 
   await ladeFortschritt();
@@ -34917,6 +35040,7 @@ function render(gewaehlt){
   if (ansicht === "start"){
     const themen = KATALOG[fach].themen[klasse];
     const fertig = themen.filter(t => anzahlAufgaben(t) > 0);
+    const gefiltert = themenGefiltert(themen);
     const kopf = `
       <div class="pfad">
         ${navLink("/faecher", "zurFachwahl()", KATALOG[fach].name)}
@@ -34969,27 +35093,33 @@ function render(gewaehlt){
         <p class="soft">Du bekommst nie die Lösung — nur Fragen, die dich hinführen.</p>
       </div>
 
+      ${gefiltert.zeile}
       <div class="card">
         <div class="themen">
-          ${themen.map(t=>{
+          ${gefiltert.liste.map(t=>{
             const n = anzahlAufgaben(t);
             if (!n) return `<div class="thema aus"><span class="themaname">${t}</span><span class="themastand">kommt noch</span></div>`;
-            const z = zeileZu(t);
+            /* nicht z: das ist die Zahlenformatierung */
+            const plan = zeileZu(t);
             const mal = malGeuebt(t);
             let stand;
-            if (z){
-              const w = wannText(z);
+            if (plan){
+              const w = wannText(plan);
               stand = `<span class="themastand ${w.stil === "sitzt" ? "sitzt" : "faellig"}">${w.text}</span>`;
             } else if (mal){
               /* Ohne Konto gibt es keinen Wiederholungsplan — aber sagen kann
                  man trotzdem, wo man schon war. */
-              stand = `<span class="themastand geuebt">${SYM.haken} ${mal === 1 ? "schon geübt" : z(mal) + "× geübt"}</span>`;
+              /* Kein z(mal) hier: Die Planzeile hieß in diesem Block früher z
+                 und verdeckte damit die Zahlenformatierung — ab dem zweiten Mal
+                 ohne Konto legte das die ganze Themenliste lahm. Eine kleine
+                 ganze Zahl braucht ohnehin keine Formatierung. */
+              stand =`<span class="themastand geuebt">${SYM.haken} ${mal === 1 ? "schon geübt" : mal + "× geübt"}</span>`;
             } else {
               stand = `<span class="themastand">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
             }
             const sicher = t.replace(/'/g,"\\'");
             return `<div class="themazeile">
-              <button class="thema ${z || mal ? "schongemacht" : ""}" onclick="starte('${sicher}')">
+              <button class="thema ${plan || mal ? "schongemacht" : ""}" onclick="starte('${sicher}')">
                 <span class="themaname">${t}</span>
                 ${stand}
               </button>
@@ -35171,6 +35301,10 @@ function render(gewaehlt){
         ${schalter("kontrast","Stärkerer Kontrast","Kräftigere Schrift und deutlichere Linien")}
         ${schalter("bewegung","Bewegung reduzieren","Schaltet Animationen aus, wenn sie dich stören", true)}`)}
 
+      ${karte("e-tasten", "Größe der Knöpfe",
+        reihe("tasten", [["normal","Normal"], ["gross","Groß"]]),
+        "Große Knöpfe stehen weiter auseinander und sind leichter zu treffen — mit dicken Fingern, mit Handschuhen, mit einer Hand, die nicht ruhig hält.")}
+
       ${karte("e-vorlesen", "Vorlesen", kannVorlesen() ? `
         <div class="optionen3">
           ${wahl("vorlesen","aus","Aus","Kein Vorlesen")}
@@ -35228,19 +35362,56 @@ function render(gewaehlt){
         <button class="btn ghost full" style="margin-top:12px" onclick="tonGeben('gut')">Ton anhören</button>`,
         "Beides ist aus, bis du es einschaltest. Manchen hilft die Rückmeldung, andere übt neben schlafenden Geschwistern.")}
 
+      ${karte("e-antworten", "Wie viel steht zur Auswahl?",
+        reihe("antworten", [[3,"3"], [4,"4"], [6,"6"]]) +
+        `<p class="small soft" style="margin:12px 0 0;text-align:center">Höchstens
+           <b>${einstellungen.antworten || 6} Möglichkeiten</b> je Schritt</p>`,
+        "Sechs Möglichkeiten sind für manche ein Wald, durch den sie nicht durchsehen. Weniger heißt nicht leichter geraten — die falschen, die bleiben, sind genau die, auf die man wirklich hereinfällt.")}
+
+      ${karte("e-tastatur", "Tastatur beim Eintippen",
+        reihe("tastatur", [["auto","Passend zur Aufgabe"], ["voll","Immer die volle"]]),
+        "Bei reinen Zahlen kommt sonst der Zifferblock. Der ist schneller — versteckt auf manchen Handys aber Komma, Bruchstrich und Einheiten.")}`;
+
+    /* ---------- Dranbleiben ----------
+       Alles, was dafür sorgt, dass man wiederkommt und nichts wieder vergisst:
+       das Pensum für heute, die Serie, die Abstände des Wiederholungsplans und
+       die tägliche Erinnerung. */
+    bereiche.dranbleiben = `
       ${karte("e-tagesziel", "Tagesziel", `
         <div class="optionen3">
           ${[3,5,10].map(n => `
             <button class="option ${tagesziel() === n ? "an" : ""}" onclick="setzeEinstellung('tagesziel', ${n})">
               <b>${n} Aufgaben</b><span>${n === 3 ? "Für jeden Tag machbar" : n === 5 ? "Voreinstellung" : "Wenn du mehr willst"}</span>
             </button>`).join("")}
-        </div>`,
-        "So viele Aufgaben am Tag zählen als geschafft. Lieber klein anfangen — geschafft ist besser als viel.")}`;
+        </div>
+        <div class="reglerreihe" style="margin-top:18px">
+          <span class="reglermarke">1</span>
+          <input class="schriftregler" type="range" min="1" max="20" step="1"
+                 value="${tagesziel()}" oninput="setzeTagesziel(this.value)"
+                 aria-label="Tagesziel einstellen">
+          <span class="reglermarke">20</span>
+        </div>
+        <p class="small soft" style="margin:10px 0 0;text-align:center">
+          Oder frei einstellen · <b>${tagesziel()} ${tagesziel() === 1 ? "Aufgabe" : "Aufgaben"} am Tag</b></p>`,
+        "So viele Aufgaben am Tag zählen als geschafft. Lieber klein anfangen — geschafft ist besser als viel.")}
 
-    /* ---------- Erinnerungen ---------- */
-    bereiche.erinnerungen = `<div id="e-erinnerung" class="${einstHervor === "e-erinnerung" ? "hervor" : ""}">${
-      erinnerungenHtml() || `<div class="card"><p class="small soft" style="margin:0">Erinnerungen sind auf diesem Gerät nicht möglich.</p></div>`
-    }</div>`;
+      ${karte("e-serie", "Serie", `
+        ${schalter("serieZeigen","Tage in Folge anzeigen","Die Flamme oben, die zählt, an wie vielen Tagen hintereinander du geübt hast")}
+        ${serieZeigen() ? "" : `<p class="small soft" style="margin:12px 0 0">Gezählt wird trotzdem weiter — du siehst es nur nicht mehr. Über <b>/serie</b> kommst du jederzeit hin.</p>`}`,
+        "Für manche ist die Serie der Antrieb, für andere ein täglicher Vorwurf: Wer einmal aussetzt, sieht die Null und hört ganz auf. Deshalb lässt sie sich ausblenden.")}
+
+      ${karte("e-plan", "Wiederholungsplan", `
+        <div class="optionen3">
+          ${wahl("planTempo","sanft","Enger","Wieder nach 1, 2, 4, 8, 16 und 40 Tagen — für alles, was schnell wieder weg ist")}
+          ${wahl("planTempo","normal","Normal","Wieder nach 1, 3, 7, 14, 30 und 90 Tagen")}
+          ${wahl("planTempo","straff","Weiter","Wieder nach 2, 5, 12, 25, 60 und 150 Tagen — wenn dir das Übliche zu oft ist")}
+        </div>
+        ${benutzer ? "" : `<p class="small soft" style="margin:14px 0 0">Der Wiederholungsplan braucht ein Konto. Ohne Konto ändert diese Einstellung noch nichts.</p>`}`,
+        "Nach jedem sicheren Durchgang rückt ein Thema eine Stufe weiter und kommt entsprechend später wieder. Wer schnell vergisst, braucht kürzere Abstände.")}
+
+      <div id="e-erinnerung" class="${einstHervor === "e-erinnerung" ? "hervor" : ""}">${
+        erinnerungenHtml() || `<div class="card"><p class="ueberschrift">${SYM.glocke} Erinnerungen</p><p class="small soft" style="margin:0">Erinnerungen sind auf diesem Gerät nicht möglich. Auf dem iPhone geht es erst, wenn die App auf dem Home-Bildschirm liegt.</p></div>`
+      }</div>`;
 
     /* ---------- Über dich ---------- */
     bereiche.dich = `
@@ -35252,6 +35423,10 @@ function render(gewaehlt){
         </div>
         <p class="small soft" style="margin:12px 0 0">Gilt für Mathe, Deutsch und Englisch. In der Ausbildung wird weiter nach dem Lehrjahr gefragt.</p>`,
         "Wenn du sie festlegst, kommst du nach dem Fach sofort zu den Themen — die Klassenwahl fällt weg. Über den Pfad oben kommst du trotzdem in jede andere Klasse.")}
+
+      ${karte("e-themenfilter", "Die Themenliste",
+        reihe("themenFilter", [["alle","Alle Themen"], ["offen","Nur, was offen ist"]]),
+        "Nach dem dritten Besuch sucht man in einer Klasse nicht mehr das Thema, sondern die Lücke. Über der Liste steht dann, wie viele ausgeblendet sind — ein Klick holt sie zurück.")}
 
       ${karte("e-start", "Womit die App startet", `
         <div class="stufenreihe">
@@ -35305,8 +35480,13 @@ function render(gewaehlt){
         `<button class="btn ghost full" onclick="appNeuLaden()">App neu laden</button>`,
         "Wenn etwas hängt oder du eine ältere Fassung siehst: holt alles frisch aus dem Netz. Dein Fortschritt bleibt.")}
 
-      ${karte("e-zuruecksetzen", "Einstellungen zurücksetzen",
-        `<button class="btn ghost full" onclick="einstellungenZuruecksetzen()">Alles zurücksetzen</button>`,
+      ${karte("e-zuruecksetzen", "Einstellungen zurücksetzen", zuruecksetzenGefragt
+        ? `<div class="feedback nope" style="margin:0 0 12px"><b>Sicher?</b> Alle
+             ${Object.keys(einstellungen).length} Einstellungen gehen auf den Anfangszustand zurück —
+             auch Schriftart, Vorlesen und die Farben. Das lässt sich nicht rückgängig machen.</div>
+           <button class="btn ghost full" onclick="einstellungenZuruecksetzen()">Ja, alles zurücksetzen</button>
+           <button class="btn full" style="margin-top:10px" onclick="zuruecksetzenAbbrechen()">Lieber nicht</button>`
+        : `<button class="btn ghost full" onclick="zuruecksetzenFragen()">Alles zurücksetzen</button>`,
         `Setzt alles auf dieser Seite auf den Anfangszustand. ${benutzer ? "Dein Fortschritt bleibt erhalten." : "Es gibt hier nichts anderes zu löschen: ohne Konto wird kein Fortschritt gespeichert."}`)}`;
 
     const jetzt = EINST_BEREICHE.find(b => b[0] === einstBereich);
@@ -35449,7 +35629,7 @@ function render(gewaehlt){
           ${/* Eine 0 direkt nach dem Lösen wäre entmutigend und obendrein falsch —
                 gezählt wird nur mit Konto. Dann lieber gar keine Kachel. */
             heuteZahl > 0 ? `<div><b>${heuteZahl}</b><span>heute gelöst</span></div>` : ""}
-          ${serieZahl > 0 ? `<div><b>${serieZahl}</b><span>${serieZahl === 1 ? "Tag" : "Tage"} in Folge</span></div>` : ""}
+          ${serieZahl > 0 && serieZeigen() ? `<div><b>${serieZahl}</b><span>${serieZahl === 1 ? "Tag" : "Tage"} in Folge</span></div>` : ""}
         </div>
         <p class="geschafftlob">${lob}</p>
       </div>

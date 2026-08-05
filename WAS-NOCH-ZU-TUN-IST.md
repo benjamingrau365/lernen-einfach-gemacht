@@ -233,6 +233,18 @@ ein Ring je Thema würde sichtbar machen, dass es vorangeht.
 * **Womit die App startet.** Wer immer dasselbe Fach übt, landet direkt dort.
 * **Einstellungssuche.** Bei über zwanzig Schaltern findet man „Ton"
   schneller durch Tippen als durch Blättern.
+* **Wiederholungsplan mit drei Tempi.** Enger (1, 2, 4, 8, 16, 40 Tage),
+  normal (1, 3, 7, 14, 30, 90) oder weiter (2, 5, 12, 25, 60, 150). Vorher
+  war es für alle dasselbe.
+* **Weniger zur Auswahl.** Drei statt sechs Möglichkeiten je Schritt, für
+  alle, die sechs nicht überblicken. Gekürzt wird von hinten — die
+  handgeschriebenen Ablenker mit eigener Begründung bleiben stehen.
+* **Serie abschaltbar.** Für die, denen sie täglich vorhält, dass sie
+  ausgesetzt haben.
+* **Themenliste: nur, was offen ist.** Filtert weg, was schon geübt ist.
+* **Große Knöpfe** und **volle Tastatur beim Eintippen**.
+* **Sicherheitsabfrage vor dem Zurücksetzen.** Ein Fehlgriff hat vorher
+  alle Einstellungen weggeräumt.
 
 ### Als Nächstes, in dieser Reihenfolge
 
@@ -263,6 +275,13 @@ ein Ring je Thema würde sichtbar machen, dass es vorangeht.
 7. **Ohne Klasse denken lernen.** In den Einstellungen: „Ich bin nicht in der
    Schule." Danach steht überall die Sache statt der Klassenstufe. Kostet
    wenig, verändert das Gefühl der ganzen Seite.
+
+8. **Erinnerung zu einer eigenen Uhrzeit und an eigenen Tagen.** Geht heute
+   nicht: Die Tabelle `push_abos` hat nur Endpunkt und Schlüssel, und
+   verschickt wird aus einem Cron-Job heraus an alle zugleich. Dafür bräuchte
+   die Tabelle zwei Spalten (`uhrzeit`, `tage`) und der Cron-Job eine
+   Bedingung darauf. Eine Einstellung, die nichts bewirkt, wäre schlimmer als
+   keine — deshalb steht sie noch nicht drin.
 
 8. **Rechenweg zum Nachlesen.** Nach einer gelösten Aufgabe der ganze Weg am
    Stück, nicht nur der letzte Schritt. Zum Abfotografieren fürs Heft.
