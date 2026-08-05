@@ -1288,7 +1288,7 @@
   .option:hover{border-color:var(--ac)}
   .option.an{border-color:var(--ac);background:var(--ac-soft)}
   .option b{display:block;font-size:16.5px}
-  .option span{font-size:14px;color:var(--soft)}
+  .option span{font-size:14px;color:var(--soft);line-height:1.42;display:block;margin-top:3px}
   .option.an b{color:var(--ac-dark)}
 
   /* ---------- Leitstand ---------- */
@@ -2023,7 +2023,10 @@
   .fachzeile:hover .fachname{color:var(--akz,var(--ac-dark))}
   .fachname{font-weight:600;font-size:17px;color:var(--akz,var(--ink))}
 
-  /* ---------- Einstellungen: Reiter, Gruppen und Schalter ---------- */
+  /* ---------- Einstellungen: Reiter, Suche und Schalter ---------- */
+  /* Auf dem Handy liegt die Reiterleiste als Zeile über dem Inhalt, auf dem
+     Rechner steht sie links daneben — dort war rechts und links nur Luft. */
+  .einstrahmen{display:block}
   .einstnav{position:sticky;top:0;z-index:30;display:flex;gap:8px;overflow-x:auto;
     padding:10px 2px;margin:0 0 4px;background:var(--bg);
     scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -2035,6 +2038,17 @@
   .einstchip.an{background:var(--ac);border-color:var(--ac);color:#fff;
     box-shadow:0 3px 10px rgba(0,0,0,.10)}
   @media(hover:hover){ .einstchip:not(.an):hover{border-color:var(--ac);color:var(--ac-dark)} }
+  @media(min-width:900px){
+    .einstrahmen{display:grid;grid-template-columns:minmax(0,206px) minmax(0,1fr);
+      gap:26px;align-items:start}
+    .einstnav{position:sticky;top:14px;flex-direction:column;gap:4px;overflow:visible;
+      padding:0;margin:6px 0 0;background:none}
+    .einstchip{width:100%;text-align:left;border-radius:11px;border-color:transparent;
+      background:none;padding:11px 14px;box-shadow:none}
+    .einstchip.an{background:var(--ac-soft);border-color:transparent;color:var(--ac-dark);
+      box-shadow:none}
+    @media(hover:hover){ .einstchip:not(.an):hover{background:var(--card);color:var(--ink)} }
+  }
   /* Ein Satz darüber, was in diesem Reiter steckt */
   .einstlead{margin:2px 2px 14px;color:var(--soft);
     font-size:calc(14px * var(--fs,1));line-height:1.5}
@@ -2042,6 +2056,66 @@
   @keyframes einstauf{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   @media(prefers-reduced-motion:reduce){ .einstteil{animation:none} }
   html.ruhig .einstteil{animation:none}
+
+  /* Suche über den Einstellungen: bei über zwanzig Schaltern findet man
+     „Ton" schneller durch Tippen als durch Blättern. */
+  .einstsuchzeile{display:flex;align-items:center;gap:9px;margin-top:16px;
+    background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:0 12px}
+  .einstsuchzeile svg{width:18px;height:18px;flex:none;color:var(--soft)}
+  .einstsuchzeile:focus-within{border-color:var(--ac)}
+  .einstsuchfeld{flex:1;min-width:0;background:none;border:none;outline:none;
+    font:inherit;font-size:calc(16px * var(--fs,1));color:var(--ink);padding:12px 0}
+  .einstsuchfeld::-webkit-search-cancel-button{display:none}
+  .einstsuchweg{flex:none;background:none;border:none;font:inherit;font-size:22px;line-height:1;
+    color:var(--soft);cursor:pointer;padding:4px}
+  .einsttreffer{display:grid;gap:8px;margin-top:12px}
+  .einsttreff{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    width:100%;text-align:left;background:var(--bg);border:1.5px solid var(--line);
+    border-radius:11px;padding:11px 14px;font:inherit;color:var(--ink);cursor:pointer}
+  .einsttreff b{font-size:calc(15.5px * var(--fs,1))}
+  .einsttreff span{font-size:calc(13px * var(--fs,1));color:var(--soft);white-space:nowrap}
+  @media(hover:hover){ .einsttreff:hover{border-color:var(--ac)} }
+  /* Wer über die Suche hierher springt, soll sehen, welche Karte gemeint war. */
+  .card.hervor, .hervor > .card{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
+
+  /* Schieberegler für kurze Entscheidungen — drei Kacheln untereinander waren
+     für „Hell / Dunkel / Wie das Gerät" reine Platzverschwendung. */
+  .segment{display:flex;gap:4px;background:var(--bg);border:1.5px solid var(--line);
+    border-radius:12px;padding:4px}
+  /* Kein nowrap: Lieber wird der Knopf zwei Zeilen hoch, als dass „Automatisch"
+     auf dem schmalen Handy zu „Automa…" verstümmelt wird. */
+  .segstueck{flex:1 1 0;min-width:0;background:none;border:none;border-radius:9px;
+    padding:11px 6px;font:inherit;font-size:calc(14.5px * var(--fs,1));font-weight:600;
+    line-height:1.3;color:var(--soft);cursor:pointer;hyphens:manual}
+  .segstueck.an{background:var(--card);color:var(--ac-dark);box-shadow:0 1px 4px rgba(0,0,0,.10)}
+  @media(hover:hover){ .segstueck:not(.an):hover{color:var(--ink)} }
+
+  /* Probe für die Schriftart — mit genau den Buchstaben, die sich vermischen */
+  .schriftprobe{margin:16px 0 0;padding:14px 15px;background:var(--bg);
+    border-radius:11px;font-size:calc(17px * var(--fs,1));line-height:1.6}
+  /* Ohne feste Größe füllt ein SVG den ganzen Knopf aus. */
+  .btn svg{width:1.1em;height:1.1em;vertical-align:-.2em;margin-right:7px;flex:none}
+  .sicherhinweis{margin:0 0 13px;padding:11px 13px;border-radius:11px;
+    background:var(--ac-soft);color:var(--ac-dark);
+    font-size:calc(14.5px * var(--fs,1));line-height:1.5}
+
+  /* Lautsprecher neben der Frage */
+  .hoerknopf{margin-left:9px;vertical-align:-.22em;background:var(--card);
+    border:1.5px solid var(--line);border-radius:9px;padding:5px;cursor:pointer;
+    color:var(--soft);line-height:0}
+  .hoerknopf svg{width:19px;height:19px;display:block}
+  @media(hover:hover){ .hoerknopf:hover{border-color:var(--ac);color:var(--ac-dark)} }
+
+  /* ---------- Schriftart und Zeilenbreite ----------
+     Es geht nicht um Geschmack: Wer b, d, p und q verwechselt, liest mit einer
+     breiteren Schrift messbar sicherer. Und eine Zeile, die über den halben
+     Bildschirm läuft, verliert man beim Zurückspringen. */
+  html[data-schriftart="breit"] body{font-family:Verdana,"DejaVu Sans",Tahoma,Geneva,sans-serif;
+    letter-spacing:.005em}
+  html[data-schriftart="serifen"] body{font-family:Georgia,"Times New Roman",Times,serif}
+  html[data-zeilen="kurz"] .card > p, html[data-zeilen="kurz"] .card > ul,
+  html[data-zeilen="kurz"] .card > ol, html[data-zeilen="kurz"] .frage,
+  html[data-zeilen="kurz"] .feedback{max-width:34em}
 
   .stufenreihe{display:flex;flex-wrap:wrap;gap:8px}
   .stufe{background:var(--card);border:1.5px solid var(--line);border-radius:11px;
@@ -2160,7 +2234,9 @@
     .kachelpaar{grid-template-columns:1fr 1fr;gap:14px}
     .kachelpaar .card{margin-bottom:0}
     .merktext{font-size:21px}
-    .optionen3{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+    /* 190px liessen in der Einstellungsspalte nur zwei Spalten zu — die dritte
+       Kachel stand dann allein in der zweiten Zeile. */
+    .optionen3{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
   }
 </style>
 </head>
@@ -11818,9 +11894,10 @@ function schaetzSchritt(letzter){
 
 /* Vor den letzten Schritt gesetzt: Erst schätzen, dann ausrechnen. Der letzte
    Schritt bleibt der, den man eintippt — daran hängt die ganze App. */
-function schaetzenEinbauen(aufgabe){
+function schaetzenEinbauen(aufgabe, immer){
   const schritte = aufgabe.schritte;
-  if (!Array.isArray(schritte) || schritte.length < 2 || schritte.length >= 4) return;
+  if (!Array.isArray(schritte) || schritte.length < 2) return;
+  if (!immer && schritte.length >= 4) return;
   const neu = schaetzSchritt(schritte[schritte.length - 1]);
   if (!neu) return;
   /* Nicht zweimal dasselbe fragen: Steht im vorletzten Schritt schon etwas
@@ -12134,12 +12211,19 @@ function baueAufgabe(name, welche){
   const bauer = liste[welche % liste.length];
   const aufgabe = typeof bauer === "function" ? bauer() : JSON.parse(JSON.stringify(bauer));
   entdoppeln(aufgabe);
+  /* Wie ausführlich soll es sein? „Kurz“ lässt Einstieg, Schätzschritt und
+     Abschluss weg — für Leute, die das Thema können und nur üben wollen.
+     „Ausführlich“ baut den Schätzschritt auch dann ein, wenn die Aufgabe von
+     sich aus schon tief ist. */
+  const tiefe = (typeof einstellungen !== "undefined" && einstellungen.tiefe) || "normal";
   /* Erst der Schätzschritt, dann Einstieg und Abschluss: Der Schätzschritt
      schaut darauf, wie tief die Aufgabe von sich aus ist. Kämen die
      Themenschritte zuerst, hielte er jede Aufgabe für schon tief genug und
      bliebe weg. */
-  schaetzenEinbauen(aufgabe);
-  themenSchritteEinbauen(aufgabe, name);
+  if (tiefe !== "kurz"){
+    schaetzenEinbauen(aufgabe, tiefe === "ausfuehrlich");
+    themenSchritteEinbauen(aufgabe, name);
+  }
   (aufgabe.schritte || []).forEach(s => fuelleAuf(s, ZIEL_ANTWORTEN));
   return aufgabe;
 }
@@ -30261,8 +30345,13 @@ function datenschutzHtml(){
       <p class="ueberschrift" style="margin-top:26px">10. Cookies und Speicherung im Browser</p>
       <p class="einfachtext">Wir verwenden <b>keine</b> Werbe-, Marketing- oder Analyse-Cookies und binden keine Zählpixel oder Social-Media-Buttons ein. Deshalb gibt es hier auch kein Cookie-Banner.</p>
       <p class="einfachtext">Gespeichert wird in deinem Browser nur, was für den Betrieb nötig ist: deine Einstellungen (Hell- oder Dunkelmodus, Schriftgröße, Art der Antwortabfrage), der Hinweis, dass du den Baustellen-Hinweis gesehen hast, die Namen der Themen, die du fertig geübt hast — damit die Themenliste dir zeigen kann, wo du schon warst —, deine selbst angelegten Vokabeln und eingetragenen Prüfungstermine, und — wenn du angemeldet bist — die Information, die dich angemeldet hält. Das alles bleibt auf deinem Gerät: Es wird nicht an uns übertragen, auch nicht ohne Konto. Das fällt unter § 25 Abs. 2 TDDDG (unbedingt erforderliche Speicherung). Du kannst es jederzeit über die Einstellungen deines Browsers löschen.</p>
+      <p class="einfachtext">Unter <b>Einstellungen → Daten &amp; Gerät</b> kannst du all das als Datei herunterladen und auf einem anderen Gerät wieder einlesen. Die Datei entsteht in deinem Browser und geht nirgendwohin, außer du verschickst sie selbst.</p>
 
-      <p class="ueberschrift" style="margin-top:26px">11. Wie lange wir speichern</p>
+      <p class="ueberschrift" style="margin-top:26px">11. Vorlesen</p>
+      <p class="einfachtext">Wenn du das Vorlesen einschaltest, benutzt die Seite die Vorlesefunktion, die dein Browser mitbringt (Web Speech API). Wir betreiben dafür keinen eigenen Dienst und bekommen nichts davon zu sehen.</p>
+      <p class="einfachtext">Wichtig zu wissen: <b>Manche Stimmen rechnen auf deinem Gerät, andere über die Server des Browser-Herstellers.</b> Bei einer Netz-Stimme schickt dein Browser den vorzulesenden Text — also den Aufgabentext und die Frage — an diesen Hersteller (bei Chrome etwa an Google). Darauf haben wir keinen Einfluss. In der Stimmenauswahl steht deshalb bei jeder Stimme, ob sie <i>auf dem Gerät</i> läuft oder <i>über das Netz</i>. Wenn dir das wichtig ist, wähl eine Stimme, die auf dem Gerät läuft.</p>
+
+      <p class="ueberschrift" style="margin-top:26px">12. Wie lange wir speichern</p>
       <ul class="liste">
         <li><b>Konto und Lernfortschritt:</b> solange dein Konto besteht.</li>
         <li><b>Löschst du dein Konto</b>, werden alle zugehörigen Daten sofort und vollständig gelöscht — nicht nur ausgeblendet.</li>
@@ -30270,10 +30359,10 @@ function datenschutzHtml(){
         <li><b>Technische Protokolle des Hosters:</b> kurzfristig, automatisch.</li>
       </ul>
 
-      <p class="ueberschrift" style="margin-top:26px">12. Kinder und Jugendliche</p>
+      <p class="ueberschrift" style="margin-top:26px">13. Kinder und Jugendliche</p>
       <p class="einfachtext">Diese Seite richtet sich an Schülerinnen und Schüler ab Klasse 5. Wenn du jünger als 16 Jahre bist, dürfen wir dein Konto nur mit Einverständnis deiner Eltern oder Erziehungsberechtigten anlegen (Art. 8 DSGVO). Frag sie also bitte vorher. <b>Ohne Konto kannst du die ganze Seite nutzen, ohne dass irgendetwas gespeichert wird</b> — das ist der einfachste Weg, wenn du dir unsicher bist.</p>
 
-      <p class="ueberschrift" style="margin-top:26px">13. Deine Rechte</p>
+      <p class="ueberschrift" style="margin-top:26px">14. Deine Rechte</p>
       <p class="einfachtext">Du hast jederzeit das Recht auf:</p>
       <ul class="liste">
         <li><b>Auskunft</b> darüber, welche Daten wir zu dir gespeichert haben (Art. 15)</li>
@@ -30286,10 +30375,10 @@ function datenschutzHtml(){
       </ul>
       <p class="einfachtext">Für Auskunft oder Löschung reicht eine formlose Nachricht an hilfe@endlichkapiert.com. Löschen kannst du auch selbst und sofort: unter <b>Mein Konto → Konto löschen</b>.</p>
 
-      <p class="ueberschrift" style="margin-top:26px">14. Beschwerderecht</p>
+      <p class="ueberschrift" style="margin-top:26px">15. Beschwerderecht</p>
       <p class="einfachtext">Wenn du der Meinung bist, dass wir mit deinen Daten nicht richtig umgehen, kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Zuständig ist die Datenschutz-Aufsichtsbehörde des Bundeslandes, in dem wir unseren Sitz haben. Du kannst dich aber auch an die Behörde deines eigenen Wohnorts wenden — jede Aufsichtsbehörde nimmt deine Beschwerde entgegen und leitet sie gegebenenfalls weiter.</p>
 
-      <p class="ueberschrift" style="margin-top:26px">15. Änderungen dieser Erklärung</p>
+      <p class="ueberschrift" style="margin-top:26px">16. Änderungen dieser Erklärung</p>
       <p class="einfachtext">Die Seite wird weiterentwickelt. Ändert sich etwas an der Datenverarbeitung, passen wir diese Erklärung an. Es gilt jeweils die hier veröffentlichte Fassung.</p>
       <p class="einfachtext small soft" style="margin-top:22px">Stand: ${STAND}</p>
     </div>`;
@@ -30450,7 +30539,11 @@ const SYM = {
   handy:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>`,
   rechner:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>`,
   teilen:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:1em;height:1em;vertical-align:-.15em;display:inline-block"><path d="M12 15V3"/><path d="M8.5 6.5L12 3l3.5 3.5"/><path d="M6 12v7.5a1.5 1.5 0 0 0 1.5 1.5h9a1.5 1.5 0 0 0 1.5-1.5V12"/></svg>`,
-  glocke:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6z"/><path d="M10.5 20a2 2 0 0 0 3 0"/></svg>`
+  glocke:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6z"/><path d="M10.5 20a2 2 0 0 0 3 0"/></svg>`,
+  /* Lautsprecher fürs Vorlesen */
+  laut:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>`,
+  /* Diskette für „Fortschritt sichern“ */
+  sichern:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11"/><path d="M8 10.5 12 14.5l4-4"/><path d="M4.5 16v3.5h15V16"/></svg>`
 };
 
 /* ---------- Aktivität: Serie und Tagesziel ---------- */
@@ -31754,7 +31847,16 @@ const einstellungen = {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:
   tagesziel:0,          /* 0 = Voreinstellung benutzen */
   stufe:0,              /* Lieblings-Klassenstufe, 0 = jedes Mal fragen */
   autoWeiter:false,     /* nach richtiger Antwort von allein weiterblättern */
-  erklaerungZuerst:false};  /* Thema erst erklären, dann rechnen */
+  erklaerungZuerst:false,   /* Thema erst erklären, dann rechnen */
+  schriftart:"standard",/* standard | breit (leichter zu unterscheiden) | serifen */
+  zeilen:"normal",      /* normal | kurz — kurze Zeilen liest man leichter */
+  tiefe:"normal",       /* kurz | normal | ausfuehrlich — wie viele Schritte */
+  klang:false,          /* kurzer Ton bei richtig und falsch */
+  vibrieren:false,      /* kurzes Rütteln bei falsch (nur Handy) */
+  vorlesen:"aus",       /* aus | knopf | auto */
+  lesetempo:1,          /* 0,7 bis 1,3 */
+  lesestimme:"",        /* Name der gewählten Stimme */
+  start:"standard"};    /* standard | Schlüssel eines Fachs */
 const BUNDESLAENDER = ["Baden-Württemberg","Bayern","Berlin","Brandenburg","Bremen","Hamburg",
   "Hessen","Mecklenburg-Vorpommern","Niedersachsen","Nordrhein-Westfalen","Rheinland-Pfalz",
   "Saarland","Sachsen","Sachsen-Anhalt","Schleswig-Holstein","Thüringen"];
@@ -31794,7 +31896,108 @@ function wendeEinstellungenAn(){
   document.documentElement.classList.toggle("lesehilfe", !!einstellungen.lesehilfe);
   document.documentElement.classList.toggle("ruhig", einstellungen.bewegung === false);
   document.documentElement.classList.toggle("kontrast", !!einstellungen.kontrast);
+  document.documentElement.dataset.schriftart = einstellungen.schriftart || "standard";
+  document.documentElement.dataset.zeilen = einstellungen.zeilen || "normal";
   farbenAnwenden();
+}
+
+/* ---------- Ton und Rütteln ----------
+   Kein Klang aus einer Datei: zwei kurze Töne aus dem Browser selbst. Das
+   kostet nichts an Ladezeit und funktioniert auch ohne Netz. Beides ist
+   ausgeschaltet, bis man es einschaltet — ungefragt piepen ist ärgerlich. */
+let tonWerk = null;
+function tonGeben(art){
+  if (!einstellungen.klang) return;
+  try {
+    const Werk = window.AudioContext || window.webkitAudioContext;
+    if (!Werk) return;
+    tonWerk = tonWerk || new Werk();
+    if (tonWerk.state === "suspended") tonWerk.resume();
+    /* richtig: zwei Töne aufwärts. falsch: ein tiefer, kurzer. */
+    const noten = art === "gut" ? [660, 990] : [200];
+    noten.forEach((hz, i) => {
+      const o = tonWerk.createOscillator(), v = tonWerk.createGain();
+      o.type = "sine"; o.frequency.value = hz;
+      const t0 = tonWerk.currentTime + i * 0.1;
+      v.gain.setValueAtTime(0.0001, t0);
+      v.gain.exponentialRampToValueAtTime(0.12, t0 + 0.015);
+      v.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.17);
+      o.connect(v); v.connect(tonWerk.destination);
+      o.start(t0); o.stop(t0 + 0.2);
+    });
+  } catch(e){ /* ohne Ton geht es auch */ }
+}
+function ruetteln(){
+  if (!einstellungen.vibrieren) return;
+  try { if (navigator.vibrate) navigator.vibrate(35); } catch(e){}
+}
+
+/* ---------- Vorlesen ----------
+   Wer schlecht liest, scheitert an der Aufgabe, bevor er über die Sache
+   nachdenken kann. Der Browser bringt eine Vorlesestimme mit — sie braucht
+   kein Netz und schickt nichts irgendwohin. */
+let sprachStimmen = [];
+function kannVorlesen(){
+  return !!window.speechSynthesis && typeof window.SpeechSynthesisUtterance === "function";
+}
+function stimmenLaden(){
+  try {
+    sprachStimmen = kannVorlesen()
+      ? (speechSynthesis.getVoices() || []).filter(s => /^de/i.test(s.lang || "")) : [];
+  } catch(e){ sprachStimmen = []; }
+  return sprachStimmen;
+}
+if (typeof window !== "undefined" && window.speechSynthesis){
+  stimmenLaden();
+  /* Die Liste kommt bei manchen Browsern erst später. */
+  try { speechSynthesis.addEventListener("voiceschanged", stimmenLaden); } catch(e){}
+}
+/* Aus dem Aufgabentext wird gesprochene Sprache: Auszeichnungen raus,
+   Rechenzeichen als Wort, damit „U = R · I“ nicht als Stille ankommt. */
+function vorleseText(html){
+  const kasten = document.createElement("div");
+  kasten.innerHTML = String(html == null ? "" : html);
+  return (kasten.textContent || "")
+    .replace(/·/g, " mal ").replace(/÷/g, " geteilt durch ")
+    .replace(/\s*=\s*/g, " gleich ").replace(/\s*≈\s*/g, " ungefähr ")
+    .replace(/\s+/g, " ").trim();
+}
+function sprich(text){
+  if (!kannVorlesen()) return;
+  const satz = vorleseText(text);
+  if (!satz) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(satz);
+    u.lang = "de-DE";
+    u.rate = Math.min(1.4, Math.max(0.6, parseFloat(einstellungen.lesetempo) || 1));
+    const stimme = (sprachStimmen.length ? sprachStimmen : stimmenLaden())
+      .find(s => s.name === einstellungen.lesestimme);
+    if (stimme) u.voice = stimme;
+    speechSynthesis.speak(u);
+  } catch(e){ /* dann eben nicht */ }
+}
+function sprechenAus(){ try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch(e){} }
+/* Der Lautsprecher neben der Frage — nur, wenn Vorlesen eingeschaltet ist. */
+function vorleseKnopfHtml(){
+  if (einstellungen.vorlesen === "aus" || !kannVorlesen()) return "";
+  return `<button class="hoerknopf" onclick="frageVorlesen()"
+            title="Aufgabe und Frage vorlesen" aria-label="Aufgabe und Frage vorlesen">${SYM.laut}</button>`;
+}
+function frageVorlesen(){
+  if (!aktuell) return;
+  const s = aktuell.schritte[schrittNr] || {};
+  sprich((aktuell.text ? aktuell.text + ". " : "") + (s.frage || ""));
+}
+/* Bei „von allein“ jeden Schritt genau einmal vorlesen — nicht bei jedem
+   Neuzeichnen, sonst fängt die Stimme nach jedem Klick von vorn an. */
+let zuletztVorgelesen = "";
+function vorlesenWennGewuenscht(){
+  if (einstellungen.vorlesen !== "auto" || !aktuell) return;
+  const marke = `${aktuellName}|${variante}|${schrittNr}`;
+  if (marke === zuletztVorgelesen) return;
+  zuletztVorgelesen = marke;
+  frageVorlesen();
 }
 /* Die gewählte Farbe je Fach als Eigenschaft an <html> schreiben. Sie zeigt auf
    die Palette, nicht auf einen festen Wert — dadurch stimmt sie in Hell und
@@ -31821,19 +32024,136 @@ function setzeFachFarbe(f, farbe){
    Früher stand alles auf einer einzigen, sehr langen Rolle. Jetzt sind es
    Reiter: sichtbar ist immer nur der Bereich, den man gewählt hat. */
 const EINST_BEREICHE = [
-  ["aussehen","Aussehen","Farben, Schriftgröße und wie leicht sich alles lesen lässt."],
-  ["ueben","Üben","Wie du antwortest, wie viel Hilfe kommt und was ein Tag zählt."],
+  ["ansicht","Ansicht","Hell oder dunkel, Farben und wie groß die Schrift ist."],
+  ["lesen","Lesen","Schriftart, Zeilen, Abstände — und Vorlesen für alles, was hier steht."],
+  ["ueben","Üben","Wie du antwortest, wie ausführlich es ist und wie viel Hilfe kommt."],
   ["erinnerungen","Erinnerungen","Wann dich die App ans Üben erinnert."],
-  ["dich","Über dich","Klassenstufe, Bundesland und dein Zugang."],
-  ["geraet","Gerät","Die App ablegen, neu laden oder alles zurücksetzen."]
+  ["dich","Über dich","Klassenstufe, Bundesland, Startseite und dein Zugang."],
+  ["daten","Daten & Gerät","Fortschritt sichern, App ablegen, alles zurücksetzen."]
 ];
-let einstBereich = "aussehen";
+/* Womit man rechnet, wenn man etwas sucht: Name, Bereich und die Wörter, unter
+   denen jemand danach suchen würde — auch die, die wir selbst nicht benutzen. */
+const EINST_PUNKTE = [
+  ["e-modus","ansicht","Hell oder dunkel","dunkelmodus nachtmodus dark mode augen blenden hell"],
+  ["e-farben","ansicht","Farbe der Fächer","farbe fach schnellhefter mathe deutsch blau rot"],
+  ["e-groesse","ansicht","Schriftgröße","schrift größer kleiner zoom lesen winzig"],
+  ["e-schriftart","lesen","Schriftart","schriftart font legasthenie buchstaben verwechseln serifen"],
+  ["e-zeilen","lesen","Zeilenbreite","zeile breit lang kurz textbreite lesen"],
+  ["e-lesehilfe","lesen","Leichter lesen","abstand kontrast bewegung animation ruhig legasthenie"],
+  ["e-vorlesen","lesen","Vorlesen","vorlesen sprache stimme hören laut audio blind lesen schwer"],
+  ["e-eingabe","ueben","Antworten","antwort tippen auswählen anklicken raten tastatur"],
+  ["e-tiefe","ueben","Wie ausführlich","schritte kurz lang ausführlich schnell zwischenschritte tempo"],
+  ["e-hilfe","ueben","Hilfe beim Üben","tipp hilfe hinweis lösung erklärung"],
+  ["e-erstklaeren","ueben","Erklärung zuerst","erklärung zuerst vorher lesen einführung"],
+  ["e-klang","ueben","Ton und Rütteln","ton klang sound piep vibration rütteln stumm leise"],
+  ["e-tagesziel","ueben","Tagesziel","ziel tag aufgaben pensum serie"],
+  ["e-erinnerung","erinnerungen","Erinnerungen","erinnerung benachrichtigung push wecker uhrzeit"],
+  ["e-stufe","dich","Deine Klassenstufe","klasse stufe jahrgang lehrjahr 5 6 7 8 9 10"],
+  ["e-land","dich","Bundesland","bundesland land lehrplan bayern nrw"],
+  ["e-start","dich","Womit die App startet","startseite start fach direkt lieblingsfach"],
+  ["e-zugang","dich","Dein Zugang","konto anmelden abmelden passwort e-mail registrieren"],
+  ["e-sichern","daten","Fortschritt sichern","sichern backup datei speichern umziehen handy wechseln export"],
+  ["e-install","daten","Aufs Gerät legen","installieren app homebildschirm offline pwa"],
+  ["e-neuladen","daten","Neu laden","neu laden hängt alte fassung aktualisieren cache"],
+  ["e-zuruecksetzen","daten","Einstellungen zurücksetzen","zurücksetzen löschen anfang standard"]
+];
+let einstBereich = "ansicht";
+let einstSuche = "";
+let einstHervor = "";
 function einstBereichWaehlen(id){
   if (!EINST_BEREICHE.some(b => b[0] === id)) return;
-  einstBereich = id;
+  einstBereich = id; einstHervor = "";
   render();
   /* Nach dem Wechsel oben anfangen, sonst steht man mitten im neuen Bereich. */
   window.scrollTo({ top: 0, behavior: einstellungen.bewegung === false ? "auto" : "smooth" });
+}
+function einstSuchTippen(wert){ einstSuche = wert; render(); }
+function einstSuchLeeren(){ einstSuche = ""; einstHervor = ""; render(); }
+function einstTreffer(){
+  const q = String(einstSuche || "").toLowerCase().trim();
+  if (q.length < 2) return [];
+  return EINST_PUNKTE.filter(([, , titel, worte]) =>
+    (titel + " " + worte).toLowerCase().includes(q)).slice(0, 8);
+}
+/* Aus dem Suchergebnis heraus: Bereich wechseln, hinscrollen, kurz aufleuchten. */
+function einstSpringen(id, bereich){
+  einstBereich = bereich; einstHervor = id; einstSuche = "";
+  render();
+  setTimeout(() => {
+    const ziel = document.getElementById(id);
+    if (!ziel) return;
+    ziel.scrollIntoView({ behavior: einstellungen.bewegung === false ? "auto" : "smooth", block: "center" });
+  }, 40);
+}
+/* ---------- Fortschritt sichern und zurückholen ----------
+   Ohne Konto liegt alles nur in diesem einen Browser. Wer den Verlauf löscht
+   oder das Handy wechselt, hat es weg. Deshalb: eine Datei zum Mitnehmen. */
+const SICHER_SCHLUESSEL = ["ek-einstellungen","ek_themen","ek_geuebt","ek_eigene_woerter",
+  "ek_pruefungen","ek_meilenstein","ek_beste_serie","ek_ls_bereich","ek_baustelle"];
+let sicherungHinweis = "";
+function gespeicherteMenge(){
+  let n = 0;
+  for (const k of SICHER_SCHLUESSEL){
+    try { const v = localStorage.getItem(k); if (v !== null) n += v.length; } catch(e){}
+  }
+  return n;
+}
+function datenSichern(){
+  const daten = {app:"Endlich kapiert", stand:1, gesichert:new Date().toISOString(), inhalt:{}};
+  for (const k of SICHER_SCHLUESSEL){
+    try { const v = localStorage.getItem(k); if (v !== null) daten.inhalt[k] = v; } catch(e){}
+  }
+  try {
+    const blob = new Blob([JSON.stringify(daten, null, 2)], {type:"application/json"});
+    const netz = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = netz; a.download = "endlich-kapiert-sicherung.json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(netz), 4000);
+    sicherungHinweis = "Gesichert. Die Datei liegt jetzt in deinen Downloads — heb sie gut auf.";
+  } catch(e){ sicherungHinweis = "Das Sichern hat nicht geklappt. Vielleicht sperrt der Browser Downloads."; }
+  render();
+}
+function sicherungWaehlen(){
+  const feld = document.getElementById("sicherungDatei");
+  if (feld) feld.click();
+}
+function datenEinlesen(feld){
+  const datei = feld && feld.files && feld.files[0];
+  if (!datei) return;
+  const leser = new FileReader();
+  leser.onload = () => {
+    try {
+      const daten = JSON.parse(String(leser.result));
+      if (!daten || typeof daten.inhalt !== "object") throw new Error("kein Inhalt");
+      let n = 0;
+      for (const k of SICHER_SCHLUESSEL){
+        if (typeof daten.inhalt[k] === "string"){ localStorage.setItem(k, daten.inhalt[k]); n++; }
+      }
+      if (!n) throw new Error("nichts dabei");
+      sicherungHinweis = `${n} ${n === 1 ? "Eintrag" : "Einträge"} eingelesen. Die App lädt gleich neu.`;
+      render();
+      setTimeout(() => location.reload(), 900);
+    } catch(e){
+      sicherungHinweis = "Diese Datei passt nicht. Es muss die Sicherung von „Endlich kapiert“ sein.";
+      render();
+    }
+  };
+  leser.onerror = () => { sicherungHinweis = "Die Datei ließ sich nicht lesen."; render(); };
+  leser.readAsText(datei);
+}
+/* ---------- Womit die App startet ----------
+   Wer immer dasselbe Fach übt, will nicht jedes Mal zwei Mal klicken. */
+function startAnwenden(){
+  const s = einstellungen.start;
+  if (!s || s === "standard" || !KATALOG[s]) return;
+  /* Nur beim Aufruf der nackten Adresse — ein geteilter Link geht vor. */
+  const pfad = location.pathname.replace(/\/index\.html$/, "/");
+  if (pfad !== "/" && pfad !== "") return;
+  fach = s;
+  const wunsch = einstellungen.stufe;
+  if (wunsch && KATALOG[s].themen[wunsch]){ klasse = wunsch; ansicht = "start"; }
+  else { klasse = null; ansicht = "klassenwahl"; }
 }
 /* Alles frisch aus dem Netz holen — hilft, wenn eine alte Fassung hängen bleibt */
 async function appNeuLaden(){
@@ -31853,7 +32173,10 @@ async function appNeuLaden(){
 function einstellungenZuruecksetzen(){
   Object.assign(einstellungen, {modus:"auto", schrift:"normal", schriftSkala:1, autoTipp:true,
     eingabe:"gemischt", bundesland:"", fachfarben:{}, lesehilfe:false, bewegung:true,
-    kontrast:false, tagesziel:0, stufe:0, autoWeiter:false, erklaerungZuerst:false});
+    kontrast:false, tagesziel:0, stufe:0, autoWeiter:false, erklaerungZuerst:false,
+    schriftart:"standard", zeilen:"normal", tiefe:"normal", klang:false, vibrieren:false,
+    vorlesen:"aus", lesetempo:1, lesestimme:"", start:"standard"});
+  sprechenAus();
   speichereEinstellungen(); wendeEinstellungenAn(); render();
 }
 function farbenZuruecksetzen(){
@@ -33800,6 +34123,7 @@ async function pruefeAnmeldung(){
   benutzer = data.session ? data.session.user : null;
   if (benutzer){ await ladeFortschritt(); await pruefeAdmin(); await ladeAktivitaet(); ansicht = "uebersicht"; }
   else { istAdmin = false; aktivitaet = {serie:0, heute:0, geladen:true}; ansicht = "willkommen"; }
+  startAnwenden();
   ansichtAusPfad();
   render();
 }
@@ -34023,6 +34347,9 @@ function zurueckVonErklaerung(){ ansicht = vorErklaerung === "erklaerung" ? "sta
 let vorEinstellungen = "willkommen";
 function zeigeEinstellungen(){
   if (ansicht !== "einstellungen") vorEinstellungen = ansicht;
+  /* Frisch aufmachen heißt frisch anfangen: keine alte Suche, kein alter
+     Hinweis von der letzten Sicherung. */
+  einstSuche = ""; einstHervor = ""; sicherungHinweis = "";
   ansicht = "einstellungen"; render();
 }
 
@@ -34058,10 +34385,12 @@ function antwort(i){
   if (falschGeklickt.includes(i)) return;          // dieselbe falsche Antwort nicht zweimal
   if (aktuell.schritte[schrittNr].optionen[i].ok){
     beantwortet = true;
+    tonGeben("gut");
     render(i);
     autoWeiter();
     return;
   }
+  tonGeben("falsch"); ruetteln();
   falschGeklickt.push(i);
   fehlerImSchritt++;
   fehlversuche++;
@@ -34153,9 +34482,11 @@ function eingabePruefen(){
   if (eingabePasst(wert, erwartet)){
     beantwortet = true;
     letzteEingabe = wert;
+    tonGeben("gut");
     render();
     return;
   }
+  tonGeben("falsch"); ruetteln();
   letzteEingabe = wert;
   fehlerImSchritt++;
   fehlversuche++;
@@ -34170,6 +34501,7 @@ function schrittZuruecksetzen(){
   falschGeklickt = []; fehlerImSchritt = 0; aufgeloest = false; erklaerungAngeboten = false; letzteEingabe = "";
 }
 async function weiter(){
+  sprechenAus();
   schrittNr++; beantwortet = false; hilfeStufe = 0;
   schrittZuruecksetzen();
   if (schrittNr < aktuell.schritte.length) neueReihenfolge();
@@ -34744,10 +35076,21 @@ function render(gewaehlt){
   if (ansicht === "passwortNeu"){ el.innerHTML = passwortNeuHtml(); return; }
 
   if (ansicht === "einstellungen"){
+    /* Große Kachel mit Untertext — für Entscheidungen, die Erklärung brauchen. */
     const wahl = (feld, wert, titel, unter) => `
       <button class="option ${einstellungen[feld] === wert ? "an" : ""}" onclick="setzeEinstellung('${feld}', ${typeof wert === "string" ? `'${wert}'` : wert})">
         <b>${titel}</b>${unter ? `<span>${unter}</span>` : ""}
       </button>`;
+    /* Schmaler Schieberegler nebeneinander — für kurze Entscheidungen, die
+       keinen Beipackzettel brauchen. Drei Kacheln untereinander waren dafür
+       reine Platzverschwendung. */
+    const reihe = (feld, punkte) => `
+      <div class="segment" role="group">
+        ${punkte.map(([wert, titel]) => `
+          <button class="segstueck ${einstellungen[feld] === wert ? "an" : ""}"
+                  aria-pressed="${einstellungen[feld] === wert}"
+                  onclick="setzeEinstellung('${feld}', ${typeof wert === "string" ? `'${wert}'` : wert})">${titel}</button>`).join("")}
+      </div>`;
     const schalter = (feld, titel, unter, umgekehrt) => {
       const an = umgekehrt ? !einstellungen[feld] : !!einstellungen[feld];
       return `
@@ -34757,23 +35100,27 @@ function render(gewaehlt){
         <span class="schalterknopf"></span>
       </button>`;
     };
-    if (!EINST_BEREICHE.some(b => b[0] === einstBereich)) einstBereich = "aussehen";
+    /* Jede Karte trägt ihre Kennung — daran findet die Suche sie wieder. */
+    const karte = (id, titel, inhalt, unter) => `
+      <div class="card ${einstHervor === id ? "hervor" : ""}" id="${id}">
+        <p class="ueberschrift">${titel}</p>
+        ${unter ? `<p class="small soft" style="margin:0 0 13px">${unter}</p>` : ""}
+        ${inhalt}
+      </div>`;
+
+    if (!EINST_BEREICHE.some(b => b[0] === einstBereich)) einstBereich = "ansicht";
     const bereiche = {};
 
-    bereiche.aussehen = `
-      <div class="card">
-        <p class="ueberschrift">Hell oder dunkel</p>
-        <div class="optionen3">
-          ${wahl("modus","hell","Hell","Heller Hintergrund")}
-          ${wahl("modus","dunkel","Dunkel","Schont die Augen abends")}
-          ${wahl("modus","auto","Automatisch","Wie dein Gerät eingestellt ist")}
-        </div>
-      </div>
+    /* ---------- Ansicht ---------- */
+    bereiche.ansicht = `
+      ${karte("e-modus", "Hell oder dunkel",
+        /* Weiches Trennzeichen: auf breiten Schirmen steht „Automatisch“ in einer
+           Zeile, auf dem 320er Handy bricht es sauber mit Bindestrich, statt
+           abgeschnitten zu werden. */
+        reihe("modus", [["hell","Hell"], ["dunkel","Dunkel"], ["auto","Auto&shy;matisch"]]),
+        "„Automatisch“ folgt deinem Gerät: abends dunkel, tagsüber hell.")}
 
-      <div class="card">
-        <p class="ueberschrift">Farbe der Fächer</p>
-        <p class="small soft" style="margin:0 0 14px">Voreingestellt sind die Farben der
-          Schnellhefter. Wenn deine anders sind, stell es um.</p>
+      ${karte("e-farben", "Farbe der Fächer", `
         ${Object.entries(KATALOG).map(([k, v]) => `
           <div class="farbzeile">
             <span class="farbfach" style="--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)">
@@ -34787,11 +35134,10 @@ function render(gewaehlt){
                         onclick="setzeFachFarbe('${k}','${schluessel}')"></button>`).join("")}
             </span>
           </div>`).join("")}
-        <button class="btn ghost full" style="margin-top:6px" onclick="farbenZuruecksetzen()">Zurück auf Schnellhefter-Farben</button>
-      </div>
+        <button class="btn ghost full" style="margin-top:6px" onclick="farbenZuruecksetzen()">Zurück auf Schnellhefter-Farben</button>`,
+        "Voreingestellt sind die Farben der Schnellhefter. Wenn deine anders sind, stell es um.")}
 
-      <div class="card">
-        <p class="ueberschrift">Schriftgröße</p>
+      ${karte("e-groesse", "Schriftgröße", `
         <div class="reglerreihe">
           <span class="reglerklein">A</span>
           <input class="schriftregler" type="range" min="${SCHRIFT_MIN}" max="${SCHRIFT_MAX}" step="0.05"
@@ -34802,132 +35148,209 @@ function render(gewaehlt){
         <p class="small soft" style="margin:12px 0 0;text-align:center">
           Nach rechts wischen = größer, nach links = kleiner ·
           <b>${Math.round((einstellungen.schriftSkala || 1) * 100)} %</b></p>
-        <div class="schriftvorschau">So sieht dein Text in dieser Größe aus.</div>
-      </div>
+        <div class="schriftvorschau">So sieht dein Text in dieser Größe aus.</div>`)}`;
 
-      <div class="card">
-        <p class="ueberschrift">Leichter lesen</p>
+    /* ---------- Lesen ---------- */
+    const stimmen = kannVorlesen() ? (sprachStimmen.length ? sprachStimmen : stimmenLaden()) : [];
+    bereiche.lesen = `
+      ${karte("e-schriftart", "Schriftart", `
+        <div class="optionen3">
+          ${wahl("schriftart","standard","Standard","Die Schrift deines Geräts")}
+          ${wahl("schriftart","breit","Breit und klar","Buchstaben stehen weiter auseinander — hilft, wenn sich b, d, p und q vermischen")}
+          ${wahl("schriftart","serifen","Mit Serifen","Die Buchstaben haben Füßchen. Manche folgen der Zeile damit leichter")}
+        </div>
+        <p class="schriftprobe">Der brave Zwerg prüft flink dreißig Wege. 0 O 1 l I b d p q</p>`,
+        "Die Buchstabenform entscheidet mit, wie schnell man liest.")}
+
+      ${karte("e-zeilen", "Zeilenbreite",
+        reihe("zeilen", [["normal","Normal"], ["kurz","Kurze Zeilen"]]),
+        "Kurze Zeilen bedeuten mehr Umbrüche — dafür verrutscht man beim Zurückspringen seltener.")}
+
+      ${karte("e-lesehilfe", "Leichter lesen", `
         ${schalter("lesehilfe","Mehr Abstand","Größerer Zeilen- und Buchstabenabstand — hilft, wenn Zeilen ineinanderlaufen")}
         ${schalter("kontrast","Stärkerer Kontrast","Kräftigere Schrift und deutlichere Linien")}
-        ${schalter("bewegung","Bewegung reduzieren","Schaltet Animationen aus, wenn sie dich stören", true)}
-      </div>`;
+        ${schalter("bewegung","Bewegung reduzieren","Schaltet Animationen aus, wenn sie dich stören", true)}`)}
 
+      ${karte("e-vorlesen", "Vorlesen", kannVorlesen() ? `
+        <div class="optionen3">
+          ${wahl("vorlesen","aus","Aus","Kein Vorlesen")}
+          ${wahl("vorlesen","knopf","Auf Knopfdruck","Neben der Frage steht ein Lautsprecher — du entscheidest, wann")}
+          ${wahl("vorlesen","auto","Von allein","Jeder neue Schritt wird sofort vorgelesen")}
+        </div>
+        ${einstellungen.vorlesen === "aus" ? "" : `
+          <p class="ueberschrift" style="margin:22px 0 10px">Tempo</p>
+          ${reihe("lesetempo", [[0.8,"Langsam"], [1,"Normal"], [1.2,"Zügig"]])}
+          ${stimmen.length > 1 ? `
+            <p class="ueberschrift" style="margin:22px 0 10px">Stimme</p>
+            <select class="feld" onchange="setzeEinstellung('lesestimme', this.value)" aria-label="Vorlesestimme">
+              <option value="">Die Stimme des Geräts</option>
+              ${stimmen.map(s => `<option value="${s.name}" ${einstellungen.lesestimme === s.name ? "selected" : ""}>${s.name} — ${s.localService ? "auf dem Gerät" : "über das Netz"}</option>`).join("")}
+            </select>
+            ${stimmen.some(s => !s.localService) ? `
+              <p class="small soft" style="margin:10px 0 0">Eine Stimme „über das Netz“ heißt: Dein Browser schickt den vorzulesenden Text an seinen Hersteller. Wir bekommen davon nichts zu sehen, haben darauf aber auch keinen Einfluss. Wähl eine Stimme „auf dem Gerät“, wenn dir das nicht recht ist.</p>` : ""}` : ""}
+          <button class="btn ghost full" style="margin-top:14px"
+                  onclick="sprich('Ein Widerstand von zweihundertzwanzig Ohm liegt an zwölf Volt. Wie groß ist der Strom?')">
+            Probe hören</button>`}`
+        : `<p class="small soft" style="margin:0">Dein Browser bringt keine Vorlesestimme mit. In Chrome, Edge und Safari geht es.</p>`,
+        "Die Vorlesestimme deines Browsers liest Aufgabe und Frage vor. Wir betreiben dafür keinen eigenen Dienst — was du hörst, macht dein Gerät.")}`;
+
+    /* ---------- Üben ---------- */
     bereiche.ueben = `
-      <div class="card">
-        <p class="ueberschrift">Antworten</p>
+      ${karte("e-eingabe", "Antworten", `
         <div class="optionen3">
           ${wahl("eingabe","gemischt","Gemischt","Zwischenschritte auswählen, Ergebnis selbst eintippen")}
           ${wahl("eingabe","auswahl","Immer auswählen","Aus mehreren Möglichkeiten anklicken")}
           ${wahl("eingabe","tippen","Immer eintippen","Schwerer, aber ohne Rateglück")}
         </div>
-        ${schalter("autoWeiter","Von allein weiterblättern","Nach einer richtigen Antwort geht es nach kurzer Pause weiter, ohne „Weiter“ zu drücken")}
-      </div>
+        ${schalter("autoWeiter","Von allein weiterblättern","Nach einer richtigen Antwort geht es nach kurzer Pause weiter, ohne „Weiter“ zu drücken")}`)}
 
-      <div class="card">
-        <p class="ueberschrift">Hilfe beim Üben</p>
+      ${karte("e-tiefe", "Wie ausführlich?", `
+        <div class="optionen3">
+          ${wahl("tiefe","kurz","Kurz und knapp","Nur die Rechenschritte. Für Themen, die du im Griff hast")}
+          ${wahl("tiefe","normal","Normal","Mit Einstieg, Überschlag und Nachgedanken — meist sechs bis sieben Schritte")}
+          ${wahl("tiefe","ausfuehrlich","Ausführlich","Zusätzlich ein Überschlag — überall dort, wo einer sich anbietet")}
+        </div>`,
+        "Wie viele Zwischenschritte eine Aufgabe hat. Die Lösung bekommst du in keiner Stufe vorgesagt.")}
+
+      ${karte("e-hilfe", "Hilfe beim Üben", `
         <div class="optionen3">
           ${wahl("autoTipp",true,"Tipp kommt von allein","Nach dem ersten Fehler")}
           ${wahl("autoTipp",false,"Tipp nur auf Knopfdruck","Ich will es erst selbst versuchen")}
         </div>
-        <p class="small soft" style="margin-top:14px">In beiden Fällen bringt „Ich weiß nicht weiter“ dich stufenweise weiter: erst ein Tipp, dann ein zweiter, dann die Regeln, dann die ganze Erklärung. Die Lösung ist in keiner Stufe dabei.</p>
-      </div>
+        <p class="small soft" style="margin-top:14px">In beiden Fällen bringt „Ich weiß nicht weiter“ dich stufenweise weiter: erst ein Tipp, dann ein zweiter, dann die Regeln, dann die ganze Erklärung. Die Lösung ist in keiner Stufe dabei.</p>`)}
 
-      <div class="card">
-        <p class="ueberschrift">Erklärung zuerst</p>
-        ${schalter("erklaerungZuerst","Thema erst erklären lassen","Beim Öffnen eines Themas kommt zuerst die Erklärung mit Bild, dann die Aufgaben")}
-      </div>
+      ${karte("e-erstklaeren", "Erklärung zuerst",
+        schalter("erklaerungZuerst","Thema erst erklären lassen","Beim Öffnen eines Themas kommt zuerst die Erklärung mit Bild, dann die Aufgaben"))}
 
-      <div class="card">
-        <p class="ueberschrift">Tagesziel</p>
-        <p class="small soft" style="margin:0 0 12px">So viele Aufgaben am Tag zählen als geschafft. Lieber klein anfangen — geschafft ist besser als viel.</p>
+      ${karte("e-klang", "Ton und Rütteln", `
+        ${schalter("klang","Kurzer Ton","Zwei Töne bei richtig, ein tiefer bei falsch")}
+        ${schalter("vibrieren","Kurzes Rütteln","Bei einer falschen Antwort — nur auf dem Handy zu spüren")}
+        <button class="btn ghost full" style="margin-top:12px" onclick="tonGeben('gut')">Ton anhören</button>`,
+        "Beides ist aus, bis du es einschaltest. Manchen hilft die Rückmeldung, andere übt neben schlafenden Geschwistern.")}
+
+      ${karte("e-tagesziel", "Tagesziel", `
         <div class="optionen3">
           ${[3,5,10].map(n => `
             <button class="option ${tagesziel() === n ? "an" : ""}" onclick="setzeEinstellung('tagesziel', ${n})">
               <b>${n} Aufgaben</b><span>${n === 3 ? "Für jeden Tag machbar" : n === 5 ? "Voreinstellung" : "Wenn du mehr willst"}</span>
             </button>`).join("")}
-        </div>
-      </div>`;
+        </div>`,
+        "So viele Aufgaben am Tag zählen als geschafft. Lieber klein anfangen — geschafft ist besser als viel.")}`;
 
-    bereiche.erinnerungen =
-      erinnerungenHtml() || `<div class="card"><p class="small soft" style="margin:0">Erinnerungen sind auf diesem Gerät nicht möglich.</p></div>`;
+    /* ---------- Erinnerungen ---------- */
+    bereiche.erinnerungen = `<div id="e-erinnerung" class="${einstHervor === "e-erinnerung" ? "hervor" : ""}">${
+      erinnerungenHtml() || `<div class="card"><p class="small soft" style="margin:0">Erinnerungen sind auf diesem Gerät nicht möglich.</p></div>`
+    }</div>`;
 
+    /* ---------- Über dich ---------- */
     bereiche.dich = `
-      <div class="card">
-        <p class="ueberschrift">Deine Klassenstufe</p>
-        <p class="small soft" style="margin:0 0 12px">Wenn du sie festlegst, kommst du nach dem Fach sofort zu den Themen — die Klassenwahl fällt weg. Über den Pfad oben kommst du trotzdem in jede andere Klasse.</p>
+      ${karte("e-stufe", "Deine Klassenstufe", `
         <div class="stufenreihe">
           <button class="stufe ${!einstellungen.stufe ? "an" : ""}" onclick="setzeEinstellung('stufe', 0)">Jedes Mal fragen</button>
           ${[5,6,7,8,9,10].map(k => `
             <button class="stufe ${einstellungen.stufe === k ? "an" : ""}" onclick="setzeEinstellung('stufe', ${k})">Klasse ${k}</button>`).join("")}
         </div>
-        <p class="small soft" style="margin:12px 0 0">Gilt für Mathe, Deutsch und Englisch. In der Ausbildung wird weiter nach dem Lehrjahr gefragt.</p>
-      </div>
+        <p class="small soft" style="margin:12px 0 0">Gilt für Mathe, Deutsch und Englisch. In der Ausbildung wird weiter nach dem Lehrjahr gefragt.</p>`,
+        "Wenn du sie festlegst, kommst du nach dem Fach sofort zu den Themen — die Klassenwahl fällt weg. Über den Pfad oben kommst du trotzdem in jede andere Klasse.")}
 
-      <div class="card">
-        <p class="ueberschrift">Bundesland</p>
-        <p class="small soft" style="margin:0 0 12px">Damit wir die Themen später an deinen Lehrplan anpassen können.</p>
+      ${karte("e-start", "Womit die App startet", `
+        <div class="stufenreihe">
+          <button class="stufe ${(einstellungen.start || "standard") === "standard" ? "an" : ""}"
+                  onclick="setzeEinstellung('start','standard')">Startseite</button>
+          ${Object.entries(KATALOG).map(([k, v]) => `
+            <button class="stufe ${einstellungen.start === k ? "an" : ""}"
+                    onclick="setzeEinstellung('start','${k}')">${v.name}</button>`).join("")}
+        </div>`,
+        "Wenn du immer dasselbe übst, spart das jedes Mal zwei Klicks. Ein geteilter Link geht trotzdem vor.")}
+
+      ${karte("e-land", "Bundesland", `
         <select class="feld" onchange="setBundesland(this.value)" aria-label="Bundesland">
           <option value="">Nicht angegeben</option>
           ${BUNDESLAENDER.map(l => `<option value="${l}" ${einstellungen.bundesland === l ? "selected" : ""}>${l}</option>`).join("")}
-        </select>
-      </div>
+        </select>`,
+        "Damit wir die Themen später an deinen Lehrplan anpassen können.")}
 
-      <div class="card">
-        <p class="ueberschrift">Dein Zugang</p>
-        ${benutzer
-          ? `<p class="small soft" style="margin:0 0 12px">Angemeldet als <b>${benutzer.email}</b>. Dein Fortschritt wird gespeichert.</p>
-             ${navLink("/konto", "zeigeSeite('konto')", "Mein Konto", "btn ghost full")}`
-          : `<p class="small soft" style="margin:0 0 12px">Du übst ohne Konto. Alles funktioniert — nur der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, braucht ein Konto.</p>
-             ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "btn full")}
-             ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost full", "margin-top:10px")}`}
-      </div>`;
+      ${karte("e-zugang", "Dein Zugang", benutzer
+        ? `<p class="small soft" style="margin:0 0 12px">Angemeldet als <b>${benutzer.email}</b>. Dein Fortschritt wird gespeichert.</p>
+           ${navLink("/konto", "zeigeSeite('konto')", "Mein Konto", "btn ghost full")}`
+        : `<p class="small soft" style="margin:0 0 12px">Du übst ohne Konto. Alles funktioniert — nur der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, braucht ein Konto.</p>
+           ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "btn full")}
+           ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost full", "margin-top:10px")}`)}`;
 
-    bereiche.geraet = `
-      ${istInstalliert() ? "" : `
-      <div class="card">
-        <p class="ueberschrift">${SYM.handy} Aufs Gerät legen</p>
-        <p class="small soft" style="margin:0 0 12px">Dann startet es wie eine App, ohne Browserleiste — und funktioniert auch ohne Netz weiter.</p>
-        ${installEvent
-          ? `<button class="btn full" onclick="installStarten()">Jetzt ablegen</button>`
-          : `<p class="small soft" style="margin:0">${istApple()
-              ? "In Safari auf das Teilen-Zeichen tippen und „Zum Home-Bildschirm“ wählen."
-              : "Im Browsermenü auf „Zum Startbildschirm hinzufügen“ tippen."}</p>`}
-      </div>`}
+    /* ---------- Daten & Gerät ---------- */
+    const menge = gespeicherteMenge();
+    bereiche.daten = `
+      ${karte("e-sichern", "Fortschritt sichern", `
+        ${sicherungHinweis ? `<p class="sicherhinweis">${sicherungHinweis}</p>` : ""}
+        <button class="btn full" onclick="datenSichern()">${SYM.sichern} Sicherung herunterladen</button>
+        <button class="btn ghost full" style="margin-top:10px" onclick="sicherungWaehlen()">Sicherung einlesen</button>
+        <input type="file" id="sicherungDatei" accept="application/json,.json"
+               style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
+               onchange="datenEinlesen(this)" aria-hidden="true" tabindex="-1">
+        <p class="small soft" style="margin:14px 0 0">Auf diesem Gerät liegen gerade
+          <b>${menge ? (menge < 1024 ? menge + " Zeichen" : Math.round(menge / 1024) + " KB") : "keine Daten"}</b>:
+          deine Einstellungen, welche Themen du schon geübt hast, deine eigenen Vokabeln und deine Prüfungsergebnisse.</p>`,
+        benutzer
+          ? "Dein gelöster Fortschritt liegt sicher im Konto. Alles andere — Einstellungen, eigene Vokabeln, geübte Themen — liegt nur in diesem Browser. Die Sicherung nimmt es mit."
+          : "Ohne Konto liegt alles nur in diesem einen Browser. Wer den Verlauf löscht oder das Gerät wechselt, verliert es. Mit der Sicherung nicht.")}
 
-      <div class="card">
-        <p class="ueberschrift">Neu laden</p>
-        <p class="small soft" style="margin:0 0 12px">Wenn etwas hängt oder du eine ältere Fassung siehst: holt alles frisch aus dem Netz. Dein Fortschritt bleibt.</p>
-        <button class="btn ghost full" onclick="appNeuLaden()">App neu laden</button>
-      </div>
+      ${istInstalliert() ? "" : karte("e-install", `${SYM.handy} Aufs Gerät legen`, installEvent
+        ? `<button class="btn full" onclick="installStarten()">Jetzt ablegen</button>`
+        : `<p class="small soft" style="margin:0">${istApple()
+            ? "In Safari auf das Teilen-Zeichen tippen und „Zum Home-Bildschirm“ wählen."
+            : "Im Browsermenü auf „Zum Startbildschirm hinzufügen“ tippen."}</p>`,
+        "Dann startet es wie eine App, ohne Browserleiste — und funktioniert auch ohne Netz weiter.")}
 
-      <div class="card">
-        <p class="ueberschrift">Einstellungen zurücksetzen</p>
-        <p class="small soft" style="margin:0 0 12px">Setzt alles auf dieser Seite auf den Anfangszustand. ${benutzer ? "Dein Fortschritt bleibt erhalten." : "Es gibt hier nichts anderes zu löschen: ohne Konto wird kein Fortschritt gespeichert."}</p>
-        <button class="btn ghost full" onclick="einstellungenZuruecksetzen()">Alles zurücksetzen</button>
-      </div>`;
+      ${karte("e-neuladen", "Neu laden",
+        `<button class="btn ghost full" onclick="appNeuLaden()">App neu laden</button>`,
+        "Wenn etwas hängt oder du eine ältere Fassung siehst: holt alles frisch aus dem Netz. Dein Fortschritt bleibt.")}
+
+      ${karte("e-zuruecksetzen", "Einstellungen zurücksetzen",
+        `<button class="btn ghost full" onclick="einstellungenZuruecksetzen()">Alles zurücksetzen</button>`,
+        `Setzt alles auf dieser Seite auf den Anfangszustand. ${benutzer ? "Dein Fortschritt bleibt erhalten." : "Es gibt hier nichts anderes zu löschen: ohne Konto wird kein Fortschritt gespeichert."}`)}`;
 
     const jetzt = EINST_BEREICHE.find(b => b[0] === einstBereich);
+    const treffer = einstTreffer();
     el.innerHTML = `
       <div class="card">
         ${navLink(pfadFuer(vorEinstellungen, fach, klasse), "zurueckVonEinstellungen()", "← Zurück", "zurueck")}
         <span class="tag">Einstellungen</span>
         <h1>Wie hättest du es gern?</h1>
         <p class="soft">Alles hier lässt sich jederzeit wieder ändern. Gespeichert wird es auf diesem Gerät.</p>
+        <div class="einstsuchzeile">
+          ${SYM.lupe}
+          <input class="einstsuchfeld" type="search" value="${einstSuche.replace(/"/g, "&quot;")}"
+                 placeholder="Einstellung suchen — z. B. dunkel, Ton, Schrift"
+                 aria-label="Einstellung suchen" oninput="einstSuchTippen(this.value)">
+          ${einstSuche ? `<button class="einstsuchweg" onclick="einstSuchLeeren()" aria-label="Suche leeren">×</button>` : ""}
+        </div>
+        ${einstSuche.trim().length >= 2 ? (treffer.length
+          ? `<div class="einsttreffer">
+               ${treffer.map(([id, ber, titel]) => `
+                 <button class="einsttreff" onclick="einstSpringen('${id}','${ber}')">
+                   <b>${titel}</b><span>${(EINST_BEREICHE.find(b => b[0] === ber) || [,"?"])[1]}</span>
+                 </button>`).join("")}
+             </div>`
+          : `<p class="small soft" style="margin:12px 0 0">Dazu gibt es hier keine Einstellung.
+               Wenn dir etwas fehlt, schreib es uns über <a href="/feedback" onclick="event.preventDefault();zeigeFeedback()">Feedback</a>.</p>`) : ""}
       </div>
 
-      <nav class="einstnav" role="tablist" aria-label="Bereiche der Einstellungen">
-        ${EINST_BEREICHE.map(([id, titel]) => `
-          <button class="einstchip ${einstBereich === id ? "an" : ""}" role="tab"
-                  id="reiter-${id}" aria-controls="bereich-${id}"
-                  aria-selected="${einstBereich === id}"
-                  onclick="einstBereichWaehlen('${id}')">${titel}</button>`).join("")}
-      </nav>
+      <div class="einstrahmen">
+        <nav class="einstnav" role="tablist" aria-label="Bereiche der Einstellungen">
+          ${EINST_BEREICHE.map(([id, titel]) => `
+            <button class="einstchip ${einstBereich === id ? "an" : ""}" role="tab"
+                    id="reiter-${id}" aria-controls="bereich-${id}"
+                    aria-selected="${einstBereich === id}"
+                    onclick="einstBereichWaehlen('${id}')">${titel}</button>`).join("")}
+        </nav>
 
-      <p class="einstlead">${jetzt[2]}</p>
-
-      <div class="einstteil" id="bereich-${einstBereich}" role="tabpanel"
-           aria-labelledby="reiter-${einstBereich}">
-        ${bereiche[einstBereich]}
+        <div class="einstspalte">
+          <p class="einstlead">${jetzt[2]}</p>
+          <div class="einstteil" id="bereich-${einstBereich}" role="tabpanel"
+               aria-labelledby="reiter-${einstBereich}">
+            ${bereiche[einstBereich]}
+          </div>
+        </div>
       </div>`;
     /* Der gewählte Reiter soll sichtbar sein, auch wenn die Leiste schmal ist. */
     const leiste = el.querySelector(".einstnav"), gewaehlt = el.querySelector(".einstchip.an");
@@ -35130,7 +35553,7 @@ function render(gewaehlt){
             vorangeht — deshalb darf er kräftiger sein als vorher. */""}
       <div class="fortschritt">${balken}</div>
       <div class="aufg klebt ${aufgabenGroesse(aktuell)}"><div class="zeile1">${bruecheSetzen(aktuell.text)}</div></div>
-      <p class="frage">${s.frage}</p>
+      <p class="frage">${s.frage}${vorleseKnopfHtml()}</p>
       <div class="optionen ${tippen ? "" : "breit"}">${optionenHtml}</div>
       ${fb}
       ${beantwortet
@@ -35149,6 +35572,7 @@ function render(gewaehlt){
           gehört auf die Startseite, wo man sich entscheidet, und nicht neben
           die Aufgabe, an der man gerade sitzt. Dort ist er nur eine Karte, die
           den Bildschirm länger macht. */""}`;
+  vorlesenWennGewuenscht();
 }
 
 /* ---------- Startseite und Anmeldung ---------- */

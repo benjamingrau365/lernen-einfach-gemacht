@@ -216,6 +216,23 @@ ein Ring je Thema würde sichtbar machen, dass es vorangeht.
 * **Acht Alltagsbereiche** — Geld, Wohnung, Bewerbung, Strom, Kopfrechnen,
   Rechtschreibung, Statistik, Englisch. Themen quer durch alle Fächer und
   Klassen, sortiert danach, wofür man sie braucht.
+* **Vorlesen.** Die Stimme des Browsers liest Aufgabe und Frage vor — auf
+  Knopfdruck oder von allein. Läuft auf dem Gerät, ohne Netz, ohne dass
+  irgendetwas irgendwohin geschickt wird. Für den Menschen, der die Sache
+  könnte, aber am Lesen scheitert, ist das die wichtigste Neuerung.
+* **Schriftart und Zeilenbreite.** Eine breite Schrift für alle, bei denen
+  b, d, p und q ineinanderlaufen; kurze Zeilen für alle, die beim
+  Zurückspringen die Zeile verlieren.
+* **Wie ausführlich?** Kurz (nur die Rechenschritte), normal (sechs bis
+  sieben), ausführlich (zusätzlich ein Überschlag). Wer ein Thema kann, muss
+  nicht durch den Einstieg.
+* **Ton und Rütteln.** Beides aus, bis man es einschaltet.
+* **Fortschritt sichern.** Eine Datei zum Herunterladen und Wiedereinlesen.
+  Ohne Konto lag bisher alles nur in einem Browser — ein gelöschter Verlauf
+  hat es weggeräumt.
+* **Womit die App startet.** Wer immer dasselbe Fach übt, landet direkt dort.
+* **Einstellungssuche.** Bei über zwanzig Schaltern findet man „Ton"
+  schneller durch Tippen als durch Blättern.
 
 ### Als Nächstes, in dieser Reihenfolge
 
