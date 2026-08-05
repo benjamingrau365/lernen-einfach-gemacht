@@ -324,15 +324,25 @@
 
   /* Hilfe steht darunter, abgesetzt und ohne Kasten — damit man sie nicht
      versehentlich für eine vierte Antwort hält */
-  .hilfezeile{display:grid;gap:2px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
-  /* Diese beiden sind das Herz der Sache — man drückt sie, wenn man
-     feststeckt. Als bloßer Text sahen sie nicht nach etwas aus, das man
-     antippen kann. Jetzt haben sie einen Rahmen, bleiben aber ruhig genug,
-     dass man sie nicht statt einer Antwort drückt. */
-  .hilfeknopf{background:var(--bg);border:1.5px solid var(--line);padding:12px 14px;
-    font:inherit;font-size:15px;font-weight:600;color:var(--soft);cursor:pointer;
-    text-align:center;border-radius:11px;text-decoration:none;display:block}
-  .hilfeknopf + .hilfeknopf{margin-top:8px}
+  /* Diese beiden sind das Herz der Sache — man drückt sie, wenn man feststeckt.
+     Als bloßer Text sahen sie nicht nach etwas aus, das man antippen kann;
+     deshalb haben sie einen Rahmen. Der Rahmen war dann aber derselbe wie bei
+     den Antwortmöglichkeiten, und sie standen genauso breit darunter — beim
+     Überfliegen zwei weitere Antworten.
+
+     Jetzt stehen sie nebeneinander statt untereinander, nehmen nur so viel
+     Breite wie ihr Text und tragen ein kleines Zeichen vorweg. Sie sehen
+     weiterhin nach Knopf aus, aber nach einem anderen als eine Antwort. */
+  .hilfezeile{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;padding-top:14px;
+    border-top:1px solid var(--line)}
+  .hilfeknopf{background:var(--bg);border:1.5px solid var(--line);padding:9px 14px;
+    font:inherit;font-size:14.5px;font-weight:600;color:var(--soft);cursor:pointer;
+    text-align:left;border-radius:999px;text-decoration:none;
+    display:inline-flex;align-items:center;gap:7px;flex:0 1 auto;min-width:0}
+  .hilfeknopf::before{content:"?";flex:none;width:18px;height:18px;border-radius:50%;
+    background:var(--line);color:var(--card);font-size:12px;font-weight:800;
+    display:flex;align-items:center;justify-content:center}
+  @media(hover:hover){ .hilfeknopf:hover::before{background:var(--ac);color:#fff} }
   /* nur mit Maus hervorheben — auf dem Handy bliebe die Hervorhebung
      nach dem Antippen sonst kleben */
   @media(hover:hover){ .hilfeknopf:hover{color:var(--ac-dark);background:var(--ac-soft)} }
@@ -655,8 +665,14 @@
      im Wort. „overflow-wrap:anywhere“ machte aus Dezimalzahlen ein
      „Dezimalzahle n“. Mit hyphens:auto trennt der Browser deutsch richtig,
      und break-word greift nur, wenn ein Wort wirklich nicht passt. */
-  .thema > span:first-child{min-width:0;overflow-wrap:break-word;hyphens:auto;
-    font-weight:600;line-height:1.3}
+  /* Zwei Zeilen statt einer: oben der Name über die volle Breite, darunter die
+     Angabe. Damit hat der Name Platz und muss nicht mehr getrennt werden. */
+  .thema{flex-direction:column;align-items:flex-start;justify-content:center;gap:3px}
+  .themaname{min-width:0;overflow-wrap:break-word;hyphens:auto;
+    font-weight:600;line-height:1.3;display:block}
+  .themastand{font-size:12.5px;font-weight:600;color:var(--soft);line-height:1.2}
+  .themastand.faellig{color:var(--fach-dark)}
+  .themastand.sitzt{color:var(--gut-dark, var(--ac-dark))}
   .thema:hover{border-color:var(--fach);background:var(--fach-soft);
     transform:translateY(-1px);box-shadow:0 8px 18px -12px color-mix(in srgb, var(--fach) 75%, transparent)}
   .thema:active{transform:scale(.995)}
@@ -995,9 +1011,14 @@
   .themazeile{display:flex;gap:8px;align-items:stretch}
   .themazeile .thema{flex:1;margin:0;min-width:0}   /* darf schrumpfen, sonst läuft die Zeile über */
   .thema .pill{flex:none;white-space:nowrap;font-size:12.5px}
-  .erklknopf{flex:none;width:44px;border:1.5px solid var(--line);background:var(--card);
-    border-radius:14px;font:inherit;font-size:18px;font-weight:800;color:var(--soft);
+  /* Ein nacktes Fragezeichen sagt niemandem, was passiert. Seit die Zeile zwei
+     Zeilen hoch ist, ist Platz für das Wort darunter. */
+  .erklknopf{flex:none;width:58px;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:1px;border:1.5px solid var(--line);background:var(--card);
+    border-radius:14px;font:inherit;color:var(--soft);
     cursor:pointer;transition:border-color .12s,background .12s,color .12s}
+  .erklknopf b{font-size:17px;font-weight:800;line-height:1}
+  .erklknopf small{font-size:10px;font-weight:700;letter-spacing:.02em;line-height:1}
   .erklknopf:hover{border-color:var(--fach);background:var(--fach-soft);color:var(--fach-dark)}
   ol.beispielschritte{margin:0 0 16px;padding-left:22px}
   ol.beispielschritte li{padding:5px 0;font-size:16px;color:var(--soft)}
@@ -1816,8 +1837,14 @@
 
   /* ---------- Fußleiste ---------- */
   .fussleiste{border-top:1px solid var(--line);background:var(--card);margin-top:30px;padding:34px 20px 26px}
-  .fussinhalt{max-width:1140px;margin:0 auto;display:grid;gap:26px}
-  .fussspalte{display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+  /* Auf dem Handy stand der Fußbereich einspaltig: fünf Abschnitte, gut zwei
+     Dutzend Links, zusammen länger als der Inhalt darüber. Wer unten ankommt,
+     wischt an einer Textwand vorbei. Zwei Spalten halbieren das, ohne dass ein
+     einziger Link verschwindet — ab 640 Pixeln ordnet es sich wie bisher. */
+  .fussinhalt{max-width:1140px;margin:0 auto;display:grid;gap:22px 18px;
+    grid-template-columns:repeat(2, minmax(0, 1fr))}
+  @media(min-width:640px){ .fussinhalt{gap:26px} }
+  .fussspalte{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
   .fusstitel{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--soft);
     font-weight:700;margin:0 0 8px}
   .fusslink{background:none;border:none;padding:5px 0;font:inherit;font-size:15px;
@@ -1991,18 +2018,27 @@
   /* ---------- Einstieg in die Fächer, ganz oben auf der Startseite ---------- */
   .grussszeile{margin:0 0 12px;font-size:16px;color:var(--soft)}
   .grussszeile b{color:var(--ink)}
-  .einstieg{display:grid;gap:12px;margin-bottom:14px}
-  @media(min-width:560px){ .einstieg{grid-template-columns:1fr 1fr} }
+  /* Vier Kacheln untereinander sind auf dem Handy siebenhundert Pixel, die
+     man wegwischen muss, bevor irgendetwas anderes kommt — und dabei ist jede
+     Kachel zur Hälfte leer. Zwei Spalten zeigen alle vier auf einen Blick.
+     Genau darum geht es hier: sehen, was es gibt, und sich entscheiden. */
+  .einstieg{display:grid;gap:10px;margin-bottom:14px;
+    grid-template-columns:repeat(2, minmax(0, 1fr))}
   .einstiegkachel{display:block;background:var(--akz-soft);border:2px solid transparent;
-    border-radius:18px;padding:20px 20px 18px;color:var(--ink);text-decoration:none;cursor:pointer;
-    transition:border-color .12s,transform .08s}
+    border-radius:18px;padding:15px 15px 13px;color:var(--ink);text-decoration:none;cursor:pointer;
+    min-width:0;transition:border-color .12s,transform .08s}
+  @media(min-width:560px){ .einstiegkachel{padding:20px 20px 18px} }
   @media(hover:hover){ .einstiegkachel:hover{border-color:var(--akz)} }
   .einstiegkachel:active{transform:scale(.99)}
   .einstiegzeichen{display:flex;align-items:center;justify-content:center;
-    width:52px;height:52px;border-radius:16px;background:var(--akz);color:#fff;
-    font-size:25px;font-weight:900;margin-bottom:12px;
+    width:40px;height:40px;border-radius:13px;background:var(--akz);color:#fff;
+    font-size:20px;font-weight:900;margin-bottom:9px;
     box-shadow:0 10px 22px -12px var(--akz)}
-  .einstiegkachel b{display:block;font-size:24px;letter-spacing:-.01em;color:var(--akz-dark)}
+  @media(min-width:560px){ .einstiegzeichen{width:52px;height:52px;border-radius:16px;
+    font-size:25px;margin-bottom:12px} }
+  .einstiegkachel b{display:block;font-size:19px;letter-spacing:-.01em;color:var(--akz-dark);
+    overflow-wrap:break-word;hyphens:auto}
+  @media(min-width:560px){ .einstiegkachel b{font-size:24px} }
   .einstiegzahl{display:block;font-size:14.5px;color:var(--soft);margin-top:2px}
   .fachzahl{font-size:13.5px;color:var(--soft);white-space:nowrap;text-align:right}
   .fachbalken{grid-column:1 / -1;height:9px;border-radius:999px;background:var(--bg);
@@ -30830,12 +30866,17 @@ function uebersichtHtml(){
       ${Object.entries(KATALOG).map(([k, v]) => {
         let fertig = 0;
         for (const liste of Object.values(v.themen)) fertig += liste.filter(t => AUFGABEN[t]).length;
-        /* Englisch ist mehr als seine Grammatikthemen — die Vokabeln gehören dazu. */
-        if (k === "englisch") fertig += vokThemenGesamt();
+        /* Bei Englisch wurden die Vokabelgruppen zu den Grammatikthemen dazugezählt.
+           Dann stand dort „112 Themen fertig" gegen 48 bei Mathe — und wer das
+           liest, hält Englisch für das größte Fach. Es sind zwei verschiedene
+           Sachen, also stehen sie auch getrennt da. */
+        const zusatz = k === "englisch"
+          ? `${z(vokabelAnzahl())} Vokabeln`
+          : "";
         return navLink(`/${k}`, `waehleFach('${k}')`, `
           <span class="einstiegzeichen">${v.name[0]}</span>
           <b>${v.name}</b>
-          <span class="einstiegzahl">${fertig} Themen fertig</span>
+          <span class="einstiegzahl">${fertig} ${fertig === 1 ? "Thema" : "Themen"}${zusatz ? ` · ${zusatz}` : ""}</span>
         `, "einstiegkachel", `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
       }).join("")}
     </div>`;
@@ -30913,7 +30954,7 @@ function uebersichtHtml(){
       <div class="card kachel">
         <p class="ueberschrift">${SYM.buch} Von vorn erklärt</p>
         <p class="small soft">Du verstehst ein Thema gar nicht? Zu jedem Thema gibt es eine
-          Erklärung mit Bild — such dir ein Fach aus und tipp beim Thema auf das Fragezeichen.</p>
+          Erklärung mit Bild — such dir ein Fach aus und tipp beim Thema auf „erklären“.</p>
       </div>`}
     </div>
 
@@ -30995,7 +31036,7 @@ function uebersichtHtml(){
    gesetzt — von Hand vergisst man sie. Genau das ist passiert: Fünf
    Änderungen gingen an einem Tag raus, unten stand weiter das Datum von
    gestern, und dann sieht die Seite aus, als wäre nichts angekommen. */
-const STAND = "4. August 2026";
+const STAND = "5. August 2026";
 const WARTUNG      = true;
 const WARTUNG_HART = false;
 
@@ -34031,7 +34072,14 @@ function render(gewaehlt){
   if (demoEl){
     const st = baustelleStand();
     /* Im Leitstand nicht: Der Satz ist eine Botschaft an Lernende. */
-    demoEl.textContent = (WARTUNG && ansicht !== "dashboard")
+    /* Dieselbe Angabe stand oben im Band und noch einmal unter dem Inhalt —
+       zweimal auf einem Bildschirm. Unten bleibt sie nur dort stehen, wo oben
+       kein Band ist: beim Lösen und Lesen, wo das Band bewusst wegbleibt. */
+    const bandDa = document.querySelector(".baustelle");
+    /* Beim Rechnen bleibt sie ganz weg: Dort ist das Band oben mit Absicht
+       ausgeblendet, und die Zeile unten wäre genau die Ablenkung, die dort
+       nicht hingehört. */
+    demoEl.textContent = (WARTUNG && ansicht !== "dashboard" && !bandDa && !amLoesen())
       ? `Stand heute: ${z(st.fertig)} Themen sind fertig — ${z(st.offen)} fehlen noch, neue kommen dazu.`
       : "";
   }
@@ -34285,12 +34333,15 @@ function render(gewaehlt){
           <div class="themen" style="margin-top:12px">
             ${g.themen.map(th => {
               const n = anzahlAufgaben(th);
-              if (!n) return `<div class="thema aus"><span>${th}</span><span class="pill bald">kommt</span></div>`;
+              if (!n) return `<div class="thema aus"><span class="themaname">${th}</span><span class="themastand">kommt noch</span></div>`;
               const zeile = zeileZu(th);
               const w = zeile ? wannText(zeile) : null;
+              /* Steht ein Wiederholungsstand an, ist er die Nachricht — dann bleibt
+                 er farbig. Sonst ist die Aufgabenzahl nur eine Angabe und wird
+                 entsprechend leise gesetzt. */
               const pille = w
-                ? `<span class="pill ${w.stil === "sitzt" ? "" : "neutral"}">${w.text}</span>`
-                : `<span class="pill">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
+                ? `<span class="themastand ${w.stil === "sitzt" ? "sitzt" : "faellig"}">${w.text}</span>`
+                : `<span class="themastand">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
               const sicher = th.replace(/'/g, "\\'");
               const dabei = !pruefTeilAbwahl.has(th);
               return `<div class="themazeile">
@@ -34299,8 +34350,18 @@ function render(gewaehlt){
                 <button class="themahaken ${dabei ? "an" : ""}" onclick="pruefTeilUm('${sicher}')"
                         title="${dabei ? "Aus dem Plan nehmen" : "In den Plan aufnehmen"}"
                         aria-label="${th} ${dabei ? "aus dem Plan nehmen" : "in den Plan aufnehmen"}">${dabei ? "✓" : ""}</button>
-                <button class="thema ${dabei ? "" : "abgewaehlt"}" onclick="starte('${sicher}')"><span>${th}</span>${pille}</button>
-                ${hatErklaerung(th) ? `<button class="erklknopf" title="Erklärung" onclick="zeigeErklaerung('${sicher}')">?</button>` : ""}
+                ${/* Der Name steht allein in der ersten Zeile und bekommt die ganze
+                      Breite. Vorher teilte er sie sich mit einer farbigen Pille, die
+                      bei fast jedem Thema dasselbe sagte („2 Aufgaben“) — dabei blieb
+                      für den Namen so wenig Platz, dass „Dezimalzahlen“ mitten im Wort
+                      umbrach. Die Angabe steht jetzt klein darunter, wo sie hingehört:
+                      lesbar, aber nicht lauter als die Sache selbst. */""}
+                <button class="thema ${dabei ? "" : "abgewaehlt"}" onclick="starte('${sicher}')">
+                  <span class="themaname">${th}</span>
+                  ${pille}
+                </button>
+                ${hatErklaerung(th) ? `<button class="erklknopf" onclick="zeigeErklaerung('${sicher}')"
+                    aria-label="${th} erklären lassen"><b>?</b><small>erklären</small></button>` : ""}
               </div>`;
             }).join("")}
           </div>
@@ -34351,8 +34412,9 @@ function render(gewaehlt){
               const n = anzahlAufgaben(g.thema);
               return `<div class="themazeile">
                 ${navLink(`/${fach}/${g.klasse}`, `starteThemaAusKlasse('${sicher}')`,
-                  `<span>${g.thema}</span><span class="pill neutral">${stufenText(fach, g.klasse)}</span>`, "thema")}
-                ${hatErklaerung(g.thema) ? `<button class="erklknopf" title="Erklärung" onclick="zeigeErklaerung('${sicher}')">?</button>` : ""}
+                  `<span class="themaname">${g.thema}</span><span class="themastand faellig">${stufenText(fach, g.klasse)}</span>`, "thema")}
+                ${hatErklaerung(g.thema) ? `<button class="erklknopf" onclick="zeigeErklaerung('${sicher}')"
+                    aria-label="${g.thema} erklären lassen"><b>?</b><small>erklären</small></button>` : ""}
               </div>`;
             }).join("")}
           </div>
@@ -34375,19 +34437,23 @@ function render(gewaehlt){
         <div class="themen">
           ${themen.map(t=>{
             const n = anzahlAufgaben(t);
-            if (!n) return `<div class="thema aus"><span>${t}</span><span class="pill bald">kommt</span></div>`;
+            if (!n) return `<div class="thema aus"><span class="themaname">${t}</span><span class="themastand">kommt noch</span></div>`;
             const z = zeileZu(t);
-            let pille;
+            let stand;
             if (z){
               const w = wannText(z);
-              pille = `<span class="pill ${w.stil === "sitzt" ? "" : "neutral"}">${w.text}</span>`;
+              stand = `<span class="themastand ${w.stil === "sitzt" ? "sitzt" : "faellig"}">${w.text}</span>`;
             } else {
-              pille = `<span class="pill">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
+              stand = `<span class="themastand">${n} ${n === 1 ? "Aufgabe" : "Aufgaben"}</span>`;
             }
             const sicher = t.replace(/'/g,"\\'");
             return `<div class="themazeile">
-              <button class="thema" onclick="starte('${sicher}')"><span>${t}</span>${pille}</button>
-              ${hatErklaerung(t) ? `<button class="erklknopf" title="Erklärung" onclick="zeigeErklaerung('${sicher}')">?</button>` : ""}
+              <button class="thema" onclick="starte('${sicher}')">
+                <span class="themaname">${t}</span>
+                ${stand}
+              </button>
+              ${hatErklaerung(t) ? `<button class="erklknopf" onclick="zeigeErklaerung('${sicher}')"
+                  aria-label="${t} erklären lassen"><b>?</b><small>erklären</small></button>` : ""}
             </div>`;
           }).join("")}
         </div>
@@ -34851,9 +34917,11 @@ function render(gewaehlt){
                ? `<button class="hilfeknopf" id="erklBtn" onclick="zeigeErklaerung()">Ich verstehe das Thema gar nicht</button>` : ""}
            </div>`}
     </div>
-    <div class="card">
-      <p class="small soft" style="margin:0">Auch nach allen Hinweisen bekommst du nie die Lösung. Den letzten Schritt machst immer du.</p>
-    </div>`;
+    ${/* Der Satz „Auch nach allen Hinweisen bekommst du nie die Lösung“ stand
+          unter jeder Aufgabe in einer eigenen Karte. Er ist richtig — aber er
+          gehört auf die Startseite, wo man sich entscheidet, und nicht neben
+          die Aufgabe, an der man gerade sitzt. Dort ist er nur eine Karte, die
+          den Bildschirm länger macht. */""}`;
 }
 
 /* ---------- Startseite und Anmeldung ---------- */
