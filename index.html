@@ -2023,16 +2023,25 @@
   .fachzeile:hover .fachname{color:var(--akz,var(--ac-dark))}
   .fachname{font-weight:600;font-size:17px;color:var(--akz,var(--ink))}
 
-  /* ---------- Einstellungen: Sprungleiste, Gruppen und Schalter ---------- */
+  /* ---------- Einstellungen: Reiter, Gruppen und Schalter ---------- */
   .einstnav{position:sticky;top:0;z-index:30;display:flex;gap:8px;overflow-x:auto;
     padding:10px 2px;margin:0 0 4px;background:var(--bg);
     scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .einstnav::-webkit-scrollbar{display:none}
   .einstchip{flex:none;background:var(--card);border:1.5px solid var(--line);border-radius:999px;
-    padding:9px 15px;font:inherit;font-size:calc(14.5px * var(--fs,1));font-weight:600;
-    color:var(--soft);cursor:pointer;white-space:nowrap}
-  .einstchip.an{background:var(--ac);border-color:var(--ac);color:#fff}
+    padding:10px 16px;font:inherit;font-size:calc(14.5px * var(--fs,1));font-weight:600;
+    color:var(--soft);cursor:pointer;white-space:nowrap;
+    transition:background .15s ease, border-color .15s ease, color .15s ease}
+  .einstchip.an{background:var(--ac);border-color:var(--ac);color:#fff;
+    box-shadow:0 3px 10px rgba(0,0,0,.10)}
   @media(hover:hover){ .einstchip:not(.an):hover{border-color:var(--ac);color:var(--ac-dark)} }
+  /* Ein Satz darüber, was in diesem Reiter steckt */
+  .einstlead{margin:2px 2px 14px;color:var(--soft);
+    font-size:calc(14px * var(--fs,1));line-height:1.5}
+  .einstteil{animation:einstauf .22s ease both}
+  @keyframes einstauf{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media(prefers-reduced-motion:reduce){ .einstteil{animation:none} }
+  html.ruhig .einstteil{animation:none}
 
   .stufenreihe{display:flex;flex-wrap:wrap;gap:8px}
   .stufe{background:var(--card);border:1.5px solid var(--line);border-radius:11px;
@@ -31808,39 +31817,23 @@ function setzeFachFarbe(f, farbe){
   einstellungen.fachfarben[f] = farbe;
   speichereEinstellungen(); farbenAnwenden(); render();
 }
-/* ---------- Bereiche der Einstellungen ---------- */
+/* ---------- Bereiche der Einstellungen ----------
+   Früher stand alles auf einer einzigen, sehr langen Rolle. Jetzt sind es
+   Reiter: sichtbar ist immer nur der Bereich, den man gewählt hat. */
 const EINST_BEREICHE = [
-  ["aussehen","Aussehen"], ["ueben","Üben"], ["erinnerungen","Erinnerungen"],
-  ["dich","Über dich"], ["geraet","Gerät"]
+  ["aussehen","Aussehen","Farben, Schriftgröße und wie leicht sich alles lesen lässt."],
+  ["ueben","Üben","Wie du antwortest, wie viel Hilfe kommt und was ein Tag zählt."],
+  ["erinnerungen","Erinnerungen","Wann dich die App ans Üben erinnert."],
+  ["dich","Über dich","Klassenstufe, Bundesland und dein Zugang."],
+  ["geraet","Gerät","Die App ablegen, neu laden oder alles zurücksetzen."]
 ];
-/* Zu einem Bereich springen — der Abstand richtet sich nach der Leiste,
-   damit die Überschrift nicht darunter verschwindet. */
-function zuAbschnitt(id){
-  const ziel = document.getElementById(id);
-  if (!ziel) return;
-  const leiste = document.querySelector(".einstnav");
-  const abstand = (leiste ? leiste.getBoundingClientRect().height : 0) + 18;
-  const y = window.scrollY + ziel.getBoundingClientRect().top - abstand;
-  window.scrollTo({ top: Math.max(0, y),
-    behavior: einstellungen.bewegung === false ? "auto" : "smooth" });
-}
-/* Der Punkt, in dem man gerade steckt, wird in der Leiste hervorgehoben. */
-let einstBeobachter = null;
-function einstNavAktivieren(){
-  if (einstBeobachter){ einstBeobachter.disconnect(); einstBeobachter = null; }
-  const chips = [...document.querySelectorAll(".einstchip")];
-  if (!chips.length) return;
-  const setzen = (id) => chips.forEach(c => c.classList.toggle("an", c.dataset.ziel === id));
-  setzen(chips[0].dataset.ziel);
-  einstBeobachter = new IntersectionObserver((eintraege) => {
-    const sichtbar = eintraege.filter(e => e.isIntersecting)
-      .sort((a,b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-    if (sichtbar) setzen(sichtbar.target.id);
-  }, { rootMargin: "-90px 0px -70% 0px" });
-  EINST_BEREICHE.forEach(([id]) => {
-    const el = document.getElementById("gr-" + id);
-    if (el) einstBeobachter.observe(el);
-  });
+let einstBereich = "aussehen";
+function einstBereichWaehlen(id){
+  if (!EINST_BEREICHE.some(b => b[0] === id)) return;
+  einstBereich = id;
+  render();
+  /* Nach dem Wechsel oben anfangen, sonst steht man mitten im neuen Bereich. */
+  window.scrollTo({ top: 0, behavior: einstellungen.bewegung === false ? "auto" : "smooth" });
 }
 /* Alles frisch aus dem Netz holen — hilft, wenn eine alte Fassung hängen bleibt */
 async function appNeuLaden(){
@@ -34764,22 +34757,10 @@ function render(gewaehlt){
         <span class="schalterknopf"></span>
       </button>`;
     };
-    const gruppe = (id, titel) => `<p class="gruppe" id="gr-${id}">${titel}</p>`;
-    el.innerHTML = `
-      <div class="card">
-        ${navLink(pfadFuer(vorEinstellungen, fach, klasse), "zurueckVonEinstellungen()", "← Zurück", "zurueck")}
-        <span class="tag">Einstellungen</span>
-        <h1>Wie hättest du es gern?</h1>
-        <p class="soft">Alles hier lässt sich jederzeit wieder ändern. Gespeichert wird es auf diesem Gerät.</p>
-      </div>
+    if (!EINST_BEREICHE.some(b => b[0] === einstBereich)) einstBereich = "aussehen";
+    const bereiche = {};
 
-      <nav class="einstnav" aria-label="Bereiche">
-        ${EINST_BEREICHE.map(([id, titel]) =>
-          `<button class="einstchip" data-ziel="gr-${id}" onclick="zuAbschnitt('gr-${id}')">${titel}</button>`).join("")}
-      </nav>
-
-      ${gruppe("aussehen","Aussehen")}
-
+    bereiche.aussehen = `
       <div class="card">
         <p class="ueberschrift">Hell oder dunkel</p>
         <div class="optionen3">
@@ -34829,10 +34810,9 @@ function render(gewaehlt){
         ${schalter("lesehilfe","Mehr Abstand","Größerer Zeilen- und Buchstabenabstand — hilft, wenn Zeilen ineinanderlaufen")}
         ${schalter("kontrast","Stärkerer Kontrast","Kräftigere Schrift und deutlichere Linien")}
         ${schalter("bewegung","Bewegung reduzieren","Schaltet Animationen aus, wenn sie dich stören", true)}
-      </div>
+      </div>`;
 
-      ${gruppe("ueben","Üben")}
-
+    bereiche.ueben = `
       <div class="card">
         <p class="ueberschrift">Antworten</p>
         <div class="optionen3">
@@ -34866,13 +34846,12 @@ function render(gewaehlt){
               <b>${n} Aufgaben</b><span>${n === 3 ? "Für jeden Tag machbar" : n === 5 ? "Voreinstellung" : "Wenn du mehr willst"}</span>
             </button>`).join("")}
         </div>
-      </div>
+      </div>`;
 
-      ${gruppe("erinnerungen","Erinnerungen")}
-      ${erinnerungenHtml() || `<div class="card"><p class="small soft" style="margin:0">Erinnerungen sind auf diesem Gerät nicht möglich.</p></div>`}
+    bereiche.erinnerungen =
+      erinnerungenHtml() || `<div class="card"><p class="small soft" style="margin:0">Erinnerungen sind auf diesem Gerät nicht möglich.</p></div>`;
 
-      ${gruppe("dich","Über dich")}
-
+    bereiche.dich = `
       <div class="card">
         <p class="ueberschrift">Deine Klassenstufe</p>
         <p class="small soft" style="margin:0 0 12px">Wenn du sie festlegst, kommst du nach dem Fach sofort zu den Themen — die Klassenwahl fällt weg. Über den Pfad oben kommst du trotzdem in jede andere Klasse.</p>
@@ -34901,10 +34880,9 @@ function render(gewaehlt){
           : `<p class="small soft" style="margin:0 0 12px">Du übst ohne Konto. Alles funktioniert — nur der Wiederholungsplan, der dafür sorgt, dass du es nicht wieder vergisst, braucht ein Konto.</p>
              ${navLink("/registrieren", "zeigeRegistrierung()", "Konto anlegen", "btn full")}
              ${navLink("/anmelden", "zeigeAnmeldung()", "Anmelden", "btn ghost full", "margin-top:10px")}`}
-      </div>
+      </div>`;
 
-      ${gruppe("geraet","Auf diesem Gerät")}
-
+    bereiche.geraet = `
       ${istInstalliert() ? "" : `
       <div class="card">
         <p class="ueberschrift">${SYM.handy} Aufs Gerät legen</p>
@@ -34927,7 +34905,33 @@ function render(gewaehlt){
         <p class="small soft" style="margin:0 0 12px">Setzt alles auf dieser Seite auf den Anfangszustand. ${benutzer ? "Dein Fortschritt bleibt erhalten." : "Es gibt hier nichts anderes zu löschen: ohne Konto wird kein Fortschritt gespeichert."}</p>
         <button class="btn ghost full" onclick="einstellungenZuruecksetzen()">Alles zurücksetzen</button>
       </div>`;
-    einstNavAktivieren();
+
+    const jetzt = EINST_BEREICHE.find(b => b[0] === einstBereich);
+    el.innerHTML = `
+      <div class="card">
+        ${navLink(pfadFuer(vorEinstellungen, fach, klasse), "zurueckVonEinstellungen()", "← Zurück", "zurueck")}
+        <span class="tag">Einstellungen</span>
+        <h1>Wie hättest du es gern?</h1>
+        <p class="soft">Alles hier lässt sich jederzeit wieder ändern. Gespeichert wird es auf diesem Gerät.</p>
+      </div>
+
+      <nav class="einstnav" role="tablist" aria-label="Bereiche der Einstellungen">
+        ${EINST_BEREICHE.map(([id, titel]) => `
+          <button class="einstchip ${einstBereich === id ? "an" : ""}" role="tab"
+                  id="reiter-${id}" aria-controls="bereich-${id}"
+                  aria-selected="${einstBereich === id}"
+                  onclick="einstBereichWaehlen('${id}')">${titel}</button>`).join("")}
+      </nav>
+
+      <p class="einstlead">${jetzt[2]}</p>
+
+      <div class="einstteil" id="bereich-${einstBereich}" role="tabpanel"
+           aria-labelledby="reiter-${einstBereich}">
+        ${bereiche[einstBereich]}
+      </div>`;
+    /* Der gewählte Reiter soll sichtbar sein, auch wenn die Leiste schmal ist. */
+    const leiste = el.querySelector(".einstnav"), gewaehlt = el.querySelector(".einstchip.an");
+    if (leiste && gewaehlt) leiste.scrollLeft = Math.max(0, gewaehlt.offsetLeft - 12);
     return;
   }
 
