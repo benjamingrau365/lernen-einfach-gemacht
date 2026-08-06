@@ -2361,6 +2361,61 @@
     .optionen3{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
   }
 
+  /* ---------- Der Weg durch die Aufgabe ----------
+     Auf dem Rechner lag rechts und links der Aufgabenkarte je 220 px Luft und
+     darunter rund 300 px Nichts — auf der Seite, auf der man 95 % der Zeit
+     verbringt. Dort steht jetzt der Weg: jeder Schritt, den man schon
+     entschieden hat, mit der eigenen Antwort. Nach sechs Schritten weiß sonst
+     niemand mehr, was er in Schritt 2 herausbekommen hat.
+     Auf dem Handy ist derselbe Weg ein zugeklappter Streifen über der Aufgabe. */
+  .loesenraum{display:block}
+  .weg{background:var(--card);border:1.5px solid var(--line);border-radius:16px;
+    margin-bottom:14px;overflow:hidden}
+  .wegkopf{display:flex;align-items:center;gap:10px;width:100%;padding:13px 16px;
+    background:none;border:none;font:inherit;color:var(--ink);cursor:pointer;text-align:left}
+  .wegtitel{font-weight:700;font-size:calc(15.5px * var(--fs,1))}
+  .wegstand{margin-left:auto;font-size:calc(13.5px * var(--fs,1));color:var(--soft);
+    font-variant-numeric:tabular-nums}
+  .wegpfeil{font-size:12px;color:var(--soft);transition:transform .16s ease}
+  /* nur der Pfeil dreht sich — nicht der Text darunter */
+  .weg:has(.wegliste.auf) .wegpfeil{transform:rotate(180deg)}
+  .wegliste{list-style:none;margin:0;padding:0 16px;max-height:0;overflow:hidden;
+    transition:max-height .22s ease, padding .22s ease}
+  .wegliste.auf{max-height:none;padding:0 16px 6px}
+  html.ruhig .wegliste,html.ruhig .wegpfeil{transition:none}
+  .wegschritt{display:flex;align-items:flex-start;gap:11px;padding:9px 0;
+    border-top:1px solid var(--line)}
+  .wegschritt:first-child{border-top:none}
+  .wegzeichen{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;
+    font-size:calc(12.5px * var(--fs,1));font-weight:800;
+    background:var(--bg);color:var(--soft);border:1.5px solid var(--line)}
+  .wegschritt.sitzt .wegzeichen{background:var(--gut-soft);color:var(--gut-dark);border-color:transparent}
+  .wegschritt.gehakt .wegzeichen{background:var(--amber-soft);color:var(--amber);border-color:transparent}
+  .wegschritt.aufgeloest .wegzeichen{background:var(--amber-soft);color:var(--amber);border-color:transparent}
+  .wegschritt.jetzt .wegzeichen{background:var(--ac);color:#fff;border-color:transparent}
+  .wegtext{min-width:0}
+  .wegfrage{display:block;font-size:calc(13.5px * var(--fs,1));line-height:1.4;color:var(--soft)}
+  .wegschritt.jetzt .wegfrage{color:var(--ink);font-weight:600}
+  .wegschritt.offen .wegfrage{opacity:.6}
+  .wegantwort{display:block;font-size:calc(15px * var(--fs,1));line-height:1.35;
+    color:var(--ink);margin-top:2px;overflow-wrap:break-word;hyphens:auto}
+  /* Der Schlusssatz gehört zur Liste — zugeklappt stünde er ohne Bezug da. */
+  .wegfuss{display:none;margin:2px 16px 14px;font-size:calc(13px * var(--fs,1));
+    line-height:1.45;color:var(--soft)}
+  .wegliste.auf ~ .wegfuss{display:block}
+
+  @media(min-width:1000px){
+    /* Zwei Spalten: der Weg steht links und läuft mit, die Aufgabe rechts. */
+    .loesenraum{display:grid;grid-template-columns:minmax(0,278px) minmax(0,1fr);
+      gap:22px;align-items:start}
+    .weg{position:sticky;top:16px;margin-bottom:0}
+    .wegkopf{cursor:default;padding-bottom:6px}
+    .wegpfeil{display:none}
+    .wegliste{max-height:none;padding:0 16px 6px}
+    .wegfuss{display:block}
+    .loesenhaupt{margin-bottom:0}
+  }
+
   /* ---------- Schmale Schirme, große Schrift ----------
      html{zoom:var(--fs)} lässt die ganze Oberfläche mitwachsen, das Fenster
      aber nicht: Auf einem 360er Handy bei 145 % Schrift bleiben 248 CSS-Pixel
@@ -31917,6 +31972,13 @@ let aktuell = null, aktuellName = "", variante = 0;
 let schrittNr = 0, beantwortet = false, hilfeStufe = 0, fehlversuche = 0;
 let reihenfolge = [];   // in welcher Reihenfolge die Antworten gerade angezeigt werden
 let falschGeklickt = [];   // welche Antworten in diesem Schritt schon danebenlagen
+/* ---------- Der Weg durch die Aufgabe ----------
+   Nach sechs, sieben Schritten weiß niemand mehr, was er in Schritt 2
+   entschieden hat — und genau darauf baut Schritt 5 auf. Deshalb wird jeder
+   abgeschlossene Schritt mit der eigenen Antwort mitgeschrieben und bleibt
+   sichtbar. Das ist kein Schmuck: Es ist der Gedankengang, den die App
+   behauptet aufzubauen, endlich auch zu sehen. */
+let wegAntworten = [];
 let insBildHolen = "";   // was nach dem Zeichnen sichtbar sein muss (CSS-Auswahl, letzter Treffer)
 let fehlerImSchritt = 0;
 let aufgeloest = false;    // nach drei Fehlversuchen wird die Lösung gezeigt
@@ -34622,6 +34684,7 @@ function starte(name, welche){
   aktuell = baueAufgabe(name, variante);   // Zahlen werden hier frisch gewürfelt
   gastZaehler[name] = (gastZaehler[name] || 0) + 1;
   schrittNr = 0; beantwortet = false; hilfeStufe = 0; fehlversuche = 0;
+  wegAntworten = [];
   schrittZuruecksetzen();
   neueReihenfolge();
   /* Auf Wunsch erst die Erklaerung, dann die Aufgabe. Zurueck fuehrt von dort
@@ -34681,6 +34744,7 @@ function antwort(i){
   if (falschGeklickt.includes(i)) return;          // dieselbe falsche Antwort nicht zweimal
   if (aktuell.schritte[schrittNr].optionen[i].ok){
     beantwortet = true;
+    wegMerken(aktuell.schritte[schrittNr].optionen[i].t, fehlerImSchritt > 0);
     tonGeben("gut");
     render(i);
     autoWeiter();
@@ -34698,7 +34762,14 @@ function antwort(i){
   /* Stufe 2: Erklärung zum Thema wird angeboten */
   if (fehlerImSchritt === 2) erklaerungAngeboten = true;
   /* Stufe 3: Lösung wird gezeigt, damit niemand hängen bleibt */
-  if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
+  if (fehlerImSchritt >= 3){
+    aufgeloest = true; beantwortet = true;
+    /* Auch der aufgelöste Schritt gehört in den Weg — sonst klafft dort eine
+       Lücke, und gerade der Schritt, an dem es gehakt hat, wäre der, den man
+       später nachlesen will. */
+    const richtig = aktuell.schritte[schrittNr].optionen.find(o => o.ok);
+    wegMerken(richtig ? richtig.t : "", true, true);
+  }
   render(i);
 }
 /* ---------- Hilfe in Stufen ----------
@@ -34778,6 +34849,7 @@ function eingabePruefen(){
   if (eingabePasst(wert, erwartet)){
     beantwortet = true;
     letzteEingabe = wert;
+    wegMerken(wert, fehlerImSchritt > 0);
     tonGeben("gut");
     render();
     return;
@@ -34789,9 +34861,76 @@ function eingabePruefen(){
   insBildHolen = "#screen .feedback";   /* auch beim Eintippen darf die Erklärung nicht unten wegrutschen */
   if (fehlerImSchritt === 1 && einstellungen.autoTipp) hilfeStufe = Math.max(hilfeStufe, 1);
   if (fehlerImSchritt === 2) erklaerungAngeboten = true;
-  if (fehlerImSchritt >= 3){ aufgeloest = true; beantwortet = true; }
+  if (fehlerImSchritt >= 3){
+    aufgeloest = true; beantwortet = true;
+    /* Auch der aufgelöste Schritt gehört in den Weg — sonst klafft dort eine
+       Lücke, und gerade der Schritt, an dem es gehakt hat, wäre der, den man
+       später nachlesen will. */
+    const richtig = aktuell.schritte[schrittNr].optionen.find(o => o.ok);
+    wegMerken(richtig ? richtig.t : "", true, true);
+  }
   render();
 }
+
+/* ---------- Den Weg schreiben und zeichnen ---------- */
+function wegMerken(antwortText, mitFehlern, aufgeloestJetzt){
+  if (!aktuell) return;
+  const s = aktuell.schritte[schrittNr] || {};
+  wegAntworten[schrittNr] = {
+    frage: nurText(s.frage),
+    antwort: nurText(antwortText),
+    haken: !mitFehlern,
+    aufgeloest: !!aufgeloestJetzt
+  };
+}
+function nurText(html){
+  return String(html == null ? "" : html)
+    .replace(/<br\s*\/?>/gi, " ").replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/\s+/g, " ").trim();
+}
+/* Die Frage eines Schritts als kurze Marke — die ganze Frage wäre in der
+   Spalte ein Absatz, und man will dort nicht lesen, sondern wiedererkennen. */
+function wegMarke(text, laenge){
+  const t = nurText(text);
+  if (t.length <= laenge) return t;
+  const schnitt = t.slice(0, laenge);
+  const luecke = schnitt.lastIndexOf(" ");
+  return (luecke > laenge * 0.6 ? schnitt.slice(0, luecke) : schnitt) + " …";
+}
+function wegHtml(){
+  if (!aktuell || !Array.isArray(aktuell.schritte)) return "";
+  const n = aktuell.schritte.length;
+  const fertig = wegAntworten.filter(Boolean).length;
+  return `
+    <aside class="weg" aria-label="Dein Weg durch die Aufgabe">
+      <button class="wegkopf" onclick="wegUm()" aria-expanded="${wegOffen}"
+              aria-controls="wegliste">
+        <span class="wegtitel">Dein Weg</span>
+        <span class="wegstand">${fertig} von ${n}</span>
+        <span class="wegpfeil" aria-hidden="true">▾</span>
+      </button>
+      <ol class="wegliste ${wegOffen ? "auf" : ""}" id="wegliste">
+        ${aktuell.schritte.map((s, i) => {
+          const w = wegAntworten[i];
+          const jetzt = i === schrittNr;
+          const art = w ? (w.aufgeloest ? "aufgeloest" : w.haken ? "sitzt" : "gehakt")
+                        : jetzt ? "jetzt" : "offen";
+          const zeichen = w ? (w.aufgeloest ? "!" : "✓") : jetzt ? String(i + 1) : String(i + 1);
+          return `
+            <li class="wegschritt ${art}">
+              <span class="wegzeichen">${zeichen}</span>
+              <span class="wegtext">
+                <span class="wegfrage">${w || jetzt ? wegMarke(s.frage, 58) : "Schritt " + (i + 1)}</span>
+                ${w ? `<b class="wegantwort">${w.antwort}</b>` : ""}
+              </span>
+            </li>`;
+        }).join("")}
+      </ol>
+      ${fertig ? `<p class="wegfuss">Das hast du selbst herausgefunden — ohne dass es dir jemand gesagt hat.</p>` : ""}
+    </aside>`;
+}
+let wegOffen = false;
+function wegUm(){ wegOffen = !wegOffen; render(); }
 
 function schrittZuruecksetzen(){
   falschGeklickt = []; fehlerImSchritt = 0; aufgeloest = false; erklaerungAngeboten = false; letzteEingabe = "";
@@ -35893,7 +36032,9 @@ function render(gewaehlt){
 
   const anz = anzahlAufgaben(aktuellName);
   el.innerHTML = `
-    <div class="card">
+    <div class="loesenraum">
+    ${wegHtml()}
+    <div class="card loesenhaupt">
       ${navLink(pfadFuer("start", fach, klasse), "ansicht='start';render()", "← Zurück zur Übersicht", "zurueck")}
       ${/* Vorher stand das ganze Thema samt Aufgabennummer in einer Pille —
             auf dem Handy brach sie in zwei Zeilen um und drängte die
@@ -35929,7 +36070,8 @@ function render(gewaehlt){
           unter jeder Aufgabe in einer eigenen Karte. Er ist richtig — aber er
           gehört auf die Startseite, wo man sich entscheidet, und nicht neben
           die Aufgabe, an der man gerade sitzt. Dort ist er nur eine Karte, die
-          den Bildschirm länger macht. */""}`;
+          den Bildschirm länger macht. */""}
+    </div>`;
   vorlesenWennGewuenscht();
 }
 
