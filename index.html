@@ -2361,6 +2361,34 @@
     .optionen3{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
   }
 
+  /* ---------- „Womit es weitergeht" ----------
+     Die erste Karte, die man beim Öffnen sieht, soll eine Entscheidung
+     abnehmen, nicht eine treffen lassen. Deshalb wiegt sie sichtbar mehr als
+     alles darunter: farbiger Grund, kein Rand, ein großer Knopf. */
+  .weiter{background:linear-gradient(150deg,var(--ac-soft) 0%,var(--card) 78%);
+    border-color:transparent;
+    box-shadow:0 16px 36px -26px rgba(16,33,30,.34), 0 2px 6px -3px rgba(16,33,30,.09)}
+  /* nicht .faellig nennen — die Klasse gibt es schon und setzt einen grünen
+     Rahmen, der hier neben dem gelben Grund falsch aussah */
+  .weiter.dran{background:linear-gradient(150deg,var(--amber-soft) 0%,var(--card) 78%)}
+  .weiterlabel{display:flex;align-items:center;gap:8px;margin:0 0 8px;
+    font-size:calc(12.5px * var(--fs,1));letter-spacing:.13em;text-transform:uppercase;
+    font-weight:700;color:var(--ac-dark)}
+  .weiter.dran .weiterlabel{color:var(--amber)}
+  .weiterlabel svg{width:16px;height:16px;flex:none}
+  .weitertitel{font-size:calc(22px * var(--fs,1));line-height:1.25;margin:0 0 6px;
+    letter-spacing:-.01em;overflow-wrap:break-word;hyphens:auto}
+  .weitersoft{margin:0 0 16px;color:var(--soft);font-size:calc(14.5px * var(--fs,1));
+    line-height:1.5}
+  /* „Natürliche Zahlen wiederholen" ist ein langer Knopftext. Bei 320 px und
+     145 % Schrift bleiben 127 px — er muss umbrechen dürfen. */
+  .weiterknopf{font-size:calc(16.5px * var(--fs,1));padding:15px 18px;
+    min-width:0;white-space:normal;overflow-wrap:break-word;hyphens:auto;line-height:1.3}
+  html[data-eng="an"] .weiterknopf{overflow-wrap:anywhere}
+  .weiterzweit{margin-top:10px}
+  .weiterrest{margin:10px 0 0;text-align:center;color:var(--soft);
+    font-size:calc(13.5px * var(--fs,1))}
+
   /* ---------- Kartenstufen ----------
      Bisher sah jede Karte gleich aus: weißer Kasten, 18 px Radius, 1 px Rand,
      derselbe schwache Schatten. Auf der Übersicht standen sechs davon
@@ -30639,7 +30667,7 @@ function datenschutzHtml(){
 
       <p class="ueberschrift" style="margin-top:26px">10. Cookies und Speicherung im Browser</p>
       <p class="einfachtext">Wir verwenden <b>keine</b> Werbe-, Marketing- oder Analyse-Cookies und binden keine Zählpixel oder Social-Media-Buttons ein. Deshalb gibt es hier auch kein Cookie-Banner.</p>
-      <p class="einfachtext">Gespeichert wird in deinem Browser nur, was für den Betrieb nötig ist: deine Einstellungen (Hell- oder Dunkelmodus, Schriftgröße, Art der Antwortabfrage), der Hinweis, dass du den Baustellen-Hinweis gesehen hast, die Namen der Themen, die du fertig geübt hast — damit die Themenliste dir zeigen kann, wo du schon warst —, deine selbst angelegten Vokabeln und eingetragenen Prüfungstermine, und — wenn du angemeldet bist — die Information, die dich angemeldet hält. Das alles bleibt auf deinem Gerät: Es wird nicht an uns übertragen, auch nicht ohne Konto. Das fällt unter § 25 Abs. 2 TDDDG (unbedingt erforderliche Speicherung). Du kannst es jederzeit über die Einstellungen deines Browsers löschen.</p>
+      <p class="einfachtext">Gespeichert wird in deinem Browser nur, was für den Betrieb nötig ist: deine Einstellungen (Hell- oder Dunkelmodus, Schriftgröße, Art der Antwortabfrage), der Hinweis, dass du den Baustellen-Hinweis gesehen hast, die Namen der Themen, die du fertig geübt hast — damit die Themenliste dir zeigen kann, wo du schon warst —, das zuletzt geübte Thema — damit die App beim nächsten Öffnen sagen kann, wo es weitergeht —, deine selbst angelegten Vokabeln und eingetragenen Prüfungstermine, und — wenn du angemeldet bist — die Information, die dich angemeldet hält. Das alles bleibt auf deinem Gerät: Es wird nicht an uns übertragen, auch nicht ohne Konto. Das fällt unter § 25 Abs. 2 TDDDG (unbedingt erforderliche Speicherung). Du kannst es jederzeit über die Einstellungen deines Browsers löschen.</p>
       <p class="einfachtext">Unter <b>Einstellungen → Daten &amp; Gerät</b> kannst du all das als Datei herunterladen und auf einem anderen Gerät wieder einlesen. Die Datei entsteht in deinem Browser und geht nirgendwohin, außer du verschickst sie selbst.</p>
 
       <p class="ueberschrift" style="margin-top:26px">11. Vorlesen</p>
@@ -31504,7 +31532,8 @@ function uebersichtHtml(){
       <button class="btn" onclick="meilensteinWeg()">Weiter üben</button>
     </div>` : ""}
     ${benutzer ? "" : `
-      <p class="grussszeile"><b>${begruessung()}</b> · Such dir ein Fach aus.</p>
+      <p class="grussszeile"><b>${begruessung()}</b></p>
+      ${weitermachenHtml()}
       ${suchEinstiegHtml()}
       ${einstieg}`}
     ${/* Für Gäste sagt die Begrüßungszeile über den Fächern schon alles; die
@@ -31531,7 +31560,7 @@ function uebersichtHtml(){
         : ""}
     </div>` : ""}
 
-    ${benutzer ? suchEinstiegHtml() + einstieg : ""}
+    ${benutzer ? weitermachenHtml() + suchEinstiegHtml() + einstieg : ""}
     ${pruefHinweisHtml()}
     ${installHinweisHtml()}
 
@@ -31681,6 +31710,14 @@ function merkeGeuebt(name){
   if (name){
     geuebteThemen[name] = (geuebteThemen[name] || 0) + 1;
     try { localStorage.setItem("ek_themen", JSON.stringify(geuebteThemen)); } catch(e){}
+    /* Womit man zuletzt fertig war — damit die App beim nächsten Öffnen
+       sagen kann, wo es weitergeht, statt nur „Guten Morgen". Auch ohne
+       Konto, denn das steht hier im Browser. */
+    try {
+      const i = themaInfo(name);
+      localStorage.setItem("ek_zuletzt", JSON.stringify(
+        {thema: name, fach: i.fach, klasse: i.klasse, zeit: new Date().toISOString()}));
+    } catch(e){}
   }
   if (schonGeuebt) return;
   schonGeuebt = true;
@@ -31688,6 +31725,74 @@ function merkeGeuebt(name){
 }
 /* Wie oft ein Thema fertig geübt wurde — angefangene Aufgaben zählen nicht. */
 function malGeuebt(name){ return geuebteThemen[name] || 0; }
+
+/* ---------- Womit es weitergeht ----------
+   Beim Öffnen stand bisher „Guten Morgen, 4 Tage in Folge, heute 2 von 5".
+   Freundlich — aber es sagt nicht, was man tun soll. Wer wiederkommt, muss
+   sich jedes Mal neu entscheiden: Fach, Klasse, Thema. Drei Klicks, bevor
+   überhaupt eine Aufgabe kommt. Das hier nimmt die Entscheidung ab. */
+function zuletztThema(){
+  /* Mit Konto ist der Fortschritt die bessere Quelle — er gilt auf jedem
+     Gerät. Ohne Konto steht es hier im Browser. */
+  if (benutzer && fortschritt.length){
+    const z = fortschritt.slice()
+      .sort((a,b) => new Date(b.zuletzt_geuebt) - new Date(a.zuletzt_geuebt))[0];
+    if (z && AUFGABEN[z.thema]) return {thema: z.thema, fach: z.fach, klasse: z.klasse};
+  }
+  try {
+    const roh = JSON.parse(localStorage.getItem("ek_zuletzt") || "null");
+    if (roh && roh.thema && AUFGABEN[roh.thema]) return roh;
+  } catch(e){}
+  return null;
+}
+function weitermachenHtml(){
+  const offen = benutzer ? fortschritt.filter(z => tageBis(z.naechste_wiederholung) <= 0) : [];
+  const sicher = (t) => String(t).replace(/'/g, "\\'");
+
+  /* 1. Fällig schlägt alles: Das ist der Teil, der gegen das Vergessen wirkt. */
+  if (offen.length){
+    const erste = offen[0];
+    return `
+      <div class="card weiter dran">
+        <p class="weiterlabel">${SYM.uhr} Heute dran</p>
+        <h2 class="weitertitel">${offen.length} ${offen.length === 1 ? "Thema wartet" : "Themen warten"} auf die Wiederholung</h2>
+        <p class="weitersoft">Genau diese Wiederholung ist der Teil, der wirklich etwas bringt —
+          sie kommt dann, wenn du es sonst vergessen würdest.</p>
+        ${/* Kein „Loslegen mit ${thema}" — nach „mit" stünde der Dativ, und
+              Themennamen lassen sich nicht beugen („mit Dreiecke"). */""}
+        <button class="btn full weiterknopf" onclick="starte('${sicher(erste.thema)}')">
+          ${erste.thema} wiederholen</button>
+        ${offen.length > 1 ? `<p class="weiterrest">danach noch ${offen.length - 1} ${offen.length - 1 === 1 ? "weiteres" : "weitere"}</p>` : ""}
+      </div>`;
+  }
+
+  /* 2. Sonst: da weitermachen, wo man aufgehört hat. */
+  const z = zuletztThema();
+  if (z){
+    const n = anzahlAufgaben(z.thema);
+    const mal = malGeuebt(z.thema);
+    return `
+      <div class="card weiter">
+        <p class="weiterlabel">${SYM.pfeil} Weitermachen</p>
+        <h2 class="weitertitel">${z.thema}</h2>
+        <p class="weitersoft">${KATALOG[z.fach] ? KATALOG[z.fach].name : z.fach} ·
+          ${stufenText(z.fach, z.klasse)}${mal ? ` · schon ${mal}× durch` : ""}${n > 1 ? ` · ${n} Aufgaben` : ""}</p>
+        <button class="btn full weiterknopf" onclick="starte('${sicher(z.thema)}')">Weiter üben</button>
+        <button class="btn ghost full weiterzweit" onclick="ueberraschMich()">Lieber etwas anderes</button>
+      </div>`;
+  }
+
+  /* 3. Ganz frisch: nicht mit einer leeren Karte begrüßen, sondern mit dem
+        kürzesten Weg zur ersten Aufgabe. */
+  return `
+    <div class="card weiter">
+      <p class="weiterlabel">${SYM.wuerfel} Womit fängst du an?</p>
+      <h2 class="weitertitel">Such dir nichts aus — fang einfach an</h2>
+      <p class="weitersoft">Eine Aufgabe, eine Minute. Du musst dich nicht erst für ein Fach
+        entscheiden.</p>
+      <button class="btn full weiterknopf" onclick="ueberraschMich()">Erste Aufgabe zeigen</button>
+    </div>`;
+}
 /* ---------- Themenliste: nur das Offene ----------
    In einer Klasse mit zwanzig Themen sucht man nach dem dritten Besuch nicht
    mehr das Thema, sondern die Lücke. Auf Wunsch bleibt nur stehen, was noch
@@ -32494,7 +32599,8 @@ function einstSpringen(id, bereich){
    Ohne Konto liegt alles nur in diesem einen Browser. Wer den Verlauf löscht
    oder das Handy wechselt, hat es weg. Deshalb: eine Datei zum Mitnehmen. */
 const SICHER_SCHLUESSEL = ["ek-einstellungen","ek_themen","ek_geuebt","ek_eigene_woerter",
-  "ek_pruefungen","ek_meilenstein","ek_beste_serie","ek_ls_bereich","ek_baustelle"];
+  "ek_pruefungen","ek_meilenstein","ek_beste_serie","ek_ls_bereich","ek_baustelle",
+  "ek_zuletzt"];
 let sicherungHinweis = "";
 function gespeicherteMenge(){
   let n = 0;
