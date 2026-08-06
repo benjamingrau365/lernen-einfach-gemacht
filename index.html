@@ -2361,6 +2361,36 @@
     .optionen3{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
   }
 
+  /* ---------- Kartenstufen ----------
+     Bisher sah jede Karte gleich aus: weißer Kasten, 18 px Radius, 1 px Rand,
+     derselbe schwache Schatten. Auf der Übersicht standen sechs davon
+     untereinander — das Auge hat nichts, woran es sich festhält, und die
+     Hauptsache wiegt genauso viel wie die Fußnote. Drei Stufen statt einer. */
+  .card.haupt{border-color:transparent;padding:30px 28px;
+    box-shadow:0 18px 40px -28px rgba(16,33,30,.35), 0 2px 6px -3px rgba(16,33,30,.10)}
+  .card.haupt h1{font-size:clamp(28px,6.2vw,34px);margin-bottom:12px}
+  .card.leise{background:none;border-color:transparent;box-shadow:none;
+    padding:4px 6px 18px;margin-bottom:6px}
+  .card.leise .ueberschrift{color:var(--soft)}
+
+  /* ---------- Fachmotiv in der Kopfkarte ----------
+     Groß, blass und angeschnitten: Es soll den Raum füllen und das Fach
+     erkennbar machen, nicht um Aufmerksamkeit kämpfen. */
+  .mitmotiv{position:relative;overflow:hidden;isolation:isolate}
+  .mitmotiv > *:not(.fachmotiv){position:relative;z-index:1}
+  .fachmotiv{position:absolute;right:-26px;top:50%;transform:translateY(-50%);
+    width:clamp(210px,52%,340px);color:var(--fach,var(--ac));opacity:.13;
+    pointer-events:none;z-index:0;line-height:0}
+  .fachmotiv svg{width:100%;height:auto;display:block}
+  html.dunkel .fachmotiv{opacity:.20}
+  /* Auf dem Handy ist die Karte so schmal, dass ein mittig sitzendes Motiv
+     mitten durch die Überschrift läuft. Dort gehört es in die obere Ecke —
+     sichtbar genug, um das Fach zu zeigen, weit genug weg vom Text. */
+  @media(max-width:560px){
+    .fachmotiv{width:150px;right:-34px;top:-14px;transform:none;opacity:.11}
+  }
+  html.kontrast .fachmotiv{opacity:.07}
+
   /* ---------- Der Weg durch die Aufgabe ----------
      Auf dem Rechner lag rechts und links der Aufgabenkarte je 220 px Luft und
      darunter rund 300 px Nichts — auf der Seite, auf der man 95 % der Zeit
@@ -30756,6 +30786,47 @@ function fussleisteHtml(){
    runde Enden. Nur so sehen sie nebeneinander wie eine Familie aus und nicht
    wie vier zusammengesuchte Symbole. Sie erben die Farbe von außen
    (currentColor), damit jedes Fach seine eigene behält. */
+/* ---------- Fachmotive ----------
+   „Mehr Bilder" heißt nicht Stockfotos — die machen eine Lernseite billig und
+   kosten Ladezeit. Stattdessen für jedes Fach ein ruhiges Motiv aus der Sache
+   selbst: Bruchbalken, Satzbau, Sprechblasen, Leiterbahnen. Als SVG in der
+   Fachfarbe, blass im Hintergrund der Kopfkarte. Kostet nichts, skaliert in
+   jede Größe und stimmt in Hell wie Dunkel. */
+const FACHMOTIV = {
+  mathe:`<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="2.4"
+    stroke-linecap="round" aria-hidden="true" focusable="false">
+    <rect x="12" y="24" width="86" height="20" rx="6"/>
+    <rect x="12" y="56" width="86" height="20" rx="6" fill="currentColor" stroke="none" opacity=".55"/>
+    <rect x="12" y="88" width="86" height="20" rx="6"/>
+    <path d="M118 66h30M133 51v30"/>
+    <circle cx="196" cy="46" r="24"/>
+    <path d="M196 22v24l17 17"/>
+    <path d="M168 100h56"/><path d="M180 92l-8 16M212 92l-8 16"/></svg>`,
+  deutsch:`<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="2.4"
+    stroke-linecap="round" aria-hidden="true" focusable="false">
+    <path d="M20 34h120M20 54h150M20 74h96M20 94h134"/>
+    <path d="M150 74h18" stroke-width="6" opacity=".55"/>
+    <path d="M196 26c-10 0-18 8-18 18s8 18 18 18h6l10 12v-12h2c10 0 18-8 18-18s-8-18-18-18z"
+      stroke-width="2.4"/>
+    <path d="M192 40h20M192 50h12"/></svg>`,
+  englisch:`<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="2.4"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M18 32h96a10 10 0 0 1 10 10v34a10 10 0 0 1-10 10H52L30 100V86H18a10 10 0 0 1-10-10V42a10 10 0 0 1 10-10z"/>
+    <path d="M34 52h64M34 68h44"/>
+    <path d="M146 56h76a10 10 0 0 1 10 10v30a10 10 0 0 1-10 10h-8v14l-20-14h-48a10 10 0 0 1-10-10V66a10 10 0 0 1 10-10z"
+      opacity=".62"/>
+    <path d="M162 76h46M162 90h28" opacity=".62"/></svg>`,
+  elektroniker:`<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="2.4"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M14 40h44M86 40h48M162 40h64"/>
+    <rect x="58" y="30" width="28" height="20" rx="4"/>
+    <circle cx="148" cy="40" r="14"/><path d="M141 40h14"/>
+    <path d="M14 40v56h56M226 40v56h-54"/>
+    <path d="M70 96h102"/>
+    <path d="M118 74l-12 22h16l-10 20" stroke-width="3.2"/></svg>`
+};
+function fachMotiv(k){ return FACHMOTIV[k] || ""; }
+
 const FACHZEICHEN = {
   /* Mathe: das Geodreieck — das eine Werkzeug, das jeder aus dem Unterricht kennt */
   mathe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
@@ -31439,7 +31510,7 @@ function uebersichtHtml(){
     ${/* Für Gäste sagt die Begrüßungszeile über den Fächern schon alles; die
           große Karte wiederholte nur den Gruß. Angemeldete brauchen sie —
           dort stehen Serie und Tagesziel drin. */ benutzer ? `
-    <div class="card kopfkarte">
+    <div class="card kopfkarte haupt">
       <div class="kopfzeile">
         <div>
           <span class="tag">${benutzer ? "Schön, dass du da bist" : "Du übst ohne Konto"}</span>
@@ -31529,7 +31600,7 @@ function uebersichtHtml(){
           dasselbe, was jetzt in den vier Fachkacheln ganz oben steht, nur rund
           2.000 px weiter unten. Geblieben ist der Satz, der erklärt, was
           „sicher“ überhaupt heißt, und der Weg zu allen Klassen. */""}
-    <div class="card">
+    <div class="card leise">
       <p class="ueberschrift">${SYM.balken} ${benutzer ? "Dein Fortschritt" : "Was drin ist"}</p>
       <p class="small soft" style="margin:0 0 14px">${benutzer
         ? `Oben an jedem Fach siehst du, wie weit du bist. <b>„Sicher“</b> heißt dabei: mehrfach fehlerfrei gelöst, mit Abstand dazwischen — genau das ist der Unterschied zwischen können und geraten.`
@@ -35232,7 +35303,8 @@ function render(gewaehlt){
   if (ansicht === "klassenwahl"){
     const themen = KATALOG[fach].themen;
     el.innerHTML = `
-      <div class="card">
+      <div class="card haupt mitmotiv">
+        <span class="fachmotiv" aria-hidden="true">${fachMotiv(fach)}</span>
         ${navLink("/faecher", "zurFachwahl()", "← Anderes Fach", "zurueck")}
         <span class="tag">Schritt 2 von 3 · ${KATALOG[fach].name}</span>
         <h1>${stufenwort(fach) === "Lehrjahr" ? "Welches Lehrjahr?" : "Welche Klasse?"}</h1>
@@ -35404,7 +35476,8 @@ function render(gewaehlt){
 
     /* ---- normale Themenliste (mit Wunsch-Feld, wenn noch etwas fehlt) ---- */
     el.innerHTML = `
-      <div class="card">
+      <div class="card haupt mitmotiv">
+        <span class="fachmotiv" aria-hidden="true">${fachMotiv(fach)}</span>
         ${kopf}
         <h1>Such dir dein Thema</h1>
         <p class="soft">Du bekommst nie die Lösung — nur Fragen, die dich hinführen.</p>
