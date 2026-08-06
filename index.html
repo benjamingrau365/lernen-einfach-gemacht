@@ -859,9 +859,13 @@
   .hero.dunkel .heromerkmale i{background:rgba(255,255,255,.14);color:#6fdcbb}
   .hero.dunkel .heromerkmale{margin-top:clamp(18px,3vw,26px)}
   @media(min-width:900px){
+    /* align-items:start, nicht center: Die Mitmach-Probe rechts ist höher als
+       der Text links. Zentriert schob sie die Überschrift rund 180 px nach
+       unten — oben links stand nichts, und der erste Satz der Seite fing
+       unterhalb der Bildschirmmitte an. */
     .hero.dunkel .heroinhalt{max-width:none;display:grid;
       grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);
-      gap:clamp(28px,4vw,56px);align-items:center}
+      gap:clamp(28px,4vw,56px);align-items:start}
     .hero.dunkel h1{max-width:none}
     .hero.dunkel .lede{margin:0 0 12px}
     .hero.dunkel .herolinks,.hero.dunkel .herorechts{min-width:0}
@@ -1617,25 +1621,6 @@
   .baubalken i{display:block;height:100%;background:var(--ac);border-radius:999px}
 
   /* je Fach ein kleiner Block mit den sechs Klassen als Plättchen */
-  .baufaecher{display:grid;grid-template-columns:1fr;gap:10px;margin:16px 0 4px}
-  @media(min-width:620px){ .baufaecher{grid-template-columns:1fr 1fr} }
-  .baufach{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px 16px}
-  .baufachkopf{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-  .baufachkopf b{font-size:16.5px}
-  .baufachkopf span{font-size:13.5px;color:var(--soft)}
-  .bauchips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-  .bauchip{flex:1;min-width:38px;text-align:center;border-radius:9px;padding:7px 4px;
-    font-size:14px;font-weight:700;border:1.5px solid var(--line);
-    background:var(--bg);color:var(--soft)}
-  .bauchip.fertig{border-color:var(--ac);background:var(--ac-soft);color:var(--ac-dark)}
-  .bauchip.arbeit{border-color:var(--amber);background:var(--amber-soft);color:var(--amber)}
-  .baulegende{display:flex;gap:8px 18px;flex-wrap:wrap;margin-top:12px;
-    font-size:13.5px;color:var(--amber)}
-  .baulegende span{display:inline-flex;align-items:center;gap:7px}
-  .baulegende i{width:13px;height:13px;border-radius:4px;border:1.5px solid var(--line);
-    background:var(--bg);display:block}
-  .baulegende i.fertig{border-color:var(--ac);background:var(--ac-soft)}
-  .baulegende i.arbeit{border-color:var(--amber);background:var(--amber-soft)}
   .baubox .btn.ghost{background:var(--card);color:var(--amber);border-color:var(--amber)}
   .baubox .btn.ghost:hover{background:var(--card);color:var(--amber);border-color:var(--amber)}
 
@@ -1690,7 +1675,7 @@
   .kopfleiste.schlank .kopfnav{display:none}
   @media(max-width:640px){ .kopfleiste.schlank{padding-top:8px;padding-bottom:8px} }
   .fussleiste a,.menue a{text-decoration:none}
-  a.btn,a.grosswahl,a.planbtn,a.fachzeile,a.thema,a.wechseln,a.zurueck{text-decoration:none}
+  a.btn,a.grosswahl,a.planbtn,a.thema,a.wechseln,a.zurueck{text-decoration:none}
   .marke{flex:none;display:flex;align-items:center;justify-content:flex-start;gap:12px;
     background:none;border:none;font:inherit;color:var(--ink);cursor:pointer;padding:4px;text-align:left}
   .marke .ekkuerzel{font-size:clamp(23px,6.2vw,34px);font-weight:900;letter-spacing:.03em;
@@ -2019,14 +2004,6 @@
   .merksatz{border-left:4px solid var(--ac)}
   .merktext{font-size:19.5px;line-height:1.5;margin:4px 0 10px}
 
-  .fachzeile{display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center;
-    padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
-  .fachzeile:last-of-type{border-bottom:none}
-  /* ohne eigene Farbe rutschten diese Links ins Browser-Blau (#0000EE) */
-  a.fachzeile{color:var(--ink)}
-  .fachzeile:hover .fachname{color:var(--akz,var(--ac-dark))}
-  .fachname{font-weight:600;font-size:17px;color:var(--akz,var(--ink))}
-
   /* ---------- Einstellungen: Reiter, Suche und Schalter ---------- */
   /* Auf dem Handy liegt die Reiterleiste als Zeile über dem Inhalt, auf dem
      Rechner steht sie links daneben — dort war rechts und links nur Luft. */
@@ -2228,10 +2205,20 @@
     overflow-wrap:break-word;hyphens:auto}
   @media(min-width:560px){ .einstiegkachel b{font-size:24px} }
   .einstiegzahl{display:block;font-size:14.5px;color:var(--soft);margin-top:2px}
-  .fachzahl{font-size:13.5px;color:var(--soft);white-space:nowrap;text-align:right}
-  .fachbalken{grid-column:1 / -1;height:9px;border-radius:999px;background:var(--bg);
-    border:1px solid var(--line);overflow:hidden;display:block}
-  .fachbalken i{display:block;height:100%;background:var(--ac);border-radius:999px;min-width:0}
+  /* Der Balken in der Fachkachel: dünn, in der Fachfarbe, ohne Beschriftung.
+     Er soll auf einen Blick sagen „viel“ oder „wenig“, nicht eine Zahl
+     ersetzen — die steht darunter. */
+  .kachelbalken{display:block;position:relative;height:6px;border-radius:999px;margin:11px 0 7px;
+    background:color-mix(in srgb, var(--akz) 16%, transparent);overflow:hidden}
+  .kachelbalken i{position:absolute;left:0;top:0;height:100%;border-radius:999px;
+    min-width:0;transition:width .3s ease}
+  .kachelbalken i.angefangen{background:color-mix(in srgb, var(--akz) 45%, transparent)}
+  .kachelbalken i.sitzt{background:var(--akz)}
+  html.ruhig .kachelbalken i{transition:none}
+  .kachelstand{display:block;font-size:13.5px;color:var(--soft);line-height:1.35}
+  .kachelfaellig{display:inline-block;font-size:13px;font-weight:700;color:#fff;
+    background:var(--akz);border-radius:999px;padding:3px 10px;line-height:1.35}
+  .einstiegkachel.hatfaellig{border-color:var(--akz)}
 
   /* ---------- breiter Bildschirm ---------- */
   @media(min-width:900px){
@@ -30697,17 +30684,6 @@ function ueberraschMich(){
 }
 
 /* ---------- Fortschritt je Fach ---------- */
-function fachFortschritt(){
-  return Object.entries(KATALOG).map(([fk, f]) => {
-    let moeglich = 0;
-    for (const liste of Object.values(f.themen)) moeglich += liste.filter(t => AUFGABEN[t]).length;
-    const zeilen = fortschritt.filter(z => z.fach === fk);
-    const sicher = zeilen.filter(z => z.stufe >= 4).length;
-    const begonnen = zeilen.length;
-    return {schluessel: fk, name: f.name, moeglich, sicher, begonnen};
-  });
-}
-
 function begruessung(){
   const h = new Date().getHours();
   if (h < 5)  return "Noch wach";
@@ -31151,7 +31127,6 @@ function uebersichtHtml(){
     ? fortschritt.slice().sort((a,b) => new Date(b.zuletzt_geuebt) - new Date(a.zuletzt_geuebt))[0] : null;
   const merk = merksatzDesTages();
   const tipp = empfehlung();
-  const faecher = fachFortschritt();
   const punkte = n => Array.from({length: tagesziel()}, (_,i) =>
     `<i class="${i < n ? "voll" : ""}"></i>`).join("");
   const serieText = aktivitaet.serie === 0
@@ -31159,9 +31134,15 @@ function uebersichtHtml(){
     : aktivitaet.serie === 1 ? "Tag 1 — der Anfang ist gemacht."
     : `${aktivitaet.serie} Tage in Folge.`;
 
-  /* Die zwei Fächer als farbiger Einstieg — das Erste, was man sieht und
+  /* Die vier Fächer als farbiger Einstieg — das Erste, was man sieht und
      antippen kann. Vorher lag der erste Knopf zum Lernen 1.095 px weiter
-     unten, hinter Marke, Begrüßung und Baustellenkasten. */
+     unten, hinter Marke, Begrüßung und Baustellenkasten.
+
+     Und sie tragen jetzt etwas: Die Kachel ist die auffälligste Fläche der
+     Startseite und stand mit drei Wörtern darin fast leer. Wer angemeldet
+     ist, sieht hier, wie weit er ist, was fällig ist und wo er zuletzt war —
+     genau das, wofür man vorher 2.000 Pixel weiter nach unten scrollen
+     musste. */
   const einstieg = `
     <div class="einstieg">
       ${Object.entries(KATALOG).map(([k, v]) => {
@@ -31171,14 +31152,39 @@ function uebersichtHtml(){
            Dann stand dort „112 Themen fertig" gegen 48 bei Mathe — und wer das
            liest, hält Englisch für das größte Fach. Es sind zwei verschiedene
            Sachen, also stehen sie auch getrennt da. */
-        const zusatz = k === "englisch"
-          ? `${z(vokabelAnzahl())} Vokabeln`
-          : "";
+        const zusatz = k === "englisch" ? `${z(vokabelAnzahl())} Vokabeln` : "";
+
+        const zeilen   = benutzer ? fortschritt.filter(zl => zl.fach === k) : [];
+        const sicher   = zeilen.filter(zl => zl.stufe >= 4).length;
+        const faelligN = zeilen.filter(zl => tageBis(zl.naechste_wiederholung) <= 0).length;
+        /* Ohne Konto sagt der Zähler „schon geübt“ das, was auf diesem Gerät
+           bekannt ist — sonst stünde bei jedem Fach dasselbe Nichts. */
+        const geuebtN = benutzer ? zeilen.length
+          : Object.values(v.themen).flat().filter(t => malGeuebt(t)).length;
+        /* Zwei Töne: blass, was angefangen ist, kräftig, was sitzt. Ein Balken,
+           der nur „sicher" zeigt, steht nach fünf geübten Themen immer noch
+           auf null — richtig gerechnet, aber es sieht aus, als hätte man
+           nichts getan. */
+        const prozent = (n) => fertig ? Math.round(n / fertig * 100) : 0;
+        const balken = `<span class="kachelbalken" aria-hidden="true">
+            <i class="angefangen" style="width:${prozent(geuebtN)}%"></i>
+            ${benutzer ? `<i class="sitzt" style="width:${prozent(sicher)}%"></i>` : ""}
+          </span>`;
+
+        let fuss;
+        if (faelligN) fuss = `<span class="kachelfaellig">${faelligN} heute fällig</span>`;
+        else if (benutzer && zeilen.length) fuss = `<span class="kachelstand">${sicher} von ${fertig} sitzen sicher</span>`;
+        else if (geuebtN) fuss = `<span class="kachelstand">${geuebtN} von ${fertig} geübt</span>`;
+        else fuss = `<span class="kachelstand">noch nichts geübt</span>`;
+
         return navLink(`/${k}`, `waehleFach('${k}')`, `
           <span class="einstiegzeichen">${fachZeichen(k)}</span>
           <b>${v.name}</b>
           <span class="einstiegzahl">${fertig} ${fertig === 1 ? "Thema" : "Themen"}${zusatz ? ` · ${zusatz}` : ""}</span>
-        `, "einstiegkachel", `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
+          ${balken}
+          ${fuss}
+        `, `einstiegkachel${faelligN ? " hatfaellig" : ""}`,
+           `--akz:var(--${k});--akz-soft:var(--${k}-soft);--akz-dark:var(--${k}-dark)`);
       }).join("")}
     </div>`;
 
@@ -31284,17 +31290,16 @@ function uebersichtHtml(){
     ${/* Die Baustelle steht als Band über jeder Seite — hier unten stört sie
           den Einstieg nicht mehr. */ baustelleBoxHtml()}
 
+    ${/* Hier stand dieselbe Liste noch einmal: Fach, Balken, „x von y sicher“ —
+          dasselbe, was jetzt in den vier Fachkacheln ganz oben steht, nur rund
+          2.000 px weiter unten. Geblieben ist der Satz, der erklärt, was
+          „sicher“ überhaupt heißt, und der Weg zu allen Klassen. */""}
     <div class="card">
       <p class="ueberschrift">${SYM.balken} ${benutzer ? "Dein Fortschritt" : "Was drin ist"}</p>
-      ${faecher.map(f => navLink(`/${f.schluessel}`, `waehleFach('${f.schluessel}')`, `
-          <span class="fachname">${f.name}</span>
-          <span class="fachzahl">${benutzer ? `${f.sicher} von ${f.moeglich} sicher` : `${f.moeglich} Themen`}</span>
-          ${benutzer ? `<span class="fachbalken"><i style="width:${f.moeglich ? Math.round(f.sicher / f.moeglich * 100) : 0}%"></i></span>` : ""}
-        `, "fachzeile", `--akz:var(--${f.schluessel}-dark)`)).join("")}
-      <p class="small soft" style="margin-top:12px">${benutzer
-        ? "„Sicher“ heißt: mehrfach fehlerfrei gelöst, mit Abstand dazwischen. Genau das ist der Unterschied zwischen können und geraten."
-        : "Mit einem Konto siehst du hier, wie viel du schon sicher kannst."}</p>
-      ${navLink("/faecher", "zurFachwahl()", "Alle Fächer und Klassen ansehen", "btn ghost full", "margin-top:14px")}
+      <p class="small soft" style="margin:0 0 14px">${benutzer
+        ? `Oben an jedem Fach siehst du, wie weit du bist. <b>„Sicher“</b> heißt dabei: mehrfach fehlerfrei gelöst, mit Abstand dazwischen — genau das ist der Unterschied zwischen können und geraten.`
+        : `Oben an jedem Fach siehst du, wie viel du auf diesem Gerät schon geübt hast. Mit einem Konto käme dazu, was davon wirklich <b>sitzt</b> — mehrfach fehlerfrei, mit Abstand dazwischen.`}</p>
+      ${navLink("/faecher", "zurFachwahl()", "Alle Fächer und Klassen ansehen", "btn ghost full")}
     </div>
 
     ${benutzer ? `
@@ -31573,43 +31578,25 @@ function wartungBandHtml(){
     </div>`;
 }
 
-/* ---------- Hinweiskasten auf der Startseite ---------- */
+/* ---------- Hinweiszeile auf der Startseite ----------
+   Hier stand einmal derselbe Kasten wie auf der Bauplan-Seite: Balken,
+   Klassenwürfel für jedes Fach, Legende — rund 900 px mitten auf der
+   Startseite. Dieselbe Auskunft steht schon im Band ganz oben und
+   ausführlich unter /baustelle. Dreimal dasselbe ist zweimal zu viel;
+   geblieben ist die Zeile mit dem Balken und dem Weg zum Bauplan. */
 function baustelleBoxHtml(){
   if (!WARTUNG) return "";
   const s = baustelleStand();
   return `
-    <div class="baubox">
+    <div class="baubox schlank">
       <div class="baukopf">
         <span class="bausymbol">${BAU_SYM}</span>
         <h2>Die Seite ist noch im Aufbau</h2>
       </div>
-      <p>Alles, was du hier findest, funktioniert schon richtig — es ist nur noch nicht alles da.
-         Hier siehst du jederzeit, woran gerade gebaut wird.</p>
       <div class="baubalken"><i style="width:${s.prozent}%"></i></div>
-      <p class="small">${z(s.fertig)} Themen sind fertig, ${z(s.offen)} fehlen noch.
-        Es kommen laufend neue dazu — das hier ist kein Ziel, das irgendwann erreicht ist.</p>
-
-      <div class="baufaecher">
-        ${s.faecher.map(f => `
-          <div class="baufach">
-            <div class="baufachkopf">
-              <b>${f.name}</b><span>${f.fertig} von ${f.gesamt} Themen</span>
-            </div>
-            <div class="bauchips">
-              ${f.klassen.map(k => `
-                <span class="bauchip ${k.stand}"
-                  title="Klasse ${k.klasse}: ${k.fertig} von ${k.gesamt} Themen">${k.klasse}</span>`).join("")}
-            </div>
-          </div>`).join("")}
-      </div>
-
-      <div class="baulegende">
-        <span><i class="fertig"></i> Klasse fertig</span>
-        <span><i class="arbeit"></i> in Arbeit</span>
-        <span><i></i> noch geplant</span>
-      </div>
-
-      ${navLink("/baustelle", "zeigeSeite('baustelle')", "Ganzen Bauplan ansehen", "btn ghost full", "margin-top:14px")}
+      <p class="small">${z(s.fertig)} von ${z(s.fertig + s.offen)} Themen sind fertig.
+        Alles, was da ist, funktioniert schon richtig — es kommt nur laufend Neues dazu.</p>
+      ${navLink("/baustelle", "zeigeSeite('baustelle')", "Woran gerade gebaut wird", "btn ghost full", "margin-top:12px")}
     </div>`;
 }
 
