@@ -250,6 +250,29 @@ ein Ring je Thema würde sichtbar machen, dass es vorangeht.
   war da, aber wer sie brauchte, bekam eine verrutschte App. Vierzehn
   Ursachen, gefunden mit einem Durchlauf über 6.336 Kombinationen aus
   Ansicht, Datenlage und Fensterbreite.
+* **Der Weg durch die Aufgabe.** Jeder Schritt, den man entschieden hat,
+  bleibt mit der eigenen Antwort sichtbar. Auf dem Rechner als eigene
+  Spalte, auf dem Handy zugeklappt. Seit eine Aufgabe sieben Schritte
+  hat, weiß nach Schritt 5 sonst niemand mehr, was in Schritt 2 herauskam.
+* **Fachmotive und Kartenstufen.** Vier SVG-Motive (Bruchbalken, Satzbau,
+  Sprechblasen, Leiterbahn) in der Fachfarbe, und drei Kartenstufen statt
+  einer — vorher sahen alle sechs Karten einer Seite gleich aus.
+
+### Am Design noch offen
+
+1. **Die Marke ist unsichtbar.** Grüne Glühbirne und Systemschrift; die
+   Seite könnte jede App sein. Das Versprechen ist „nur Fragen, die dich
+   hinführen" — genau das sollte die Signatur werden: Fragezeichen und
+   Schrittpfad, wiederkehrend in Logo, Fortschrittsbalken, Hilfeknopf
+   und Favicon.
+2. **Der Dunkelmodus ist nur umgedreht**, nicht entworfen: dieselben
+   Formen, andere Farben. Dunkel braucht eigene Kontraste und weniger
+   große Weißflächen.
+3. **Nach einer richtigen Antwort passiert visuell fast nichts** — der
+   Moment, für den die Leute wiederkommen, ist ein grüner Rahmen.
+4. **Die Willkommensseite ist auf dem Handy 6.500 Pixel lang.** Kürzer
+   wird sie dort nur, wenn Text wegfällt; das ist eine Entscheidung über
+   den Inhalt, nicht über das Layout.
 
 ### Als Nächstes, in dieser Reihenfolge
 
