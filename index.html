@@ -625,6 +625,11 @@
   .plantag.ziel .plandatum{color:var(--ink)}
   /* Fächerliste auf der Startseite — was es gibt, auf einen Blick statt im Fließtext */
   .fachliste{display:grid;gap:10px;margin-top:18px}
+  /* Auf dem breiten Abschnitt „Was drin ist" lief jede Fachzeile über die
+     ganzen 1.140 px, mit dem Text links und Leere dahinter. Zwei Spalten. */
+  @media(min-width:1000px){
+    html[data-werbeseite="an"] .fachliste{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
   .fachzeile2{display:flex;align-items:center;gap:13px;background:var(--akz-soft);
     border-radius:13px;padding:12px 15px}
   .fachpunkt2{flex:none;width:34px;height:34px;border-radius:11px;background:var(--akz);
@@ -931,6 +936,26 @@
   .abschnitt::before{content:"";position:absolute;left:0;top:18px;bottom:18px;width:5px;
     border-radius:0 5px 5px 0;background:var(--akz)}
   .abschnitt .ueberschrift{color:var(--akz)}
+  /* ---------- Takt auf dem Rechner ----------
+     Vorher lief die ganze Werbeseite als ein 880 px schmales Band über
+     4.471 px nach unten: sieben gleich breite Textkästen hintereinander,
+     ohne dass sich das Auge irgendwo festhalten kann. Jetzt ist die Seite
+     breiter, der Fließtext bleibt aber auf Lesebreite — und die zwei
+     Abschnitte, die Bild sind statt Text (der Vergleich und die Zahlen),
+     brechen auf die volle Breite aus. Schmal, breit, schmal: Das ist der
+     Takt. */
+  @media(min-width:1000px){
+    html[data-werbeseite="an"] .shell{max-width:1180px}
+    html[data-werbeseite="an"] #screen > .card:not(.weit){
+      max-width:860px;margin-left:auto;margin-right:auto}
+    html[data-werbeseite="an"] .hero{margin-left:auto;margin-right:auto}
+  }
+  /* Die Nummer vor der Abschnittsüberschrift: Sie macht aus sieben Kästen
+     einen Weg mit Stationen — man sieht, wo man ist und wie viel noch kommt. */
+  .abschnittnr{display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:7px;margin-right:9px;vertical-align:-5px;
+    background:var(--akz,var(--ac));color:#fff;font-size:12px;font-weight:800;
+    letter-spacing:0}
   .abschnitt.rose{--akz:var(--rose);--akz-soft:var(--rose-soft)}
   .abschnitt.gruen{--akz:var(--ac-dark);--akz-soft:var(--ac-soft)}
   .abschnitt.indigo{--akz:var(--indigo);--akz-soft:var(--indigo-soft)}
@@ -963,6 +988,16 @@
     box-shadow:0 18px 40px -26px rgba(0,0,0,.45)}
   .probeaufgabe{font-size:clamp(24px,7vw,30px);font-weight:800;letter-spacing:-.01em;
     text-align:center;color:var(--ink);padding:4px 0 12px;line-height:1.3}
+  /* Ein ganzer Satz darf nicht wie eine Schlagzeile dastehen: je länger der
+     Text, desto kleiner und linksbündig — dann liest man ihn, statt ihn
+     anzustarren. */
+  .probeaufgabe.mittel{font-size:clamp(19px,5vw,22px);line-height:1.35}
+  .probeaufgabe.lang{font-size:clamp(16px,4vw,17.5px);font-weight:700;line-height:1.5;
+    text-align:left;letter-spacing:0}
+  /* Woher die Aufgabe kommt — auf einer Werbeseite ist das die halbe Aussage:
+     Es gibt nicht nur Mathe. */
+  .probeherkunft{margin:0 0 10px;font-size:12px;letter-spacing:.13em;
+    text-transform:uppercase;font-weight:700;color:var(--ac-dark);text-align:center}
   .probeleiste{display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
   .probepunkte{display:flex;gap:6px}
@@ -34783,6 +34818,11 @@ function render(gewaehlt){
      deshalb eine eigene Oberfläche: enger gesetzt, nüchterne Farben, Zahlen in
      gleicher Breite. Ein Kennzeichen am Wurzelelement schaltet sie um. */
   document.documentElement.dataset.leitstand = ansicht === "dashboard" ? "an" : "";
+  /* Die Willkommensseite ist keine Arbeitsfläche, sondern eine Argumentation.
+     Auf dem Rechner darf sie breiter atmen als der Lernbereich: Der Text
+     bleibt auf Lesebreite, aber Vergleich und Zahlen brechen aus. Genau der
+     Wechsel gibt der Seite den Takt, der ihr gefehlt hat. */
+  document.documentElement.dataset.werbeseite = ansicht === "willkommen" ? "an" : "";
 
   if (ansicht === "laden"){
     el.innerHTML = `<div class="card"><p class="laden">Einen Moment …</p></div>`;
@@ -35748,17 +35788,48 @@ function render(gewaehlt){
    demselben Erzeuger wie im Übungsteil, mit echten Fragen, echten Antworten
    und echten Rückmeldungen. Wer hier vier Mal tippt, hat eine Gleichung
    gelöst — ohne Anmeldung und ohne dass ihm jemand die Lösung gezeigt hat. */
-const PROBE_THEMA = "Gleichungen umstellen";
+/* Zwei aus jedem Fach, nicht mehr nur die eine Gleichung. Wer auf die Seite
+   kommt, sah bisher immer „9x + 8 = 62" — und wer kein Mathe sucht, war damit
+   schon weg. Jetzt zeigt die Probe bei jedem Aufruf ein anderes Fach.
+
+   Die Auswahl ist nicht beliebig: Ein Programm hat alle 125 Themen daraufhin
+   geprüft, ob sie in die schmale Karte passen — kurzer Aufgabentext, drei bis
+   vier Schritte, höchstens vier kurze Antworten, und der Erzeuger muss über
+   400 Ziehungen stabil bleiben. Übrig blieben 25; das hier sind acht davon. */
+const PROBE_THEMEN = [
+  ["Gleichungen umstellen",    "mathe"],
+  ["Brüche",                   "mathe"],
+  ["Kommas bei Nebensätzen",   "deutsch"],
+  ["Zeitformen",               "deutsch"],
+  ["Fragen bilden",            "englisch"],
+  ["Steigerung von Adjektiven","englisch"],
+  ["Ladung und Strom",         "elektroniker"],
+  ["Einheiten und Vorsätze",   "elektroniker"]
+];
 let probeAufgabe = null, probeSchritt = 0, probeFalsch = [], probeFertig = false, probeOrdnung = [];
+let probeThema = "", probeFach = "";
 
 function probeNeu(neuZeichnen){
-  const erzeuger = AUFGABEN[PROBE_THEMA];
-  if (!erzeuger || !erzeuger.length){ probeAufgabe = null; return; }
-  try { probeAufgabe = erzeuger[0](); }
+  const moeglich = PROBE_THEMEN.filter(([t]) => AUFGABEN[t] && AUFGABEN[t].length);
+  if (!moeglich.length){ probeAufgabe = null; return; }
+  /* Nicht zweimal hintereinander dasselbe Thema — sonst tippt jemand auf
+     „Noch eine" und bekommt scheinbar dieselbe Aufgabe zurück. */
+  const auswahl = moeglich.length > 1 ? moeglich.filter(([t]) => t !== probeThema) : moeglich;
+  const [thema, fk] = auswahl[Math.floor(Math.random() * auswahl.length)];
+  const erzeuger = AUFGABEN[thema];
+  try { probeAufgabe = erzeuger[Math.floor(Math.random() * erzeuger.length)](); }
   catch(e){ probeAufgabe = null; return; }
+  probeThema = thema; probeFach = fk;
   probeSchritt = 0; probeFalsch = []; probeFertig = false;
   probeOrdnung = probeAufgabe.schritte.map(s => mischeReihenfolge(s.optionen.length));
   if (neuZeichnen) render();
+}
+/* Der Aufgabentext ist mal „7x + 10 = 45" und mal ein ganzer Satz. In 30 Pixel
+   fett und mittig sieht das eine gut aus und das andere wie eine Schlagzeile,
+   die den halben Kasten füllt. Also richtet sich die Größe nach der Länge. */
+function probeGroesse(text){
+  const n = String(text).replace(/<[^>]+>/g, "").trim().length;
+  return n <= 22 ? "kurz" : n <= 55 ? "mittel" : "lang";
 }
 function probeAntwort(i){
   if (!probeAufgabe || probeFertig) return;
@@ -35778,11 +35849,12 @@ function probeHtml(){
       <div class="probehaken">✓</div>
       <div class="probeloesung">${a.loesung}</div>
       <p class="probesatz">Das hast du gerade selbst gelöst. Niemand hat dir die Lösung gezeigt.</p>
-      <button class="btn ghost probeneu" onclick="probeNeu(true)">Noch eine — mit neuen Zahlen</button>
+      <button class="btn ghost probeneu" onclick="probeNeu(true)">Noch eine — aus einem anderen Fach</button>
     </div>`;
   const s = a.schritte[probeSchritt];
   return `<div class="probe">
-      <div class="probeaufgabe">${a.text}</div>
+      <p class="probeherkunft">${KATALOG[probeFach] ? KATALOG[probeFach].name : ""} · ${probeThema}</p>
+      <div class="probeaufgabe ${probeGroesse(a.text)}">${a.text}</div>
       <div class="probeleiste">
         <span class="probepunkte">${a.schritte.map((_, i) =>
           `<i class="${i < probeSchritt ? "fertig" : i === probeSchritt ? "an" : ""}"></i>`).join("")}</span>
@@ -35854,7 +35926,7 @@ function willkommenHtml(){
     ${installHinweisHtml()}
 
     <div class="card abschnitt rose">
-      <p class="ueberschrift">Kennst du das?</p>
+      <p class="ueberschrift"><span class="abschnittnr">1</span>Kennst du das?</p>
       <ul class="liste">
         <li>Die Lösung steht da — aber du verstehst nicht, wie man darauf kommt.</li>
         <li>Bei Textaufgaben weißt du nicht mal, was du überhaupt rechnen sollst.</li>
@@ -35866,8 +35938,8 @@ function willkommenHtml(){
           niemand glaubt eine Behauptung. Also nebeneinander zeigen: dieselbe
           Aufgabe, einmal so wie überall, einmal so wie hier. Kein Name fällt;
           wer die anderen Seiten kennt, erkennt sie sowieso. */""}
-    <div class="card abschnitt himmel">
-      <p class="ueberschrift">Was hier anders läuft</p>
+    <div class="card abschnitt himmel weit">
+      <p class="ueberschrift"><span class="abschnittnr">2</span>Was hier anders läuft</p>
       <p class="small soft" style="margin:0 0 16px">Dieselbe Aufgabe, zwei Wege. Links, wie es auf
         Abfrageseiten läuft. Rechts, wie es hier läuft.</p>
       <div class="vergleich">
@@ -35900,7 +35972,7 @@ function willkommenHtml(){
     </div>
 
     <div class="card abschnitt gruen">
-      <p class="ueberschrift">So funktioniert es</p>
+      <p class="ueberschrift"><span class="abschnittnr">3</span>So funktioniert es</p>
       <ol class="schritte">
         <li><b>Du suchst dir dein Thema</b><span>Fach wählen, Klasse wählen, Thema antippen.</span></li>
         <li><b>Du wirst hingeführt, nicht bedient</b><span>Statt einer Lösung bekommst du kleine Fragen. Auch bei „Ich weiß nicht weiter“ kommt nur ein Hinweis — den letzten Schritt machst immer du.</span></li>
@@ -35909,7 +35981,7 @@ function willkommenHtml(){
     </div>
 
     <div class="card abschnitt indigo">
-      <p class="ueberschrift">Warum nicht einfach eine KI fragen?</p>
+      <p class="ueberschrift"><span class="abschnittnr">4</span>Warum nicht einfach eine KI fragen?</p>
       ${/* Der erklärende Absatz stand hier zweimal fast wortgleich — einmal
             hier, einmal in den beiden Kästen darunter. Die Kästen sagen es
             konkreter, also bleiben nur sie. */""}
@@ -35926,8 +35998,8 @@ function willkommenHtml(){
           auf der Baustellenseite, und die Zahl nennt schon das Band ganz oben.
           Dreimal dasselbe zu sagen macht die Seite lang, nicht ehrlicher. */""}
 
-    <div class="card abschnitt himmel">
-      <p class="ueberschrift">Was drin ist</p>
+    <div class="card abschnitt himmel weit">
+      <p class="ueberschrift"><span class="abschnittnr">5</span>Was drin ist</p>
       <div class="zahlen">
         <div><b>${Object.keys(KATALOG).length}</b><span>Fächer</span></div>
         <div><b>${anzahlStufen()}</b><span>Klassen und Lehrjahre</span></div>
@@ -35958,7 +36030,7 @@ function willkommenHtml(){
     </div>
 
     <div class="card abschnitt">
-      <p class="ueberschrift">Zum Nachlesen</p>
+      <p class="ueberschrift"><span class="abschnittnr">6</span>Zum Nachlesen</p>
       <p class="soft" style="margin:0 0 14px;max-width:54ch">Zu jedem Thema gibt es eine Seite, auf der alles von
         ganz vorn erklärt steht — mit Beispiel, den häufigsten Fehlern und einer Tabelle. Einfach zum Lesen.</p>
       <a class="btn ghost full" href="/erklaerungen.html">Alle ${anzahlFertig()} Erklärungen ansehen</a>
