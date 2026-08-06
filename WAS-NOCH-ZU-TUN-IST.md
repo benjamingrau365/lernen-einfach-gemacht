@@ -245,6 +245,11 @@ ein Ring je Thema würde sichtbar machen, dass es vorangeht.
 * **Große Knöpfe** und **volle Tastatur beim Eintippen**.
 * **Sicherheitsabfrage vor dem Zurücksetzen.** Ein Fehlgriff hat vorher
   alle Einstellungen weggeräumt.
+* **Große Schrift funktioniert jetzt wirklich.** Vorher schob sich ab
+  115 % Schriftgröße jede einzelne Seite seitlich weg — die Einstellung
+  war da, aber wer sie brauchte, bekam eine verrutschte App. Vierzehn
+  Ursachen, gefunden mit einem Durchlauf über 6.336 Kombinationen aus
+  Ansicht, Datenlage und Fensterbreite.
 
 ### Als Nächstes, in dieser Reihenfolge
 

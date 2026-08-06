@@ -245,14 +245,30 @@
      Fachfarbe darin sagt das, ohne ein Wort dafür zu brauchen — und sie
      wechselt mit dem Fach, in dem man gerade ist. */
   .card:has(> h1){background:linear-gradient(158deg, var(--fach-soft) 0%, var(--card) 64%)}
+  /* Deutsche Überschriften sind oft ein einziges langes Wort:
+     „Datenschutzerklärung" braucht 283 px und hatte auf einem 320er Handy nur
+     226 px — die Überschrift lief einfach aus der Karte heraus und schob die
+     ganze Seite seitlich mit. hyphens:auto trennt deutsch richtig, seit
+     <html lang="de"> gesetzt ist. */
+  h1,h2{min-width:0;overflow-wrap:break-word;hyphens:auto}
+  /* Dasselbe für Fließtext: E-Mail-Adressen, Aktenzeichen und lange
+     Zusammensetzungen im Impressum und in den Rechtstexten haben sonst keine
+     Stelle zum Umbrechen. Nur Absätze und Listen — Aufgabenterme bleiben
+     ausdrücklich außen vor, dort wäre ein Umbruch mitten in der Formel
+     schlimmer als ein Balken zum Schieben. */
+  .card p, .card li, .card dd, .card dt, .card address{overflow-wrap:break-word}
   h1{font-size:28px;line-height:1.2;letter-spacing:-.02em;margin:0 0 10px}
   h2{font-size:20px;margin:0 0 16px}
   p{margin:0 0 14px} p:last-child{margin-bottom:0}
   .soft{color:var(--soft)} .small{font-size:14.5px}
 
+  /* Ein einzelnes langes Wort in Versalien — „NUTZUNGSBEDINGUNGEN" — machte
+     die Pille 223 px breit in einer 207 px breiten Karte. inline-block wächst
+     mit dem Wort, wenn man es nicht bremst. */
   .tag{display:inline-block;background:var(--fach-soft);color:var(--fach-dark);font-size:12.5px;
     font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:5px 11px;
-    border-radius:999px;margin-bottom:12px}
+    border-radius:999px;margin-bottom:12px;
+    max-width:100%;overflow-wrap:break-word;hyphens:auto}
 
   /* Themenpille und Schrittzählung teilen sich eine Zeile. Passte beides nicht
      nebeneinander, wurde die Pille zusammengequetscht, bis der Name mitten im
@@ -561,7 +577,11 @@
     .kalender{margin-left:-26px;margin-right:-26px;border-radius:0;
       border-left:none;border-right:none;box-shadow:none}
   }
-  .kaltag{aspect-ratio:1;min-height:38px;display:flex;align-items:center;justify-content:center;
+  /* min-height:38px hielt jede der sieben Spalten breit — 7 x 38 plus sechs
+     Abstände sind 290 px, und mit dem Rand der Karte passte das auf einem
+     320er Handy nicht mehr. Der Tag darf jetzt kleiner werden; das
+     Seitenverhältnis hält ihn trotzdem quadratisch. */
+  .kaltag{aspect-ratio:1;min-width:0;display:flex;align-items:center;justify-content:center;
     border:1.5px solid transparent;border-radius:11px;background:var(--bg);
     font:inherit;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;
     transition:background .14s,border-color .14s,color .14s,transform .1s}
@@ -661,7 +681,8 @@
     background:var(--card);color:var(--soft);font-size:18px;line-height:1;cursor:pointer;font-family:inherit}
   .eigweg:hover{border-color:var(--red);color:var(--red)}
 
-  .feedback{border-radius:12px;padding:15px 17px;margin:16px 0 0;font-size:16px}
+  .feedback{border-radius:12px;padding:15px 17px;margin:16px 0 0;font-size:16px;
+    min-width:0;overflow-wrap:break-word;hyphens:auto}
   .feedback.ok{background:var(--gut-soft);color:var(--gut-dark)}
   .feedback.nope{background:var(--red-soft);color:var(--red)}
   .feedback.tipp{background:var(--amber-soft);color:var(--amber)}
@@ -716,8 +737,15 @@
     background:var(--fach-soft);color:var(--fach-dark)}
   .pill.bald{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
 
-  .zeile{display:flex;justify-content:space-between;align-items:center;gap:14px;
+  /* Themenname links, Fälligkeits-Plakette rechts. Ohne min-width:0 hält der
+     Name seine volle Breite und schiebt die Plakette aus der Karte —
+     „Kommas bei Infinitivgruppen" bei großer Schrift auf einem 360er Handy.
+     flex-wrap ist die zweite Sicherung, wenn selbst der Umbruch nicht reicht. */
+  .zeile{display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:8px 14px;
     padding:14px 0;border-bottom:1px solid var(--line)}
+  .zeile > *{min-width:0}
+  .zeile b{overflow-wrap:break-word;hyphens:auto}
   .zeile:last-child{border-bottom:none}
   .nutzerzeile{flex-wrap:wrap}
   .nutzerzeile > div:first-child{flex:1 1 200px;min-width:0}
@@ -730,8 +758,12 @@
   .miniaktion.gefahr:hover{border-color:var(--red);background:var(--red-soft)}
   .zeile b{display:block;font-size:16.5px}
   .zeile span{font-size:13.5px;color:var(--soft)}
-  .wann{font-size:12.5px;font-weight:700;white-space:nowrap;background:var(--amber-soft);
-    color:var(--amber);padding:6px 12px;border-radius:999px}
+  /* white-space:nowrap war richtig gedacht — „jetzt fällig" soll nicht in zwei
+     Zeilen zerfallen —, hat aber bei großer Schrift die ganze Planzeile aus
+     der Seite geschoben. Jetzt darf es im Notfall umbrechen. */
+  .wann{font-size:12.5px;font-weight:700;background:var(--amber-soft);
+    color:var(--amber);padding:6px 12px;border-radius:999px;
+    min-width:0;text-align:center;overflow-wrap:break-word}
   .wann.spaeter{background:var(--bg);color:var(--soft);border:1px solid var(--line)}
   .wann.sitzt{background:var(--gut-soft);color:var(--gut-dark)}
 
@@ -742,6 +774,7 @@
   /* auf dem Handy zwei mal zwei — vier Spalten passten dort nie hinein
      und schoben die Seite seitlich hinaus */
   .zahlen{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;text-align:center}
+  .zahlen > div{min-width:0;overflow-wrap:break-word;hyphens:auto}
   @media(min-width:560px){ .zahlen{grid-template-columns:repeat(4,minmax(0,1fr))} }
   .zahlen div{background:var(--bg);border-radius:13px;padding:16px 8px}
   .zahlen b{display:block;font-size:26px;line-height:1.1}
@@ -1027,12 +1060,17 @@
   .fuss{text-align:center;color:var(--soft);font-size:14px;padding:26px 10px 0;line-height:1.6}
 
   /* ---------- geführte Auswahl ---------- */
-  .wahlgitter{display:grid;gap:12px;margin-bottom:14px}
+  /* minmax(0,1fr) statt 1fr: Ein Rasterfeld ist von sich aus so breit wie
+     sein längstes unteilbares Wort — „Betriebstechnik" neben dem Fachzeichen
+     machte die Kachel bei großer Schrift breiter als die Spalte und schob die
+     Fächerseite seitlich hinaus. */
+  .wahlgitter{display:grid;gap:12px;margin-bottom:14px;grid-template-columns:minmax(0,1fr)}
   .grosswahl{display:block;width:100%;text-align:left;background:var(--card);
     border:1.5px solid var(--line);border-radius:16px;padding:20px 22px;font:inherit;
     color:var(--ink);cursor:pointer;transition:border-color .12s,background .12s}
   .grosswahl:hover{border-color:var(--fach);background:var(--fach-soft)}
-  .grosswahl b{display:block;font-size:21px;letter-spacing:-.01em;margin-bottom:3px}
+  .grosswahl b{display:block;font-size:21px;letter-spacing:-.01em;margin-bottom:3px;
+    overflow-wrap:break-word;hyphens:auto}
   .grosswahl span{font-size:14.5px;color:var(--soft)}
   /* Farbige Kacheln für Fach und Klasse — jede mit ihrem eigenen Zeichen */
   .grosswahl.mitfarbe{--akz:var(--fach);--akz-soft:var(--fach-soft);--akz-dark:var(--fach-dark);
@@ -1671,9 +1709,16 @@
     max-width:560px;margin:0 auto;padding:40px 0}
 
   /* ---------- Kopfleiste und Menü ---------- */
+  /* flex-wrap ist kein Schönheitsmittel, sondern die Notbremse: Die ganze
+     Leiste wächst mit der Schriftgröße mit (html{zoom:var(--fs)}), die
+     Fensterbreite nicht. Ab 115 % passte die rechte Knopfgruppe nicht mehr
+     neben die Marke und schob jede einzelne Seite der App seitlich hinaus —
+     auf dem Handy hieß das: alles verrutscht, sobald man die Schrift
+     größer stellt. Jetzt rutscht die Gruppe in eine zweite Zeile. */
   .kopfleiste{position:sticky;top:0;z-index:40;background:var(--bg);
     border-bottom:1px solid var(--line);
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:10px;
     padding:18px 20px;max-width:1320px;margin:0 auto}
   /* Sicherheitsnetz: Marke und Slogan dürfen notfalls schrumpfen. Ohne das
      schob die Leiste die ganze Seite auf jedem Handy seitlich hinaus. */
@@ -1686,15 +1731,26 @@
      :focus-within sorgt dafür, dass es auch mit der Tastatur aufgeht. */
   .kopfgruppe{position:relative;display:flex;align-items:center}
   .kopfpfeil{font-size:10px;margin-left:5px;opacity:.65}
+  /* display:none statt nur visibility:hidden. Ein unsichtbares Element hat
+     trotzdem eine Lage — und dieses Klappmenü ragte zugeklappt 108 px über
+     den rechten Fensterrand hinaus, sobald Schrift und Knöpfe groß gestellt
+     waren. Ergebnis: Die ganze Seite ließ sich seitlich schieben, ohne dass
+     dort irgendetwas zu sehen war. Mit display:none gibt es keine Lage mehr.
+     Das Aufblenden bleibt über transition-behavior:allow-discrete erhalten;
+     wo der Browser das nicht kennt, erscheint das Menü eben sofort. */
   .kopfklapp{position:absolute;top:100%;left:0;margin-top:8px;min-width:246px;
     background:var(--card);border:1px solid var(--line);border-radius:15px;padding:8px;
     box-shadow:0 16px 38px rgba(0,0,0,.16);z-index:60;
-    opacity:0;visibility:hidden;transform:translateY(-6px);
-    transition:opacity .15s ease,transform .15s ease,visibility .15s}
+    display:none;opacity:0;transform:translateY(-6px);
+    transition:opacity .15s ease,transform .15s ease,display .15s allow-discrete}
   /* unsichtbare Brücke über den Abstand, damit es beim Hinuntergehen offen bleibt */
   .kopfklapp::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
   .kopfgruppe:hover .kopfklapp,.kopfgruppe:focus-within .kopfklapp{
-    opacity:1;visibility:visible;transform:none}
+    display:block;opacity:1;transform:none}
+  @starting-style{
+    .kopfgruppe:hover .kopfklapp,.kopfgruppe:focus-within .kopfklapp{
+      opacity:0;transform:translateY(-6px)}
+  }
   .klapplink{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:11px;color:var(--ink)}
   .klapplink:hover{background:var(--akz-soft)}
   .klappzeichen{width:31px;height:31px;border-radius:9px;background:var(--akz-soft);color:var(--akz-dark);
@@ -1756,7 +1812,10 @@
   @media(min-width:1360px){ .abbreit{display:inline-block} .kopflink{font-size:16.5px;padding:9px 14px} }
   @media(min-width:1380px){ .absehrbreit{display:inline-block} }
   /* rechte Gruppe: Serie + Aktions-Button + Menü */
-  .kopfrechts{display:flex;align-items:center;gap:9px;flex:none}
+  /* flex:none allein hätte die Gruppe unter allen Umständen breit gehalten.
+     Sie darf umbrechen, aber ihre Knöpfe nicht zerquetscht werden. */
+  .kopfrechts{display:flex;align-items:center;justify-content:flex-end;
+    flex-wrap:wrap;gap:9px;min-width:0}
   .kopfrechts .serie--mini{flex-direction:row;gap:6px;min-width:0;padding:8px 13px;border-radius:999px;
     font:inherit;cursor:pointer}
   .kopfrechts .serie--mini:hover{background:var(--ac-soft)}
@@ -1933,11 +1992,21 @@
   .fussinhalt{max-width:1140px;margin:0 auto;display:grid;gap:22px 18px;
     grid-template-columns:repeat(2, minmax(0, 1fr))}
   @media(min-width:640px){ .fussinhalt{gap:26px} }
-  .fussspalte{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+  /* align-items:flex-start hieß: Jeder Link ist so breit, wie sein Text lang
+     ist — auch wenn die Spalte schmaler ist. Damit lief „Datenschutzerklärung"
+     bei großer Schrift aus der Seite heraus, statt umzubrechen. Mit stretch
+     nimmt der Link die Spaltenbreite und der Text bricht darin um; links
+     ausgerichtet bleibt er über text-align. */
+  .fussspalte{display:flex;flex-direction:column;align-items:stretch;gap:2px;min-width:0}
+  /* Versalien plus .13em Sperrung machen aus „Rechtliches" 98 px in einer
+     95 px breiten Spalte — auf dem kleinsten Handy bei größter Schrift. */
   .fusstitel{font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--soft);
-    font-weight:700;margin:0 0 8px}
+    font-weight:700;margin:0 0 8px;min-width:0;overflow-wrap:break-word;hyphens:auto}
+  /* „Datenschutzerklärung" passt bei 145 % Schrift in keine halbe Handybreite
+     mehr. Deutsche Trennung statt seitlichem Überlauf. */
   .fusslink{background:none;border:none;padding:5px 0;font:inherit;font-size:15px;
-    color:var(--ink);text-align:left;cursor:pointer}
+    color:var(--ink);text-align:left;cursor:pointer;
+    min-width:0;overflow-wrap:break-word;hyphens:auto}
   .fusslink:hover{color:var(--ac-dark);text-decoration:underline}
   .fussstand{max-width:1140px;margin:8px auto 0;font-size:12.5px;color:var(--soft);
     opacity:.75;text-align:center}
@@ -1950,7 +2019,12 @@
   .ueberschrift svg{width:16px;height:16px;vertical-align:-3px;margin-right:7px;
     color:var(--ac);flex:none}
   .kopfkarte{background:linear-gradient(150deg,var(--ac-soft) 0%,var(--card) 62%)}
-  .kopfzeile{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  /* Bei 320 px Fensterbreite und 145 % Schrift bleiben 221 px Layout übrig —
+     Gruß und Serienplakette passen dann nicht mehr nebeneinander. Umbrechen
+     statt hinausschieben. */
+  .kopfzeile{display:flex;align-items:flex-start;justify-content:space-between;
+    flex-wrap:wrap;gap:14px}
+  .kopfzeile > div{min-width:0}
   .kopfzeile h1{margin:8px 0 6px}
   .serie{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:0;background:var(--card);border:1.5px solid var(--ac);border-radius:16px;
@@ -2019,7 +2093,7 @@
   .textlink{background:none;border:none;font:inherit;color:var(--ac-dark);font-weight:600;
     cursor:pointer;text-decoration:underline;padding:6px;width:100%;text-align:center}
 
-  .kachelpaar{display:grid;grid-template-columns:1fr;gap:0}
+  .kachelpaar{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
   /* Dünner Ladebalken oben — Feedback beim Seitenwechsel (wie bei anderen Seiten) */
   #ladebalken{position:fixed;top:0;left:0;height:3.5px;width:0;z-index:100;opacity:0;
     background:linear-gradient(90deg,#0a8f5f,#18c169,#12b5c9,#4f7cf7,#18c169,#0a8f5f);
@@ -2239,7 +2313,8 @@
   .einstiegkachel b{display:block;font-size:19px;letter-spacing:-.01em;color:var(--akz-dark);
     overflow-wrap:break-word;hyphens:auto}
   @media(min-width:560px){ .einstiegkachel b{font-size:24px} }
-  .einstiegzahl{display:block;font-size:14.5px;color:var(--soft);margin-top:2px}
+  .einstiegzahl{display:block;font-size:14.5px;color:var(--soft);margin-top:2px;
+    min-width:0;overflow-wrap:break-word}
   /* Der Balken in der Fachkachel: dünn, in der Fachfarbe, ohne Beschriftung.
      Er soll auf einen Blick sagen „viel“ oder „wenig“, nicht eine Zahl
      ersetzen — die steht darunter. */
@@ -2275,16 +2350,86 @@
     .shell.voll{grid-template-columns:1fr;max-width:880px}
     .gegen{grid-template-columns:1fr 1fr}
     .hero{padding:34px 0 14px}
-    .wahlgitter{grid-template-columns:1fr 1fr}
+    .wahlgitter{grid-template-columns:repeat(2,minmax(0,1fr))}
     .fussinhalt{grid-template-columns:repeat(4,1fr);gap:30px}
-    .wahlgitter.drei{grid-template-columns:1fr 1fr 1fr}
-    .kachelpaar{grid-template-columns:1fr 1fr;gap:14px}
+    .wahlgitter.drei{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kachelpaar{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
     .kachelpaar .card{margin-bottom:0}
     .merktext{font-size:21px}
     /* 190px liessen in der Einstellungsspalte nur zwei Spalten zu — die dritte
        Kachel stand dann allein in der zweiten Zeile. */
     .optionen3{grid-template-columns:repeat(auto-fit,minmax(168px,1fr))}
   }
+
+  /* ---------- Schmale Schirme, große Schrift ----------
+     html{zoom:var(--fs)} lässt die ganze Oberfläche mitwachsen, das Fenster
+     aber nicht: Auf einem 360er Handy bei 145 % Schrift bleiben 248 CSS-Pixel
+     Layoutbreite übrig — weniger als jedes Handy je hatte. Alles, was dann
+     nicht mehr schrumpfen oder umbrechen kann, schiebt die ganze Seite
+     seitlich hinaus. Das ist kein Randfall: Genau diese Einstellung wählt,
+     wer schlecht sieht.
+
+     Die Regeln stehen bewusst hier am Ende und gelten überall — ein Umbruch
+     schadet nie, ein seitlich verrutschtes Layout immer. */
+  .hero h1{overflow-wrap:anywhere}
+  .probeleiste{flex-wrap:wrap}
+  .optionen,.pick{min-width:0}
+  .picktext{min-width:0;overflow-wrap:break-word;hyphens:auto}
+  .vergleich{grid-template-columns:minmax(0,1fr)}
+  /* Hier reicht break-word nicht: Es bricht das Wort zwar um, meldet dem
+     Raster aber weiter die volle Wortbreite als Mindestmaß — die Kachel
+     bleibt also zu breit. Nur „anywhere" senkt auch das Mindestmaß. Sichtbar
+     ändert sich nichts, solange das Wort passt. */
+  .themazeile,.thema{min-width:0}
+  .thema > span,.themaname,.themastand,.vername,.vschritt,
+  .suchzeile b,.suchzeile small,.alltagkopf b,.alltagkopf small,
+  .fachliste > *,.gegen > *,.heromerkmale span,
+  .suchknopftext b,.suchknopftext small,.alltagtext b,.alltagtext small,
+  .herosuchetext b,.herosuchetext small{
+    min-width:0;overflow-wrap:break-word;hyphens:auto}
+  .fachliste{grid-template-columns:minmax(0,1fr)}
+  /* Nur bei vergrößerter Schrift auch mitten im Wort trennen: Dort ist die
+     Spalte sonst schmaler als das längste Wort, und „Spannungsteiler" muss
+     irgendwo brechen. Bei normaler Schrift bliebe es hässlich ohne Not. */
+  html[data-eng="an"] .thema > span,
+  html[data-eng="an"] .themaname,
+  html[data-eng="an"] .themastand,
+  html[data-eng="an"] .vername,
+  html[data-eng="an"] .vschritt,
+  html[data-eng="an"] .fachliste > *,
+  html[data-eng="an"] .gegen > *,
+  html[data-eng="an"] .heromerkmale span,
+  html[data-eng="an"] .suchknopftext b,
+  html[data-eng="an"] .suchknopftext small,
+  html[data-eng="an"] .alltagtext b,
+  html[data-eng="an"] .alltagtext small,
+  html[data-eng="an"] .herosuchetext b,
+  html[data-eng="an"] .herosuchetext small,
+  html[data-eng="an"] .picktext{overflow-wrap:anywhere}
+  /* Der Schieberegler darf zweizeilig werden, statt „Automatisch" zu kappen */
+  .segment{flex-wrap:wrap}
+  .segstueck{flex:1 1 5.5em}
+  .reglerreihe{flex-wrap:wrap}
+  .farbzeile{flex-wrap:wrap}
+  .farbfach{min-width:0;overflow-wrap:anywhere}
+  /* Einstiegsknöpfe mit Lupe/Zeichen links und zwei Textzeilen rechts: Der
+     Text muss schrumpfen dürfen, sonst drückt er das Zeichen aus dem Knopf. */
+  .suchknopftext,.alltagtext,.herosuchetext{min-width:0}
+  .schriftregler{min-width:0;flex:1 1 60px}
+  /* Zeichen links, Zahl rechts, Text dazwischen: Bei 221 px Layoutbreite
+     fraßen die beiden festen Enden den Text auf null Pixel herunter. Er
+     verlangt jetzt eine Mindestbreite und rutscht sonst in die zweite Zeile. */
+  .alltagkopf,.suchknopf{flex-wrap:wrap}
+  .alltagtext,.suchknopftext{flex:1 1 8em}
+  .gegen{grid-template-columns:minmax(0,1fr)}
+  .kalkopf{flex-wrap:wrap;gap:6px}
+  /* Der Tag im Kalender ist quadratisch; die Zahl darf notfalls kleiner
+     werden, statt das Gitter zu sprengen. */
+  .kaltag{font-size:min(16px, 4.4vw);padding:0}
+  .sterne{flex-wrap:wrap}
+  .baugitter{grid-template-columns:minmax(0,1fr)}
+  .bauzeile,.bauname{min-width:0;overflow-wrap:break-word;hyphens:auto}
+  summary{overflow-wrap:break-word;hyphens:auto}
 </style>
 </head>
 <body>
@@ -32013,6 +32158,12 @@ function wendeEinstellungenAn(){
   document.documentElement.dataset.schriftart = einstellungen.schriftart || "standard";
   document.documentElement.dataset.zeilen = einstellungen.zeilen || "normal";
   document.documentElement.dataset.tasten = einstellungen.tasten || "normal";
+  /* Ab etwa 110 % Schrift wird der Platz so knapp, dass harte Worttrennungen
+     nötig werden — hübsch ist anders, aber besser als eine Seite, die sich
+     seitlich schieben lässt. Bei normaler Schrift bleibt es bei der sauberen
+     deutschen Silbentrennung. */
+  document.documentElement.dataset.eng =
+    (parseFloat(einstellungen.schriftSkala) || 1) > 1.1 ? "an" : "";
   farbenAnwenden();
 }
 
