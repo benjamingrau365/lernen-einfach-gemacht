@@ -4,7 +4,7 @@ Diese Datei ist die Merkliste für alles, was **nicht** im Code steht, sondern
 draußen erledigt werden muss. Sie liegt hier, damit nichts verlorengeht, wenn
 zwischen zwei Arbeitssitzungen Wochen liegen.
 
-Stand: 4. August 2026
+Stand: 7. August 2026
 
 ---
 
@@ -257,6 +257,19 @@ ein Ring je Thema würde sichtbar machen, dass es vorangeht.
 * **Fachmotive und Kartenstufen.** Vier SVG-Motive (Bruchbalken, Satzbau,
   Sprechblasen, Leiterbahn) in der Fachfarbe, und drei Kartenstufen statt
   einer — vorher sahen alle sechs Karten einer Seite gleich aus.
+* **Formelsammlung** (`/formeln`). 102 Formeln — 59 Elektrotechnik, 43
+  Mathematik —, jede nach allen Größen umgestellt, mit Einheiten, einem
+  durchgerechneten Beispiel und der Falle, in die man sonst tappt. Echte
+  Bruchstriche und Wurzelzeichen, kein `U = (R1*R2)/(R1+R2)`.
+
+  Der eigentliche Punkt steckt nicht im Aussehen: Jede Formel ist als
+  Rechenausdruck hinterlegt, nicht als Text. Daraus wird beides gemacht — das
+  gesetzte Bild und der Zahlenwert. `node pruefe-formeln.js` setzt 200-mal je
+  Formel Zufallszahlen ein und stellt jede Umstellung gegen ihre Grundformel.
+  Eine falsch umgestellte Formel in einer Formelsammlung ist schlimmer als
+  gar keine, denn sie wird geglaubt. Der Prüfer wurde gegengeprüft: fünf
+  absichtlich eingebaute Fehler (Vorzeichen, vertauschter Nenner, 9550 → 9950,
+  fehlende Größe) wurden alle gefunden.
 
 ### Am Design noch offen
 

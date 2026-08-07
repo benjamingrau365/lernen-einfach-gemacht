@@ -1,20 +1,20 @@
 # Die Aufgaben prüfen
 
 Die Übungen in `index.html` gehen an Kinder. Ein falsch markiertes Beispiel
-lernen sie falsch. Deshalb gibt es vier Prüfer, die vor jeder Änderung laufen
+lernen sie falsch. Deshalb gibt es fünf Prüfer, die vor jeder Änderung laufen
 sollten:
 
 ```bash
 npm run pruefen
 ```
 
-Das ruft nacheinander alle vier auf. Sie brauchen nur Node, keine Installation.
+Das ruft sie nacheinander auf. Sie brauchen nur Node, keine Installation.
 
 ---
 
 ## 0. `pruefe-seite.js` — hängt die Seite zusammen?
 
-Die anderen drei schauen auf die Inhalte, dieser auf das Gerüst — ganz ohne
+Die anderen schauen auf die Inhalte, dieser auf das Gerüst — ganz ohne
 Browser und Zusatzpakete:
 
 * **Adressen:** Jede verlinkte Adresse muss die App beim Neuladen auch wieder
@@ -90,7 +90,30 @@ Der Reimvergleich rechnet dabei mit dem **Klang**, nicht mit der Schreibweise:
 „stehn“ reimt auf „schön“, „hin“ auf „Sinn“. Dafür werden Umlaute, Dehnungs-h
 und Doppelbuchstaben vorher vereinheitlicht.
 
-## 3. `pruefe-quellen.js` — ist die Faktenbehauptung belegt?
+## 3. `pruefe-formeln.js` — ist die Formel richtig umgestellt?
+
+Die Formelsammlung unter `/formeln` gibt jede Formel nach allen Größen
+umgestellt aus. Eine falsch umgestellte Formel ist dort schlimmer als gar
+keine: Sie wird geglaubt, und der Fehler fällt erst in der Prüfung auf.
+
+Von Hand ist das nicht zu kontrollieren — es sind über 300 Gleichungen.
+Deshalb steht keine Formel als Text in der App, sondern als Rechenausdruck.
+Daraus wird beides gemacht: das gesetzte Bild mit echtem Bruchstrich und der
+Zahlenwert. Der Prüfer nutzt genau denselben Rechenkern wie die App, aus der
+`index.html` herausgeschnitten — eine zweite Fassung hier würde irgendwann
+abweichen, und dann prüfte der Prüfer sich selbst.
+
+Je Formel 200-mal:
+
+* Zufallszahlen für alle Größen einsetzen, die Grundformel ausrechnen
+* jede Umstellung gegenrechnen: Kommt links dasselbe heraus wie rechts?
+* Identitäten wie die binomischen Formeln: beide Seiten vergleichen
+
+Dazu kommt die Buchführung: Jedes Formelzeichen im Ausdruck muss in der
+Größenliste stehen und umgekehrt, jede Größe braucht ein Wort dazu, kein Name
+darf doppelt vorkommen, und das Beispiel muss aufgehen.
+
+## 4. `pruefe-quellen.js` — ist die Faktenbehauptung belegt?
 
 Manche Aufgaben behaupten Dinge, die man nicht herleiten kann: dass
 „Marschall“ früher Pferdeknecht hieß, dass „bios“ Leben bedeutet, dass
@@ -118,7 +141,7 @@ sonst schlägt die Prüfung fehl.
 1. Aufgabe in `index.html` schreiben (Muster: die bestehenden Themen).
 2. Erklärung in `ERKLAERUNGEN` ergänzen — der Aufbau-Prüfer besteht darauf.
 3. Wenn es um Fakten geht: Eintrag in `quellen.json` mit Quelle.
-4. `npm run pruefen` — muss viermal sauber durchlaufen.
+4. `npm run pruefen` — muss vollständig sauber durchlaufen.
 
 ## Warum die Prüfer selbst getestet sind
 
@@ -126,3 +149,9 @@ Ein Prüfer, der nie anschlägt, ist wertlos. Jede Prüfung wurde deshalb
 gegengetestet, indem absichtlich ein Fehler eingebaut und geschaut wurde, ob er
 gefunden wird — ein verfälschter Fakt, ein falsch benanntes Stilmittel, eine
 erfundene Adresse, ein doppelt vergebener Themenname. Alle wurden gefunden.
+
+Beim Formelprüfer waren es fünf: das ohmsche Gesetz falsch umgestellt
+(R = U · I statt U / I), im Spannungsteiler der Widerstand vertauscht, beim
+Pythagoras ein Plus statt eines Minus, die 9550 der Drehmomentformel zu 9950
+verrutscht und eine Größe aus der Liste gestrichen. Jeder einzelne wurde
+gemeldet.
