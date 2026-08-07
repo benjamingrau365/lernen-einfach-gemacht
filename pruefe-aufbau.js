@@ -75,6 +75,26 @@ for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
         if (!Array.isArray(s.optionen) || s.optionen.length < 2)
           return melde(thema, nr, `Schritt ${si + 1}: weniger als 2 Antworten`);
 
+        /* Passt die Frage zu dem, was man anklicken kann?
+           Gefunden hat das ein Nutzer, nicht diese Prüfung: Bei „Erzählen“
+           lautete die Frage „Was ist an B besser?“ — zur Auswahl standen „A“,
+           „B“ und „Beide gleich“. Das sind Antworten auf die Frage *welcher*,
+           nicht auf *was*. Wer die Frage las und dann B anklickte, hatte recht,
+           ohne zu verstehen, warum.
+           Zahlen zählen nicht als Auswahlmarke — „Was ergibt 4 + 5?“ → „9“ ist
+           völlig richtig. Und Fragen, die den Buchstaben selbst nennen
+           („Welcher Satz — A oder B?“), sind ebenfalls in Ordnung. */
+        const fragetext = nackt(s.frage);
+        if (/^(was|warum|wieso|weshalb|wodurch|woran)\b/i.test(fragetext)
+            && !/\bA\b[^.]*\bB\b/.test(fragetext)) {
+          const marken = s.optionen
+            .map((o) => nackt(o.t))
+            .filter((t) => /^([A-H]|beide( gleich)?|beides|keins?|keiner|keines|alle)$/i.test(t));
+          if (marken.length >= 2)
+            melde(thema, nr, `Schritt ${si + 1}: die Frage „${fragetext}“ fragt nach dem Was, `
+              + `zur Auswahl stehen aber nur Marken (${marken.join(", ")}) — das beantwortet ein Welcher`);
+        }
+
         const richtige = s.optionen.filter((o) => o.ok);
         if (richtige.length !== 1)
           melde(thema, nr, `Schritt ${si + 1}: ${richtige.length} richtige Antworten (muss genau 1 sein)`);
