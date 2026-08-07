@@ -39,11 +39,15 @@ function schneide(von, bis, name){
   return h.slice(a, b);
 }
 
-const kern = schneide("function formelTeile(text){", "/* ---------- Die Sammlung ----------", "Rechenkern");
-const daten = schneide("\nconst FORMELSAMMLUNG = [", "\n/* ---------- Die Seite ---------- */", "Sammlung");
-
-let umgebung;
+/* Die Marken enden bewusst vor dem Kommentar-Ende: Aus einer einzeiligen
+   Überschrift wird beim nächsten Umbau eine mit Erklärung darunter, und dann
+   fände der Prüfer sein Ende nicht mehr. Genau das ist beim Umbau der Seite
+   auf zwei Ebenen passiert — und weil das Schneiden außerhalb des try stand,
+   ist der Prüfer abgestürzt statt zu melden. Beides behoben. */
+let umgebung, kern, daten;
 try {
+  kern  = schneide("function formelTeile(text){", "/* ---------- Die Sammlung ----------", "Rechenkern");
+  daten = schneide("\nconst FORMELSAMMLUNG = [", "\n/* ---------- Die Seite ----------", "Sammlung");
   umgebung = new Function(`${kern}\n${daten}\nreturn {FORMELSAMMLUNG, formelBaum, formelWert, formelRechne, formelTermFuer, formelVariablen, formelZeichen, FORMEL_FN};`)();
 } catch (e) {
   console.log("=== FORMELPRÜFUNG ===\n\n=== ERGEBNIS ===");
