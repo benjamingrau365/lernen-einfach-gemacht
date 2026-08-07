@@ -271,6 +271,14 @@ ein Ring je Thema würde sichtbar machen, dass es vorangeht.
   absichtlich eingebaute Fehler (Vorzeichen, vertauschter Nenner, 9550 → 9950,
   fehlende Größe) wurden alle gefunden.
 
+  Die Seite hat danach noch einen zweiten Umbau gebraucht: Zuerst stand alles
+  untereinander — **47 Bildschirme am Stück**, zum Nachschlagen unbrauchbar.
+  Jetzt sind es zwei Ebenen: oben das Gebiet, darunter die Gruppe als Kachel,
+  sichtbar ist immer nur eine. Innerhalb der Gruppe steht jede Formel
+  zugeklappt da (Name und Grundformel — genau das, woran man sie
+  wiedererkennt) und klappt auf Tipp ganz auf. Aus 47 Bildschirmen wurden
+  **höchstens 3,8**.
+
 ### Am Design noch offen
 
 1. **Die Marke ist unsichtbar.** Grüne Glühbirne und Systemschrift; die

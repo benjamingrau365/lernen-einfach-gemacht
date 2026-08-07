@@ -2693,6 +2693,55 @@
     letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
   .einstteil > .fgruppe:first-child{margin-top:6px}
 
+  /* ---------- zwei Ebenen: Gruppe wählen, Formel aufklappen ----------
+     Die Gruppen stehen als Kacheln nebeneinander statt als Reihe zum
+     Wegwischen: Was man nicht sieht, sucht man nicht. */
+  .fgruppennav{display:flex;flex-wrap:wrap;gap:6px;margin:0 2px 6px}
+  .fgruppenchip{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;
+    background:var(--card);border:1.5px solid var(--line);border-radius:999px;
+    padding:6px 11px;font:inherit;font-size:calc(12.5px * var(--fs,1));font-weight:600;
+    line-height:1.25;color:var(--soft);cursor:pointer;text-align:left;
+    transition:background .15s ease, border-color .15s ease, color .15s ease}
+  /* Der Titel steckt in einem eigenen Kasten, nicht nackt im Flex-Kasten:
+     Ein Textknoten dort ist ein eigener Block und kann nicht umbrechen —
+     „Beleuchtung und Instandhaltung" schob sonst bei großer Schrift die
+     Seite zur Seite. */
+  .fgruppenchip > span{flex:0 1 auto;min-width:0;overflow-wrap:break-word;hyphens:auto}
+  .fgruppenchip em{flex:none;font-style:normal;font-weight:700;font-size:calc(11px * var(--fs,1));
+    background:var(--bg);border-radius:999px;padding:1px 6px;color:var(--soft)}
+  .fgruppenchip.an{background:var(--ac);border-color:var(--ac);color:#fff}
+  .fgruppenchip.an em{background:rgba(255,255,255,.22);color:#fff}
+  @media(hover:hover){ .fgruppenchip:not(.an):hover{border-color:var(--ac);color:var(--ac-dark)} }
+
+  /* Die zugeklappte Formel: Name oben, Grundformel darunter. Zwei Zeilen
+     statt einer halben Bildschirmseite. */
+  /* Kästchen im Raster brauchen min-width:0, sonst sind sie mindestens so
+     breit wie ihr längster unteilbarer Inhalt — bei 175 % Schrift schiebt das
+     die ganze Seite zur Seite. */
+  .fliste{display:grid;gap:9px}
+  .fliste > *{min-width:0;max-width:100%}
+  .fzeilekarte{display:block;width:100%;text-align:left;background:var(--card);
+    border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;
+    font:inherit;color:var(--ink);cursor:pointer;min-width:0;
+    transition:border-color .15s ease, background .15s ease}
+  @media(hover:hover){ .fzeilekarte:hover{border-color:var(--ac)} }
+  .fzukopf{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    width:100%;min-width:0}
+  .fzukopf .fname{flex:0 1 auto;min-width:0;overflow-wrap:break-word;hyphens:auto}
+  .fzukopf.auf{background:none;border:none;padding:0;margin:0 0 4px;font:inherit;
+    color:inherit;cursor:pointer;text-align:left}
+  .fzeilekarte .fname{margin:0;font-size:calc(16.5px * var(--fs,1));font-weight:700}
+  .fzukopf.auf .fname{margin:0}
+  .fzupfeil{flex:none;color:var(--soft);font-size:calc(13px * var(--fs,1));
+    transition:transform .18s ease}
+  .fzupfeil.offen{transform:rotate(180deg);color:var(--ac)}
+  html.ruhig .fzupfeil{transition:none}
+  @media(prefers-reduced-motion:reduce){ .fzupfeil{transition:none} }
+  .fzuformel{display:block;margin-top:7px;min-width:0}
+  .fzuformel .fzeile{font-size:calc(17px * var(--fs,1));font-weight:600;color:var(--ac-dark)}
+  .fkarte.auf{border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
+  .fkarte.auf .fsatz > .fzeile:first-child{color:var(--ac-dark)}
+
   /* Die Beispielspalte („1 GW = 1 000 000 000 W") ist breiter als ein Handy.
      Sie darf deshalb umbrechen — nur die schmalen Spalten links bleiben in
      einer Zeile. Ohne das schob die Tabelle die ganze Seite zur Seite. */
@@ -31307,6 +31356,7 @@ function fussleisteHtml(){
           <a class="fusslink" href="/pruefung/elektroniker-teil-1.html">Abschlussprüfung Teil 1</a>
           <a class="fusslink" href="/pruefung/elektroniker-teil-2.html">Abschlussprüfung Teil 2</a>
           ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "fusslink")}
+          ${navLink("/formeln", "zeigeFormeln()", "Formelsammlung", "fusslink")}
           ${navLink("/arbeitsblatt", "zeigeArbeitsblatt()", "Arbeitsblatt drucken", "fusslink")}
           ${benutzer ? navLink("/plan", "zeigePlan()", "Mein Wiederholungsplan", "fusslink") : ""}
         </div>
@@ -34929,8 +34979,19 @@ gruppen:[
 ];
 
 
-/* ---------- Die Seite ---------- */
+/* ---------- Die Seite ----------
+   Zuerst stand hier alles untereinander: 59 Formeln, jede mit Umstellungen,
+   Größen, Beispiel und Hinweis — 47 Bildschirme am Stück. Zum Nachschlagen
+   ist das unbrauchbar; man sucht eine Formel und wischt eine Minute.
+
+   Jetzt sind es zwei Ebenen. Oben wählt man das Gebiet, darunter die Gruppe;
+   sichtbar ist immer nur eine. Innerhalb der Gruppe steht jede Formel
+   zugeklappt da — Name und die Grundformel, mehr braucht man zum Wiederfinden
+   nicht. Ein Tipp klappt sie ganz auf. So passt eine Gruppe auf einen
+   Bildschirm, statt sich über zehn zu ziehen. */
 let formelBereich = "elektro";
+let formelGruppe = 0;
+let formelOffen = "";
 let formelSuche = "";
 
 function zeigeFormeln(){
@@ -34941,7 +35002,25 @@ function zeigeFormeln(){
     formelBereich = fach === "mathe" ? "mathe" : "elektro";
   ansicht = "formeln"; render();
 }
-function formelBereichWaehlen(id){ formelBereich = id; formelSuche = ""; render(); }
+function formelBereichWaehlen(id){
+  formelBereich = id; formelGruppe = 0; formelOffen = ""; formelSuche = ""; render();
+}
+/* Beim Gruppenwechsel nach oben: Sonst steht man mitten in der neuen Gruppe,
+   weil man vorher unten in der alten war. */
+function formelGruppeWaehlen(i){
+  formelGruppe = i; formelOffen = ""; render();
+  try { window.scrollTo({top:0, behavior:"smooth"}); } catch(e){ window.scrollTo(0, 0); }
+}
+/* Immer nur eine Formel offen — sonst ist die Seite nach fünf Tippern wieder
+   so lang wie vorher. Nochmal auf dieselbe tippen schließt sie. */
+function formelUm(name){
+  formelOffen = formelOffen === name ? "" : name;
+  render();
+  if (!formelOffen) return;
+  const el = document.getElementById("f-" + schnipselId(name));
+  if (el && el.getBoundingClientRect().top < 0)
+    el.scrollIntoView({block:"start", behavior:"smooth"});
+}
 function formelAnzahl(){
   return FORMELSAMMLUNG.reduce(function(n, b){
     return n + b.gruppen.reduce(function(m, gr){ return m + (gr.eintraege || []).length; }, 0); }, 0);
@@ -35019,7 +35098,23 @@ function formelBeispielHtml(e, zei){
     + mitEinheit(e.bsp.suche, wert) + "</span></p>";
 }
 
-function formelKarteHtml(e, herkunft){
+/* Zugeklappt: Name und die Grundformel. Das ist genau die Zeile, an der man
+   eine Formel wiedererkennt — der Rest kommt beim Auftippen. */
+function formelZeileHtml(e){
+  const zei = formelZeichenKarte(e);
+  const erste = (e.f || [])[0];
+  return `
+    <button class="fzeilekarte" id="f-${schnipselId(e.name)}" aria-expanded="false"
+            onclick="formelUm(${JSON.stringify(e.name).replace(/"/g, "&quot;")})">
+      <span class="fzukopf">
+        <span class="fname">${e.name}</span>
+        <span class="fzupfeil" aria-hidden="true">▾</span>
+      </span>
+      ${erste ? `<span class="fzuformel">${formelZeile(erste.z, erste.t, zei)}</span>` : ""}
+    </button>`;
+}
+
+function formelKarteHtml(e, herkunft, zumZuklappen){
   const zei = formelZeichenKarte(e);
   const saetze = (e.f || []).map(function(s){
     const zeilen = [formelZeile(s.z, s.t, zei)]
@@ -35030,9 +35125,19 @@ function formelKarteHtml(e, herkunft){
     return "<li><i>" + formelZeichen(x[0], zei) + "</i><span>" + x[1] + "</span>"
       + (x[2] ? "<em>" + x[2] + "</em>" : "") + "</li>";
   }).join("");
+  /* In der Gruppenansicht ist die Überschrift zugleich der Knopf zum Zuklappen.
+     In der Suche nicht: Dort sind alle Treffer offen, und ein Knopf, der die
+     einzige Antwort wieder wegnimmt, wäre nur eine Falle. */
+  const kopf = zumZuklappen
+    ? `<button class="fzukopf auf" aria-expanded="true"
+               onclick="formelUm(${JSON.stringify(e.name).replace(/"/g, "&quot;")})">
+         <span class="fname">${e.name}</span>
+         <span class="fzupfeil offen" aria-hidden="true">▾</span>
+       </button>`
+    : `<h3 class="fname">${e.name}${herkunft ? `<span class="fherkunft">${herkunft}</span>` : ""}</h3>`;
   return `
-    <article class="card fkarte">
-      <h3 class="fname">${e.name}${herkunft ? `<span class="fherkunft">${herkunft}</span>` : ""}</h3>
+    <article class="card fkarte${zumZuklappen ? " auf" : ""}" id="f-${schnipselId(e.name)}">
+      ${kopf}
       ${e.wofuer ? `<p class="fwofuer">${e.wofuer}</p>` : ""}
       <div class="fsaetze">${saetze}</div>
       ${groessen ? `<ul class="fgroessen">${groessen}</ul>` : ""}
@@ -35068,6 +35173,9 @@ function formelnHtml(){
   const anzahl = FORMELSAMMLUNG.reduce(function(n, b){
     return n + b.gruppen.reduce(function(m, gr){ return m + (gr.eintraege || []).length; }, 0); }, 0);
 
+  if (formelGruppe >= bereich.gruppen.length) formelGruppe = 0;
+  const gruppe = bereich.gruppen[formelGruppe];
+
   const inhalt = sucht
     ? (treffer.length
       ? `<p class="einstlead">${z(treffer.length)} ${treffer.length === 1 ? "Formel gefunden" : "Formeln gefunden"}.</p>
@@ -35075,20 +35183,19 @@ function formelnHtml(){
       : `<div class="card"><p class="soft" style="margin:0">Dazu steht hier noch nichts.
            Wenn dir eine Formel fehlt, schreib sie uns über
            ${navLink("/feedback", "zeigeFeedback()", "Feedback", "")} — dann kommt sie dazu.</p></div>`)
-    : bereich.gruppen.map(function(gr){
-        if (gr.art === "tabelle") return formelTabelleHtml(gr);
-        return `<h2 class="fgruppe" id="fg-${schnipselId(gr.titel)}">${gr.titel}</h2>`
-          + (gr.eintraege || []).map(function(e){ return formelKarteHtml(e, ""); }).join("");
-      }).join("");
+    : gruppe.art === "tabelle"
+      ? formelTabelleHtml(gruppe)
+      : `<div class="fliste">${(gruppe.eintraege || []).map(function(e){
+           return formelOffen === e.name ? formelKarteHtml(e, "", true) : formelZeileHtml(e);
+         }).join("")}</div>`;
 
   return `
     <div class="card">
       ${navLink(pfadFuer(vorSeite || "uebersicht", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
       <span class="tag">Nachschlagen</span>
       <h1>Formelsammlung</h1>
-      <p class="soft" style="margin:10px 0 0">${z(anzahl)} Formeln — jede auch nach allen Größen umgestellt,
-        damit du beim Rechnen nicht selbst umstellen musst. Jede Umstellung wird vor der Veröffentlichung
-        nachgerechnet.</p>
+      <p class="soft" style="margin:8px 0 0">${z(anzahl)} Formeln, jede nach allen Größen umgestellt —
+        und jede Umstellung nachgerechnet.</p>
       <div class="einstsuchzeile">
         ${SYM.lupe}
         <input class="einstsuchfeld" id="formelSuchfeld" type="text" value="${String(formelSuche).replace(/"/g, "&quot;")}"
@@ -35105,7 +35212,20 @@ function formelnHtml(){
                     aria-selected="${b.id === formelBereich}"
                     onclick="formelBereichWaehlen('${b.id}')">${b.name}</button>`; }).join("")}
       </div>
-      <p class="einstlead">${bereich.unter}</p>`}
+
+      ${/* Die Gruppen als eigene Reihe darunter. Sie stehen alle nebeneinander
+            und nicht in einer Liste zum Blättern: So sieht man auf einen Blick,
+            was die Sammlung überhaupt hergibt. */""}
+      <div class="fgruppennav" role="tablist" aria-label="Gruppe">
+        ${bereich.gruppen.map(function(gr, i){
+          const n = (gr.eintraege || []).length;
+          return `<button class="fgruppenchip ${i === formelGruppe ? "an" : ""}" role="tab"
+                    aria-selected="${i === formelGruppe}"
+                    onclick="formelGruppeWaehlen(${i})"><span>${gr.titel}</span>${
+                    n ? `<em>${n}</em>` : ""}</button>`; }).join("")}
+      </div>
+      <p class="einstlead">${gruppe.art === "tabelle" ? bereich.unter
+        : "Tipp eine Formel an — dann klappt sie mit Umstellungen, Einheiten und Beispiel auf."}</p>`}
 
     <div class="einstteil">${inhalt}</div>`;
 }
