@@ -665,6 +665,9 @@ const adressen = [
   {a: "/suche", p: "0.9"},
   {a: "/erklaerungen.html", p: "0.9"},
   {a: "/vokabeln", p: "0.7"},
+  /* „Formelsammlung Elektrotechnik“ wird gesucht — und zwar von genau den
+     Leuten, für die die App gemacht ist. */
+  {a: "/formeln", p: "0.8"},
   /* Wer „Elektroniker Abschlussprüfung Teil 1“ sucht, sucht genau diese Seite.
      Angemeldet werden die statischen Fassungen: Unter /elektroniker/teil-1
      liefert der Server die App-Hülle aus, und die trägt den Titel der

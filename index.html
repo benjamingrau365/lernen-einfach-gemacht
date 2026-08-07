@@ -2194,7 +2194,7 @@
     @media(hover:hover){ .einstchip:not(.an):hover{background:var(--card);color:var(--ink)} }
   }
   /* Ein Satz darüber, was in diesem Reiter steckt */
-  .einstlead{margin:2px 2px 14px;color:var(--soft);
+  .einstlead{margin:2px 2px 14px;color:var(--soft);overflow-wrap:break-word;hyphens:auto;
     font-size:calc(14px * var(--fs,1));line-height:1.5}
   .einstteil{animation:einstauf .22s ease both}
   @keyframes einstauf{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -2615,6 +2615,116 @@
   .baugitter{grid-template-columns:minmax(0,1fr)}
   .bauzeile,.bauname{min-width:0;overflow-wrap:break-word;hyphens:auto}
   summary{overflow-wrap:break-word;hyphens:auto}
+
+  /* ---------- Formelsammlung ----------
+     Eine Formel wird gelesen wie ein Bild, nicht wie ein Satz. Deshalb steht
+     jede Fassung auf einer eigenen Zeile, der Bruchstrich ist ein echter
+     Strich, und die Formelzeichen stehen kursiv — so wie im Tabellenbuch.
+     Jede Zeile darf für sich seitlich rollen; die Seite selbst nie. */
+  /* Kein display:flex hier: Ein Textknoten in einem Flex-Kasten ist ein
+     eigenes Element, das nicht umbrechen kann — „Gegenwahrscheinlichkeit"
+     schob dann die ganze Seite zur Seite. Als normaler Absatz bricht das Wort
+     um wie jedes andere. */
+  .fname{margin:0 0 4px;font-size:calc(19px * var(--fs,1));letter-spacing:-.01em;
+    min-width:0;overflow-wrap:break-word;hyphens:auto}
+  .fherkunft{display:block;margin-top:2px;font-size:calc(12.5px * var(--fs,1));
+    font-weight:600;color:var(--soft);overflow-wrap:break-word}
+  .fwofuer{margin:0 0 14px;color:var(--soft);font-size:calc(14.5px * var(--fs,1));line-height:1.5}
+
+  .fsaetze{display:grid;gap:12px}
+  .fsatz{display:grid;gap:9px;background:var(--bg);border-radius:12px;padding:14px 16px;min-width:0}
+  .fzeile{display:flex;align-items:center;min-width:0;overflow-x:auto;padding-bottom:2px;
+    font-size:calc(17px * var(--fs,1));line-height:1.15;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .fzeile::-webkit-scrollbar{display:none}
+  .fsatz > .fzeile:first-child{font-size:calc(21px * var(--fs,1));font-weight:600}
+  .fseite{white-space:nowrap}
+  .fgleich{flex:none;margin:0 .4em;opacity:.7}
+  .fvar{font-style:italic}
+  .fvar sub, .fgroessen i sub{font-style:normal}
+  .fzahl{font-variant-numeric:tabular-nums}
+  .fop{margin:0 .3em}
+  .fmal{margin:0 .18em;opacity:.85}
+  .fklam{opacity:.7}
+  .ffn{font-style:normal;margin-right:.05em}
+
+  /* Echter Bruchstrich: Zähler über Nenner, dazwischen eine Linie in der
+     Textfarbe — dadurch stimmt sie auch im Dunkelmodus. */
+  .fbruch{display:inline-flex;flex-direction:column;align-items:center;
+    vertical-align:middle;margin:0 .25em}
+  .fzaehler{padding:0 .4em .1em}
+  .fnenner{padding:.14em .4em 0;border-top:1.6px solid currentColor}
+
+  .fwurzel{display:inline-flex;align-items:flex-start}
+  .fwz{line-height:1.05}
+  .fwinhalt{border-top:1.6px solid currentColor;padding:.12em .2em 0;margin-top:.1em}
+
+  /* Was jedes Zeichen bedeutet und in welcher Einheit es eingesetzt wird —
+     ohne das ist eine Formelsammlung nur die halbe Auskunft. */
+  .fgroessen{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:7px}
+  /* Kein starres Raster: Bei großer Schrift auf einem schmalen Handy rutscht
+     die Einheit lieber in die nächste Zeile, als dass die Seite breiter wird. */
+  /* min-width:0 ist hier Pflicht: Als Kästchen im Raster darüber wäre die
+     Zeile sonst mindestens so breit wie ihr längster unteilbarer Inhalt. */
+  .fgroessen li{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;
+    min-width:0;font-size:calc(14.5px * var(--fs,1))}
+  .fgroessen i{flex:0 1 auto;min-width:2.6em;max-width:100%;
+    font-style:italic;font-weight:600;overflow-wrap:break-word}
+  .fgroessen span{flex:1 1 7em;min-width:0;color:var(--soft);overflow-wrap:break-word;hyphens:auto}
+  /* „m/(Ω·mm²)" ist eine gültige Einheit und breiter als eine Handyspalte —
+     sie darf notfalls mitten drin umbrechen. */
+  .fgroessen em{flex:0 0 auto;margin-left:auto;max-width:100%;
+    font-style:normal;font-weight:600;overflow-wrap:anywhere}
+
+  .fbsp{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:14px 0 0;
+    padding:11px 14px;background:var(--ac-soft);border-radius:11px;
+    font-size:calc(14.5px * var(--fs,1));min-width:0;max-width:100%;overflow-x:auto;
+    scrollbar-width:none}
+  .fbsp::-webkit-scrollbar{display:none}
+  .fbsp b{font-size:calc(12px * var(--fs,1));letter-spacing:.06em;color:var(--ac-dark)}
+  .fgeg{white-space:nowrap}
+  .fpfeil{opacity:.6}
+  .ferg{font-weight:700;white-space:nowrap}
+
+  .fhinweis{margin:12px 0 0;padding-left:12px;border-left:3px solid var(--line);
+    color:var(--soft);font-size:calc(14px * var(--fs,1));line-height:1.55}
+
+  .fgruppe{margin:26px 2px 12px;font-size:calc(14.5px * var(--fs,1));font-weight:700;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+  .einstteil > .fgruppe:first-child{margin-top:6px}
+
+  /* Die Beispielspalte („1 GW = 1 000 000 000 W") ist breiter als ein Handy.
+     Sie darf deshalb umbrechen — nur die schmalen Spalten links bleiben in
+     einer Zeile. Ohne das schob die Tabelle die ganze Seite zur Seite. */
+  .ftabellenraum{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .ftabelle{border-collapse:collapse;width:100%;table-layout:auto;
+    font-size:calc(14.5px * var(--fs,1))}
+  .ftabelle th,.ftabelle td{text-align:left;padding:9px 12px;
+    border-bottom:1px solid var(--line);overflow-wrap:break-word}
+  .ftabelle th:nth-child(-n+2),.ftabelle td:nth-child(-n+2){white-space:nowrap}
+  /* Auf dem Handy wird aus der Tabelle eine Liste: Vier Spalten nebeneinander
+     sind auf 390 px nicht lesbar, und seitlich rollen muss man auf einer
+     Nachschlageseite nicht. Jede Zelle nennt dann selbst ihre Spalte. */
+  @media(max-width:620px){
+    .ftabelle, .ftabelle thead, .ftabelle tbody, .ftabelle tr, .ftabelle td{display:block;width:auto}
+    .ftabelle thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+    .ftabelle tr{padding:11px 0;border-bottom:1px solid var(--line)}
+    .ftabelle tr:last-child{border-bottom:none}
+    /* Die Spalte für die Überschrift in Prozent, nicht in em: Bei 175 %
+       Schrift wäre eine em-Breite breiter als das ganze Handy. */
+    .ftabelle td{border:none;padding:2px 0;display:grid;
+      grid-template-columns:minmax(0,38%) minmax(0,1fr);gap:4px 10px;
+      white-space:normal;overflow-wrap:break-word}
+    .ftabelle td:nth-child(-n+2){white-space:normal}
+    .ftabelle td::before{content:attr(data-kopf);color:var(--soft);
+      font-size:calc(12px * var(--fs,1));letter-spacing:.05em;text-transform:uppercase;
+      line-height:1.6;overflow-wrap:anywhere}
+    .ftabelle td:first-child{font-weight:700}
+  }
+  .ftabelle tr:last-child td{border-bottom:none}
+  .ftabelle th{font-size:calc(12px * var(--fs,1));letter-spacing:.05em;
+    text-transform:uppercase;color:var(--soft)}
+
 </style>
 </head>
 <body>
@@ -30731,6 +30841,7 @@ function menueHtml(){
       <p class="mtitel">Üben</p>
       ${navLink("/vokabeln", "zeigeVokabeln();menueSchliessen()",
           `Vokabeln<span>${z(vokabelAnzahl())} Wörter</span>`, "mpunkt")}
+      ${navLink("/formeln", "zeigeFormeln()", `Formelsammlung<span>${z(formelAnzahl())} Formeln, umgestellt</span>`, "mpunkt")}
       ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "mpunkt")}
       ${navLink("/arbeitsblatt", "zeigeArbeitsblatt()", "Arbeitsblatt drucken", "mpunkt")}
       ${benutzer ? navLink("/anfragen", "zeigeAnfragen();menueSchliessen()", "Meine Anfragen", "mpunkt") : ""}
@@ -33740,6 +33851,1274 @@ function abPdfSpeichern(){
   setTimeout(() => URL.revokeObjectURL(adresse), 4000);
 }
 
+/* ---------- Formelsammlung ----------
+   Eine Formelsammlung lebt davon, dass man sie sieht: Ein echter Bruchstrich
+   sagt mehr als ein Schrägstrich, und U₂ ist etwas anderes als U2.
+
+   Deshalb steht hier keine Formel als fertiger Text, sondern als Rechen-
+   ausdruck. Daraus wird beides gemacht — das gesetzte Bild für den Menschen
+   und der Zahlenwert für die Maschine. Das ist der eigentliche Grund für den
+   Aufwand: Was sich rechnen lässt, lässt sich prüfen. „node pruefe-formeln.js"
+   stellt jede umgestellte Formel gegen ihre Grundformel und rechnet mit
+   Zufallszahlen nach, ob beide dasselbe ergeben. Eine falsch umgestellte
+   Formel in einer Formelsammlung ist schlimmer als gar keine — sie wird
+   geglaubt. */
+
+/* ---------- Ausdruck zerlegen ---------- */
+function formelTeile(text){
+  const t = []; let i = 0;
+  while (i < text.length){
+    const c = text[i];
+    if (c === " "){ i++; continue; }
+    if (/[0-9.]/.test(c)){
+      let j = i; while (j < text.length && /[0-9.]/.test(text[j])) j++;
+      t.push({a:"zahl", w:text.slice(i, j)}); i = j; continue;
+    }
+    if (/[A-Za-z_]/.test(c)){
+      let j = i; while (j < text.length && /[A-Za-z0-9_]/.test(text[j])) j++;
+      t.push({a:"wort", w:text.slice(i, j)}); i = j; continue;
+    }
+    t.push({a:c, w:c}); i++;
+  }
+  return t;
+}
+
+/* ---------- daraus einen Baum ---------- */
+function formelBaum(text){
+  const t = formelTeile(text); let p = 0;
+  const schau = () => t[p], nimm = () => t[p++];
+  function summe(){
+    let l = produkt();
+    while (schau() && (schau().a === "+" || schau().a === "-")){ const o = nimm().a; l = {a:o, l:l, r:produkt()}; }
+    return l;
+  }
+  function produkt(){
+    let l = potenz();
+    while (schau() && (schau().a === "*" || schau().a === "/")){ const o = nimm().a; l = {a:o, l:l, r:potenz()}; }
+    return l;
+  }
+  function potenz(){
+    const b = vorzeichen();
+    if (schau() && schau().a === "^"){ nimm(); return {a:"^", l:b, r:potenz()}; }
+    return b;
+  }
+  function vorzeichen(){
+    if (schau() && schau().a === "-"){ nimm(); return {a:"neg", l:vorzeichen()}; }
+    return grund();
+  }
+  function grund(){
+    const s = nimm();
+    if (!s) return {a:"zahl", w:"0"};
+    if (s.a === "("){ const e = summe(); if (schau() && schau().a === ")") nimm(); return e; }
+    if (s.a === "wort"){
+      if (schau() && schau().a === "("){
+        nimm(); const arg = [summe()];
+        while (schau() && schau().a === ","){ nimm(); arg.push(summe()); }
+        if (schau() && schau().a === ")") nimm();
+        return {a:"fn", w:s.w, arg:arg};
+      }
+      return {a:"var", w:s.w};
+    }
+    return {a:"zahl", w:s.w};
+  }
+  return summe();
+}
+
+/* ---------- ausrechnen ----------
+   Die Winkelfunktionen rechnen in Grad, nicht im Bogenmaß. In der Schule und
+   auf der Baustelle steht der Winkel in Grad; wer 30° eingibt, will nicht
+   erst umrechnen müssen. */
+const FORMEL_FN = {
+  sqrt: Math.sqrt, abs: Math.abs, exp: Math.exp, ln: Math.log,
+  lg: function(x){ return Math.log(x) / Math.LN10; },
+  sin: function(x){ return Math.sin(x * Math.PI / 180); },
+  cos: function(x){ return Math.cos(x * Math.PI / 180); },
+  tan: function(x){ return Math.tan(x * Math.PI / 180); },
+  arcsin: function(x){ return Math.asin(x) * 180 / Math.PI; },
+  arccos: function(x){ return Math.acos(x) * 180 / Math.PI; },
+  arctan: function(x){ return Math.atan(x) * 180 / Math.PI; }
+};
+function formelWert(baum, werte){
+  const r = function(n){ return formelWert(n, werte); };
+  switch (baum.a){
+    case "zahl":   return parseFloat(baum.w);
+    case "var":    return baum.w === "pi" ? Math.PI : Number(werte[baum.w]);
+    case "neg":    return -r(baum.l);
+    case "+":      return r(baum.l) + r(baum.r);
+    case "-":      return r(baum.l) - r(baum.r);
+    case "*":      return r(baum.l) * r(baum.r);
+    case "/":      return r(baum.l) / r(baum.r);
+    case "^":      return Math.pow(r(baum.l), r(baum.r));
+    case "fn":     return FORMEL_FN[baum.w] ? FORMEL_FN[baum.w].apply(null, baum.arg.map(r)) : NaN;
+  }
+  return NaN;
+}
+function formelRechne(text, werte){ return formelWert(formelBaum(text), werte); }
+
+/* Zu welcher Größe steht ein fertiger Ausdruck bereit? Erst die Grundformeln,
+   dann die Umstellungen. Für ein Beispiel ist beides gleich gut — beim
+   ohmschen Gesetz ist die Grundformel U = R · I, vorrechnen will man aber
+   den Strom. */
+function formelTermFuer(eintrag, name){
+  for (const s of (eintrag.f || [])){
+    if (s.z === name) return s.t;
+    for (const u of (s.um || [])) if (u[0] === name) return u[1];
+  }
+  return "";
+}
+
+/* alle Formelzeichen, die in einem Ausdruck vorkommen */
+function formelVariablen(text, hinein){
+  const menge = hinein || [];
+  for (const s of formelTeile(text))
+    if (s.a === "wort" && s.w !== "pi" && !FORMEL_FN[s.w] && menge.indexOf(s.w) < 0) menge.push(s.w);
+  return menge;
+}
+
+/* ---------- Formelzeichen schreiben ----------
+   Im Ausdruck heißt es „cosphi", auf dem Papier „cos φ". Was nicht in der
+   Liste steht, bekommt die Regel: Großbuchstabe plus Kleinbuchstaben oder
+   Ziffern heißt Zeichen mit Tiefstellung — aus „Rges" wird R_ges, aus „U1"
+   wird U₁. */
+const FORMEL_ZEICHEN = {
+  pi:"π", alpha:"α", beta:"β", gamma:"γ", delta:"δ", phi:"φ", eta:"η", rho:"ρ",
+  kappa:"κ", omega:"ω", tau:"τ", lambda:"λ", Phi:"Φ", Delta:"Δ",
+  cosphi:"cos φ", sinphi:"sin φ", tanphi:"tan φ",
+  dU:"ΔU", dI:"ΔI", dt:"Δt", dT:"Δϑ", dUp:"ΔU", dp:"Δp",
+  sqrt:"√", MTBF:"MTBF", MTTR:"MTTR"
+};
+function formelZeichen(name, eigene){
+  if (eigene && eigene[name]) return eigene[name];
+  if (FORMEL_ZEICHEN[name]) return FORMEL_ZEICHEN[name];
+  const m = name.match(/^([A-Za-zÄÖÜ])([a-z0-9]+)$/);
+  if (m) return m[1] + "<sub>" + m[2] + "</sub>";
+  return name;
+}
+
+/* ---------- setzen ----------
+   Die Klammern aus dem Ausdruck werden beim Zerlegen weggeworfen und hier aus
+   dem Vorrang neu gesetzt. Das ist Absicht: In einem echten Bruch braucht es
+   keine Klammern mehr, „(a+b)/2" wird zu a+b über 2 — und genau so soll es
+   dastehen. */
+function formelSatz(n, zei, min){
+  min = min || 0;
+  const klam = function(html, eigen){
+    return eigen < min ? '<span class="fklam">(</span>' + html + '<span class="fklam">)</span>' : html;
+  };
+  switch (n.a){
+    case "zahl":
+      return '<span class="fzahl">' + n.w.replace(".", ",") + "</span>";
+    case "var":
+      return '<i class="fvar">' + formelZeichen(n.w, zei) + "</i>";
+    case "neg":
+      return klam('<span class="fop">−</span>' + formelSatz(n.l, zei, 3), 2);
+    case "+": case "-":
+      return klam(formelSatz(n.l, zei, 1)
+        + '<span class="fop">' + (n.a === "+" ? "+" : "−") + "</span>"
+        + formelSatz(n.r, zei, 2), 1);
+    case "*":
+      return klam(formelSatz(n.l, zei, 2) + '<span class="fmal">·</span>' + formelSatz(n.r, zei, 2), 2);
+    case "/":
+      return '<span class="fbruch"><span class="fzaehler">' + formelSatz(n.l, zei, 0)
+        + '</span><span class="fnenner">' + formelSatz(n.r, zei, 0) + "</span></span>";
+    case "^":
+      return klam(formelSatz(n.l, zei, 5) + "<sup>" + formelSatz(n.r, zei, 0) + "</sup>", 4);
+    case "fn":
+      if (n.w === "sqrt")
+        return '<span class="fwurzel"><span class="fwz">√</span><span class="fwinhalt">'
+          + formelSatz(n.arg[0], zei, 0) + "</span></span>";
+      return '<span class="ffn">' + n.w + "</span>"
+        + '<span class="fklam">(</span>' + n.arg.map(function(a){ return formelSatz(a, zei, 0); }).join("; ")
+        + '<span class="fklam">)</span>';
+  }
+  return "";
+}
+/* Jede Seite der Gleichung bekommt eine eigene Hülle. Grund: Die Zeile ist
+   ein Flex-Kasten, und in einem Flex-Kasten wird jedes direkte Kind zu einem
+   eigenen Block — „hochgestellt" gilt dort nicht mehr, U² sähe aus wie U2.
+   Mit der Hülle steht innen wieder gewöhnlicher Fließtext. */
+function formelZeile(links, rechts, zei){
+  return '<span class="fzeile"><span class="fseite">' + formelSatz(formelBaum(links), zei, 0)
+    + '</span><span class="fgleich">=</span><span class="fseite">'
+    + formelSatz(formelBaum(rechts), zei, 0) + "</span></span>";
+}
+
+/* ---------- Zahlen im Beispiel ----------
+   Vier gültige Stellen reichen: „0,5933 Ω" ist ablesbar, „0,593333333 Ω"
+   nicht. Ganze Zahlen bleiben ganz. */
+function formelZahl(x){
+  if (!isFinite(x)) return "—";
+  const b = Math.abs(x);
+  /* Eine Kette von Nullen liest niemand: 0,00006017 wird zu 6,017 · 10⁻⁵.
+     Das ist nicht nur kürzer, es ist auch die Schreibweise, die im
+     Tabellenbuch steht. */
+  if (x !== 0 && (b < 0.001 || b >= 1e6)){
+    const e = Math.floor(Math.log10(b));
+    const m = parseFloat((x / Math.pow(10, e)).toPrecision(4));
+    return String(m).replace(".", ",") + ' · 10<sup>' + String(e).replace("-", "−") + "</sup>";
+  }
+  return String(parseFloat(b >= 100 ? x.toFixed(2) : x.toPrecision(4))).replace(".", ",");
+}
+
+/* ---------- Die Sammlung ----------
+   Aufbau eines Eintrags:
+     name     Überschrift
+     wofuer   ein Satz: wozu man die Formel nimmt
+     g        die Formelzeichen: [Kürzel, Wort, Einheit, (Anzeige)]
+     f        die Sätze. Ein Satz ist eine Grundformel z = t und dazu die
+              Umstellungen um: [linke Seite, rechte Seite]
+     bsp      ein durchgerechnetes Beispiel — die Zahl darin rechnet die App
+              selbst aus, damit sie nicht irgendwann nicht mehr stimmt
+     hinweis  die Falle, in die man sonst tappt
+     probe    Wertebereiche nur für den Prüfer (z. B. wenn ein Winkel
+              zwischen 15° und 75° liegen muss)
+*/
+const FORMELSAMMLUNG = [
+{
+id:"elektro", name:"Elektrotechnik",
+unter:"Für Elektroniker für Betriebstechnik — vom ohmschen Gesetz bis zur Blindleistung.",
+gruppen:[
+
+{ titel:"Strom, Spannung, Widerstand", eintraege:[
+
+  { name:"Ohmsches Gesetz",
+    wofuer:"Die wichtigste Formel überhaupt: Spannung, Widerstand und Strom hängen fest zusammen.",
+    g:[["U","Spannung","V"],["R","Widerstand","Ω"],["I","Stromstärke","A"]],
+    f:[{z:"U", t:"R * I", um:[["R","U / I"],["I","U / R"]]}],
+    bsp:{werte:{U:230, R:46}, suche:"I"},
+    hinweis:"Merkhilfe: U steht oben, R und I stehen unten nebeneinander. Was man sucht, deckt man zu." },
+
+  { name:"Ladung und Strom",
+    wofuer:"Wie viel Ladung in einer bestimmten Zeit durch den Leiter geht.",
+    g:[["Q","Ladung","As"],["I","Stromstärke","A"],["t","Zeit","s"]],
+    f:[{z:"Q", t:"I * t", um:[["I","Q / t"],["t","Q / I"]]}],
+    bsp:{werte:{I:2, t:60}, suche:"Q"},
+    hinweis:"1 As ist dasselbe wie 1 C (Coulomb). Auf Akkus steht meist Ah: 1 Ah = 3600 As." },
+
+  { name:"Elektrische Leistung",
+    wofuer:"Was ein Gerät in jedem Augenblick zieht.",
+    g:[["P","Leistung","W"],["U","Spannung","V"],["I","Stromstärke","A"]],
+    f:[{z:"P", t:"U * I", um:[["U","P / I"],["I","P / U"]]}],
+    bsp:{werte:{U:230, I:5}, suche:"P"} },
+
+  { name:"Leistung aus Spannung und Widerstand",
+    wofuer:"Wenn der Strom nicht bekannt ist, aber der Widerstand.",
+    g:[["P","Leistung","W"],["U","Spannung","V"],["R","Widerstand","Ω"]],
+    f:[{z:"P", t:"U^2 / R", um:[["R","U^2 / P"],["U","sqrt(P * R)"]]}],
+    bsp:{werte:{U:230, R:46}, suche:"P"},
+    hinweis:"Entsteht aus P = U · I, wenn man I durch U / R ersetzt." },
+
+  { name:"Leistung aus Strom und Widerstand",
+    wofuer:"Die Verlustleistung in einer Leitung oder in einem Widerstand.",
+    g:[["P","Leistung","W"],["I","Stromstärke","A"],["R","Widerstand","Ω"]],
+    f:[{z:"P", t:"I^2 * R", um:[["R","P / I^2"],["I","sqrt(P / R)"]]}],
+    bsp:{werte:{I:16, R:0.2}, suche:"P"},
+    hinweis:"Doppelter Strom heißt vierfache Verlustwärme — deshalb wird bei großen Leistungen hoch transformiert." },
+
+  { name:"Elektrische Arbeit",
+    wofuer:"Was über eine Zeit hinweg zusammenkommt — das, was der Zähler zählt.",
+    g:[["W","Arbeit","Wh"],["P","Leistung","W"],["t","Zeit","h"]],
+    f:[{z:"W", t:"P * t", um:[["P","W / t"],["t","W / P"]]}],
+    bsp:{werte:{P:2000, t:1.5}, suche:"W"},
+    hinweis:"Zeit in Stunden ergibt Wh, Zeit in Sekunden ergibt Ws (= Joule). Nicht mischen." },
+
+  { name:"Energiekosten",
+    wofuer:"Was das Gerät im Jahr wirklich kostet.",
+    g:[["K","Kosten","€"],["W","Arbeit","kWh"],["p","Arbeitspreis","€/kWh"]],
+    f:[{z:"K", t:"W * p", um:[["W","K / p"],["p","K / W"]]}],
+    bsp:{werte:{W:3, p:0.35}, suche:"K"},
+    hinweis:"Die Arbeit hier in Kilowattstunden einsetzen: 3000 Wh sind 3 kWh." },
+
+  { name:"Wirkungsgrad",
+    wofuer:"Wie viel von dem, was hineingeht, hinten auch ankommt.",
+    g:[["eta","Wirkungsgrad","","η"],["Pab","abgegebene Leistung","W"],["Pzu","zugeführte Leistung","W"]],
+    f:[{z:"eta", t:"Pab / Pzu", um:[["Pab","eta * Pzu"],["Pzu","Pab / eta"]]}],
+    bsp:{werte:{Pab:1500, Pzu:1800}, suche:"eta"},
+    hinweis:"η hat keine Einheit und ist immer kleiner als 1. Mal 100 ergibt Prozent. Bei mehreren Stufen hintereinander werden die Wirkungsgrade multipliziert." }
+]},
+
+{ titel:"Reihen- und Parallelschaltung", eintraege:[
+
+  { name:"Reihenschaltung — Gesamtwiderstand",
+    wofuer:"Widerstände hintereinander addieren sich einfach.",
+    g:[["Rges","Gesamtwiderstand","Ω"],["R1","erster Widerstand","Ω"],["R2","zweiter Widerstand","Ω"]],
+    f:[{z:"Rges", t:"R1 + R2", um:[["R1","Rges - R2"],["R2","Rges - R1"]]}],
+    bsp:{werte:{R1:100, R2:220}, suche:"Rges"},
+    hinweis:"In der Reihe ist der Strom überall gleich groß. Die Spannungen addieren sich zur Gesamtspannung." },
+
+  { name:"Reihenschaltung — Spannungen und Widerstände",
+    wofuer:"Am größeren Widerstand fällt die größere Spannung ab — genau im gleichen Verhältnis.",
+    g:[["U1","Spannung am ersten Widerstand","V"],["U2","Spannung am zweiten Widerstand","V"],
+       ["R1","erster Widerstand","Ω"],["R2","zweiter Widerstand","Ω"]],
+    f:[{z:"U1", t:"U2 * R1 / R2", um:[["U2","U1 * R2 / R1"],["R1","R2 * U1 / U2"],["R2","R1 * U2 / U1"]]}],
+    bsp:{werte:{U2:6, R1:200, R2:100}, suche:"U1"} },
+
+  { name:"Unbelasteter Spannungsteiler",
+    wofuer:"Aus einer großen Spannung eine kleinere machen — der Klassiker der Messtechnik.",
+    g:[["U2","Teilspannung","V"],["U","Gesamtspannung","V"],
+       ["R1","oberer Widerstand","Ω"],["R2","unterer Widerstand","Ω"]],
+    f:[{z:"U2", t:"U * R2 / (R1 + R2)",
+        um:[["U","U2 * (R1 + R2) / R2"],["R2","U2 * R1 / (U - U2)"],["R1","R2 * (U - U2) / U2"]]}],
+    bsp:{werte:{U:24, R1:1000, R2:500}, suche:"U2"},
+    hinweis:"Nur ohne Last am Abgriff. Sobald ein Verbraucher dranhängt, bricht die Teilspannung ein." },
+
+  { name:"Vorwiderstand",
+    wofuer:"Eine LED oder eine Lampe an einer zu großen Spannung betreiben.",
+    g:[["Rv","Vorwiderstand","Ω"],["Uges","Gesamtspannung","V"],
+       ["Uv","Spannung am Verbraucher","V"],["I","Stromstärke","A"]],
+    f:[{z:"Rv", t:"(Uges - Uv) / I",
+        um:[["Uges","Uv + Rv * I"],["Uv","Uges - Rv * I"],["I","(Uges - Uv) / Rv"]]}],
+    bsp:{werte:{Uges:12, Uv:2, I:0.02}, suche:"Rv"},
+    hinweis:"Der Vorwiderstand verheizt die überschüssige Spannung. Seine Leistung mit P = (Uges − Uv) · I nachrechnen, sonst wird er zu heiß." },
+
+  { name:"Parallelschaltung — zwei Widerstände",
+    wofuer:"Zwei Widerstände nebeneinander.",
+    g:[["Rges","Gesamtwiderstand","Ω"],["R1","erster Widerstand","Ω"],["R2","zweiter Widerstand","Ω"]],
+    f:[{z:"Rges", t:"R1 * R2 / (R1 + R2)",
+        um:[["R1","Rges * R2 / (R2 - Rges)"],["R2","Rges * R1 / (R1 - Rges)"]]}],
+    bsp:{werte:{R1:100, R2:100}, suche:"Rges"},
+    hinweis:"Der Gesamtwiderstand ist immer kleiner als der kleinste einzelne. Bei zwei gleichen ist er genau die Hälfte." },
+
+  { name:"Parallelschaltung — beliebig viele",
+    wofuer:"Drei und mehr Widerstände nebeneinander.",
+    g:[["Rges","Gesamtwiderstand","Ω"],["R1","erster Widerstand","Ω"],
+       ["R2","zweiter Widerstand","Ω"],["R3","dritter Widerstand","Ω"]],
+    f:[{z:"Rges", t:"1 / (1 / R1 + 1 / R2 + 1 / R3)",
+        um:[["1 / Rges","1 / R1 + 1 / R2 + 1 / R3"]]}],
+    bsp:{werte:{R1:100, R2:200, R3:200}, suche:"Rges"},
+    hinweis:"Der Kehrwert ganz zum Schluss — das ist der Fehler, der am häufigsten passiert." },
+
+  { name:"Stromteiler",
+    wofuer:"Wie sich der Strom auf zwei parallele Zweige aufteilt.",
+    g:[["I1","Strom im ersten Zweig","A"],["I2","Strom im zweiten Zweig","A"],
+       ["R1","erster Widerstand","Ω"],["R2","zweiter Widerstand","Ω"]],
+    f:[{z:"I1", t:"I2 * R2 / R1", um:[["I2","I1 * R1 / R2"]]}],
+    bsp:{werte:{I2:0.5, R1:100, R2:300}, suche:"I1"},
+    hinweis:"Umgekehrt als bei der Reihenschaltung: Durch den kleineren Widerstand fließt der größere Strom." }
+]},
+
+{ titel:"Leiter und Leitungen", eintraege:[
+
+  { name:"Leiterwiderstand",
+    wofuer:"Was eine Leitung allein durch ihre Länge an Widerstand mitbringt.",
+    g:[["R","Widerstand","Ω"],["rho","spezifischer Widerstand","Ω·mm²/m","ρ"],
+       ["l","Länge","m"],["A","Querschnitt","mm²"]],
+    f:[{z:"R", t:"rho * l / A", um:[["l","R * A / rho"],["A","rho * l / R"],["rho","R * A / l"]]}],
+    bsp:{werte:{rho:0.0178, l:50, A:1.5}, suche:"R"},
+    hinweis:"Kupfer ρ = 0,0178, Aluminium ρ = 0,0286 Ω·mm²/m. Länge in Metern, Querschnitt in Quadratmillimetern." },
+
+  { name:"Leiterwiderstand über die Leitfähigkeit",
+    wofuer:"Dieselbe Sache, nur mit κ statt ρ — so steht es in den meisten Tabellenbüchern.",
+    g:[["R","Widerstand","Ω"],["l","Länge","m"],
+       ["kappa","elektrische Leitfähigkeit","m/(Ω·mm²)","κ"],["A","Querschnitt","mm²"]],
+    f:[{z:"R", t:"l / (kappa * A)", um:[["A","l / (kappa * R)"],["l","kappa * A * R"],["kappa","l / (R * A)"]]}],
+    bsp:{werte:{l:50, kappa:56, A:1.5}, suche:"R"},
+    hinweis:"κ ist der Kehrwert von ρ. Kupfer κ = 56, Aluminium κ = 35 m/(Ω·mm²)." },
+
+  { name:"Spannungsfall — Wechselstrom einphasig",
+    wofuer:"Wie viel Spannung auf dem Weg zur Steckdose verloren geht.",
+    g:[["dU","Spannungsfall","V","ΔU"],["l","einfache Leitungslänge","m"],["I","Stromstärke","A"],
+       ["kappa","Leitfähigkeit","m/(Ω·mm²)","κ"],["A","Querschnitt","mm²"]],
+    f:[{z:"dU", t:"2 * l * I / (kappa * A)",
+        um:[["A","2 * l * I / (kappa * dU)"],["l","dU * kappa * A / (2 * I)"],["I","dU * kappa * A / (2 * l)"]]}],
+    bsp:{werte:{l:30, I:16, kappa:56, A:2.5}, suche:"dU"},
+    hinweis:"Die 2 steht für Hin- und Rückleiter. l ist deshalb nur die einfache Strecke." },
+
+  { name:"Spannungsfall — Drehstrom",
+    wofuer:"Dasselbe im Drehstromnetz.",
+    g:[["dU","Spannungsfall","V","ΔU"],["l","Leitungslänge","m"],["I","Stromstärke","A"],
+       ["cosphi","Leistungsfaktor","","cos φ"],["kappa","Leitfähigkeit","m/(Ω·mm²)","κ"],["A","Querschnitt","mm²"]],
+    f:[{z:"dU", t:"sqrt(3) * l * I * cosphi / (kappa * A)",
+        um:[["A","sqrt(3) * l * I * cosphi / (kappa * dU)"],["l","dU * kappa * A / (sqrt(3) * I * cosphi)"]]}],
+    bsp:{werte:{l:60, I:25, cosphi:0.9, kappa:56, A:10}, suche:"dU"},
+    hinweis:"Bei Drehstrom steht √3 statt der 2 — es gibt keinen Rückleiter, der den vollen Strom trägt." },
+
+  { name:"Spannungsfall in Prozent",
+    wofuer:"Ob die Leitung die Vorschrift noch einhält.",
+    g:[["dUp","Spannungsfall in Prozent","%","ΔU%"],["dU","Spannungsfall","V","ΔU"],["U","Nennspannung","V"]],
+    f:[{z:"dUp", t:"dU / U * 100", um:[["dU","dUp * U / 100"],["U","dU / dUp * 100"]]}],
+    bsp:{werte:{dU:6.9, U:230}, suche:"dUp"},
+    hinweis:"In der Hausinstallation sind zwischen Zähler und Verbraucher meist höchstens 3 % zulässig." },
+
+  { name:"Widerstand und Temperatur",
+    wofuer:"Ein Kupferleiter wird warm — und dabei hochohmiger.",
+    g:[["Rw","Widerstand warm","Ω"],["Rk","Widerstand kalt","Ω"],
+       ["alpha","Temperaturbeiwert","1/K","α"],["dT","Temperaturänderung","K","Δϑ"]],
+    f:[{z:"Rw", t:"Rk * (1 + alpha * dT)",
+        um:[["Rk","Rw / (1 + alpha * dT)"],["dT","(Rw / Rk - 1) / alpha"],["alpha","(Rw / Rk - 1) / dT"]]}],
+    bsp:{werte:{Rk:10, alpha:0.0039, dT:50}, suche:"Rw"},
+    hinweis:"Kupfer α = 0,0039 1/K. Δϑ ist der Unterschied, nicht die Temperatur selbst." }
+]},
+
+{ titel:"Wechselstrom", eintraege:[
+
+  { name:"Frequenz und Periodendauer",
+    wofuer:"Wie oft die Spannung in der Sekunde hin und her geht.",
+    g:[["f","Frequenz","Hz"],["T","Periodendauer","s"]],
+    f:[{z:"f", t:"1 / T", um:[["T","1 / f"]]}],
+    bsp:{werte:{T:0.02}, suche:"f"},
+    hinweis:"Im deutschen Netz: 50 Hz, also 20 ms für eine volle Schwingung." },
+
+  { name:"Kreisfrequenz",
+    wofuer:"Die Rechengröße, mit der man Spulen und Kondensatoren behandelt.",
+    g:[["omega","Kreisfrequenz","1/s","ω"],["f","Frequenz","Hz"]],
+    f:[{z:"omega", t:"2 * pi * f", um:[["f","omega / (2 * pi)"]]}],
+    bsp:{werte:{f:50}, suche:"omega"} },
+
+  { name:"Scheitelwert und Effektivwert",
+    wofuer:"Was das Messgerät anzeigt und was tatsächlich als Spitze anliegt.",
+    g:[["us","Scheitelwert","V","û"],["U","Effektivwert","V"]],
+    f:[{z:"us", t:"sqrt(2) * U", um:[["U","us / sqrt(2)"]]}],
+    bsp:{werte:{U:230}, suche:"us"},
+    hinweis:"230 V aus der Steckdose sind der Effektivwert. In der Spitze sind es rund 325 V — danach werden Bauteile ausgesucht." },
+
+  { name:"Induktiver Blindwiderstand",
+    wofuer:"Wie stark eine Spule den Wechselstrom bremst.",
+    g:[["XL","induktiver Blindwiderstand","Ω"],["f","Frequenz","Hz"],["L","Induktivität","H"]],
+    f:[{z:"XL", t:"2 * pi * f * L", um:[["L","XL / (2 * pi * f)"],["f","XL / (2 * pi * L)"]]}],
+    bsp:{werte:{f:50, L:0.1}, suche:"XL"},
+    hinweis:"Je höher die Frequenz, desto größer der Widerstand der Spule. Bei Gleichstrom ist er null." },
+
+  { name:"Kapazitiver Blindwiderstand",
+    wofuer:"Wie stark ein Kondensator den Wechselstrom bremst.",
+    g:[["XC","kapazitiver Blindwiderstand","Ω"],["f","Frequenz","Hz"],["C","Kapazität","F"]],
+    f:[{z:"XC", t:"1 / (2 * pi * f * C)", um:[["C","1 / (2 * pi * f * XC)"],["f","1 / (2 * pi * C * XC)"]]}],
+    bsp:{werte:{f:50, C:0.00001}, suche:"XC", zeige:{C:[1000000,"µF"]}},
+    hinweis:"C in Farad einsetzen: 10 µF sind 0,000 01 F. Genau umgekehrt zur Spule — hohe Frequenz, kleiner Widerstand." },
+
+  { name:"Scheinwiderstand",
+    wofuer:"Wirkwiderstand und Blindwiderstand zusammen — sie addieren sich nicht einfach.",
+    g:[["Z","Scheinwiderstand","Ω"],["R","Wirkwiderstand","Ω"],["X","Blindwiderstand","Ω"]],
+    f:[{z:"Z", t:"sqrt(R^2 + X^2)", um:[["R","sqrt(Z^2 - X^2)"],["X","sqrt(Z^2 - R^2)"]]}],
+    bsp:{werte:{R:30, X:40}, suche:"Z"},
+    hinweis:"Wie beim Satz des Pythagoras: R und X stehen senkrecht aufeinander, Z ist die Hypotenuse." },
+
+  { name:"Resonanzfrequenz",
+    wofuer:"Bei welcher Frequenz sich Spule und Kondensator gegenseitig aufheben.",
+    g:[["f0","Resonanzfrequenz","Hz"],["L","Induktivität","H"],["C","Kapazität","F"]],
+    f:[{z:"f0", t:"1 / (2 * pi * sqrt(L * C))",
+        um:[["L","1 / ((2 * pi * f0)^2 * C)"],["C","1 / ((2 * pi * f0)^2 * L)"]]}],
+    bsp:{werte:{L:0.1, C:0.00001}, suche:"f0", zeige:{C:[1000000,"µF"]}},
+    hinweis:"In der Resonanz bleibt nur der Wirkwiderstand übrig — im Reihenkreis wird der Strom dort am größten." }
+]},
+
+{ titel:"Leistung im Wechselstrom", eintraege:[
+
+  { name:"Scheinleistung",
+    wofuer:"Was durch die Leitung muss — danach wird der Querschnitt ausgelegt.",
+    g:[["S","Scheinleistung","VA"],["U","Spannung","V"],["I","Stromstärke","A"]],
+    f:[{z:"S", t:"U * I", um:[["U","S / I"],["I","S / U"]]}],
+    bsp:{werte:{U:230, I:10}, suche:"S"} },
+
+  { name:"Wirkleistung",
+    wofuer:"Was wirklich Arbeit verrichtet — und was der Zähler zählt.",
+    g:[["P","Wirkleistung","W"],["U","Spannung","V"],["I","Stromstärke","A"],["cosphi","Leistungsfaktor","","cos φ"]],
+    f:[{z:"P", t:"U * I * cosphi",
+        um:[["cosphi","P / (U * I)"],["I","P / (U * cosphi)"],["U","P / (I * cosphi)"]]}],
+    bsp:{werte:{U:230, I:10, cosphi:0.85}, suche:"P"},
+    probe:{cosphi:[0.5,0.99]} },
+
+  { name:"Blindleistung",
+    wofuer:"Die Leistung, die zwischen Netz und Verbraucher hin und her pendelt.",
+    g:[["Q","Blindleistung","var"],["U","Spannung","V"],["I","Stromstärke","A"],["sinphi","Sinus des Phasenwinkels","","sin φ"]],
+    f:[{z:"Q", t:"U * I * sinphi", um:[["sinphi","Q / (U * I)"],["I","Q / (U * sinphi)"]]}],
+    bsp:{werte:{U:230, I:10, sinphi:0.53}, suche:"Q"},
+    probe:{sinphi:[0.1,0.9]},
+    hinweis:"Blindleistung verrichtet keine Arbeit, belastet die Leitung aber trotzdem." },
+
+  { name:"Leistungsdreieck",
+    wofuer:"Wirk-, Blind- und Scheinleistung hängen über den Pythagoras zusammen.",
+    g:[["S","Scheinleistung","VA"],["P","Wirkleistung","W"],["Q","Blindleistung","var"]],
+    f:[{z:"S", t:"sqrt(P^2 + Q^2)", um:[["P","sqrt(S^2 - Q^2)"],["Q","sqrt(S^2 - P^2)"]]}],
+    bsp:{werte:{P:1955, Q:1219}, suche:"S"} },
+
+  { name:"Leistungsfaktor",
+    wofuer:"Wie viel von der Scheinleistung tatsächlich ankommt.",
+    g:[["cosphi","Leistungsfaktor","","cos φ"],["P","Wirkleistung","W"],["S","Scheinleistung","VA"]],
+    f:[{z:"cosphi", t:"P / S", um:[["P","S * cosphi"],["S","P / cosphi"]]}],
+    bsp:{werte:{P:1955, S:2300}, suche:"cosphi"},
+    hinweis:"cos φ = 1 heißt reine Wirkleistung. Betriebe zahlen ab etwa 0,9 einen Aufschlag." },
+
+  { name:"Phasenwinkel aus dem Leistungsfaktor",
+    wofuer:"Für die Kompensationsrechnung braucht man den Winkel selbst.",
+    g:[["phi","Phasenwinkel","°","φ"],["cosphi","Leistungsfaktor","","cos φ"]],
+    f:[{z:"phi", t:"arccos(cosphi)", um:[["cosphi","cos(phi)"]]}],
+    bsp:{werte:{cosphi:0.85}, suche:"phi"},
+    probe:{cosphi:[0.2,0.99]} },
+
+  { name:"Drehstrom — Wirkleistung",
+    wofuer:"Die Formel für jeden Drehstrommotor.",
+    g:[["P","Wirkleistung","W"],["U","Außenleiterspannung","V"],["I","Außenleiterstrom","A"],["cosphi","Leistungsfaktor","","cos φ"]],
+    f:[{z:"P", t:"sqrt(3) * U * I * cosphi",
+        um:[["I","P / (sqrt(3) * U * cosphi)"],["U","P / (sqrt(3) * I * cosphi)"],["cosphi","P / (sqrt(3) * U * I)"]]}],
+    bsp:{werte:{U:400, I:10, cosphi:0.85}, suche:"P"},
+    probe:{cosphi:[0.5,0.99]},
+    hinweis:"U ist die Spannung zwischen zwei Außenleitern (400 V), nicht die gegen N (230 V)." },
+
+  { name:"Drehstrom — Scheinleistung",
+    wofuer:"Für die Auslegung von Leitung und Sicherung.",
+    g:[["S","Scheinleistung","VA"],["U","Außenleiterspannung","V"],["I","Außenleiterstrom","A"]],
+    f:[{z:"S", t:"sqrt(3) * U * I", um:[["I","S / (sqrt(3) * U)"],["U","S / (sqrt(3) * I)"]]}],
+    bsp:{werte:{U:400, I:10}, suche:"S"} },
+
+  { name:"Blindleistungskompensation",
+    wofuer:"Wie viel Blindleistung ein Kondensator übernehmen muss.",
+    g:[["Qc","zu kompensierende Blindleistung","var"],["P","Wirkleistung","W"],
+       ["phi1","Winkel vorher","°","φ₁"],["phi2","Winkel nachher","°","φ₂"]],
+    f:[{z:"Qc", t:"P * (tan(phi1) - tan(phi2))",
+        um:[["P","Qc / (tan(phi1) - tan(phi2))"]]}],
+    bsp:{werte:{P:5000, phi1:36.87, phi2:18.19}, suche:"Qc"},
+    probe:{phi1:[35,55], phi2:[10,25]},
+    hinweis:"φ₁ ist der Winkel vor, φ₂ der nach der Kompensation. Beide über arccos aus dem cos φ holen." },
+
+  { name:"Kompensationskondensator",
+    wofuer:"Welche Kapazität der Kondensator dafür haben muss.",
+    g:[["C","Kapazität","F"],["Qc","Blindleistung","var"],["f","Frequenz","Hz"],["U","Spannung","V"]],
+    f:[{z:"C", t:"Qc / (2 * pi * f * U^2)", um:[["Qc","C * 2 * pi * f * U^2"]]}],
+    bsp:{werte:{Qc:1000, f:50, U:230}, suche:"C", zeige:{C:[1000000,"µF"]}},
+    hinweis:"Die Formel liefert Farad. Für den Bestellzettel mal 1 000 000 nehmen — dann steht es in µF, so wie es auf dem Kondensator aufgedruckt ist." }
+]},
+
+{ titel:"Stern und Dreieck", eintraege:[
+
+  { name:"Sternschaltung — Spannungen",
+    wofuer:"Warum an der Steckdose 230 V liegen, obwohl das Netz 400 V hat.",
+    g:[["Ustr","Strangspannung","V","U<sub>Str</sub>"],["UL","Außenleiterspannung","V","U<sub>L</sub>"]],
+    f:[{z:"Ustr", t:"UL / sqrt(3)", um:[["UL","sqrt(3) * Ustr"]]}],
+    bsp:{werte:{UL:400}, suche:"Ustr"},
+    hinweis:"Der Strangstrom ist im Stern genauso groß wie der Außenleiterstrom." },
+
+  { name:"Dreieckschaltung — Ströme",
+    wofuer:"Warum die Zuleitung im Dreieck mehr Strom führt als der Strang.",
+    g:[["IL","Außenleiterstrom","A","I<sub>L</sub>"],["Istr","Strangstrom","A","I<sub>Str</sub>"]],
+    f:[{z:"IL", t:"sqrt(3) * Istr", um:[["Istr","IL / sqrt(3)"]]}],
+    bsp:{werte:{Istr:10}, suche:"IL"},
+    hinweis:"Die Strangspannung ist im Dreieck genauso groß wie die Außenleiterspannung." },
+
+  { name:"Stern-Dreieck-Anlauf",
+    wofuer:"Warum der Motor im Stern nur ein Drittel der Leistung bringt.",
+    g:[["Pd","Leistung im Dreieck","W","P<sub>Δ</sub>"],["Py","Leistung im Stern","W","P<sub>Y</sub>"]],
+    f:[{z:"Pd", t:"3 * Py", um:[["Py","Pd / 3"]]}],
+    bsp:{werte:{Py:2000}, suche:"Pd"},
+    hinweis:"Auch der Anlaufstrom sinkt im Stern auf ein Drittel — genau dafür macht man es." }
+]},
+
+{ titel:"Kondensator und Spule", eintraege:[
+
+  { name:"Ladung im Kondensator",
+    wofuer:"Wie viel Ladung ein Kondensator bei einer bestimmten Spannung aufnimmt.",
+    g:[["Q","Ladung","As"],["C","Kapazität","F"],["U","Spannung","V"]],
+    f:[{z:"Q", t:"C * U", um:[["C","Q / U"],["U","Q / C"]]}],
+    bsp:{werte:{C:0.001, U:24}, suche:"Q", zeige:{C:[1000000,"µF"]}} },
+
+  { name:"Energie im Kondensator",
+    wofuer:"Warum ein geladener Kondensator auch nach dem Abschalten gefährlich ist.",
+    g:[["W","Energie","Ws"],["C","Kapazität","F"],["U","Spannung","V"]],
+    f:[{z:"W", t:"0.5 * C * U^2", um:[["C","2 * W / U^2"],["U","sqrt(2 * W / C)"]]}],
+    bsp:{werte:{C:0.001, U:400}, suche:"W", zeige:{C:[1000000,"µF"]}},
+    hinweis:"Doppelte Spannung heißt vierfache Energie. Vor dem Anfassen entladen und messen." },
+
+  { name:"Energie in der Spule",
+    wofuer:"Warum es beim Abschalten einer Spule funkt.",
+    g:[["W","Energie","Ws"],["L","Induktivität","H"],["I","Stromstärke","A"]],
+    f:[{z:"W", t:"0.5 * L * I^2", um:[["L","2 * W / I^2"],["I","sqrt(2 * W / L)"]]}],
+    bsp:{werte:{L:0.5, I:2}, suche:"W"} },
+
+  { name:"Zeitkonstante",
+    wofuer:"Wie schnell ein Kondensator über einen Widerstand voll wird.",
+    g:[["tau","Zeitkonstante","s","τ"],["R","Widerstand","Ω"],["C","Kapazität","F"]],
+    f:[{z:"tau", t:"R * C", um:[["R","tau / C"],["C","tau / R"]]}],
+    bsp:{werte:{R:10000, C:0.0001}, suche:"tau", zeige:{C:[1000000,"µF"]}},
+    hinweis:"Nach 1 τ sind rund 63 % erreicht, nach 5 τ gilt der Kondensator als voll." },
+
+  { name:"Ladekurve",
+    wofuer:"Welche Spannung nach einer bestimmten Zeit erreicht ist.",
+    g:[["u","Spannung nach der Zeit t","V"],["U","Ladespannung","V"],["t","Zeit","s"],["tau","Zeitkonstante","s","τ"]],
+    f:[{z:"u", t:"U * (1 - exp(-t / tau))", um:[["t","-tau * ln(1 - u / U)"]]}],
+    bsp:{werte:{U:24, t:1, tau:1}, suche:"u"} },
+
+  { name:"Kondensatoren zusammenschalten",
+    wofuer:"Achtung — genau umgekehrt wie bei Widerständen.",
+    g:[["Cpar","Kapazität parallel","F","C<sub>par</sub>"],["Creihe","Kapazität in Reihe","F","C<sub>reihe</sub>"],
+       ["C1","erster Kondensator","F"],["C2","zweiter Kondensator","F"]],
+    f:[{z:"Cpar", t:"C1 + C2", um:[]},
+       {z:"Creihe", t:"C1 * C2 / (C1 + C2)", um:[]}],
+    bsp:{werte:{C1:0.00001, C2:0.00002}, suche:"Cpar", zeige:{C1:[1000000,"µF"], C2:[1000000,"µF"], Cpar:[1000000,"µF"]}},
+    hinweis:"Parallel addieren sich die Kapazitäten, in Reihe werden sie kleiner." },
+
+  { name:"Selbstinduktion",
+    wofuer:"Welche Spannung eine Spule erzeugt, wenn sich der Strom ändert.",
+    g:[["U","induzierte Spannung","V"],["L","Induktivität","H"],
+       ["dI","Stromänderung","A","ΔI"],["dt","Zeitspanne","s","Δt"]],
+    f:[{z:"U", t:"L * dI / dt", um:[["L","U * dt / dI"],["dI","U * dt / L"],["dt","L * dI / U"]]}],
+    bsp:{werte:{L:0.5, dI:2, dt:0.01}, suche:"U"},
+    hinweis:"Je schneller die Änderung, desto höher die Spannung — deshalb die Freilaufdiode am Schütz." }
+]},
+
+{ titel:"Transformator", eintraege:[
+
+  { name:"Übersetzungsverhältnis",
+    wofuer:"Das Verhältnis, das alles am Trafo bestimmt.",
+    g:[["ue","Übersetzungsverhältnis","","ü"],["N1","Windungen Primärseite","","N₁"],["N2","Windungen Sekundärseite","","N₂"]],
+    f:[{z:"ue", t:"N1 / N2", um:[["N1","ue * N2"],["N2","N1 / ue"]]}],
+    bsp:{werte:{N1:1000, N2:50}, suche:"ue"} },
+
+  { name:"Transformator — Spannungen",
+    wofuer:"Die Spannungen verhalten sich wie die Windungszahlen.",
+    g:[["U1","Primärspannung","V","U₁"],["U2","Sekundärspannung","V","U₂"],
+       ["N1","Windungen primär","","N₁"],["N2","Windungen sekundär","","N₂"]],
+    f:[{z:"U2", t:"U1 * N2 / N1", um:[["U1","U2 * N1 / N2"],["N2","N1 * U2 / U1"],["N1","N2 * U1 / U2"]]}],
+    bsp:{werte:{U1:230, N1:1000, N2:50}, suche:"U2"} },
+
+  { name:"Transformator — Ströme",
+    wofuer:"Beim Strom ist es genau andersherum als bei der Spannung.",
+    g:[["I1","Primärstrom","A","I₁"],["I2","Sekundärstrom","A","I₂"],
+       ["N1","Windungen primär","","N₁"],["N2","Windungen sekundär","","N₂"]],
+    f:[{z:"I1", t:"I2 * N2 / N1", um:[["I2","I1 * N1 / N2"]]}],
+    bsp:{werte:{I2:20, N1:1000, N2:50}, suche:"I1"},
+    hinweis:"Weniger Windungen heißt weniger Spannung, aber mehr Strom. Die Leistung bleibt (fast) gleich." }
+]},
+
+{ titel:"Motor", eintraege:[
+
+  { name:"Synchrondrehzahl",
+    wofuer:"Die Drehzahl, die das Drehfeld vorgibt.",
+    g:[["ns","Synchrondrehzahl","1/min","n<sub>s</sub>"],["f","Frequenz","Hz"],["p","Polpaarzahl",""]],
+    f:[{z:"ns", t:"f * 60 / p", um:[["f","ns * p / 60"],["p","f * 60 / ns"]]}],
+    bsp:{werte:{f:50, p:2}, suche:"ns"},
+    hinweis:"Polpaarzahl, nicht Polzahl: Ein vierpoliger Motor hat p = 2 und dreht mit 1500 1/min." },
+
+  { name:"Schlupf",
+    wofuer:"Der Asynchronmotor bleibt immer ein Stück hinter dem Drehfeld zurück.",
+    g:[["s","Schlupf","%"],["ns","Synchrondrehzahl","1/min","n<sub>s</sub>"],["n","Läuferdrehzahl","1/min"]],
+    f:[{z:"s", t:"(ns - n) / ns * 100", um:[["n","ns * (1 - s / 100)"],["ns","n / (1 - s / 100)"]]}],
+    bsp:{werte:{ns:1500, n:1440}, suche:"s"},
+    hinweis:"Ohne Schlupf gäbe es keine Induktion im Läufer und damit kein Drehmoment." },
+
+  { name:"Drehmoment aus Leistung und Drehzahl",
+    wofuer:"Die Formel vom Typenschild — Leistung und Drehzahl stehen dort, das Moment nicht.",
+    g:[["M","Drehmoment","Nm"],["P","Leistung","kW"],["n","Drehzahl","1/min"]],
+    f:[{z:"M", t:"9550 * P / n", um:[["P","M * n / 9550"],["n","9550 * P / M"]]}],
+    bsp:{werte:{P:5.5, n:1450}, suche:"M"},
+    hinweis:"Nur mit P in Kilowatt und n in Umdrehungen je Minute. Die 9550 ist 60 000 geteilt durch 2π." },
+
+  { name:"Mechanische Leistung",
+    wofuer:"Dieselbe Sache in Grundeinheiten.",
+    g:[["P","Leistung","W"],["M","Drehmoment","Nm"],["n","Drehzahl","1/s"]],
+    f:[{z:"P", t:"M * 2 * pi * n", um:[["M","P / (2 * pi * n)"],["n","P / (2 * pi * M)"]]}],
+    bsp:{werte:{M:36, n:24}, suche:"P"},
+    hinweis:"Hier n in Umdrehungen je Sekunde und P in Watt — sonst kommt Unsinn heraus." },
+
+  { name:"Wirkungsgrad eines Drehstrommotors",
+    wofuer:"Was der Motor an der Welle abgibt, verglichen mit dem, was er zieht.",
+    g:[["eta","Wirkungsgrad","","η"],["Pab","Wellenleistung","W"],["U","Außenleiterspannung","V"],
+       ["I","Außenleiterstrom","A"],["cosphi","Leistungsfaktor","","cos φ"]],
+    f:[{z:"eta", t:"Pab / (sqrt(3) * U * I * cosphi)",
+        um:[["Pab","eta * sqrt(3) * U * I * cosphi"],["I","Pab / (eta * sqrt(3) * U * cosphi)"]]}],
+    bsp:{werte:{Pab:5500, U:400, I:11, cosphi:0.85}, suche:"eta"},
+    probe:{cosphi:[0.5,0.99]},
+    hinweis:"Auf dem Typenschild steht die abgegebene Leistung — nicht die, die der Motor aus dem Netz nimmt." }
+]},
+
+{ titel:"Beleuchtung und Instandhaltung", eintraege:[
+
+  { name:"Beleuchtungsstärke",
+    wofuer:"Ob am Arbeitsplatz genug Licht ankommt.",
+    g:[["E","Beleuchtungsstärke","lx"],["Phi","Lichtstrom","lm","Φ"],["A","Fläche","m²"]],
+    f:[{z:"E", t:"Phi / A", um:[["Phi","E * A"],["A","Phi / E"]]}],
+    bsp:{werte:{Phi:4000, A:10}, suche:"E"},
+    hinweis:"1 lx ist 1 lm je m². Am Büroarbeitsplatz werden 500 lx gefordert." },
+
+  { name:"Lichtausbeute",
+    wofuer:"Wie sparsam ein Leuchtmittel ist.",
+    g:[["etaL","Lichtausbeute","lm/W","η<sub>L</sub>"],["Phi","Lichtstrom","lm","Φ"],["P","Leistung","W"]],
+    f:[{z:"etaL", t:"Phi / P", um:[["Phi","etaL * P"],["P","Phi / etaL"]]}],
+    bsp:{werte:{Phi:4000, P:36}, suche:"etaL"},
+    hinweis:"Glühlampe rund 12 lm/W, LED 100 lm/W und mehr — daher der Unterschied auf der Rechnung." },
+
+  { name:"Verfügbarkeit einer Anlage",
+    wofuer:"Die Kennzahl der Instandhaltung.",
+    g:[["V","Verfügbarkeit","%"],["MTBF","mittlere Betriebsdauer zwischen Ausfällen","h"],
+       ["MTTR","mittlere Reparaturdauer","h"]],
+    f:[{z:"V", t:"MTBF / (MTBF + MTTR) * 100",
+        um:[["MTBF","MTTR * V / (100 - V)"],["MTTR","MTBF * (100 - V) / V"]]}],
+    bsp:{werte:{MTBF:950, MTTR:50}, suche:"V"},
+    hinweis:"Kürzere Reparaturzeiten heben die Verfügbarkeit genauso wie seltenere Ausfälle." }
+]},
+
+{ titel:"Vorsätze und Einheiten", art:"tabelle",
+  vor:"Die Vorsätze verschieben nur das Komma. Wer sie im Kopf hat, spart sich die halbe Rechnerei.",
+  kopf:["Vorsatz","Zeichen","Bedeutet","Beispiel"],
+  zeilen:[
+    ["Giga","G","1 000 000 000","1 GW = 1 000 000 000 W"],
+    ["Mega","M","1 000 000","1 MΩ = 1 000 000 Ω"],
+    ["Kilo","k","1 000","1 kV = 1 000 V"],
+    ["—","","1","1 A"],
+    ["Milli","m","0,001","1 mA = 0,001 A"],
+    ["Mikro","µ","0,000 001","1 µF = 0,000 001 F"],
+    ["Nano","n","0,000 000 001","1 nF = 0,000 000 001 F"],
+    ["Piko","p","0,000 000 000 001","1 pF = 0,000 000 000 001 F"]
+  ],
+  nach:"Von einer Zeile zur nächsten nach unten: Komma um drei Stellen nach links. Nach oben: um drei nach rechts." }
+]},
+
+{
+id:"mathe", name:"Mathematik",
+unter:"Klasse 5 bis 10 — Flächen, Körper, Prozent, Gleichungen, Funktionen und Trigonometrie.",
+gruppen:[
+
+{ titel:"Fläche und Umfang", eintraege:[
+
+  { name:"Rechteck",
+    wofuer:"Die erste Flächenformel — und die Grundlage für fast alle anderen.",
+    g:[["A","Fläche","cm²"],["U","Umfang","cm"],["a","Länge","cm"],["b","Breite","cm"]],
+    f:[{z:"A", t:"a * b", um:[["a","A / b"],["b","A / a"]]},
+       {z:"U", t:"2 * (a + b)", um:[["a","U / 2 - b"],["b","U / 2 - a"]]}],
+    bsp:{werte:{a:5, b:3}, suche:"A"} },
+
+  { name:"Quadrat",
+    wofuer:"Ein Rechteck, bei dem alle Seiten gleich lang sind.",
+    g:[["A","Fläche","cm²"],["U","Umfang","cm"],["a","Seitenlänge","cm"]],
+    f:[{z:"A", t:"a^2", um:[["a","sqrt(A)"]]},
+       {z:"U", t:"4 * a", um:[["a","U / 4"]]}],
+    bsp:{werte:{a:6}, suche:"A"} },
+
+  { name:"Dreieck",
+    wofuer:"Ein Dreieck ist immer das halbe Rechteck über derselben Grundseite.",
+    g:[["A","Fläche","cm²"],["g","Grundseite","cm"],["h","Höhe","cm"]],
+    f:[{z:"A", t:"g * h / 2", um:[["g","2 * A / h"],["h","2 * A / g"]]}],
+    bsp:{werte:{g:8, h:5}, suche:"A"},
+    hinweis:"Die Höhe steht senkrecht auf der Grundseite — nicht die schräge Seite nehmen." },
+
+  { name:"Parallelogramm",
+    wofuer:"Ein verschobenes Rechteck — die Fläche bleibt dieselbe.",
+    g:[["A","Fläche","cm²"],["a","Grundseite","cm"],["h","Höhe","cm"]],
+    f:[{z:"A", t:"a * h", um:[["a","A / h"],["h","A / a"]]}],
+    bsp:{werte:{a:7, h:4}, suche:"A"} },
+
+  { name:"Trapez",
+    wofuer:"Zwei Seiten sind parallel, aber verschieden lang.",
+    g:[["A","Fläche","cm²"],["a","erste parallele Seite","cm"],
+       ["c","zweite parallele Seite","cm"],["h","Höhe","cm"]],
+    f:[{z:"A", t:"(a + c) / 2 * h", um:[["h","2 * A / (a + c)"],["a","2 * A / h - c"],["c","2 * A / h - a"]]}],
+    bsp:{werte:{a:8, c:4, h:5}, suche:"A"},
+    hinweis:"Zuerst den Mittelwert der beiden parallelen Seiten, dann mal der Höhe." },
+
+  { name:"Kreis",
+    wofuer:"Die Formel mit π — Fläche und Umfang aus dem Radius.",
+    g:[["A","Fläche","cm²"],["U","Umfang","cm"],["r","Radius","cm"],["d","Durchmesser","cm"]],
+    f:[{z:"A", t:"pi * r^2", um:[["r","sqrt(A / pi)"]]},
+       {z:"U", t:"2 * pi * r", um:[["r","U / (2 * pi)"]]},
+       {z:"d", t:"2 * r", um:[["r","d / 2"]]}],
+    bsp:{werte:{r:5}, suche:"A"},
+    hinweis:"Steht der Durchmesser da, erst halbieren. Das ist der häufigste Fehler bei Kreisaufgaben." }
+]},
+
+{ titel:"Körper", eintraege:[
+
+  { name:"Würfel",
+    wofuer:"Sechs gleiche Quadrate.",
+    g:[["V","Volumen","cm³"],["O","Oberfläche","cm²"],["a","Kantenlänge","cm"]],
+    f:[{z:"V", t:"a^3", um:[["a","V^(1/3)"]]},
+       {z:"O", t:"6 * a^2", um:[["a","sqrt(O / 6)"]]}],
+    bsp:{werte:{a:4}, suche:"V"} },
+
+  { name:"Quader",
+    wofuer:"Die Kiste, der Raum, der Kabelkanal.",
+    g:[["V","Volumen","cm³"],["O","Oberfläche","cm²"],
+       ["a","Länge","cm"],["b","Breite","cm"],["c","Höhe","cm"]],
+    f:[{z:"V", t:"a * b * c", um:[["a","V / (b * c)"],["c","V / (a * b)"]]},
+       {z:"O", t:"2 * (a * b + a * c + b * c)", um:[]}],
+    bsp:{werte:{a:5, b:3, c:2}, suche:"V"} },
+
+  { name:"Prisma",
+    wofuer:"Alles, was oben und unten dieselbe Fläche hat.",
+    g:[["V","Volumen","cm³"],["G","Grundfläche","cm²"],["h","Höhe","cm"]],
+    f:[{z:"V", t:"G * h", um:[["G","V / h"],["h","V / G"]]}],
+    bsp:{werte:{G:24, h:10}, suche:"V"} },
+
+  { name:"Zylinder",
+    wofuer:"Das Rohr, der Tank, die Dose.",
+    g:[["V","Volumen","cm³"],["O","Oberfläche","cm²"],["r","Radius","cm"],["h","Höhe","cm"]],
+    f:[{z:"V", t:"pi * r^2 * h", um:[["h","V / (pi * r^2)"],["r","sqrt(V / (pi * h))"]]},
+       {z:"O", t:"2 * pi * r^2 + 2 * pi * r * h", um:[["h","(O - 2 * pi * r^2) / (2 * pi * r)"]]}],
+    bsp:{werte:{r:5, h:20}, suche:"V"},
+    hinweis:"1 cm³ ist 1 ml, 1 dm³ ist 1 Liter." },
+
+  { name:"Pyramide",
+    wofuer:"Spitz zulaufend — deshalb nur ein Drittel.",
+    g:[["V","Volumen","cm³"],["G","Grundfläche","cm²"],["h","Höhe","cm"]],
+    f:[{z:"V", t:"G * h / 3", um:[["G","3 * V / h"],["h","3 * V / G"]]}],
+    bsp:{werte:{G:36, h:10}, suche:"V"} },
+
+  { name:"Kegel",
+    wofuer:"Die spitze Tüte — Volumen, Mantel und Seitenlinie.",
+    g:[["V","Volumen","cm³"],["M","Mantelfläche","cm²"],
+       ["r","Radius","cm"],["h","Höhe","cm"],["s","Seitenlinie","cm"]],
+    f:[{z:"V", t:"pi * r^2 * h / 3", um:[["h","3 * V / (pi * r^2)"]]},
+       {z:"s", t:"sqrt(r^2 + h^2)", um:[["h","sqrt(s^2 - r^2)"],["r","sqrt(s^2 - h^2)"]]},
+       {z:"M", t:"pi * r * s", um:[["s","M / (pi * r)"],["r","M / (pi * s)"]]}],
+    bsp:{werte:{r:3, h:8}, suche:"V"},
+    hinweis:"Die Seitenlinie s ist nicht die Höhe. Sie kommt über den Pythagoras aus r und h." },
+
+  { name:"Kugel",
+    wofuer:"Volumen und Oberfläche der Kugel.",
+    g:[["V","Volumen","cm³"],["O","Oberfläche","cm²"],["r","Radius","cm"]],
+    f:[{z:"V", t:"4 / 3 * pi * r^3", um:[["r","(3 * V / (4 * pi))^(1/3)"]]},
+       {z:"O", t:"4 * pi * r^2", um:[["r","sqrt(O / (4 * pi))"]]}],
+    bsp:{werte:{r:6}, suche:"V"} }
+]},
+
+{ titel:"Prozent und Zinsen", eintraege:[
+
+  { name:"Prozentrechnung",
+    wofuer:"Grundwert, Prozentsatz, Prozentwert — die drei, zwischen denen man ständig umstellt.",
+    g:[["W","Prozentwert","€"],["G","Grundwert","€"],["p","Prozentsatz","%"]],
+    f:[{z:"W", t:"G * p / 100", um:[["G","W * 100 / p"],["p","W * 100 / G"]]}],
+    bsp:{werte:{G:250, p:19}, suche:"W"},
+    hinweis:"Der Grundwert ist immer das Ganze — das, was 100 % entspricht." },
+
+  { name:"Prozentuale Veränderung",
+    wofuer:"Um wie viel Prozent etwas gestiegen oder gefallen ist.",
+    g:[["p","Veränderung","%"],["alt","alter Wert","€"],["neu","neuer Wert","€"]],
+    f:[{z:"p", t:"(neu - alt) / alt * 100", um:[["neu","alt * (1 + p / 100)"],["alt","neu / (1 + p / 100)"]]}],
+    bsp:{werte:{alt:80, neu:100}, suche:"p"},
+    hinweis:"Verglichen wird immer mit dem alten Wert. Erst plus 25 % und dann minus 25 % ergibt nicht wieder den Ausgangswert." },
+
+  { name:"Zinsen für ein Jahr",
+    wofuer:"Was Geld in einem Jahr kostet oder bringt.",
+    g:[["Z","Zinsen","€"],["K","Kapital","€"],["p","Zinssatz","%"]],
+    f:[{z:"Z", t:"K * p / 100", um:[["K","Z * 100 / p"],["p","Z * 100 / K"]]}],
+    bsp:{werte:{K:2000, p:3.5}, suche:"Z"} },
+
+  { name:"Zinsen für Monate oder Tage",
+    wofuer:"Wenn das Geld nicht das ganze Jahr liegt.",
+    g:[["Z","Zinsen","€"],["K","Kapital","€"],["p","Zinssatz","%"],["t","Tage",""]],
+    f:[{z:"Z", t:"K * p * t / (100 * 360)", um:[["t","Z * 100 * 360 / (K * p)"],["K","Z * 100 * 360 / (p * t)"]]}],
+    bsp:{werte:{K:2000, p:3.5, t:90}, suche:"Z"},
+    hinweis:"Im Bankjahr hat jeder Monat 30 Tage und das Jahr 360." },
+
+  { name:"Zinseszins",
+    wofuer:"Wenn die Zinsen liegen bleiben und selbst wieder Zinsen bringen.",
+    g:[["Kn","Kapital nach n Jahren","€","K<sub>n</sub>"],["K0","Anfangskapital","€","K₀"],
+       ["p","Zinssatz","%"],["n","Jahre",""]],
+    f:[{z:"Kn", t:"K0 * (1 + p / 100)^n",
+        um:[["K0","Kn / (1 + p / 100)^n"],["n","ln(Kn / K0) / ln(1 + p / 100)"]]}],
+    bsp:{werte:{K0:2000, p:3.5, n:10}, suche:"Kn"} },
+
+  { name:"Dreisatz",
+    wofuer:"Von einem Wert auf einen anderen schließen — bei gleichem Verhältnis.",
+    g:[["x","gesuchter Wert",""],["a","erste Menge",""],["b","erster Preis",""],["c","zweite Menge",""]],
+    f:[{z:"x", t:"b * c / a", um:[["a","b * c / x"],["c","x * a / b"]]}],
+    bsp:{werte:{a:3, b:7.5, c:8}, suche:"x"},
+    hinweis:"Zuerst auf eins herunterrechnen, dann auf die gesuchte Menge hoch." }
+]},
+
+{ titel:"Terme und Gleichungen", eintraege:[
+
+  { name:"Erste binomische Formel",
+    wofuer:"Eine Klammer im Quadrat ausmultiplizieren — ohne jedes Mal neu auszurechnen.",
+    g:[["a","erster Summand",""],["b","zweiter Summand",""]],
+    f:[{z:"(a + b)^2", t:"a^2 + 2 * a * b + b^2", um:[]}],
+    hinweis:"Der mittlere Teil wird am häufigsten vergessen: 2 · a · b." },
+
+  { name:"Zweite binomische Formel",
+    wofuer:"Dasselbe mit einem Minus in der Klammer.",
+    g:[["a","erster Summand",""],["b","zweiter Summand",""]],
+    f:[{z:"(a - b)^2", t:"a^2 - 2 * a * b + b^2", um:[]}] },
+
+  { name:"Dritte binomische Formel",
+    wofuer:"Plus mal Minus — der Mittelteil fällt weg.",
+    g:[["a","erster Summand",""],["b","zweiter Summand",""]],
+    f:[{z:"(a + b) * (a - b)", t:"a^2 - b^2", um:[]}],
+    hinweis:"Von rechts nach links gelesen ist das ein Faktorisierungs-Trick: 25 − x² wird zu (5 + x)(5 − x)." },
+
+  { name:"pq-Formel",
+    wofuer:"Quadratische Gleichungen der Form x² + p·x + q = 0.",
+    g:[["x1","erste Lösung","","x₁"],["x2","zweite Lösung","","x₂"],
+       ["p","Beiwert von x",""],["q","Absolutglied",""]],
+    f:[{z:"x1", t:"-p / 2 + sqrt((p / 2)^2 - q)", um:[["x1^2 + p * x1 + q","0"]]},
+       {z:"x2", t:"-p / 2 - sqrt((p / 2)^2 - q)", um:[["x2^2 + p * x2 + q","0"]]}],
+    bsp:{werte:{p:-6, q:8}, suche:"x1"},
+    probe:{q:[-9,-1]},
+    hinweis:"Vorher muss vor dem x² eine 1 stehen. Ist der Ausdruck unter der Wurzel negativ, gibt es keine Lösung." },
+
+  { name:"Mitternachtsformel",
+    wofuer:"Quadratische Gleichungen der Form a·x² + b·x + c = 0 — ohne vorher zu teilen.",
+    g:[["x1","erste Lösung","","x₁"],["x2","zweite Lösung","","x₂"],
+       ["a","Beiwert von x²",""],["b","Beiwert von x",""],["c","Absolutglied",""]],
+    f:[{z:"x1", t:"(-b + sqrt(b^2 - 4 * a * c)) / (2 * a)", um:[["a * x1^2 + b * x1 + c","0"]]},
+       {z:"x2", t:"(-b - sqrt(b^2 - 4 * a * c)) / (2 * a)", um:[["a * x2^2 + b * x2 + c","0"]]}],
+    bsp:{werte:{a:2, b:-8, c:6}, suche:"x1"},
+    probe:{c:[-9,-1]},
+    hinweis:"b² − 4·a·c heißt Diskriminante. Ist sie null, gibt es genau eine Lösung." },
+
+  { name:"Potenzgesetze",
+    wofuer:"Potenzen mit gleicher Basis zusammenfassen.",
+    g:[["a","Basis",""],["m","erster Hochzahl",""],["n","zweite Hochzahl",""]],
+    f:[{z:"a^m * a^n", t:"a^(m + n)", um:[]},
+       {z:"a^m / a^n", t:"a^(m - n)", um:[]},
+       {z:"(a^m)^n", t:"a^(m * n)", um:[]},
+       {z:"a^(-n)", t:"1 / a^n", um:[]}],
+    probe:{a:[1.2,4], m:[1,4], n:[1,4]},
+    hinweis:"Mal heißt plus in der Hochzahl, geteilt heißt minus. Nur bei gleicher Basis." },
+
+  { name:"Wurzel als Potenz",
+    wofuer:"Wurzeln lassen sich als Potenz schreiben — dann gelten dieselben Regeln.",
+    g:[["a","Radikand",""],["n","Wurzelexponent",""]],
+    f:[{z:"sqrt(a)", t:"a^(1 / 2)", um:[["a^(1 / n) * a^(1 / n)","a^(2 / n)"]]}],
+    probe:{a:[1,9], n:[2,5]} },
+
+  { name:"Logarithmus",
+    wofuer:"Die Umkehrung des Potenzierens: Welche Hochzahl war es?",
+    g:[["x","Hochzahl",""],["a","Ergebnis",""],["b","Basis",""]],
+    f:[{z:"x", t:"ln(a) / ln(b)", um:[["a","b^x"]]}],
+    bsp:{werte:{a:1000, b:10}, suche:"x"},
+    probe:{a:[2,9], b:[2,9]},
+    hinweis:"Auf dem Taschenrechner: log für Basis 10, ln für Basis e. Andere Basen über diesen Bruch." }
+]},
+
+{ titel:"Funktionen", eintraege:[
+
+  { name:"Lineare Funktion",
+    wofuer:"Die Gerade — Steigung und Schnittpunkt mit der y-Achse.",
+    g:[["y","y-Wert",""],["m","Steigung",""],["x","x-Wert",""],["b","y-Achsenabschnitt",""]],
+    f:[{z:"y", t:"m * x + b", um:[["m","(y - b) / x"],["b","y - m * x"],["x","(y - b) / m"]]}],
+    bsp:{werte:{m:2, x:3, b:1}, suche:"y"},
+    hinweis:"b ist der Wert bei x = 0 — dort schneidet die Gerade die y-Achse." },
+
+  { name:"Steigung aus zwei Punkten",
+    wofuer:"Wenn nur zwei Punkte gegeben sind.",
+    g:[["m","Steigung",""],["x1","x des ersten Punktes","","x₁"],["y1","y des ersten Punktes","","y₁"],
+       ["x2","x des zweiten Punktes","","x₂"],["y2","y des zweiten Punktes","","y₂"]],
+    f:[{z:"m", t:"(y2 - y1) / (x2 - x1)", um:[["y2","y1 + m * (x2 - x1)"]]}],
+    bsp:{werte:{x1:1, y1:3, x2:5, y2:11}, suche:"m"},
+    hinweis:"Höhenunterschied geteilt durch Längenunterschied — y oben, x unten." },
+
+  { name:"Nullstelle einer Geraden",
+    wofuer:"Wo die Gerade die x-Achse schneidet.",
+    g:[["x","Nullstelle",""],["m","Steigung",""],["b","y-Achsenabschnitt",""]],
+    f:[{z:"x", t:"-b / m", um:[["m * x + b","0"]]}],
+    bsp:{werte:{m:2, b:-6}, suche:"x"} },
+
+  { name:"Scheitelpunktform",
+    wofuer:"An der Parabel sofort ablesen, wo der Scheitel liegt.",
+    g:[["y","y-Wert",""],["a","Streckfaktor",""],["x","x-Wert",""],
+       ["d","x des Scheitels",""],["e","y des Scheitels",""]],
+    f:[{z:"y", t:"a * (x - d)^2 + e", um:[["e","y - a * (x - d)^2"],["a","(y - e) / (x - d)^2"]]}],
+    bsp:{werte:{a:1, x:5, d:3, e:-2}, suche:"y"},
+    hinweis:"Der Scheitel liegt bei (d | e). Achtung beim Vorzeichen: In (x − 3)² ist d = 3." },
+
+  { name:"Exponentielles Wachstum",
+    wofuer:"Alles, was sich in gleichen Zeitschritten immer um denselben Faktor ändert.",
+    g:[["N","Bestand nach der Zeit t",""],["N0","Anfangsbestand","","N₀"],
+       ["q","Wachstumsfaktor",""],["t","Zeitschritte",""]],
+    f:[{z:"N", t:"N0 * q^t", um:[["q","(N / N0)^(1 / t)"],["t","ln(N / N0) / ln(q)"],["N0","N / q^t"]]}],
+    bsp:{werte:{N0:100, q:1.05, t:10}, suche:"N"},
+    probe:{q:[1.05,3], N0:[1,9], t:[1,6]},
+    hinweis:"Plus 5 % im Jahr heißt q = 1,05. Minus 5 % heißt q = 0,95." },
+
+  { name:"Halbwertszeit",
+    wofuer:"Wenn sich etwas in gleichen Zeitspannen halbiert.",
+    g:[["N","Rest nach der Zeit t",""],["N0","Anfangsmenge","","N₀"],
+       ["t","verstrichene Zeit",""],["T","Halbwertszeit",""]],
+    f:[{z:"N", t:"N0 * 0.5^(t / T)",
+        um:[["t","T * ln(N / N0) / ln(0.5)"],["T","t * ln(0.5) / ln(N / N0)"]]}],
+    bsp:{werte:{N0:100, t:15, T:5}, suche:"N"} }
+]},
+
+{ titel:"Dreieck und Trigonometrie", eintraege:[
+
+  { name:"Satz des Pythagoras",
+    wofuer:"Im rechtwinkligen Dreieck aus zwei Seiten die dritte berechnen.",
+    g:[["a","erste Kathete","cm"],["b","zweite Kathete","cm"],["c","Hypotenuse","cm"]],
+    f:[{z:"c", t:"sqrt(a^2 + b^2)", um:[["a","sqrt(c^2 - b^2)"],["b","sqrt(c^2 - a^2)"],["c^2","a^2 + b^2"]]}],
+    bsp:{werte:{a:3, b:4}, suche:"c"},
+    hinweis:"c ist immer die längste Seite — die, die dem rechten Winkel gegenüberliegt." },
+
+  { name:"Sinus, Kosinus, Tangens",
+    wofuer:"Seiten und Winkel im rechtwinkligen Dreieck verbinden.",
+    g:[["a","Gegenkathete","cm"],["b","Ankathete","cm"],["c","Hypotenuse","cm"],["alpha","Winkel","°","α"]],
+    f:[{z:"a", t:"c * sin(alpha)", um:[["c","a / sin(alpha)"],["alpha","arcsin(a / c)"]]},
+       {z:"b", t:"c * cos(alpha)", um:[["c","b / cos(alpha)"],["alpha","arccos(b / c)"]]},
+       {z:"a", t:"b * tan(alpha)", um:[["b","a / tan(alpha)"],["alpha","arctan(a / b)"]]}],
+    bsp:{werte:{c:10, alpha:30}, suche:"a"},
+    probe:{alpha:[15,75], c:[2,9], b:[2,9]},
+    hinweis:"Merksatz: GAGA HHAG — Gegenkathete durch Hypotenuse ist der Sinus, Ankathete durch Hypotenuse der Kosinus, Gegenkathete durch Ankathete der Tangens." },
+
+  { name:"Winkelsumme im Dreieck",
+    wofuer:"Der dritte Winkel ergibt sich immer aus den anderen beiden.",
+    g:[["alpha","erster Winkel","°","α"],["beta","zweiter Winkel","°","β"],["gamma","dritter Winkel","°","γ"]],
+    f:[{z:"gamma", t:"180 - alpha - beta", um:[["alpha + beta + gamma","180"]]}],
+    bsp:{werte:{alpha:50, beta:70}, suche:"gamma"},
+    probe:{alpha:[20,70], beta:[20,70]} },
+
+  { name:"Strahlensatz",
+    wofuer:"Aus ähnlichen Dreiecken auf eine unbekannte Länge schließen.",
+    g:[["a","erste Strecke","cm"],["b","zweite Strecke","cm"],
+       ["c","dritte Strecke","cm"],["d","vierte Strecke","cm"]],
+    f:[{z:"a", t:"b * c / d", um:[["a / b","c / d"],["d","b * c / a"],["c","a * d / b"]]}],
+    bsp:{werte:{b:4, c:9, d:6}, suche:"a"},
+    hinweis:"So misst man einen Baum: eigene Größe zu eigenem Schatten wie Baumhöhe zu Baumschatten." },
+
+  { name:"Sinussatz",
+    wofuer:"Auch in Dreiecken ohne rechten Winkel.",
+    g:[["a","erste Seite","cm"],["b","zweite Seite","cm"],
+       ["alpha","Winkel gegenüber a","°","α"],["beta","Winkel gegenüber b","°","β"]],
+    f:[{z:"a", t:"b * sin(alpha) / sin(beta)", um:[["b","a * sin(beta) / sin(alpha)"]]}],
+    bsp:{werte:{b:8, alpha:40, beta:60}, suche:"a"},
+    probe:{alpha:[20,70], beta:[20,70], b:[2,9]},
+    hinweis:"Jede Seite verhält sich zum Sinus ihres Gegenwinkels wie jede andere." },
+
+  { name:"Kosinussatz",
+    wofuer:"Zwei Seiten und der Winkel dazwischen sind bekannt.",
+    g:[["a","gesuchte Seite","cm"],["b","zweite Seite","cm"],
+       ["c","dritte Seite","cm"],["alpha","Winkel zwischen b und c","°","α"]],
+    f:[{z:"a", t:"sqrt(b^2 + c^2 - 2 * b * c * cos(alpha))", um:[["alpha","arccos((b^2 + c^2 - a^2) / (2 * b * c))"]]}],
+    bsp:{werte:{b:5, c:7, alpha:60}, suche:"a"},
+    probe:{alpha:[20,150], b:[2,9], c:[2,9]},
+    hinweis:"Bei 90° fällt der letzte Teil weg — dann ist es wieder der Pythagoras." }
+]},
+
+{ titel:"Statistik und Wahrscheinlichkeit", eintraege:[
+
+  { name:"Mittelwert",
+    wofuer:"Der Durchschnitt — Summe durch Anzahl.",
+    g:[["xq","Mittelwert","","x̄"],["summe","Summe aller Werte",""],["n","Anzahl der Werte",""]],
+    f:[{z:"xq", t:"summe / n", um:[["summe","xq * n"],["n","summe / xq"]]}],
+    bsp:{werte:{summe:84, n:4}, suche:"xq"},
+    hinweis:"Der Mittelwert wird von Ausreißern stark verzogen. Der Median nicht — der ist der mittlere Wert der geordneten Liste." },
+
+  { name:"Wahrscheinlichkeit nach Laplace",
+    wofuer:"Wenn alle Ergebnisse gleich wahrscheinlich sind.",
+    g:[["P","Wahrscheinlichkeit",""],["guenstig","günstige Fälle",""],["moeglich","mögliche Fälle",""]],
+    f:[{z:"P", t:"guenstig / moeglich", um:[["guenstig","P * moeglich"],["moeglich","guenstig / P"]]}],
+    bsp:{werte:{guenstig:3, moeglich:6}, suche:"P"},
+    hinweis:"Mal 100 ergibt Prozent. P liegt immer zwischen 0 und 1." },
+
+  { name:"Gegenwahrscheinlichkeit",
+    wofuer:"„Mindestens eins“ rechnet man fast immer über das Gegenteil.",
+    g:[["P","Wahrscheinlichkeit",""],["Pg","Gegenwahrscheinlichkeit","","P̄"]],
+    f:[{z:"Pg", t:"1 - P", um:[["P","1 - Pg"],["P + Pg","1"]]}],
+    bsp:{werte:{P:0.25}, suche:"Pg"},
+    probe:{P:[0.05,0.95]} },
+
+  { name:"Pfadregeln",
+    wofuer:"Mehrstufige Zufallsversuche im Baumdiagramm.",
+    g:[["Ppfad","Wahrscheinlichkeit eines Pfades","","P<sub>Pfad</sub>"],
+       ["p1","erste Stufe","","p₁"],["p2","zweite Stufe","","p₂"]],
+    f:[{z:"Ppfad", t:"p1 * p2", um:[["p1","Ppfad / p2"]]}],
+    bsp:{werte:{p1:0.5, p2:0.25}, suche:"Ppfad"},
+    probe:{p1:[0.05,0.95], p2:[0.05,0.95]},
+    hinweis:"Entlang eines Pfades wird multipliziert, zwischen mehreren Pfaden wird addiert." }
+]},
+
+{ titel:"Einheiten umrechnen", art:"tabelle",
+  vor:"Zwischen zwei Nachbarn steht immer derselbe Faktor. Wer den kennt, muss nichts auswendig lernen.",
+  kopf:["Was","Reihe","Schritt"],
+  zeilen:[
+    ["Länge","km — m — dm — cm — mm","· 10 je Schritt (km → m: · 1000)"],
+    ["Fläche","km² — ha — a — m² — dm² — cm² — mm²","· 100 je Schritt"],
+    ["Volumen","m³ — dm³ — cm³ — mm³","· 1000 je Schritt"],
+    ["Hohlmaß","1 dm³ = 1 l, 1 cm³ = 1 ml","1 l = 1000 ml"],
+    ["Masse","t — kg — g — mg","· 1000 je Schritt"],
+    ["Zeit","1 h = 60 min, 1 min = 60 s","1 h = 3600 s"]
+  ],
+  nach:"Nach rechts in der Reihe wird multipliziert, nach links geteilt." }
+]}
+];
+
+
+/* ---------- Die Seite ---------- */
+let formelBereich = "elektro";
+let formelSuche = "";
+
+function zeigeFormeln(){
+  menueOffen = false; menueInfoOffen = false;
+  if (ansicht !== "formeln") vorSeite = ansicht;
+  /* Wer aus Mathe kommt, will die Mathe-Formeln sehen — nicht erst umschalten. */
+  if (fach === "mathe" || fach === "elektroniker")
+    formelBereich = fach === "mathe" ? "mathe" : "elektro";
+  ansicht = "formeln"; render();
+}
+function formelBereichWaehlen(id){ formelBereich = id; formelSuche = ""; render(); }
+function formelAnzahl(){
+  return FORMELSAMMLUNG.reduce(function(n, b){
+    return n + b.gruppen.reduce(function(m, gr){ return m + (gr.eintraege || []).length; }, 0); }, 0);
+}
+function formelSuchLeeren(){ formelSuche = ""; render(); }
+function formelSuchTippen(wert){
+  formelSuche = wert; render();
+  const feld = document.getElementById("formelSuchfeld");
+  if (feld){ feld.focus(); try { feld.setSelectionRange(feld.value.length, feld.value.length); } catch(e){} }
+}
+
+/* Aus der Größenliste wird die Zuordnung „Kürzel → so wird es geschrieben". */
+function formelZeichenKarte(e){
+  const zei = {};
+  (e.g || []).forEach(function(x){ if (x[3]) zei[x[0]] = x[3]; });
+  return zei;
+}
+
+/* Womit ein Eintrag gefunden werden kann: Name, Zweck, Hinweis, alle Wörter
+   der Größen und die Kürzel selbst — „cos phi" findet den Leistungsfaktor
+   genauso wie „Wirkleistung". */
+function formelSuchtext(e, gruppe){
+  return [e.name, e.wofuer || "", e.hinweis || "", gruppe || "",
+    (e.g || []).map(function(x){ return x[0] + " " + x[1] + " " + (x[3] || ""); }).join(" ")]
+    .join(" ").replace(/<[^>]*>/g, " ");
+}
+/* Suchbegriffe kommen so, wie jemand sie tippt — „cos phi", „cosφ", „COS PHI".
+   In den Daten steht mal „cosphi", mal „cos φ". Deshalb werden beide Seiten
+   auf dieselbe schlichte Form gebracht: klein, ohne griechische Buchstaben,
+   ohne Leerzeichen. */
+const FORMEL_GRIECHISCH = {"α":"alpha","β":"beta","γ":"gamma","δ":"delta","φ":"phi","η":"eta",
+  "ρ":"rho","κ":"kappa","ω":"omega","τ":"tau","λ":"lambda","Φ":"phi","Δ":"delta","π":"pi","ü":"ue"};
+function formelSchlicht(text){
+  return String(text).toLowerCase()
+    .replace(/[αβγδφηρκωτλΦΔπü]/g, function(c){ return FORMEL_GRIECHISCH[c] || FORMEL_GRIECHISCH[c.toUpperCase()] || c; })
+    .replace(/[\s_·]+/g, "");
+}
+function formelTreffer(){
+  const roh = String(formelSuche || "").toLowerCase().trim();
+  if (roh.length < 2) return [];
+  const eng = formelSchlicht(roh);
+  const raus = [];
+  FORMELSAMMLUNG.forEach(function(b){
+    b.gruppen.forEach(function(gr){
+      (gr.eintraege || []).forEach(function(e){
+        const text = formelSuchtext(e, gr.titel);
+        if (text.toLowerCase().includes(roh) || formelSchlicht(text).includes(eng))
+          raus.push({e:e, bereich:b, gruppe:gr.titel});
+      });
+    });
+  });
+  return raus;
+}
+
+function formelBeispielHtml(e, zei){
+  if (!e.bsp) return "";
+  const term = formelTermFuer(e, e.bsp.suche);
+  if (!term) return "";
+  const wert = formelRechne(term, e.bsp.werte);
+  /* Gerechnet wird in Grundeinheiten — vorgezeigt wird in der Einheit, in der
+     das Bauteil bestellt wird. „60,17 µF“ sagt einem Elektroniker etwas,
+     „6,017 · 10⁻⁵ F“ erst nach dem zweiten Hinsehen. */
+  const zeige = e.bsp.zeige || {};
+  const mitEinheit = function(k, wert){
+    if (zeige[k]) return formelZahl(wert * zeige[k][0]) + " " + zeige[k][1];
+    const t = (e.g || []).filter(function(x){ return x[0] === k; })[0];
+    return formelZahl(wert) + (t && t[2] ? " " + t[2] : "");
+  };
+  const geg = Object.keys(e.bsp.werte).map(function(k){
+    return '<span class="fgeg">' + formelZeichen(k, zei) + " = " + mitEinheit(k, e.bsp.werte[k]) + "</span>";
+  }).join("");
+  return '<p class="fbsp"><b>Beispiel</b>' + geg
+    + '<span class="fpfeil" aria-hidden="true">→</span>'
+    + '<span class="ferg">' + formelZeichen(e.bsp.suche, zei) + " = "
+    + mitEinheit(e.bsp.suche, wert) + "</span></p>";
+}
+
+function formelKarteHtml(e, herkunft){
+  const zei = formelZeichenKarte(e);
+  const saetze = (e.f || []).map(function(s){
+    const zeilen = [formelZeile(s.z, s.t, zei)]
+      .concat((s.um || []).map(function(u){ return formelZeile(u[0], u[1], zei); }));
+    return '<div class="fsatz">' + zeilen.join("") + "</div>";
+  }).join("");
+  const groessen = (e.g || []).map(function(x){
+    return "<li><i>" + formelZeichen(x[0], zei) + "</i><span>" + x[1] + "</span>"
+      + (x[2] ? "<em>" + x[2] + "</em>" : "") + "</li>";
+  }).join("");
+  return `
+    <article class="card fkarte">
+      <h3 class="fname">${e.name}${herkunft ? `<span class="fherkunft">${herkunft}</span>` : ""}</h3>
+      ${e.wofuer ? `<p class="fwofuer">${e.wofuer}</p>` : ""}
+      <div class="fsaetze">${saetze}</div>
+      ${groessen ? `<ul class="fgroessen">${groessen}</ul>` : ""}
+      ${formelBeispielHtml(e, zei)}
+      ${e.hinweis ? `<p class="fhinweis">${e.hinweis}</p>` : ""}
+    </article>`;
+}
+
+function formelTabelleHtml(gr){
+  return `
+    <article class="card fkarte">
+      <h3 class="fname">${gr.titel}</h3>
+      ${gr.vor ? `<p class="fwofuer">${gr.vor}</p>` : ""}
+      <div class="ftabellenraum">
+        <table class="ftabelle">
+          <thead><tr>${gr.kopf.map(function(k){ return "<th>" + k + "</th>"; }).join("")}</tr></thead>
+          ${/* Die Spaltenüberschrift steht zusätzlich an jeder Zelle. Auf dem
+                Handy wird die Tabelle zu einer Liste gestapelt, und dann ist
+                sie die einzige Auskunft, in welcher Spalte man gerade ist. */""}
+          <tbody>${gr.zeilen.map(function(z){
+            return "<tr>" + z.map(function(c, i){
+              return '<td data-kopf="' + String(gr.kopf[i] || "").replace(/"/g, "&quot;") + '">' + c + "</td>"; }).join("") + "</tr>"; }).join("")}</tbody>
+        </table>
+      </div>
+      ${gr.nach ? `<p class="fhinweis">${gr.nach}</p>` : ""}
+    </article>`;
+}
+
+function formelnHtml(){
+  const treffer = formelTreffer();
+  const sucht = String(formelSuche || "").trim().length >= 2;
+  const bereich = FORMELSAMMLUNG.filter(function(b){ return b.id === formelBereich; })[0] || FORMELSAMMLUNG[0];
+  const anzahl = FORMELSAMMLUNG.reduce(function(n, b){
+    return n + b.gruppen.reduce(function(m, gr){ return m + (gr.eintraege || []).length; }, 0); }, 0);
+
+  const inhalt = sucht
+    ? (treffer.length
+      ? `<p class="einstlead">${z(treffer.length)} ${treffer.length === 1 ? "Formel gefunden" : "Formeln gefunden"}.</p>
+         ${treffer.map(function(t){ return formelKarteHtml(t.e, t.bereich.name + " · " + t.gruppe); }).join("")}`
+      : `<div class="card"><p class="soft" style="margin:0">Dazu steht hier noch nichts.
+           Wenn dir eine Formel fehlt, schreib sie uns über
+           ${navLink("/feedback", "zeigeFeedback()", "Feedback", "")} — dann kommt sie dazu.</p></div>`)
+    : bereich.gruppen.map(function(gr){
+        if (gr.art === "tabelle") return formelTabelleHtml(gr);
+        return `<h2 class="fgruppe" id="fg-${schnipselId(gr.titel)}">${gr.titel}</h2>`
+          + (gr.eintraege || []).map(function(e){ return formelKarteHtml(e, ""); }).join("");
+      }).join("");
+
+  return `
+    <div class="card">
+      ${navLink(pfadFuer(vorSeite || "uebersicht", fach, klasse), "zurueckVonSeite()", "← Zurück", "zurueck")}
+      <span class="tag">Nachschlagen</span>
+      <h1>Formelsammlung</h1>
+      <p class="soft" style="margin:10px 0 0">${z(anzahl)} Formeln — jede auch nach allen Größen umgestellt,
+        damit du beim Rechnen nicht selbst umstellen musst. Jede Umstellung wird vor der Veröffentlichung
+        nachgerechnet.</p>
+      <div class="einstsuchzeile">
+        ${SYM.lupe}
+        <input class="einstsuchfeld" id="formelSuchfeld" type="text" value="${String(formelSuche).replace(/"/g, "&quot;")}"
+               placeholder="Formel suchen — z. B. Leistung, cos phi, Kreis"
+               aria-label="Formel suchen" oninput="formelSuchTippen(this.value)">
+        ${formelSuche ? `<button class="einstsuchweg" onclick="formelSuchLeeren()" aria-label="Suche leeren">×</button>` : ""}
+      </div>
+    </div>
+
+    ${sucht ? "" : `
+      <div class="einstnav" role="tablist" aria-label="Fachgebiet">
+        ${FORMELSAMMLUNG.map(function(b){
+          return `<button class="einstchip ${b.id === formelBereich ? "an" : ""}" role="tab"
+                    aria-selected="${b.id === formelBereich}"
+                    onclick="formelBereichWaehlen('${b.id}')">${b.name}</button>`; }).join("")}
+      </div>
+      <p class="einstlead">${bereich.unter}</p>`}
+
+    <div class="einstteil">${inhalt}</div>`;
+}
+
+/* Aus „Strom, Spannung, Widerstand" wird „strom-spannung-widerstand" — als
+   Sprungmarke innerhalb der Seite. */
+function schnipselId(text){
+  return String(text).toLowerCase()
+    .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+
 /* ---------- Prüfungsmodus ----------
    Der Wiederholungsplan arbeitet vorwärts: Was hakt, kommt irgendwann wieder.
    Vor einer Klassenarbeit hilft das wenig — da gibt es einen festen Termin,
@@ -34996,6 +36375,7 @@ function pfadFuer(a, f, k){
     case "konto":        return "/konto";
     case "anfragen":     return "/anfragen";
     case "serie":        return "/serie";
+    case "formeln":      return "/formeln";
     case "vokabeln":
     case "vokabelnUeben":
     case "vokabelnFertig": return "/vokabeln";
@@ -35034,7 +36414,7 @@ function ansichtAusPfad(){
     konto:"konto", anfragen:"anfragen", serie:"serie", leitstand:"dashboard", baustelle:"baustelle",
     /* „/dashboard“ war die frühere Adresse — alte Lesezeichen sollen nicht ins Leere laufen. */
     dashboard:"dashboard",
-    vokabeln:"vokabeln", pruefung:"pruefungen", arbeitsblatt:"arbeitsblatt"};
+    vokabeln:"vokabeln", pruefung:"pruefungen", arbeitsblatt:"arbeitsblatt", formeln:"formeln"};
   /* /vokabeln/eigene ist die einzige Adresse mit zweiter Stufe außerhalb der Fächer */
   if (p === "vokabeln" && teile[1] === "eigene"){ ansicht = "vokabelnEigene"; return; }
   if (p === "vokabeln" && teile[1] === "lernen"){ zeigeVokLernen(); return; }
@@ -35854,6 +37234,25 @@ function render(gewaehlt){
       </div>`;
   }
 
+  /* Die Formelsammlung steht im Menü — aber wer eine Formel sucht, sucht sie
+     in dem Moment, in dem er vor der Themenliste sitzt. Deshalb steht sie
+     auch dort, und zwar nur bei den beiden Fächern, zu denen es sie gibt. */
+  function formelEinstiegHtml(f){
+    const bereich = f === "mathe" ? "mathe" : f === "elektroniker" ? "elektro" : "";
+    if (!bereich) return "";
+    const b = FORMELSAMMLUNG.filter(function(x){ return x.id === bereich; })[0];
+    if (!b) return "";
+    const n = b.gruppen.reduce(function(m, gr){ return m + (gr.eintraege || []).length; }, 0);
+    return `
+      <div class="card">
+        <span class="tag">${KATALOG[f].name} · Nachschlagen</span>
+        <h2 style="margin:8px 0 6px">Formelsammlung</h2>
+        <p class="soft" style="margin:0 0 14px">${z(n)} Formeln — jede auch nach allen Größen umgestellt,
+          mit Einheiten und einem durchgerechneten Beispiel. Zum Nachschlagen, nicht zum Auswendiglernen.</p>
+        ${navLink("/formeln", "zeigeFormeln()", "Zur Formelsammlung", "btn full")}
+      </div>`;
+  }
+
   /* In einer Ausbildung zählt nicht das Lehrjahr, sondern der Prüfungstermin.
      Deshalb steht die Wahl „Teil 1 oder Teil 2“ gleich unter den Lehrjahren —
      wer darauf lernt, sucht sich seine Themen nicht Jahr für Jahr zusammen. */
@@ -36103,6 +37502,7 @@ function render(gewaehlt){
       </div>
 
       ${vokabelEinstiegHtml(fach)}
+      ${formelEinstiegHtml(fach)}
       ${fertig.length < themen.length ? themenwunschHtml(true) : ""}`;
     return;
   }
@@ -36162,6 +37562,7 @@ function render(gewaehlt){
   if (ansicht === "vokabeln"){ el.innerHTML = vokabelnHtml(); return; }
   if (ansicht === "vokabelnEigene"){ el.innerHTML = vokabelnEigeneHtml(); return; }
   if (ansicht === "vokabelnLernen"){ el.innerHTML = vokabelnLernenHtml(); return; }
+  if (ansicht === "formeln"){ el.innerHTML = formelnHtml(); return; }
   if (ansicht === "arbeitsblatt"){ el.innerHTML = arbeitsblattHtml(); return; }
   if (ansicht === "arbeitsblattDruck"){ el.innerHTML = arbeitsblattDruckHtml(); return; }
   if (ansicht === "pruefungen"){ el.innerHTML = pruefungenHtml(); return; }
