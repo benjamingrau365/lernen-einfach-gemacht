@@ -141,6 +141,56 @@ for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
   });
 }
 
+/* ---------- Wie viel Abwechslung gibt es? ----------
+   Gemeldet von Benjamin: „Es gibt zu viele gleiche Sätze. Und nicht nur
+   gleiche Sätze, sondern gleiche Antwortmöglichkeiten.“ Er hat recht, und
+   bis hierher hat es niemand gemessen.
+
+   Zwei Zahlen je Thema:
+     · wie viele verschiedene Aufgabentexte überhaupt herauskommen können
+     · wie viele Schritte immer wortgleich dieselben Antworten anbieten
+
+   Beides ist keine Fehlermeldung — ein Thema mit wenigen Fällen ist nicht
+   kaputt, nur dünn. Aber ohne die Zahl sieht man nicht, wo es dünn ist. */
+const VIELFALT_ZUEGE = 220;
+const vielfalt = [];
+for (const [thema, erzeuger] of Object.entries(AUFGABEN)) {
+  const texte = new Set();
+  const proSchritt = new Map();
+  erzeuger.forEach((fn, nr) => {
+    for (let i = 0; i < VIELFALT_ZUEGE; i++) {
+      let a; try { a = baueAufgabe(thema, nr); } catch (e) { break; }
+      texte.add(nackt(a.text));
+      (a.schritte || []).forEach((s, si) => {
+        const k = nr + "|" + si;
+        if (!proSchritt.has(k)) proSchritt.set(k, new Set());
+        /* Starr heißt: Auswahl UND richtige Antwort sind immer dieselben.
+           Ein Ja/Nein-Schritt, bei dem mal das eine und mal das andere
+           stimmt, ist nicht starr — man muss jedes Mal neu überlegen. */
+        proSchritt.get(k).add(s.optionen.map((o) => nackt(o.t)).sort().join("¦")
+          + " ⇒ " + nackt((s.optionen.find((o) => o.ok) || {}).t));
+      });
+    }
+  });
+  const starr = [...proSchritt.values()].filter((m) => m.size === 1).length;
+  vielfalt.push({ thema, erzeuger: erzeuger.length, texte: texte.size,
+                  schritte: proSchritt.size, starr });
+}
+const duenn = vielfalt.filter((v) => v.texte < 12).sort((a, b) => a.texte - b.texte);
+const starrGesamt = vielfalt.reduce((a, v) => a + v.starr, 0);
+const schrGesamt  = vielfalt.reduce((a, v) => a + v.schritte, 0);
+console.log("\n=== ABWECHSLUNG ===");
+console.log(`  ${vielfalt.reduce((a, v) => a + v.texte, 0)} verschiedene Aufgabentexte aus `
+  + `${vielfalt.reduce((a, v) => a + v.erzeuger, 0)} Erzeugern`);
+console.log(`  ${starrGesamt} von ${schrGesamt} Schritten bieten immer dieselben Antworten `
+  + `(${Math.round(starrGesamt / schrGesamt * 100)} %)`);
+if (duenn.length) {
+  console.log(`  ${duenn.length} Themen mit weniger als 12 verschiedenen Aufgaben:`);
+  duenn.slice(0, 12).forEach((v) => console.log(`    ${String(v.texte).padStart(3)} Aufgaben · `
+    + `${v.starr}/${v.schritte} Schritte starr · ${v.thema}`));
+  if (duenn.length > 12) console.log(`    … und ${duenn.length - 12} weitere`);
+}
+
 /* ---------- Wie tief gehen die Aufgaben? ----------
    Drei Schritte sind zu wenig: verstehen, Weg finden, ausrechnen — und weg.
    Sechs sind das Ziel. Erreicht wird das über EINSTIEG und ABSCHLUSS je Thema;

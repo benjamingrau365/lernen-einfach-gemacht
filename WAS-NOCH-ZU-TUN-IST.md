@@ -332,6 +332,40 @@ ein Ring je Thema würde sichtbar machen, dass es vorangeht.
   Drehstrom-Leistungsmessung, Schutzarten (IP).
 * **Englisch Klasse 8, 9, 10** — 15 Themen, dann sind es 140 von 140 und das
   Baustellenband kann weg.
+* **Zu wenig Abwechslung.** Von Benjamin gemeldet: „Es gibt zu viele gleiche
+  Sätze. Und nicht nur gleiche Sätze, sondern gleiche Antwortmöglichkeiten.“
+  Nachgemessen und in `pruefe-aufbau.js` als Abschnitt ABWECHSLUNG dauerhaft
+  sichtbar gemacht. Der Befund:
+
+  * **454 von 1.272 Schritten (36 %)** bieten bei jedem Durchgang wortgleich
+    dieselben Antworten — und dieselbe richtige darunter.
+  * Das Muster ist fast immer dasselbe: Es ist die **erste Frage** jedes
+    Erzeugers, die Begriffsfrage („Was gehört in eine Erörterung?“). Sie
+    steht fest verdrahtet da, während alles darunter gewürfelt wird.
+  * Am dünnsten ist Deutsch: viele Themen haben ein bis zwei Erzeuger und
+    fünf bis zwölf Aufgabentexte. Nach einer Viertelstunde hat man alles
+    gesehen.
+
+  Zwei Themen sind vorgemacht, wie es gehen soll:
+
+  | Thema | vorher | jetzt |
+  |---|---|---|
+  | Gedichte deuten | 1 Erzeuger, 6 Aufgaben, 4/4 starr | 3 Erzeuger, 38 Aufgaben, 2/11 starr |
+  | Erörterung | 2 Erzeuger, 7 Aufgaben, 2/4 starr | 3 Erzeuger, 40 Aufgaben, 2/7 starr |
+
+  Das Rezept dahinter, für die übrigen Themen:
+  1. **Fallliste verlängern** — dreimal so viele Sätze, Gedichte, Thesen.
+  2. **Begriffsfrage würfeln** — zwei bis drei Formulierungen derselben
+     Frage samt Antworten, aus denen `pick()` zieht.
+  3. **Weitere Erzeuger** für andere Aspekte des Themas. „Gedichte deuten“
+     hieß vorher ausschließlich „Reimschema bestimmen“ — jetzt kommen
+     sprachliche Bilder und Strophenbau dazu.
+
+  Als Nächstes dran, nach Dünne sortiert: Rede und Rhetorik (8), Sprachwandel
+  (8), Argumentieren (10), Literaturepochen (5, mit Quellenbindung),
+  Sachtexte auswerten (11), Bewerbung schreiben (11), Aktiv und Passiv (12),
+  Berichten (12), Inhaltsangabe (12), Interpretation (12), Facharbeit (12).
+
 * **11 doppelte Fragestellungen** sind noch übrig — angefangen waren es 39.
   Übrig sind: Einheiten und Vorsätze, Leiterquerschnitt (2×), Schutzmaßnahmen
   (2×), Kondensator im Wechselstrom, Diode und Gleichrichter, Messen im

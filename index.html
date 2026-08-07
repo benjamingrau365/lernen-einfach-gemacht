@@ -4922,6 +4922,8 @@ const AUFGABEN = {
 ],
 
 "Gedichte deuten":[
+
+ /* Reimschema — jetzt mit umarmendem Reim und doppelt so vielen Gedichten */
  () => {
    const faelle = [
      {v:["Ein Männlein steht im Walde ganz still und stumm","es hat von lauter Purpur ein Mäntlein um","sagt, wer mag das Männlein sein","das da steht im Wald allein"],
@@ -4941,35 +4943,75 @@ const AUFGABEN = {
       erklaerung:"Erste und dritte, zweite und vierte Zeile reimen sich."},
      {v:["Ich weiß nicht, was soll es bedeuten","dass ich so traurig bin","ein Märchen aus uralten Zeiten","das kommt mir nicht aus dem Sinn"],
       endungen:["-deuten","-bin","-Zeiten","-Sinn"], schema:"abab", name:"Kreuzreim",
-      erklaerung:"Die Reime greifen über eine Zeile hinweg ineinander."}
+      erklaerung:"Die Reime greifen über eine Zeile hinweg ineinander."},
+     {v:["Sah ein Knab ein Röslein stehn","Röslein auf der Heiden","war so jung und morgenschön","lief er schnell, es nah zu sehen"],
+      endungen:["-stehn","-Heiden","-schön","-sehen"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Zeile 1 klingt wie Zeile 3, Zeile 2 wie Zeile 4."},
+     {v:["Wem Gott will rechte Gunst erweisen","den schickt er in die weite Welt","dem will er seine Wunder weisen","in Berg und Wald und Strom und Feld"],
+      endungen:["-erweisen","-Welt","-weisen","-Feld"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Die Reime greifen über je eine Zeile hinweg."},
+     {v:["Das Wasser rauscht, das Wasser schwoll","ein Fischer saß daran","sah nach der Angel ruhevoll","kühl bis ans Herz hinan"],
+      endungen:["-schwoll","-daran","-ruhevoll","-hinan"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Erste und dritte Zeile klingen gleich, zweite und vierte auch."},
+     {v:["O Täler weit, o Höhen","o schöner grüner Wald","du meiner Lust und Wehen","andächtger Aufenthalt"],
+      endungen:["-Höhen","-Wald","-Wehen","-Aufenthalt"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Die Reime überkreuzen sich."},
+     {v:["Der Regen fällt die ganze Nacht","und hat kein Ende ausgedacht","er trommelt auf das alte Dach","und hält das ganze Haus noch wach"],
+      endungen:["-Nacht","-ausgedacht","-Dach","-wach"], schema:"aabb", name:"Paarreim",
+      erklaerung:"Zeile 1 reimt auf Zeile 2, Zeile 3 auf Zeile 4."},
+     {v:["Am Morgen war der Himmel grau","die Wolken hingen schwer","doch mittags wurde alles blau","und nichts war wie vorher"],
+      endungen:["-grau","-schwer","-blau","-vorher"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Zeile 1 klingt wie Zeile 3, Zeile 2 wie Zeile 4."},
+     {v:["Der Wandrer, der von Hause fern","in fremde Städte zieht","der denkt an seinen Heimatstern","und singt ein leises Lied"],
+      endungen:["-fern","-zieht","-Heimatstern","-Lied"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Zeile 1 mit 3, Zeile 2 mit 4."},
+     {v:["Der Abend kommt, die Schatten fallen","die Vögel suchen ihren Baum","und über allen, allen Hallen","liegt schwer und weich ein alter Traum"],
+      endungen:["-fallen","-Baum","-Hallen","-Traum"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Immer über eine Zeile hinweg klingt es gleich."},
+     {v:["Die Nacht ist tief, der Weg ist weit","kein Licht am Horizont","und doch trägt mich die Dunkelheit","dorthin, wo Hoffnung wohnt"],
+      endungen:["-weit","-Horizont","-Dunkelheit","-wohnt"], schema:"abab", name:"Kreuzreim",
+      erklaerung:"Zeile 1 reimt auf Zeile 3, Zeile 2 auf Zeile 4."}
    ];
    const f = pick(faelle);
-   const kreuz = f.schema === "abab";
+   const schema = f.schema;
+   const kreuz = schema === "abab";
+   /* Die drei Erklärfragen boten bisher immer wortgleich dieselben Antworten.
+      Jetzt wird die Formulierung mitgewürfelt — der Inhalt bleibt derselbe,
+      aber man liest nicht zum zehnten Mal denselben Satz. */
+   const worauf = pick([
+     {r:"Auf das letzte Wort jeder Zeile", rf:"Genau — nur die Zeilenenden zählen.",
+      f1:"Auf das erste Wort jeder Zeile", f1f:"Gleichklang am Anfang wäre eine Anapher, kein Reim.",
+      f2:"Auf die Anzahl der Silben", f2f:"Das gehört zum Versmaß, nicht zum Reimschema."},
+     {r:"Auf den Klang am Zeilenende", rf:"Richtig — gehört wird das Ende, nicht der Anfang.",
+      f1:"Auf die Länge der Zeilen", f1f:"Wie lang eine Zeile ist, sagt nichts über den Reim.",
+      f2:"Auf die Wörter in der Zeilenmitte", f2f:"Die Mitte spielt für das Reimschema keine Rolle."},
+     {r:"Darauf, welche Zeilenenden gleich klingen", rf:"Genau darum geht es.",
+      f1:"Darauf, worum es inhaltlich geht", f1f:"Der Inhalt ist wichtig — für das Reimschema aber nicht.",
+      f2:"Darauf, wie viele Zeilen es sind", f2f:"Die Zahl der Zeilen gehört zum Strophenbau."}
+   ]);
    return {
     typ:"text",
     text: f.v.map((zeile, i) => `${i+1}. ${zeile}`).join("<br>"),
-    loesung: `${f.name} (${f.schema})`,
+    loesung: `${f.name} (${schema})`,
     schluss:"Das Reimschema ist nur der Anfang — es sagt etwas über den Klang und darüber, ob ein Gedicht ruhig fließt oder gebunden wirkt.",
     schritte:[
      {frage:"<b>Worauf schaut man, um das Reimschema zu bestimmen?</b>",
       tipp2:"Entscheidend ist der Klang am Zeilenende.",
       tipp:"Nicht auf den Inhalt.",
-      optionen:[R("Auf das letzte Wort jeder Zeile", "Genau — nur die Zeilenenden zählen."),
-                F("Auf das erste Wort jeder Zeile", "Am Anfang stehende Gleichklänge wären eine Anapher, kein Reim."),
-                F("Auf die Anzahl der Silben", "Das gehört zum Versmaß, nicht zum Reimschema.")]},
+      optionen:[R(worauf.r, worauf.rf), F(worauf.f1, worauf.f1f), F(worauf.f2, worauf.f2f)]},
      {frage:`Die Zeilen enden auf: <b>${f.endungen.join(" · ")}</b>. <b>Welche Zeilen reimen sich?</b>`,
       tipp2:"Vergleiche jede Endung mit allen anderen. Es zählt der Klang, nicht die Schreibweise.",
       tipp:"Sprich die Endungen laut hintereinander.",
       optionen: kreuz
         ? [R("Zeile 1 mit 3 und Zeile 2 mit 4", "Richtig — die Reime überkreuzen sich."),
            F("Zeile 1 mit 2 und Zeile 3 mit 4", "Lies noch mal: Zeile 1 und 2 klingen hier nicht gleich.")]
-        : [R("Zeile 1 mit 2 und Zeile 3 mit 4", "Richtig — jeweils zwei benachbarte Zeilen."),
-           F("Zeile 1 mit 3 und Zeile 2 mit 4", "Lies noch mal: hier reimen sich direkt benachbarte Zeilen.")]},
+        : [R("Zeile 1 mit 2", "Richtig — die beiden ersten Zeilen klingen gleich aus."),
+           F("Zeile 1 mit 3", "Lies noch mal: Zeile 1 und 3 klingen hier nicht gleich.")]},
      {frage:"<b>Wie schreibt man dieses Schema mit Buchstaben?</b>",
       tipp2:"Fang bei der ersten Zeile mit a an und vergib für jeden neuen Klang den nächsten Buchstaben.",
       tipp:"Gleicher Buchstabe bedeutet gleicher Reim.",
       optionen: zieheVerschiedene([
-        R(f.schema, "Genau."),
+        R(schema, "Genau."),
         F(kreuz ? "aabb" : "abab", kreuz ? "Das wäre der Paarreim — hier greifen die Reime aber über eine Zeile."
                                          : "Das wäre der Kreuzreim — hier reimen sich aber die Nachbarzeilen."),
         F("abba", "Das wäre der umarmende Reim: außen ein Reim, innen ein anderer.")], 3)},
@@ -4981,6 +5023,145 @@ const AUFGABEN = {
         R(f.name, "Richtig."),
         F(kreuz ? "Paarreim" : "Kreuzreim", kreuz ? "Beim Paarreim reimen sich benachbarte Zeilen." : "Beim Kreuzreim reimen sich Zeile 1 mit 3."),
         F("Umarmender Reim", "Der hätte das Schema abba.")], 3)}]};
+ },
+
+ /* Sprachliche Bilder — der zweite Aspekt des Themas. „Gedichte deuten“ hieß
+    bisher ausschließlich „Reimschema bestimmen“. Das Reimschema sagt aber
+    nichts darüber, was ein Gedicht meint. */
+ () => {
+   const faelle = [
+     {zeile:"Der Mond ist eine Sichel aus Silber.", art:"Metapher",
+      warum:"Der Mond wird ohne „wie“ mit etwas anderem gleichgesetzt.",
+      bild:"Er ist schmal und hell wie eine Sichel."},
+     {zeile:"Die Nacht kam still wie ein Dieb.", art:"Vergleich",
+      warum:"Zwei Dinge werden mit „wie“ nebeneinandergestellt.",
+      bild:"Die Nacht kommt leise und unbemerkt."},
+     {zeile:"Der Wind singt in den Zweigen.", art:"Personifikation",
+      warum:"Etwas Unbelebtes tut etwas, das nur Menschen können.",
+      bild:"Der Wind macht Geräusche, die an Gesang erinnern."},
+     {zeile:"Ihre Augen waren zwei tiefe Seen.", art:"Metapher",
+      warum:"Die Augen werden unmittelbar zu etwas anderem erklärt.",
+      bild:"Man kann in ihnen versinken."},
+     {zeile:"Er stand da, hart wie ein Fels.", art:"Vergleich",
+      warum:"Das Wörtchen „wie“ verbindet die beiden Seiten.",
+      bild:"Er war unerschütterlich."},
+     {zeile:"Die Sonne lacht über den Dächern.", art:"Personifikation",
+      warum:"Die Sonne bekommt eine menschliche Eigenschaft.",
+      bild:"Es ist hell und freundlich."},
+     {zeile:"Sein Herz war ein leeres Zimmer.", art:"Metapher",
+      warum:"Das Herz wird durch etwas ganz anderes ersetzt.",
+      bild:"Er fühlte nichts mehr."},
+     {zeile:"Die Blätter tanzen über den Hof.", art:"Personifikation",
+      warum:"Blätter können nicht tanzen — Menschen schon.",
+      bild:"Der Wind wirbelt sie leicht umher."},
+     {zeile:"Ihre Stimme war weich wie Samt.", art:"Vergleich",
+      warum:"„Wie“ stellt Stimme und Samt nebeneinander.",
+      bild:"Die Stimme war angenehm und sanft."},
+     {zeile:"Der Nebel legte seine Hand auf die Stadt.", art:"Personifikation",
+      warum:"Der Nebel handelt wie ein Lebewesen.",
+      bild:"Er breitete sich langsam über alles."},
+     {zeile:"Das Leben ist eine Reise.", art:"Metapher",
+      warum:"Das eine wird ohne Vergleichswort zum anderen erklärt.",
+      bild:"Es geht immer weiter, mit Stationen und Umwegen."},
+     {zeile:"Er schlief so fest wie ein Stein.", art:"Vergleich",
+      warum:"Auch hier steht das Vergleichswort „wie“ dazwischen.",
+      bild:"Er war durch nichts zu wecken."}
+   ];
+   const f = pick(faelle);
+   const andere = ["Metapher","Vergleich","Personifikation"].filter(x => x !== f.art);
+   const gegen = {
+     "Metapher":"Bei einer Metapher fehlt das Wörtchen „wie“ — sie setzt gleich.",
+     "Vergleich":"Ein Vergleich braucht ein Vergleichswort wie „wie“ oder „als“.",
+     "Personifikation":"Eine Personifikation lässt etwas Unbelebtes menschlich handeln."
+   };
+   return {
+    typ:"text",
+    text:`<i>„${f.zeile}“</i><br>Welches sprachliche Bild steckt in dieser Zeile?`,
+    loesung: f.art,
+    schluss:"Sprachliche Bilder sind kein Schmuck. Sie sagen etwas, wofür der gerade Satz zu wenige Worte hätte.",
+    schritte:[
+     {frage:"Wozu stehen solche Bilder überhaupt in einem Gedicht?",
+      tipp:"Überleg, was der Satz ohne das Bild aussagen würde.",
+      tipp2:"Ein Bild zeigt etwas, statt es zu behaupten — man sieht es vor sich.",
+      optionen:[R("Sie zeigen etwas, statt es nur zu behaupten", "Genau darum geht es."),
+                F("Sie machen das Gedicht länger", "Länge ist kein Grund für ein Bild."),
+                F("Sie sorgen dafür, dass sich alles reimt", "Mit dem Reim hat das nichts zu tun.")]},
+     {frage:`Steht in der Zeile ein Vergleichswort wie <b>„wie“</b> oder <b>„als“</b>?`,
+      tipp:"Lies die Zeile noch einmal Wort für Wort.",
+      tipp2:"Nur der Vergleich braucht so ein Wort. Metapher und Personifikation kommen ohne aus.",
+      optionen: f.art === "Vergleich"
+        ? [R("Ja", "Richtig — und genau daran erkennt man den Vergleich."),
+            F("Nein", "Doch, schau noch einmal genau hin.")]
+        : [R("Nein", "Richtig — also ist es kein Vergleich."),
+            F("Ja", "Hier steht kein Vergleichswort.")]},
+     {frage:`Wie heißt dieses sprachliche Bild?`,
+      tippAntwort: f.art,
+      tipp: f.warum,
+      tipp2:"Metapher: setzt gleich. Vergleich: braucht „wie“. Personifikation: lässt Dinge menschlich handeln.",
+      optionen: zieheVerschiedene([
+        R(f.art, `Richtig — ${f.warum.charAt(0).toLowerCase() + f.warum.slice(1)}`),
+        F(andere[0], gegen[andere[0]]),
+        F(andere[1], gegen[andere[1]])], 3)},
+     {frage:"Und was sagt die Zeile damit aus?",
+      tipp:"Sag es einmal ohne Bild, in ganz einfachen Worten.",
+      tipp2:`Gemeint ist: ${f.bild}`,
+      optionen: zieheVerschiedene([
+        R(f.bild, "Genau das steckt dahinter."),
+        F("Es ist wörtlich gemeint", "Dann wäre es kein sprachliches Bild."),
+        F("Die Zeile sagt gar nichts aus", "Ein Bild sagt eher mehr als der gerade Satz, nicht weniger.")], 3)}]};
+ },
+
+ /* Strophenbau und Wirkung — der dritte Aspekt */
+ () => {
+   const faelle = [
+     {strophen:4, zeilen:4, wirkung:"gleichmäßig und ruhig",
+      warum:"Gleich lange Strophen wirken geordnet, fast wie ein ruhiger Atem."},
+     {strophen:3, zeilen:4, wirkung:"gleichmäßig und ruhig",
+      warum:"Drei gleich gebaute Strophen geben dem Gedicht einen festen Takt."},
+     {strophen:2, zeilen:8, wirkung:"ausholend und erzählend",
+      warum:"Lange Strophen lassen dem Gedicht Zeit, etwas auszubreiten."},
+     {strophen:6, zeilen:2, wirkung:"knapp und abgehackt",
+      warum:"Ganz kurze Strophen wirken wie einzelne Schläge."},
+     {strophen:5, zeilen:4, wirkung:"gleichmäßig und ruhig",
+      warum:"Der immer gleiche Bau trägt den Leser gleichmäßig durch das Gedicht."},
+     {strophen:2, zeilen:6, wirkung:"ausholend und erzählend",
+      warum:"Sechs Zeilen am Stück geben Raum für einen längeren Gedanken."},
+     {strophen:8, zeilen:2, wirkung:"knapp und abgehackt",
+      warum:"Viele winzige Strophen zerhacken den Fluss mit Absicht."},
+     {strophen:3, zeilen:5, wirkung:"gleichmäßig und ruhig",
+      warum:"Auch fünf Zeilen wirken ruhig, solange alle Strophen gleich gebaut sind."}
+   ];
+   const f = pick(faelle);
+   const gesamt = f.strophen * f.zeilen;
+   const andereWirkung = ["gleichmäßig und ruhig","ausholend und erzählend","knapp und abgehackt"]
+     .filter(w => w !== f.wirkung);
+   return {
+    typ:"text",
+    text:`Ein Gedicht hat <b>${z(f.strophen)} Strophen</b> mit je <b>${z(f.zeilen)} Zeilen</b>.<br>Was sagt dieser Bau über die Wirkung?`,
+    loesung: f.wirkung,
+    schluss:"Der Bau eines Gedichts ist kein Zufall. Wie lang die Strophen sind, hört man beim Lesen — auch wenn man nicht darauf achtet.",
+    schritte:[
+     {frage:"Was ist eine <b>Strophe</b>?",
+      tipp:"Denk an das, was im Liedtext durch eine Leerzeile getrennt ist.",
+      tipp2:"Eine Strophe ist ein Block aus mehreren Zeilen, abgesetzt durch eine Leerzeile.",
+      optionen:[R("Ein Block aus mehreren Zeilen", "Richtig — im Gedicht durch eine Leerzeile abgesetzt."),
+                F("Eine einzelne Zeile", "Eine einzelne Zeile heißt Vers."),
+                F("Ein Reimpaar", "Ein Reimpaar sind zwei sich reimende Zeilen, keine Strophe.")]},
+     {frage:`Wie viele <b>Zeilen</b> hat das Gedicht insgesamt?`,
+      tippAntwort: String(gesamt),
+      tipp:`${z(f.strophen)} Strophen mal ${z(f.zeilen)} Zeilen.`,
+      tipp2:"Strophenzahl mal Zeilen je Strophe.",
+      optionen: zieheVerschiedene([
+        R(z(gesamt), "Richtig."),
+        F(z(f.strophen + f.zeilen), "Das wäre die Summe, gefragt ist das Produkt."),
+        F(z(gesamt + f.zeilen), "Das wäre eine Strophe zu viel.")], 3)},
+     {frage:"Wie wirkt dieser Bau beim Lesen?",
+      tipp:"Sprich das Gedicht innerlich mit — wo musst du Luft holen?",
+      tipp2: f.warum,
+      optionen: zieheVerschiedene([
+        R(f.wirkung, f.warum),
+        F(andereWirkung[0], "Das passt zu einem anderen Bau."),
+        F(andereWirkung[1], "Auch das beschreibt einen anderen Strophenbau.")], 3)}]};
  }
 ],
 
@@ -13478,21 +13659,52 @@ Object.assign(AUFGABEN, {
      {these:"Die Schule sollte später anfangen", satz:"Jugendliche werden abends später müde und sind morgens noch nicht aufnahmefähig.", seite:"Pro"},
      {these:"Die Schule sollte später anfangen", satz:"Der Nachmittag wird dann so voll, dass für Vereine und Nebenjobs keine Zeit bleibt.", seite:"Contra"},
      {these:"Auszubildende sollten Arbeitskleidung gestellt bekommen", satz:"Wer eigene Sachen anzieht, trägt die Kosten für Verschleiß selbst.", seite:"Pro"},
-     {these:"Auszubildende sollten Arbeitskleidung gestellt bekommen", satz:"Für kleine Betriebe wäre das eine spürbare zusätzliche Belastung.", seite:"Contra"}
+     {these:"Auszubildende sollten Arbeitskleidung gestellt bekommen", satz:"Für kleine Betriebe wäre das eine spürbare zusätzliche Belastung.", seite:"Contra"},
+     {these:"Hausaufgaben sollten abgeschafft werden", satz:"Wer zu Hause keine Ruhe hat, ist von vornherein im Nachteil.", seite:"Pro"},
+     {these:"Hausaufgaben sollten abgeschafft werden", satz:"Ohne Übung zwischendurch bleibt vom Unterrichtsstoff wenig hängen.", seite:"Contra"},
+     {these:"In der Berufsschule sollte es mehr Praxisunterricht geben", satz:"Vieles versteht man erst, wenn man es einmal selbst gemacht hat.", seite:"Pro"},
+     {these:"In der Berufsschule sollte es mehr Praxisunterricht geben", satz:"Für die Prüfung braucht man auch das theoretische Grundwissen.", seite:"Contra"},
+     {these:"Der öffentliche Nahverkehr sollte für alle kostenlos sein", satz:"Wer kein Auto hat, käme überall hin, ohne aufs Geld zu schauen.", seite:"Pro"},
+     {these:"Der öffentliche Nahverkehr sollte für alle kostenlos sein", satz:"Die Kosten müsste jemand tragen — am Ende alle über Steuern.", seite:"Contra"},
+     {these:"Prüfungen sollten mit Hilfsmitteln geschrieben werden dürfen", satz:"Im Beruf schlägt auch niemand Formeln aus dem Kopf nach.", seite:"Pro"},
+     {these:"Prüfungen sollten mit Hilfsmitteln geschrieben werden dürfen", satz:"Wer nichts im Kopf hat, findet in der Formelsammlung auch nichts.", seite:"Contra"},
+     {these:"Betriebe sollten die Vier-Tage-Woche einführen", satz:"Ein freier Tag mehr senkt nachweislich die Zahl der Krankmeldungen.", seite:"Pro"},
+     {these:"Betriebe sollten die Vier-Tage-Woche einführen", satz:"Aufträge verschwinden nicht — die Arbeit verteilt sich nur auf weniger Tage.", seite:"Contra"},
+     {these:"Soziale Netzwerke sollten erst ab 16 erlaubt sein", satz:"Jüngere Kinder können den Druck durch ständige Vergleiche schwer einordnen.", seite:"Pro"},
+     {these:"Soziale Netzwerke sollten erst ab 16 erlaubt sein", satz:"Ein Verbot bringt nichts, wenn niemand das Alter überprüfen kann.", seite:"Contra"},
+     {these:"Schuluniformen sollten eingeführt werden", satz:"Wer sich teure Kleidung nicht leisten kann, fällt damit nicht mehr auf.", seite:"Pro"},
+     {these:"Schuluniformen sollten eingeführt werden", satz:"Kleidung ist eine der wenigen Möglichkeiten, sich selbst auszudrücken.", seite:"Contra"},
+     {these:"Das Handy sollte im Betrieb während der Arbeitszeit tabu sein", satz:"An laufenden Maschinen kostet ein Blick aufs Display die Aufmerksamkeit, die man braucht.", seite:"Pro"},
+     {these:"Das Handy sollte im Betrieb während der Arbeitszeit tabu sein", satz:"Viele Betriebe schicken Arbeitsanweisungen inzwischen selbst aufs Handy.", seite:"Contra"},
+     {these:"Noten sollten durch Berichte ersetzt werden", satz:"Eine Zahl sagt nicht, was jemand kann und woran er noch arbeiten muss.", seite:"Pro"},
+     {these:"Noten sollten durch Berichte ersetzt werden", satz:"Bei Bewerbungen braucht man etwas, das sich schnell vergleichen lässt.", seite:"Contra"}
    ]);
    const w = f;
+   /* Die Einstiegsfrage stand vorher bei jedem Durchgang wortgleich da. */
+   const einstieg = pick([
+     {fr:"Was gehört in eine <b>Erörterung</b>?",
+      r:"Argumente für und gegen die These, dann ein Fazit", rf:"Richtig.",
+      f1:"Nur die Argumente, die zur eigenen Meinung passen", f1f:"Das wäre einseitig — und in der Klausur ein Punktabzug.",
+      f2:"Eine Zusammenfassung des Textes", f2f:"Das wäre eine Inhaltsangabe."},
+     {fr:"Woran erkennt man eine <b>Erörterung</b> von außen?",
+      r:"Beide Seiten kommen vor, am Ende steht ein begründetes Urteil", rf:"Genau das macht sie aus.",
+      f1:"Sie besteht aus einer Meinung mit vielen Beispielen", f1f:"Beispiele allein wägen nichts ab.",
+      f2:"Sie gibt einen Text mit eigenen Worten wieder", f2f:"Das wäre eine Inhaltsangabe."},
+     {fr:"Was unterscheidet eine Erörterung von einem <b>Meinungsaufsatz</b>?",
+      r:"Sie nimmt die Gegenseite ernst, statt sie wegzulassen", rf:"Richtig — ohne Gegenseite keine Erörterung.",
+      f1:"Sie ist länger", f1f:"Die Länge entscheidet nichts.",
+      f2:"Sie verzichtet auf ein Fazit", f2f:"Umgekehrt: Das begründete Fazit gehört dazu."}
+   ]);
    return {
     typ:"text",
     text:`These: <b>${w.these}</b>.<br>Argument: <i>„${w.satz}“</i><br>Steht das auf der <span class='luecke'>Pro</span>- oder der <span class='luecke'>Contra</span>-Seite?`,
     loesung: w.seite,
     schluss:"Eine Erörterung braucht beide Seiten. Wer nur eine bringt, hat keine Erörterung geschrieben, sondern eine Meinung.",
     schritte:[
-     {frage:"Was gehört in eine <b>Erörterung</b>?",
+     {frage: einstieg.fr,
       tipp:"Es reicht nicht, die eigene Meinung zu begründen.",
       tipp2:"Argumente für und gegen die These — und am Ende ein begründetes Fazit.",
-      optionen:[R("Argumente für und gegen die These, dann ein Fazit", "Richtig."),
-                F("Nur die Argumente, die zur eigenen Meinung passen", "Das wäre einseitig — und in der Klausur ein Punktabzug."),
-                F("Eine Zusammenfassung des Textes", "Das wäre eine Inhaltsangabe.")]},
+      optionen:[R(einstieg.r, einstieg.rf), F(einstieg.f1, einstieg.f1f), F(einstieg.f2, einstieg.f2f)]},
      {frage:`Unterstützt der Satz die These oder spricht er dagegen?`,
       tippAntwort: w.seite,
       tipp:"Lies die These und den Satz nacheinander: Passen sie zusammen?",
@@ -13502,17 +13714,99 @@ Object.assign(AUFGABEN, {
                 F("Weder noch", "Der Satz bezieht klar Stellung.")]}]};
  },
 
- /* Reihenfolge der Argumente */
+ /* Behauptung, Begründung, Beispiel — woraus ein Argument gebaut ist */
  () => {
    const f = pick([
-     {art:"steigernd", was:"vom schwächsten zum stärksten", warum:"Das letzte Argument bleibt am besten hängen.", falsch:"fallend"},
-     {art:"steigernd", was:"vom schwächsten zum stärksten", warum:"Wer stark anfängt, kann danach nur noch abfallen.", falsch:"zufällig"}
+     {satz:"Handys stören den Unterricht.", teil:"Behauptung",
+      warum:"Hier wird etwas festgestellt, aber noch nicht begründet."},
+     {satz:"Denn wer ständig aufs Display schaut, hört nicht zu.", teil:"Begründung",
+      warum:"Das „denn“ liefert den Grund für die Behauptung."},
+     {satz:"In meiner Klasse haben letzte Woche vier Leute die Aufgabe nicht mitbekommen.", teil:"Beispiel",
+      warum:"Ein einzelner, konkreter Fall macht die Begründung greifbar."},
+     {satz:"Ein späterer Schulbeginn wäre sinnvoll.", teil:"Behauptung",
+      warum:"Eine Feststellung, die noch keinen Grund nennt."},
+     {satz:"Weil Jugendliche einen anderen Schlafrhythmus haben als Erwachsene.", teil:"Begründung",
+      warum:"Das „weil“ verrät die Begründung."},
+     {satz:"An unserer Schule schlafen in der ersten Stunde regelmäßig mehrere Leute ein.", teil:"Beispiel",
+      warum:"Ein konkreter Fall, der die Begründung stützt."},
+     {satz:"Arbeitskleidung sollte der Betrieb stellen.", teil:"Behauptung",
+      warum:"Eine Forderung ohne Begründung ist erst einmal nur eine Behauptung."},
+     {satz:"Denn die Sachen verschleißen durch die Arbeit, nicht privat.", teil:"Begründung",
+      warum:"Das „denn“ leitet den Grund ein."},
+     {satz:"Mein Kollege hat im ersten Lehrjahr zwei Hosen durchgescheuert.", teil:"Beispiel",
+      warum:"Ein einzelner Fall, kein allgemeiner Grund."},
+     {satz:"Kostenloser Nahverkehr wäre gerechter.", teil:"Behauptung",
+      warum:"Eine Feststellung, die noch belegt werden muss."},
+     {satz:"Da nicht jeder sich ein Auto oder ein Monatsticket leisten kann.", teil:"Begründung",
+      warum:"Das „da“ leitet den Grund ein."},
+     {satz:"Eine Bekannte von mir fährt täglich 40 Minuten mit dem Rad — das Ticket ist ihr zu teuer.", teil:"Beispiel",
+      warum:"Ein konkreter Einzelfall."}
+   ]);
+   const andere = ["Behauptung","Begründung","Beispiel"].filter(x => x !== f.teil);
+   const gegen = {
+     "Behauptung":"Eine Behauptung stellt etwas fest, ohne es zu begründen.",
+     "Begründung":"Eine Begründung antwortet auf „warum“ — oft mit weil, denn oder da.",
+     "Beispiel":"Ein Beispiel nennt einen einzelnen, konkreten Fall."
+   };
+   return {
+    typ:"text",
+    text:`<i>„${f.satz}“</i><br>Welcher Teil eines Arguments ist das?`,
+    loesung: f.teil,
+    schluss:"Ein vollständiges Argument hat drei Teile: Behauptung, Begründung, Beispiel. Fehlt die Begründung, ist es nur eine Meinung.",
+    schritte:[
+     {frage:"Aus welchen drei Teilen besteht ein vollständiges Argument?",
+      tipp:"Erst die Aussage, dann das Warum, dann etwas Konkretes.",
+      tipp2:"Behauptung, Begründung, Beispiel — in dieser Reihenfolge.",
+      optionen:[R("Behauptung, Begründung, Beispiel", "Richtig."),
+                F("Einleitung, Hauptteil, Schluss", "Das ist der Aufbau eines ganzen Textes, nicht eines Arguments."),
+                F("These, Gegenthese, Fazit", "Das ist der Aufbau der ganzen Erörterung.")]},
+     {frage:"Nennt der Satz einen <b>Grund</b> (weil, denn, da)?",
+      tipp:"Achte auf die Bindewörter am Satzanfang.",
+      tipp2:"Nur die Begründung antwortet auf die Frage „warum“.",
+      optionen: f.teil === "Begründung"
+        ? [R("Ja", "Richtig — daran erkennt man die Begründung."),
+            F("Nein", "Doch, lies den Satzanfang noch einmal.")]
+        : [R("Nein", "Richtig — hier steht kein Grund."),
+            F("Ja", "Hier fehlt ein Wort wie weil, denn oder da.")]},
+     {frage:"Welcher Teil ist es also?",
+      tippAntwort: f.teil,
+      tipp: f.warum,
+      tipp2:"Behauptung: stellt fest. Begründung: sagt warum. Beispiel: nennt einen Einzelfall.",
+      optionen: zieheVerschiedene([
+        R(f.teil, f.warum),
+        F(andere[0], gegen[andere[0]]),
+        F(andere[1], gegen[andere[1]])], 3)}]};
+ },
+
+ /* Reihenfolge und Aufbau */
+ () => {
+   const f = pick([
+     {frage:"In welcher <b>Reihenfolge</b> ordnet man die Argumente innerhalb einer Seite?",
+      antwort:"steigernd", falsch:"fallend",
+      warum:"Das letzte Argument bleibt am besten hängen.",
+      tipp:"Das stärkste Argument kommt zuletzt.",
+      tipp2:"Vom schwächsten zum stärksten — das nennt man steigernd."},
+     {frage:"Wie heißt der Aufbau, bei dem erst die Gegenseite und dann die eigene Seite kommt?",
+      antwort:"Sanduhr", falsch:"Blockaufbau",
+      warum:"Die eigene Seite steht am Ende und wirkt dadurch stärker.",
+      tipp:"Der Name kommt von der Form: erst das eine, dann das andere.",
+      tipp2:"Beim Sanduhr-Aufbau kommt die Gegenseite zuerst, die eigene zuletzt."},
+     {frage:"Womit endet eine Erörterung?",
+      antwort:"Fazit", falsch:"neues Argument",
+      warum:"Am Ende wird abgewogen und ein begründetes Urteil gefällt.",
+      tipp:"Etwas Neues gehört nicht mehr ans Ende.",
+      tipp2:"Das Fazit wägt ab und begründet, wozu man kommt."},
+     {frage:"Was gehört in die <b>Einleitung</b> einer Erörterung?",
+      antwort:"Hinführung zur These", falsch:"das eigene Urteil",
+      warum:"Die Einleitung führt zum Thema hin, ohne schon zu urteilen.",
+      tipp:"Das Urteil kommt ganz zum Schluss.",
+      tipp2:"Die Einleitung nennt das Thema und führt zur Streitfrage hin."}
    ]);
    return {
     typ:"text",
-    text:`In welcher <b>Reihenfolge</b> ordnet man die Argumente einer Erörterung? Schreib das Wort.`,
-    loesung: f.art,
-    schluss:"Innerhalb einer Seite wird gesteigert. Beim Sanduhr-Aufbau kommt zuerst die Gegenseite und danach die eigene — auch dort steht das Stärkste zuletzt.",
+    text:`${f.frage}<br>Schreib das Wort.`,
+    loesung: f.antwort,
+    schluss:"Innerhalb einer Seite wird gesteigert, die eigene Seite steht zuletzt, und ganz am Ende wägt das Fazit ab.",
     schritte:[
      {frage:"Was bleibt beim Lesen am ehesten hängen?",
       tipp:"Denk an einen Vortrag, den du gehört hast.",
@@ -13520,13 +13814,14 @@ Object.assign(AUFGABEN, {
       optionen:[R("Anfang und Ende", "Richtig — deshalb gehört das Beste ans Ende."),
                 F("Die Mitte", "Die Mitte geht am ehesten unter."),
                 F("Alles gleich stark", "Leider nicht — die Reihenfolge wirkt.")]},
-     {frage:"Wie ordnet man die Argumente also?",
-      tippAntwort: f.art,
-      tipp:"Das stärkste Argument kommt zuletzt.",
-      tipp2:`${f.was} — man nennt das ${f.art}.`,
-      optionen:[R(f.art, f.warum),
-                F(f.falsch, "Dann verpufft die Wirkung — es geht bergab."),
-                F("alphabetisch", "Das hat mit dem Inhalt nichts zu tun.")]}]};
+     {frage: f.frage,
+      tippAntwort: f.antwort,
+      tipp: f.tipp,
+      tipp2: f.tipp2,
+      optionen: zieheVerschiedene([
+        R(f.antwort, f.warum),
+        F(f.falsch, "Damit verschenkst du die Wirkung."),
+        F("alphabetisch", "Das hat mit dem Inhalt nichts zu tun.")], 3)}]};
  }
 ],
 

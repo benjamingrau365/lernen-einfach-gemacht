@@ -625,6 +625,43 @@ Object.assign(deutschProben, {
   },
 
   "Gedichte deuten": (a) => {
+    const l = roh(a.loesung).trim();
+
+    /* Das Thema hieß lange ausschließlich „Reimschema bestimmen". Seit es auch
+       nach sprachlichen Bildern und nach dem Strophenbau fragt, muss hier
+       zuerst auseinandergehalten werden, welche Art Aufgabe vorliegt. */
+
+    /* Sprachliche Bilder: Nur der Vergleich braucht ein Vergleichswort. */
+    if (["Metapher", "Vergleich", "Personifikation"].includes(l)) {
+      const zeile = (roh(a.text).match(/„(.+?)“/) || [])[1] || "";
+      if (!zeile) return "Beispielzeile nicht erkennbar";
+      const hatWie = /\b(wie|als)\b/i.test(zeile);
+      if (l === "Vergleich" && !hatWie)
+        return `als Vergleich markiert, aber ohne Vergleichswort: „${zeile}“`;
+      if (l !== "Vergleich" && hatWie)
+        return `als ${l} markiert, enthält aber ein Vergleichswort: „${zeile}“`;
+      return null;
+    }
+
+    /* Strophenbau: Die Wirkung hängt an der Zeilenzahl je Strophe. */
+    if (/^(gleichmäßig|ausholend|knapp)/.test(l)) {
+      const t = roh(a.text);
+      const st = Number((t.match(/(\d+)\s*Strophen/) || [])[1]);
+      const ze = Number((t.match(/je\s*(\d+)\s*Zeilen/) || [])[1]);
+      if (!st || !ze) return "Strophen- oder Zeilenzahl nicht lesbar: " + t.slice(0, 80);
+      const erwartet = ze <= 2 ? "knapp und abgehackt"
+                     : ze >= 6 ? "ausholend und erzählend"
+                               : "gleichmäßig und ruhig";
+      if (l !== erwartet)
+        return `${st} Strophen zu je ${ze} Zeilen wirken „${erwartet}“, angegeben ist „${l}“`;
+      /* Gegenprobe: Die Gesamtzahl der Zeilen muss als Antwort auftauchen. */
+      const gesamt = st * ze;
+      const zahlen = a.schritte.flatMap(s => s.optionen.filter(o => o.ok).map(o => roh(o.t)));
+      if (!zahlen.some(x => Number(String(x).replace(/\./g, "")) === gesamt))
+        return `${st} × ${ze} = ${gesamt} Zeilen kommt in keiner richtigen Antwort vor`;
+      return null;
+    }
+
     const schema = (roh(a.loesung).match(/\((\w{4})\)/) || [])[1];
     if (!schema) return "Reimschema nicht lesbar: " + roh(a.loesung);
     const zeilen = a.text.split("<br>").map(z => roh(z).replace(/^\d+\.\s*/, "").trim()).filter(Boolean);
@@ -636,7 +673,11 @@ Object.assign(deutschProben, {
     const klang = (w) => w.toLowerCase().replace(/[^a-zäöüß]/g, "")
       .replace(/ä/g, "e").replace(/ö/g, "e").replace(/ü/g, "i").replace(/ß/g, "s")
       .replace(/([aeiou])h/g, "$1")
-      .replace(/(.)\1+/g, "$1");
+      .replace(/(.)\1+/g, "$1")
+      /* Auslautverhärtung: Am Wortende klingt d wie t, b wie p, g wie k.
+         „Wald" und „Aufenthalt" reimen sich hörbar — der Prüfer hielt das
+         für einen Fehler, weil er nur die Buchstaben verglich. */
+      .replace(/d$/, "t").replace(/b$/, "p").replace(/g$/, "k");
     const reimt = (i, j) => {
       const x = klang(zeilen[i].split(" ").pop()), y = klang(zeilen[j].split(" ").pop());
       return x.slice(-2) === y.slice(-2);
@@ -2668,7 +2709,25 @@ const deutschProben3 = {
         "Jugendliche werden abends später müde": "Pro",
         "Der Nachmittag wird dann so voll": "Contra",
         "Wer eigene Sachen anzieht": "Pro",
-        "Für kleine Betriebe wäre das": "Contra"
+        "Für kleine Betriebe wäre das": "Contra",
+        "Wer zu Hause keine Ruhe hat": "Pro",
+        "Ohne Übung zwischendurch": "Contra",
+        "Vieles versteht man erst": "Pro",
+        "Für die Prüfung braucht man auch": "Contra",
+        "Wer kein Auto hat": "Pro",
+        "Die Kosten müsste jemand tragen": "Contra",
+        "Im Beruf schlägt auch niemand Formeln": "Pro",
+        "Wer nichts im Kopf hat": "Contra",
+        "Ein freier Tag mehr senkt": "Pro",
+        "Aufträge verschwinden nicht": "Contra",
+        "Jüngere Kinder können den Druck": "Pro",
+        "Ein Verbot bringt nichts": "Contra",
+        "Wer sich teure Kleidung nicht leisten kann": "Pro",
+        "Kleidung ist eine der wenigen Möglichkeiten": "Contra",
+        "An laufenden Maschinen kostet ein Blick": "Pro",
+        "Viele Betriebe schicken Arbeitsanweisungen": "Contra",
+        "Eine Zahl sagt nicht": "Pro",
+        "Bei Bewerbungen braucht man etwas": "Contra"
       };
       const treffer = Object.keys(SEITEN).find(k => t.includes(k));
       if (!treffer) return "konnte das Argument nicht einordnen: " + t.slice(0, 100);
@@ -2676,9 +2735,31 @@ const deutschProben3 = {
         : `„${treffer}…“ gehört auf die ${SEITEN[treffer]}-Seite, angegeben ist „${l}“`;
     }
 
-    /* Reihenfolge der Argumente */
-    if (l !== "steigernd")
-      return `Argumente werden steigernd geordnet, angegeben ist „${l}“`;
+    /* Behauptung, Begründung, Beispiel — unabhängig nachgeprüft am Bindewort.
+       Nur die Begründung antwortet auf „warum“, und genau daran erkennt man
+       sie: weil, denn, da am Satzanfang. */
+    if (["Behauptung", "Begründung", "Beispiel"].includes(l)) {
+      const satz = (t.match(/„(.+?)“/) || [])[1] || "";
+      if (!satz) return "Beispielsatz nicht erkennbar";
+      const hatGrundwort = /^(weil|denn|da)\b/i.test(satz.trim());
+      if (l === "Begründung" && !hatGrundwort)
+        return `als Begründung markiert, fängt aber nicht mit weil, denn oder da an: „${satz}“`;
+      if (l !== "Begründung" && hatGrundwort)
+        return `als ${l} markiert, fängt aber wie eine Begründung an: „${satz}“`;
+      return null;
+    }
+
+    /* Aufbau und Reihenfolge — die Antwort muss zur gestellten Frage passen. */
+    const AUFBAU = [
+      [/Reihenfolge.*ordnet man die Argumente/, "steigernd"],
+      [/erst die Gegenseite und dann die eigene/, "Sanduhr"],
+      [/Womit endet eine Erörterung/, "Fazit"],
+      [/gehört in die.*Einleitung/, "Hinführung zur These"]
+    ];
+    const passend = AUFBAU.find(([muster]) => muster.test(t));
+    if (!passend) return "unbekannte Aufbaufrage: " + t.slice(0, 90);
+    if (l !== passend[1])
+      return `auf diese Frage gehört „${passend[1]}“, angegeben ist „${l}“`;
     return null;
   },
 
