@@ -71,7 +71,41 @@ for (const a of adressen){
   if (r.art !== "app") probleme.push(`„${a}“ landet nicht in der App, sondern als ${r.art}`);
 });
 
+/* ---------- Das Fassungsdatum in der Fußzeile ----------
+   Unten auf jeder Seite steht „Fassung <Datum>". Daran — und nur daran —
+   sieht man von außen, ob eine Änderung wirklich angekommen ist. Gesetzt wird
+   es von seiten-bauen.js; wer index.html von Hand ändert und das Bauen
+   auslässt, veröffentlicht Neues unter altem Datum.
+
+   Genau das ist passiert: sechs Änderungen an zwei Tagen, unten stand weiter
+   das Datum vom 5. August — und dann sieht die Seite aus, als wäre nichts
+   angekommen. Deshalb prüft das jetzt jemand. */
+const MONATE = ["Januar","Februar","März","April","Mai","Juni",
+                "Juli","August","September","Oktober","November","Dezember"];
+const standRoh = (h.match(/^const STAND = "([^"]*)";$/m) || [])[1];
+if (!standRoh){
+  probleme.push("Das Fassungsdatum (const STAND) steht nicht mehr in index.html.");
+} else {
+  const teile = standRoh.match(/^(\d{1,2})\. (\S+) (\d{4})$/);
+  const monat = teile ? MONATE.indexOf(teile[2]) : -1;
+  if (!teile || monat < 0){
+    probleme.push(`Das Fassungsdatum „${standRoh}" lässt sich nicht lesen.`);
+  } else {
+    const stand = new Date(Number(teile[3]), monat, Number(teile[1]));
+    const geaendert = fs.statSync(ORDNER + "/index.html").mtime;
+    const tag = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    if (tag(geaendert) > tag(stand)){
+      const d = geaendert;
+      probleme.push(`index.html wurde am ${d.getDate()}. ${MONATE[d.getMonth()]} ${d.getFullYear()} `
+        + `geändert, unten steht aber weiter „Fassung ${standRoh}". `
+        + `So sieht die Seite für jeden aus, als wäre nichts angekommen — `
+        + `einmal „node seiten-bauen.js" laufen lassen.`);
+    }
+  }
+}
+
 console.log(probleme.length
   ? probleme.map(p => "· " + p).join("\n")
-  : `Ausliefern: keine Beanstandungen — ${zaehler.datei} Adressen als Datei, ${zaehler.app} über die App.`);
+  : `Ausliefern: keine Beanstandungen — ${zaehler.datei} Adressen als Datei, ${zaehler.app} über die App, `
+    + `Fassung ${standRoh}.`);
 process.exit(probleme.length ? 1 : 0);
