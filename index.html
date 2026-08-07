@@ -2473,6 +2473,24 @@
   }
   html.kontrast .fachmotiv{opacity:.07}
 
+  /* ---------- Aufgabe und Schrittfrage benennen ----------
+     Zwei Fragen untereinander, beide unbeschriftet: Wer neu ist, weiß nicht,
+     welche er beantworten soll. Zwei kleine Zeilen räumen das aus. */
+  .teilmarke{margin:0 2px 7px;font-size:calc(11.5px * var(--fs,1));letter-spacing:.13em;
+    text-transform:uppercase;font-weight:700;color:var(--soft)}
+  .teilmarke.frageMarke{margin-top:20px;color:var(--ac-dark)}
+  .markezusatz{display:block;margin-top:3px;text-transform:none;letter-spacing:0;
+    font-weight:600;font-size:calc(13.5px * var(--fs,1));color:var(--soft)}
+
+  /* Die einmalige Erklärung beim allerersten Schritt */
+  .erstmal{margin:16px 0 4px;padding:16px 17px;border-radius:14px;
+    background:var(--ac-soft);border:1.5px solid transparent}
+  .erstmaltitel{margin:0 0 8px;font-weight:800;font-size:calc(16px * var(--fs,1));
+    color:var(--ac-dark)}
+  .erstmal p{margin:0 0 10px;font-size:calc(15px * var(--fs,1));line-height:1.55}
+  .erstmalklein{font-size:calc(13.5px * var(--fs,1)) !important;color:var(--soft)}
+  .erstmal .btn{padding:10px 18px;font-size:calc(15px * var(--fs,1))}
+
   /* ---------- Der Weg durch die Aufgabe ----------
      Auf dem Rechner lag rechts und links der Aufgabenkarte je 220 px Luft und
      darunter rund 300 px Nichts — auf der Seite, auf der man 95 % der Zeit
@@ -30754,7 +30772,7 @@ function datenschutzHtml(){
 
       <p class="ueberschrift" style="margin-top:26px">10. Cookies und Speicherung im Browser</p>
       <p class="einfachtext">Wir verwenden <b>keine</b> Werbe-, Marketing- oder Analyse-Cookies und binden keine Zählpixel oder Social-Media-Buttons ein. Deshalb gibt es hier auch kein Cookie-Banner.</p>
-      <p class="einfachtext">Gespeichert wird in deinem Browser nur, was für den Betrieb nötig ist: deine Einstellungen (Hell- oder Dunkelmodus, Schriftgröße, Art der Antwortabfrage), der Hinweis, dass du den Baustellen-Hinweis gesehen hast, die Namen der Themen, die du fertig geübt hast — damit die Themenliste dir zeigen kann, wo du schon warst —, das zuletzt geübte Thema — damit die App beim nächsten Öffnen sagen kann, wo es weitergeht —, deine selbst angelegten Vokabeln und eingetragenen Prüfungstermine, und — wenn du angemeldet bist — die Information, die dich angemeldet hält. Das alles bleibt auf deinem Gerät: Es wird nicht an uns übertragen, auch nicht ohne Konto. Das fällt unter § 25 Abs. 2 TDDDG (unbedingt erforderliche Speicherung). Du kannst es jederzeit über die Einstellungen deines Browsers löschen.</p>
+      <p class="einfachtext">Gespeichert wird in deinem Browser nur, was für den Betrieb nötig ist: deine Einstellungen (Hell- oder Dunkelmodus, Schriftgröße, Art der Antwortabfrage), der Hinweis, dass du den Baustellen-Hinweis gesehen hast, die Namen der Themen, die du fertig geübt hast — damit die Themenliste dir zeigen kann, wo du schon warst —, das zuletzt geübte Thema — damit die App beim nächsten Öffnen sagen kann, wo es weitergeht —, der Hinweis, dass du die Einführung zur ersten Aufgabe schon gesehen hast, deine selbst angelegten Vokabeln und eingetragenen Prüfungstermine, und — wenn du angemeldet bist — die Information, die dich angemeldet hält. Das alles bleibt auf deinem Gerät: Es wird nicht an uns übertragen, auch nicht ohne Konto. Das fällt unter § 25 Abs. 2 TDDDG (unbedingt erforderliche Speicherung). Du kannst es jederzeit über die Einstellungen deines Browsers löschen.</p>
       <p class="einfachtext">Unter <b>Einstellungen → Daten &amp; Gerät</b> kannst du all das als Datei herunterladen und auf einem anderen Gerät wieder einlesen. Die Datei entsteht in deinem Browser und geht nirgendwohin, außer du verschickst sie selbst.</p>
 
       <p class="ueberschrift" style="margin-top:26px">11. Vorlesen</p>
@@ -31783,6 +31801,33 @@ try { wartungGesehen = localStorage.getItem("ek_baustelle") === WARTUNG_STAND; }
 let schonGeuebt = false;
 try { schonGeuebt = localStorage.getItem("ek_geuebt") === "1"; } catch(e){}
 
+/* ---------- Beim ersten Mal erklären, wie das hier läuft ----------
+   Wer zum ersten Mal in einer Aufgabe steht, sieht oben eine Aufgabe und
+   darunter eine ganz andere Frage. Die naheliegende Annahme ist, man solle
+   die Aufgabe sofort lösen — und dann passen die Antwortmöglichkeiten
+   überhaupt nicht dazu. Dass das hier ein Weg in Schritten ist, muss man
+   einmal gesagt bekommen; danach nie wieder. */
+let wegErklaert = false;
+try { wegErklaert = localStorage.getItem("ek_wegerklaert") === "1"; } catch(e){}
+function wegVerstanden(){
+  wegErklaert = true;
+  try { localStorage.setItem("ek_wegerklaert", "1"); } catch(e){}
+  render();
+}
+function erstErklaerungHtml(){
+  if (wegErklaert || schrittNr !== 0 || !aktuell) return "";
+  return `
+    <div class="erstmal">
+      <p class="erstmaltitel">So läuft das hier</p>
+      <p>Du sollst die Aufgabe oben <b>nicht</b> auf einen Schlag lösen. Stattdessen kommen
+        ${aktuell.schritte.length} kleine Fragen, die dich hinführen — beantworte immer nur
+        die eine Frage direkt darunter. Am Ende kommst du selbst auf das Ergebnis.</p>
+      <p class="erstmalklein">Und wenn du nicht weiterkommst: unten steht „Ich weiß nicht weiter“.
+        Da gibt es Hinweise — die Lösung nie.</p>
+      <button class="btn ghost" onclick="wegVerstanden()">Verstanden</button>
+    </div>`;
+}
+
 /* Welche Themen schon fertig geübt wurden, und wie oft. Das ist die Auskunft,
    die man beim Draufschauen auf die Themenliste haben will: Wo war ich schon?
 
@@ -32687,7 +32732,7 @@ function einstSpringen(id, bereich){
    oder das Handy wechselt, hat es weg. Deshalb: eine Datei zum Mitnehmen. */
 const SICHER_SCHLUESSEL = ["ek-einstellungen","ek_themen","ek_geuebt","ek_eigene_woerter",
   "ek_pruefungen","ek_meilenstein","ek_beste_serie","ek_ls_bereich","ek_baustelle",
-  "ek_zuletzt"];
+  "ek_zuletzt","ek_wegerklaert"];
 let sicherungHinweis = "";
 function gespeicherteMenge(){
   let n = 0;
@@ -36308,7 +36353,7 @@ function render(gewaehlt){
             das Thema, die Zählung steht klein und einzeilig daneben. */""}
       <div class="kopf">
         <span class="tag" style="margin-bottom:0">${aktuellName}</span>
-        <span class="small soft aufgabenzaehler">${anz > 1 ? `Aufgabe ${variante + 1} von ${anz} · ` : ""}Schritt ${schrittNr + 1} von ${aktuell.schritte.length}</span>
+        ${anz > 1 ? `<span class="small soft aufgabenzaehler">Aufgabe ${variante + 1} von ${anz}</span>` : ""}
       </div>
       ${/* Der Balken steht jetzt unmittelbar über der Aufgabe und nicht mehr
             zwischen Zurück-Verweis und Überschrift. Dort gehört er hin: Er
@@ -36317,7 +36362,19 @@ function render(gewaehlt){
             hat, ist er außerdem die einzige Stelle, an der man sieht, dass es
             vorangeht — deshalb darf er kräftiger sein als vorher. */""}
       <div class="fortschritt">${balken}</div>
+      ${/* Bis hierher standen Aufgabe und Schrittfrage unbeschriftet
+            untereinander. Wer zum ersten Mal hier ist, sieht zwei Fragen und
+            weiß nicht, welche er beantworten soll — und versucht, gleich die
+            ganze Aufgabe zu lösen. Zwei kleine Zeilen sagen jetzt, was was
+            ist. */""}
+      <p class="teilmarke">Die Aufgabe</p>
       <div class="aufg klebt ${aufgabenGroesse(aktuell)}"><div class="zeile1">${bruecheSetzen(aktuell.text)}</div></div>
+      ${erstErklaerungHtml()}
+      ${/* Der Zusatz steht bewusst NICHT in Versalien: Ein ganzer Satz in
+            Großbuchstaben liest sich schwer, und genau dafür ist diese App
+            nicht gebaut. Die Marke bleibt gesperrt, der Satz wird normal. */""}
+      <p class="teilmarke frageMarke">Schritt ${schrittNr + 1} von ${aktuell.schritte.length}${
+        schrittNr === 0 ? `<span class="markezusatz">beantworte nur diese eine Frage</span>` : ""}</p>
       <p class="frage">${s.frage}${vorleseKnopfHtml()}</p>
       <div class="optionen ${tippen ? "" : "breit"}">${optionenHtml}</div>
       ${fb}
