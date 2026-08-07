@@ -1912,10 +1912,13 @@
      die Schrift skaliert stattdessen über var(--fs). */
   .menue{position:fixed;top:0;right:0;bottom:0;width:min(340px,86vw);z-index:60;
     background:var(--card);border-left:1px solid var(--line);
-    padding:calc(74px * var(--fs,1)) 16px 30px;overflow-y:auto;box-shadow:-6px 0 26px rgba(0,0,0,.14);
+    /* 74 px oben waren dafür da, unter der Kopfleiste anzufangen. Der
+       Schließen-Knopf sitzt jetzt selbst dort oben, genau wo vorher das
+       Burger-Zeichen war — die Reserve kostete nur Platz. */
+    padding:14px 16px 30px;overflow-y:auto;box-shadow:-6px 0 26px rgba(0,0,0,.14);
     zoom:calc(1 / var(--fs,1))}
   .mtitel{font-size:calc(11.5px * var(--fs,1));letter-spacing:.13em;text-transform:uppercase;color:var(--soft);
-    font-weight:700;margin:20px 0 6px 10px}
+    font-weight:700;margin:15px 0 5px 10px}
   .mtitel:first-child{margin-top:0}
   .mpunkt{display:flex;justify-content:space-between;align-items:center;gap:10px;
     width:100%;text-align:left;background:none;border:none;border-radius:11px;
@@ -1924,14 +1927,65 @@
   .mpunkt:hover{background:var(--akz-soft);color:var(--akz-dark)}
   .mpunkt.an{background:var(--akz-soft);color:var(--akz-dark);font-weight:600}
   /* Fächer im Menü tragen ihr Zeichen in ihrer eigenen Farbe */
-  .fachpunkt{justify-content:flex-start;gap:11px}
-  .fachpunkt .mzeichen{flex:none;width:30px;height:30px;border-radius:9px;background:var(--akz);
-    color:#fff;display:flex;align-items:center;justify-content:center;
-    font-size:15px;font-weight:900;line-height:1}
-  .fachpunkt .mname{flex:1;font-weight:600}
   .mpunkt.unter{border-left:3px solid var(--akz-soft);margin-left:14px;border-radius:0 11px 11px 0}
   .mpunkt.unter:hover{border-left-color:var(--akz)}
   .mpunkt.unter{padding-left:26px;font-size:calc(15.5px * var(--fs,1));color:var(--soft)}
+
+  /* ---------- Kopf des Menüs ----------
+     Vorher fing das Menü ohne Anrede und ohne Schließen-Knopf an. Wer es
+     versehentlich geöffnet hatte, musste raten, wie er es wieder zubekommt. */
+  .mkopf{display:flex;align-items:flex-start;gap:12px;
+    padding:0 4px 14px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+  .mkopftext{min-width:0;flex:1}
+  .mkopftext b{display:block;font-size:calc(15.5px * var(--fs,1));line-height:1.3}
+  .mkopftext small{display:block;font-size:calc(12.8px * var(--fs,1));color:var(--soft);
+    line-height:1.4;margin-top:2px;overflow-wrap:anywhere}
+  .mzu{flex:none;width:34px;height:34px;border-radius:10px;border:1.5px solid var(--line);
+    background:var(--bg);color:var(--soft);font:inherit;font-size:22px;line-height:1;
+    cursor:pointer;display:grid;place-items:center}
+  @media(hover:hover){ .mzu:hover{border-color:var(--ac);color:var(--ac-dark)} }
+
+  /* Suchen ist die häufigste Absicht — der einzige Punkt mit eigenem Gewicht */
+  .msuche{display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+    background:var(--ac-soft);border:none;border-radius:13px;
+    padding:calc(13px * var(--fs,1)) 13px;margin:10px 0 4px;font:inherit;
+    color:var(--ink);cursor:pointer}
+  .msuche b{display:block;font-size:calc(16px * var(--fs,1));color:var(--ac-dark)}
+  .msuche small{display:block;font-size:calc(12.8px * var(--fs,1));color:var(--soft);
+    line-height:1.4;margin-top:1px}
+  .msuche > span:last-child{min-width:0}
+  .msuchzeichen{flex:none;display:grid;place-items:center;width:34px;height:34px;
+    border-radius:10px;background:var(--ac);color:#fff}
+  .msuchzeichen svg{width:19px;height:19px}
+  @media(hover:hover){ .msuche:hover{background:color-mix(in srgb, var(--ac) 18%, transparent)} }
+
+  /* ---------- Fächer als Raster ----------
+     Vier aufklappbare Zeilen mit je sechs Klassen darunter machten das Menü
+     doppelt so lang. Als Raster sind es vier Kacheln in zwei Zeilen — und man
+     sieht die Fachfarbe, statt sie zu lesen. */
+  .mkacheln{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:4px}
+  .mkachel{display:block;background:var(--akz-soft);border:1.5px solid transparent;
+    border-radius:13px;padding:11px 12px 12px;color:var(--ink);cursor:pointer;min-width:0}
+  .mkachel b{display:block;font-size:calc(15.5px * var(--fs,1));color:var(--akz-dark);
+    line-height:1.25;margin-top:7px;overflow-wrap:break-word;hyphens:auto}
+  .mkachelunter{display:block;font-size:calc(11.8px * var(--fs,1));color:var(--soft);
+    line-height:1.35;margin-top:2px}
+  .mkachelzeichen{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;
+    background:var(--akz);color:#fff;line-height:0}
+  .mkachelzeichen svg{width:17px;height:17px}
+  @media(hover:hover){ .mkachel:hover{border-color:var(--akz)} }
+  .mkachel:active{transform:scale(.99)}
+
+  /* Der zugeklappte Nachschlage-Block */
+  .minfo{margin-top:14px;border-top:1px solid var(--line);border-radius:0;
+    padding-top:calc(14px * var(--fs,1));color:var(--soft)}
+  .minfo.an{color:var(--ink)}
+  .minfopfeil{color:var(--soft);font-size:12px}
+
+  /* Rechtliches: eine kleine Zeile statt drei voller Punkte */
+  .mklein{margin:16px 4px 0;font-size:calc(12.5px * var(--fs,1));line-height:1.9;color:var(--soft)}
+  .mkleinlink{color:var(--soft);text-decoration:underline;text-underline-offset:2px}
+  @media(hover:hover){ .mkleinlink:hover{color:var(--ac-dark)} }
   .mpunkt.unter span{font-size:calc(13px * var(--fs,1));color:var(--soft)}
   .mpunkt.admin{color:var(--ac-dark);font-weight:600}
   .mpunkt span{font-size:calc(14px * var(--fs,1));color:var(--soft)}
@@ -30106,7 +30160,6 @@ function protokollHtml(){
 /* ---------- Menü und Informationsseiten ---------- */
 
 let menueOffen = false;
-let menueAuf = null;          // welches Untermenü ist aufgeklappt
 let vorSeite = "willkommen";
 let kontoHinweis = "";
 let kontoFrage = "";          // "loeschen" | "zuruecksetzen"
@@ -30133,20 +30186,25 @@ async function supportBeenden(){
   render();
 }
 
-function menueUmschalten(){ menueOffen = !menueOffen; menueAuf = null; render(); }
-function menueSchliessen(){ menueOffen = false; menueAuf = null; render(); }
-function menueKlappen(name){ menueAuf = menueAuf === name ? null : name; render(); }
+function menueUmschalten(){ menueOffen = !menueOffen; menueInfoOffen = false; render(); }
+function menueSchliessen(){ menueOffen = false; menueInfoOffen = false; render(); }
 
 function zeigeSeite(name){
   if (!["impressum","datenschutz","agb","faq","ueber","konto","anfragen","baustelle"].includes(ansicht)) vorSeite = ansicht;
   kontoHinweis = ""; kontoFrage = "";
-  ansicht = name; menueOffen = false; menueAuf = null; render();
+  ansicht = name; menueOffen = false; menueInfoOffen = false; render();
   if (name === "konto") ladeFreigabeStand().then(render);
 }
 function zurueckVonSeite(){ ansicht = vorSeite || "willkommen"; render(); }
 
+/* Aus dem Menü in ein Fach: Mit Klasse geht es direkt zu den Themen, ohne
+   Klasse entscheidet dieselbe Regel wie überall — ist eine Lieblings-Stufe
+   eingestellt und im Fach vorhanden, wird die Klassenwahl übersprungen. */
 function menueLernen(f, k){
-  fach = f; klasse = k; ansicht = "start"; menueOffen = false; menueAuf = null;
+  fach = f; menueOffen = false; menueInfoOffen = false;
+  const wunsch = k || (stufenwort(f) === "Klasse" ? einstellungen.stufe : 0);
+  if (wunsch && KATALOG[f] && KATALOG[f].themen[wunsch]){ klasse = wunsch; ansicht = "start"; }
+  else { klasse = null; ansicht = "klassenwahl"; }
   wunschZuruecksetzen(); render();
 }
 /* Wunsch-Feld ist pro Klasse gedacht — beim Wechsel wieder leer anzeigen */
@@ -30271,67 +30329,96 @@ function kopfleisteHtml(){
     </div>`;
 }
 
+/* ---------- Seitenmenü ----------
+   Vorher: 21 Punkte in fünf Gruppen, 1.362 px Inhalt in einem 844 px hohen
+   Fenster. „Einstellungen" war Punkt 19 — man kam nur durch Scrollen hin.
+   Fünf Punkte hingen ohne Überschrift unter „Ausbildung" und sahen aus, als
+   gehörten sie zum Elektroniker. „Hilfe" stand zweimal da, einmal als
+   Gruppentitel und einmal als Punkt. Und drei Rechtslinks standen im
+   Hauptmenü, obwohl sie in der Fußzeile ohnehin auf jeder Seite stehen.
+
+   Jetzt: ein Kopf, der sagt, wer angemeldet ist, die vier Fächer als Raster
+   statt als aufklappbare Liste, das Eigene und das Üben in je einer Gruppe,
+   und alles Nachschlagbare in einem zugeklappten Block. */
+let menueInfoOffen = false;
+function menueInfoUm(){ menueInfoOffen = !menueInfoOffen; render(); }
+
 function menueHtml(){
   if (!menueOffen) return "";
-  const klassen = f => {
-    const farbe = `--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)`;
-    const stufen = stufenVon(f).map(k => {
-      const fertig = KATALOG[f].themen[k].filter(t => AUFGABEN[t]).length;
-      const label = `${stufenText(f, k)}<span>${fertig ? fertig + " von " + KATALOG[f].themen[k].length : "in Arbeit"}</span>`;
-      return navLink(`/${f}/${k}`, `menueLernen('${f}', ${k})`, label, "mpunkt unter", farbe);
-    }).join("");
-    /* Unterbereiche stehen im Menü bei den Klassen — sonst findet sie dort
-       niemand, weil man dort ja gerade sucht, was es zum Fach gibt. */
-    if (!KATALOG[f].vokabeln) return stufen;
-    return stufen
-      + navLink("/vokabeln", "zeigeVokabeln();menueSchliessen()",
-          `Vokabeln<span>${z(vokabelAnzahl())} Wörter</span>`, "mpunkt unter", farbe)
-      /* Eigene Wörter kommen direkt daneben ins Menü — wer sie sucht, sucht sie
-         hier und nicht erst zwei Seiten weiter. */
-      + navLink("/vokabeln/eigene", "zeigeEigene()",
-          `Eigene Wörter<span>${EIGENE.length ? z(EIGENE.length) + " selbst geschrieben" : "selbst hinschreiben"}</span>`,
-          "mpunkt unter", farbe);
+  const fachkachel = (f) => {
+    const v = KATALOG[f];
+    const stufen = stufenVon(f);
+    const unter = stufenwort(f) === "Lehrjahr"
+      ? `${stufen[0]}. bis ${stufen[stufen.length - 1]}. Lehrjahr`
+      : `Klasse ${stufen[0]} bis ${stufen[stufen.length - 1]}`;
+    return navLink(`/${f}`, `menueLernen('${f}')`, `
+      <span class="mkachelzeichen">${fachZeichen(f)}</span>
+      <b>${v.name}</b>
+      <span class="mkachelunter">${unter}</span>`,
+      "mkachel", `--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)`);
   };
 
   return `
     <div class="menuegrund" onclick="menueSchliessen()"></div>
-    <nav class="menue">
-      ${Object.keys(KATALOG).map((f, i, alle) => `
-        ${i === 0 || bereichVon(f) !== bereichVon(alle[i - 1]) ? `<p class="mtitel">${bereichVon(f)}</p>` : ""}
-        <button class="mpunkt fachpunkt ${menueAuf === f ? "an" : ""}"
-                style="--akz:var(--${f});--akz-soft:var(--${f}-soft);--akz-dark:var(--${f}-dark)"
-                onclick="menueKlappen('${f}')">
-          <span class="mzeichen">${KATALOG[f].name[0]}</span>
-          <span class="mname">${KATALOG[f].name}</span>
-          <span>${menueAuf === f ? "▾" : "▸"}</span></button>
-        ${menueAuf === f ? klassen(f) : ""}`).join("")}
-      ${navLink("/suche", "zeigeSuche('');menueSchliessen()", "Thema suchen", "mpunkt")}
-      ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "mpunkt")}
-      ${navLink("/arbeitsblatt", "zeigeArbeitsblatt()", "Arbeitsblatt drucken", "mpunkt")}
-      ${benutzer ? navLink("/plan", "zeigePlan();menueSchliessen()", "Mein Wiederholungsplan", "mpunkt") : ""}
-      ${benutzer ? navLink("/anfragen", "zeigeAnfragen();menueSchliessen()", "Meine Anfragen", "mpunkt") : ""}
+    <nav class="menue" aria-label="Menü">
+      <div class="mkopf">
+        <span class="mkopftext">
+          ${benutzer
+            ? `<b>Angemeldet</b><small>${benutzer.email}</small>`
+            : `<b>Du übst ohne Konto</b><small>Alles funktioniert — nur nichts wird gespeichert</small>`}
+        </span>
+        <button class="mzu" onclick="menueSchliessen()" aria-label="Menü schließen">×</button>
+      </div>
 
-      <p class="mtitel">Hilfe</p>
-      ${navLink("/hilfe", "zeigeMelden();menueSchliessen()", "Hilfe", "mpunkt")}
-      ${navLink("/feedback", "zeigeFeedback();menueSchliessen()", "Feedback", "mpunkt")}
-      ${navLink("/faq", "zeigeSeite('faq')", "Häufige Fragen", "mpunkt")}
-      ${navLink("/warum", "zeigeSeite('warum')", "Warum nicht einfach KI?", "mpunkt")}
-      ${navLink("/ueber", "zeigeSeite('ueber')", "Über das Projekt", "mpunkt")}
-      ${WARTUNG ? navLink("/baustelle", "zeigeSeite('baustelle')", "Woran gerade gebaut wird", "mpunkt") : ""}
+      ${navLink("/suche", "zeigeSuche('');menueSchliessen()", `
+        <span class="msuchzeichen">${SYM.lupe}</span>
+        <span><b>Thema suchen</b><small>Ein Wort reicht — ohne Klasse, ohne Umweg</small></span>`,
+        "msuche")}
+
+      <p class="mtitel">Fächer</p>
+      <div class="mkacheln">${Object.keys(KATALOG).map(fachkachel).join("")}</div>
 
       <p class="mtitel">Mein Bereich</p>
+      ${benutzer ? navLink("/plan", "zeigePlan();menueSchliessen()", "Mein Wiederholungsplan", "mpunkt") : ""}
+      ${navLink("/einstellungen", "zeigeEinstellungen();menueSchliessen()", "Einstellungen", "mpunkt")}
       ${benutzer
         ? navLink("/konto", "zeigeSeite('konto')", "Mein Konto", "mpunkt")
         : `${navLink("/anmelden", "zeigeAnmeldung();menueSchliessen()", "Anmelden", "mpunkt")}
            ${navLink("/registrieren", "zeigeRegistrierung();menueSchliessen()", "Konto anlegen", "mpunkt")}`}
-      ${navLink("/einstellungen", "zeigeEinstellungen();menueSchliessen()", "Einstellungen", "mpunkt")}
       ${istAdmin ? navLink("/leitstand", "zeigeDashboard();menueSchliessen()", "Leitstand", "mpunkt admin") : ""}
       ${benutzer ? `<button class="mpunkt" onclick="abmelden();menueSchliessen()">Abmelden</button>` : ""}
 
-      <p class="mtitel">Rechtliches</p>
-      ${navLink("/impressum", "zeigeSeite('impressum')", "Impressum", "mpunkt")}
-      ${navLink("/datenschutz", "zeigeSeite('datenschutz')", "Datenschutzerklärung", "mpunkt")}
-      ${navLink("/agb", "zeigeSeite('agb')", "Nutzungsbedingungen", "mpunkt")}
+      <p class="mtitel">Üben</p>
+      ${navLink("/vokabeln", "zeigeVokabeln();menueSchliessen()",
+          `Vokabeln<span>${z(vokabelAnzahl())} Wörter</span>`, "mpunkt")}
+      ${navLink("/pruefung", "zeigePruefungen()", "Prüfungsmodus", "mpunkt")}
+      ${navLink("/arbeitsblatt", "zeigeArbeitsblatt()", "Arbeitsblatt drucken", "mpunkt")}
+      ${benutzer ? navLink("/anfragen", "zeigeAnfragen();menueSchliessen()", "Meine Anfragen", "mpunkt") : ""}
+
+      ${/* Sechs Seiten zum Nachschlagen, die die meisten nie brauchen — sie
+            drängten vorher alles Wichtige nach unten. Zugeklappt sind sie
+            eine Zeile. */""}
+      <button class="mpunkt minfo ${menueInfoOffen ? "an" : ""}" onclick="menueInfoUm()"
+              aria-expanded="${menueInfoOffen}">
+        <span>Hilfe &amp; Info</span><span class="minfopfeil">${menueInfoOffen ? "▾" : "▸"}</span>
+      </button>
+      ${menueInfoOffen ? `
+        ${navLink("/hilfe", "zeigeMelden();menueSchliessen()", "Hilfe", "mpunkt unter")}
+        ${navLink("/feedback", "zeigeFeedback();menueSchliessen()", "Feedback", "mpunkt unter")}
+        ${navLink("/faq", "zeigeSeite('faq')", "Häufige Fragen", "mpunkt unter")}
+        ${navLink("/warum", "zeigeSeite('warum')", "Warum nicht einfach KI?", "mpunkt unter")}
+        ${navLink("/ueber", "zeigeSeite('ueber')", "Über das Projekt", "mpunkt unter")}
+        ${WARTUNG ? navLink("/baustelle", "zeigeSeite('baustelle')", "Woran gerade gebaut wird", "mpunkt unter") : ""}` : ""}
+
+      ${/* Rechtliches steht auf jeder Seite in der Fußzeile. Im Menü reicht
+            eine kleine Zeile — als Liste nahm es dort drei volle Zeilen weg. */""}
+      <p class="mklein">
+        ${navLink("/impressum", "zeigeSeite('impressum')", "Impressum", "mkleinlink")}
+        <span aria-hidden="true">·</span>
+        ${navLink("/datenschutz", "zeigeSeite('datenschutz')", "Datenschutz", "mkleinlink")}
+        <span aria-hidden="true">·</span>
+        ${navLink("/agb", "zeigeSeite('agb')", "Nutzungsbedingungen", "mkleinlink")}
+      </p>
     </nav>`;
 }
 
@@ -34704,7 +34791,7 @@ function zeigeRegistrierung(){ ansicht = "registrieren"; hinweis = ""; render();
 function zeigeWillkommen(){ ansicht = "willkommen"; render(); }
 /* Klick aufs Logo: dieselbe Startseite wie beim Aufruf der URL
    (eingeloggt -> Leitstand, sonst -> Willkommensseite) */
-function zurStartseite(){ ansicht = benutzer ? "uebersicht" : "willkommen"; menueOffen = false; menueAuf = null; render(); }
+function zurStartseite(){ ansicht = benutzer ? "uebersicht" : "willkommen"; menueOffen = false; menueInfoOffen = false; render(); }
 
 function uebersetze(m){
   const t = (m||"").toLowerCase();
