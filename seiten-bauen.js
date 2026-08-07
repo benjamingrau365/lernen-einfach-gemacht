@@ -285,7 +285,37 @@ ${inhalt}
    sofort, dass hier gefragt und nicht vorgesagt wird. Gezogen wird beim Bauen
    einmal, dann steht sie fest. Die Lösung steht bewusst NICHT dabei — sonst
    wäre die Seite genau das, wogegen das ganze Projekt gebaut ist. */
+/* ---------- Berechenbarer Zufall ----------
+   Die Aufgabenerzeuger würfeln ihre Zahlen mit Math.random(). Beim Bauen hieß
+   das: Jeder Lauf schreibt für alle 125 Erklärseiten neue Zahlen hinein — ein
+   Commit, der nur das Fassungsdatum setzen soll, ändert plötzlich 117 Dateien.
+   Genau deshalb habe ich das Bauen ausgelassen, und genau deshalb blieb das
+   Datum in der Fußzeile zwei Tage lang stehen.
+
+   Also bekommt der Zufall beim Bauen einen festen Startwert je Thema:
+   dieselbe Seite sieht bei jedem Lauf gleich aus, verschiedene Themen
+   trotzdem verschieden. In der App bleibt alles wie es war. */
+function festerZufall(saat){
+  let x = 2166136261;
+  for (let i = 0; i < saat.length; i++){ x ^= saat.charCodeAt(i); x = Math.imul(x, 16777619) >>> 0; }
+  if (!x) x = 42;
+  return () => {
+    x ^= x << 13; x >>>= 0;
+    x ^= x >>> 17;
+    x ^= x << 5;  x >>>= 0;
+    return x / 4294967296;
+  };
+}
+function mitFestemZufall(saat, tu){
+  const echt = Math.random;
+  Math.random = festerZufall(saat);
+  try { return tu(); } finally { Math.random = echt; }
+}
+
 function probeAufgabe(thema){
+  return mitFestemZufall("probe:" + thema, () => probeAufgabeRoh(thema));
+}
+function probeAufgabeRoh(thema){
   const erzeuger = AUFGABEN[thema];
   if (!erzeuger || !erzeuger.length) return "";
   let a, s;
