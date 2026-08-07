@@ -32131,13 +32131,31 @@ try { schonGeuebt = localStorage.getItem("ek_geuebt") === "1"; } catch(e){}
    einmal gesagt bekommen; danach nie wieder. */
 let wegErklaert = false;
 try { wegErklaert = localStorage.getItem("ek_wegerklaert") === "1"; } catch(e){}
-function wegVerstanden(){
+
+/* Merken, ohne neu zu zeichnen. Wird auch aus dem Zeichnen heraus gerufen —
+   ein render() an dieser Stelle wuerde sich selbst wieder aufrufen. */
+function wegVerstandenStill(){
+  if (wegErklaert) return;
   wegErklaert = true;
   try { localStorage.setItem("ek_wegerklaert", "1"); } catch(e){}
-  render();
 }
+function wegVerstanden(){ wegVerstandenStill(); render(); }
+
+/* Wer die App schon benutzt hat, ist kein Erstnutzer — auch dann nicht, wenn
+   die Erklaerung erst nach seiner Anmeldung dazugekommen ist. Sonst bekommt
+   ausgerechnet der treueste Nutzer bei jeder Aufgabe erklaert, wie das hier
+   laeuft. Jede Spur frueherer Nutzung zaehlt: eine fertig geuebte Aufgabe,
+   ein angefangenes Thema, ein Wiederholungsstand aus dem Konto. */
+function schonDabei(){
+  if (schonGeuebt) return true;
+  try { if (geuebteThemen && Object.keys(geuebteThemen).length) return true; } catch(e){}
+  try { if (Array.isArray(fortschritt) && fortschritt.length) return true; } catch(e){}
+  return false;
+}
+
 function erstErklaerungHtml(){
   if (wegErklaert || schrittNr !== 0 || !aktuell) return "";
+  if (schonDabei()){ wegVerstandenStill(); return ""; }
   return `
     <div class="erstmal">
       <p class="erstmaltitel">So läuft das hier</p>
@@ -35568,6 +35586,10 @@ function schrittZuruecksetzen(){
 }
 async function weiter(){
   sprechenAus();
+  /* Den ersten Schritt hinter sich gebracht heisst: verstanden, wie es laeuft.
+     Ohne das stuende die Erklaerung in jeder neuen Aufgabe wieder da — jede
+     Aufgabe faengt schliesslich wieder bei Schritt 1 an. */
+  wegVerstandenStill();
   schrittNr++; beantwortet = false; hilfeStufe = 0;
   schrittZuruecksetzen();
   if (schrittNr < aktuell.schritte.length) neueReihenfolge();
