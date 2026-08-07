@@ -3352,16 +3352,29 @@ const AUFGABEN = {
       tipp:"Die beiden ganz rechts.",
       /* Endet die Zahl auf 08, ist die richtige Antwort „08" — und die
          einzelne letzte Ziffer wäre „8", also dieselbe Zahl, nur als falsch
-         markiert. Deshalb werden hier alle Ablenker gegen den Zahlenwert
-         geprüft und nur die genommen, die wirklich etwas anderes sind. */
-      optionen: [R(letzteText, "Richtig."),
-        ...[[String(Math.floor(n / 100)), "Das sind die ersten beiden."],
-            [String(Math.floor(n / 10) % 100).padStart(2, "0"), "Das sind die mittleren beiden Ziffern."],
-            [String(n % 10), "Es sind zwei Ziffern, nicht eine."],
-            [String((letzte + 10) % 100).padStart(2, "0"), "Die Zehnerziffer stimmt nicht."]]
-           .filter(([t]) => Number(t) !== letzte)
-           .slice(0, 2)
-           .map(([t, fb]) => F(t, fb))]},
+         markiert. Deshalb werden alle Ablenker gegen den Zahlenwert geprüft.
+
+         Das reichte nicht: Bei 9.999 ist die richtige Antwort „99", und die
+         beiden Ablenker „9" (letzte Ziffer) und „09" (Zehnerziffer verdreht)
+         sind zwar beide ungleich 99 — aber untereinander dieselbe Zahl. Dann
+         standen zwei gleiche Antworten nebeneinander. Also wird jetzt auch
+         gegen die schon gewählten Ablenker geprüft. */
+      optionen: (() => {
+        const genommen = new Set([letzte]);
+        const ablenker = [];
+        for (const [t, fb] of [
+              [String(Math.floor(n / 100)), "Das sind die ersten beiden."],
+              [String(Math.floor(n / 10) % 100).padStart(2, "0"), "Das sind die mittleren beiden Ziffern."],
+              [String(n % 10), "Es sind zwei Ziffern, nicht eine."],
+              [String((letzte + 10) % 100).padStart(2, "0"), "Die Zehnerziffer stimmt nicht."]]){
+          const wert = Number(t);
+          if (genommen.has(wert)) continue;
+          genommen.add(wert);
+          ablenker.push(F(t, fb));
+          if (ablenker.length === 2) break;
+        }
+        return [R(letzteText, "Richtig."), ...ablenker];
+      })()},
      {frage:`Ist <b>${letzteText}</b> durch 4 teilbar?`,
       tipp2:"Halbiere zweimal. Geht beides ohne Rest auf, ist die Zahl durch 4 teilbar.",
       tipp:"4, 8, 12, 16, 20, 24 …",
@@ -13237,7 +13250,7 @@ Object.assign(AUFGABEN, {
      {blass:"Sie sagte laut etwas.",           stark:"Sie brüllte.",               was:"ein starkes Verb statt einer Umschreibung"},
      {blass:"Es war sehr dunkel.",             stark:"Kein Lichtstrahl drang durch die Ritzen.", was:"ein Bild statt eines allgemeinen Wortes"},
      {blass:"Der Hund machte Geräusche.",      stark:"Der Hund knurrte.",          was:"ein genaues Wort statt eines vagen"},
-     {blass:"Sie hatte große Angst.",          stark:"Ihre Hände zitterten, der Atem stockte.", was:"zeigen statt behaupten"},
+     {blass:"Sie hatte große Angst.",          stark:"Ihre Hände zitterten, der Atem stockte.", was:"eine gezeigte Wirkung statt einer Behauptung"},
      {blass:"Er lief sehr schnell weg.",       stark:"Er rannte davon.",           was:"ein starkes Verb statt „sehr“ plus Adverb"}
    ]);
    return {
@@ -13252,13 +13265,27 @@ Object.assign(AUFGABEN, {
       optionen:[R("Starke Verben und anschauliche Bilder", "Richtig."),
                 F("Möglichst viele „sehr“ und „ganz“", "Verstärkungswörter machen einen schwachen Ausdruck nicht stark."),
                 F("Möglichst lange Sätze", "Die Länge sagt nichts über die Wirkung.")]},
-     {frage:"Was ist an B besser?",
+     {/* Hier stand „Was ist an B besser?" — zur Auswahl standen aber „A", „B"
+          und „Beide gleich". Das sind Antworten auf die Frage *welcher*, nicht
+          auf *was*. Wer die Frage las und dann B anklickte, hatte recht, ohne
+          zu verstehen, warum. Jetzt fragt der Schritt das, was er abfragt. */
+      frage:"Welcher der beiden Sätze ist also anschaulicher?",
       tippAntwort: "B",
       tipp:"Vergleiche, welcher Satz ein genaueres Bild erzeugt.",
       tipp2:`In B steht ${f.was}.`,
-      optionen:[R("B", `Richtig — dort steht ${f.was}.`),
+      optionen:[R("B", `Richtig — in B steht ${f.was}.`),
                 F("A", "A bleibt allgemein; man sieht nichts vor sich."),
-                F("Beide gleich", "Der Unterschied ist deutlich.")]}]};
+                F("Beide gleich", "Der Unterschied ist deutlich.")]},
+     {/* Das „warum" bekommt einen eigenen Schritt. Vorher ging es unter,
+          obwohl es das Einzige ist, was man mitnehmen kann. */
+      frage:"Und was genau macht ihn besser?",
+      tipp:"Schau dir an, womit B arbeitet und was A stattdessen tut.",
+      tipp2:`In B steht ${f.was}.`,
+      optionen:[R(`Dort steht ${f.was}`, "Genau darum geht es beim anschaulichen Schreiben."),
+                F("Er benutzt mehr Verstärkungswörter wie „sehr“ und „ganz“",
+                  "Umgekehrt: Gerade die Verstärkungswörter stehen im schwächeren Satz."),
+                F("Er ist grammatisch richtiger — in A steckt ein Fehler",
+                  "Beide Sätze sind grammatisch richtig. Der Unterschied liegt in der Wirkung.")]}]};
  },
 
  /* Zeitform der Erzählung */
